@@ -131,12 +131,14 @@ var roleLabel = map[string]string{
 //	"! text"           a message; ignored if picked
 //	"? search ..."     ask for text, then show a flat list of the matches
 //	"< back ..."       switch back to the groups
+//	"x forget unknown window for <name> (<id>)"   drop the block on that machine
 //	"- Label (...)"    an open group heading; picking it folds the group
 //	"+ Label (...)"    a folded group heading; picking it opens the group
 //	"   id  name  S"   a machine; the first word is the machine id
 const (
-	searchLine = "? search by id or name..."
-	backLine   = "< back to groups"
+	forgetPrefix = "x forget unknown window for "
+	searchLine   = "? search by id or name..."
+	backLine     = "< back to groups"
 	// SearchHint is the one line shown when the menu asks for text to search
 	// for. If it comes back unchanged, nothing was typed.
 	SearchHint = "type part of an id or name, then press Enter"
@@ -257,6 +259,18 @@ func (h *Hub) groupsLocked() []*group {
 	return out
 }
 
+// forgetLinesLocked has one line for each machine whose window could not be
+// told apart, so the owner can clear the block from the menu.
+func (h *Hub) forgetLinesLocked() []string {
+	var out []string
+	for _, s := range h.ms {
+		if s.phase == phaseUnmatched {
+			out = append(out, fmt.Sprintf("%s%s (%s)", forgetPrefix, s.m.Name, s.m.ID))
+		}
+	}
+	return out
+}
+
 // DownLabel is the heading of the group of machines that are down.
 const DownLabel = "Down machines"
 
@@ -307,6 +321,7 @@ func (h *Hub) List(flat bool, filter string) []string {
 	if m := h.activeMessageLocked(); m != "" {
 		lines = append(lines, "! "+m)
 	}
+	lines = append(lines, h.forgetLinesLocked()...)
 	if flat || filter != "" {
 		lines = append(lines, backLine)
 		var all []*mstate
@@ -393,6 +408,13 @@ func (h *Hub) Pick(line string) PickResult {
 		return PickResult{Action: "search", Reopen: true, Flat: true, Ask: true}
 	case trim == backLine && !indented:
 		return PickResult{Action: "back", Reopen: true}
+	case !indented && strings.HasPrefix(trim, forgetPrefix):
+		i, j := strings.LastIndex(trim, "("), strings.LastIndex(trim, ")")
+		if i < 0 || j != len(trim)-1 || j < i {
+			return PickResult{Action: "ignored"}
+		}
+		r := h.Forget(trim[i+1 : j])
+		return PickResult{Action: r.Action, Message: r.Message, Reopen: r.Action == "forgot"}
 	case strings.HasPrefix(trim, "+ ") || strings.HasPrefix(trim, "- "):
 		label := strings.TrimSpace(trim[2:])
 		if i := strings.LastIndex(label, " ("); i >= 0 {

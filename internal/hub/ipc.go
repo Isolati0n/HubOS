@@ -119,6 +119,9 @@ func (h *Hub) handle(c net.Conn) {
 	case "open":
 		r := h.Open(req.ID)
 		reply(c, Response{OK: r.Action == "open" || r.Action == "went", Action: r.Action, Message: r.Message})
+	case "forget":
+		r := h.Forget(req.ID)
+		reply(c, Response{OK: r.Action == "forgot", Action: r.Action, Message: r.Message})
 	case "end":
 		r := h.End(req.ID)
 		reply(c, Response{OK: r.Action == "end", Action: r.Action, Message: r.Message})

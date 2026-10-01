@@ -475,8 +475,30 @@ func TestAmbiguousMatchDoesNothing(t *testing.T) {
 	if res := r.h.Open("f"); res.Action != "refused" || r.l.count() != 1 {
 		t.Errorf("second try: %+v launches=%d", res, r.l.count())
 	}
-	if res := r.h.End("f"); res.Action != "end" || len(r.f.closed) != 0 {
-		t.Errorf("end: %+v closed=%v", res, r.f.closed)
+	if res := r.h.End("f"); res.Action != "refused" || !strings.Contains(res.Message, "hubd forget f") || len(r.f.closed) != 0 {
+		t.Errorf("end must not close an unidentified window: %+v closed=%v", res, r.f.closed)
+	}
+	// The menu offers the way out, and so does the command.
+	menu := strings.Join(r.h.List(false, ""), "\n")
+	if !strings.Contains(menu, "x forget unknown window for F (f)") {
+		t.Errorf("no forget line:\n%s", menu)
+	}
+	pr := r.h.Pick("x forget unknown window for F (f)")
+	if pr.Action != "forgot" || !pr.Reopen || !strings.Contains(pr.Message, "no window was closed or moved") {
+		t.Errorf("pick forget: %+v", pr)
+	}
+	if len(r.f.moves) != 0 || len(r.f.focused) != 0 || len(r.f.closed) != 0 || len(r.f.windows) != 2 {
+		t.Errorf("forgetting touched windows: moves=%v focused=%v closed=%v windows=%d", r.f.moves, r.f.focused, r.f.closed, len(r.f.windows))
+	}
+	if strings.Contains(strings.Join(r.h.List(false, ""), "\n"), "forget unknown") {
+		t.Error("forget line still offered")
+	}
+	if res := r.h.Forget("f"); res.Action != "refused" {
+		t.Errorf("forgetting twice: %+v", res)
+	}
+	// With the block gone a new open starts a new viewer (and may be ambiguous again).
+	if res := r.h.Open("f"); r.l.count() != 2 {
+		t.Errorf("open after forget: %+v launches=%d", res, r.l.count())
 	}
 }
 

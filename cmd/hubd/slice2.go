@@ -23,7 +23,7 @@ import (
 )
 
 // subcommands of the second slice. "check" is the first slice, unchanged.
-var subcommands = map[string]bool{"serve": true, "feed": true, "list": true, "menu": true, "pick": true, "open": true, "end": true}
+var subcommands = map[string]bool{"serve": true, "feed": true, "list": true, "menu": true, "pick": true, "open": true, "end": true, "forget": true}
 
 func dispatch(args []string, stdout, stderr io.Writer) int {
 	if len(args) > 0 {
@@ -74,7 +74,7 @@ func slice2(name string, args []string, stdout, stderr io.Writer) int {
 	rest := fs.Args()
 	need := func(n int) bool {
 		if len(rest) != n {
-			fmt.Fprintf(stderr, "usage: hubd %s%s\n", name, map[string]string{"pick": " LINE", "open": " ID", "end": " ID"}[name])
+			fmt.Fprintf(stderr, "usage: hubd %s%s\n", name, map[string]string{"pick": " LINE", "open": " ID", "end": " ID", "forget": " ID"}[name])
 			return false
 		}
 		return true
@@ -106,7 +106,7 @@ func slice2(name string, args []string, stdout, stderr io.Writer) int {
 		if r.Message != "" {
 			fmt.Fprintln(stdout, r.Message)
 		}
-	case "open", "end":
+	case "open", "end", "forget":
 		if !need(1) {
 			return exitFailure
 		}

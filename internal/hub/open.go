@@ -76,7 +76,7 @@ func (h *Hub) open(id string, mayRetry bool) OpenResult {
 		return h.done("busy", "%s is already opening; nothing done", name)
 	case phaseUnmatched:
 		h.mu.Unlock()
-		return h.refuse("refused", "a viewer for %s was started but its window could not be told apart; close it by hand, then run: hubd end %s", name, id)
+		return h.refuse("refused", "a viewer for %s was started but its window could not be told apart; close it by hand, then run: hubd forget %s", name, id)
 	}
 	// 3. Is the machine fit to open?
 	switch s.status {
@@ -349,10 +349,8 @@ func (h *Hub) End(id string) OpenResult {
 	name := s.m.Name
 	if s.win == nil {
 		if s.phase == phaseUnmatched {
-			s.phase = phaseIdle
-			h.notifyLocked()
 			h.mu.Unlock()
-			return h.done("end", "forgot the unidentified viewer of %s; its windows were not touched, close them by hand", name)
+			return h.done("refused", "hubd does not know which window is the one of %s, so it will not close any; close it by hand, then run: hubd forget %s", name, id)
 		}
 		h.mu.Unlock()
 		return h.done("refused", "hubd has no window open for %s", name)
@@ -380,4 +378,22 @@ func (h *Hub) End(id string) OpenResult {
 		time.Sleep(50 * time.Millisecond)
 	}
 	return h.done("failed", "asked the window of %s to close, but it is still open (the program may be asking something); nothing was forced", name)
+}
+
+// Forget drops the "window not identified" block of a machine. It closes
+// nothing, moves nothing and does not contact the machine: windows the viewer
+// left behind stay where they are, and the owner closes them by hand.
+func (h *Hub) Forget(id string) OpenResult {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	s := h.byID[id]
+	if s == nil {
+		return h.done("refused", "there is no machine %q", id)
+	}
+	if s.phase != phaseUnmatched {
+		return h.done("refused", "nothing to forget: hubd has no unidentified window for %s", s.m.Name)
+	}
+	s.phase = phaseIdle
+	h.notifyLocked()
+	return h.done("forgot", "forgot the unidentified window of %s; no window was closed or moved and the machine was not contacted", s.m.Name)
 }
