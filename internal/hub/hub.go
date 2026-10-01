@@ -64,6 +64,7 @@ type Settings struct {
 	Settle        time.Duration                      // extra wait after the first window, to catch a second
 	CloseWait     time.Duration                      // how long `end` waits for a window to go
 	FoldThreshold int                                // groups with more machines than this start folded
+	ListMax       int                                // most machine lines in one menu list (wofi gets very slow far above 1000)
 	TooltipCap    int                                // most down machines named in the tooltip
 	MessageTTL    time.Duration                      // how long a message stays on the bar item
 	BarHeight     int                                // pixels the bar reserves; 0 = none or unknown
@@ -77,7 +78,7 @@ func DefaultSettings() Settings {
 	return Settings{
 		ProbeCap: 200, ProbeInterval: 10 * time.Second, ProbeTimeout: 2 * time.Second,
 		WindowWait: 10 * time.Second, Settle: 500 * time.Millisecond, CloseWait: 3 * time.Second,
-		FoldThreshold: 12, TooltipCap: 10, MessageTTL: 15 * time.Second,
+		FoldThreshold: 12, ListMax: 1000, TooltipCap: 10, MessageTTL: 15 * time.Second,
 	}
 }
 

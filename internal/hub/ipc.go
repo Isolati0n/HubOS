@@ -38,10 +38,11 @@ func CheckSocketPath(p string) error {
 // line). A "feed" request is answered with an endless stream of status
 // lines, one JSON object per line, exactly what Waybar reads.
 type Request struct {
-	Cmd  string `json:"cmd"` // status, list, pick, open, end, feed
-	ID   string `json:"id,omitempty"`
-	Line string `json:"line,omitempty"`
-	Flat bool   `json:"flat,omitempty"`
+	Cmd    string `json:"cmd"` // status, list, pick, open, end, feed
+	ID     string `json:"id,omitempty"`
+	Line   string `json:"line,omitempty"`
+	Flat   bool   `json:"flat,omitempty"`
+	Filter string `json:"filter,omitempty"`
 }
 
 type Response struct {
@@ -53,6 +54,7 @@ type Response struct {
 	Status  *StatusLine `json:"status,omitempty"`
 	Reopen  bool        `json:"reopen,omitempty"`
 	Flat    bool        `json:"flat,omitempty"`
+	Ask     bool        `json:"ask,omitempty"`
 }
 
 // Listen opens the socket: directory 0700, socket 0600. If another hubd
@@ -110,10 +112,10 @@ func (h *Hub) handle(c net.Conn) {
 		st := h.Status()
 		reply(c, Response{OK: true, Status: &st})
 	case "list":
-		reply(c, Response{OK: true, Lines: h.List(req.Flat)})
+		reply(c, Response{OK: true, Lines: h.List(req.Flat, req.Filter)})
 	case "pick":
 		r := h.Pick(req.Line)
-		reply(c, Response{OK: true, Action: r.Action, Message: r.Message, Reopen: r.Reopen, Flat: r.Flat})
+		reply(c, Response{OK: true, Action: r.Action, Message: r.Message, Reopen: r.Reopen, Flat: r.Flat, Ask: r.Ask})
 	case "open":
 		r := h.Open(req.ID)
 		reply(c, Response{OK: r.Action == "open" || r.Action == "went", Action: r.Action, Message: r.Message})

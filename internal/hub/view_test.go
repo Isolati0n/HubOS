@@ -33,9 +33,9 @@ func big(t *testing.T) *rig {
 
 func TestListGroupsNestingFoldingAndDownFirst(t *testing.T) {
 	r := big(t)
-	got := strings.Join(r.h.List(false), "\n")
+	got := strings.Join(r.h.List(false, ""), "\n")
 	for _, want := range []string{
-		"? search all machines...",
+		"? search by id or name...",
 		"- Hub (1 machine)",
 		"   hub              Hub                      THIS HUB",
 		"- AI (2 machines, 1 down)",
@@ -61,7 +61,7 @@ func TestPickingAFoldedHeadingOpensItAndAsksForReopen(t *testing.T) {
 	if res.Action != "toggle" || !res.Reopen || res.Flat {
 		t.Fatalf("got %+v", res)
 	}
-	got := r.h.List(false)
+	got := r.h.List(false, "")
 	text := strings.Join(got, "\n")
 	if !strings.Contains(text, "   - Guests of vmhost-1 (20 machines, 2 down)") || !strings.Contains(text, "      g01") {
 		t.Errorf("group not open:\n%s", text)
@@ -73,21 +73,21 @@ func TestPickingAFoldedHeadingOpensItAndAsksForReopen(t *testing.T) {
 	}
 	// Picking the open heading folds it again.
 	r.h.Pick("   - Guests of vmhost-1 (20 machines, 2 down)")
-	if strings.Contains(strings.Join(r.h.List(false), "\n"), "g01") {
+	if strings.Contains(strings.Join(r.h.List(false, ""), "\n"), "g01") {
 		t.Error("did not fold again")
 	}
 }
 
 func TestFlatListHasEveryMachineDownFirst(t *testing.T) {
 	r := big(t)
-	lines := r.h.List(true)
+	lines := r.h.List(true, "")
 	if lines[0] != backLine || len(lines) != 1+25 { // back + hub + 4 + 20
 		t.Fatalf("%d lines, first %q", len(lines), lines[0])
 	}
 	if !strings.Contains(lines[1], "DOWN") || !strings.Contains(lines[2], "DOWN") || !strings.Contains(lines[3], "DOWN") {
 		t.Errorf("down machines not first: %q", lines[1:4])
 	}
-	if res := r.h.Pick(searchLine); res.Action != "search" || !res.Flat || !res.Reopen {
+	if res := r.h.Pick(searchLine); res.Action != "search" || !res.Flat || !res.Reopen || !res.Ask {
 		t.Errorf("search: %+v", res)
 	}
 	if res := r.h.Pick(backLine); res.Action != "back" || res.Flat || !res.Reopen {
@@ -192,5 +192,34 @@ func TestFileLimitCapsTheProbeCap(t *testing.T) {
 	set.FileLimit = 1024
 	if got := New(r.inv, r.vt, r.f, r.l.launch, set, "").ProbeCap(); got != 200 {
 		t.Errorf("cap with limit 1024 = %d", got)
+	}
+}
+
+func TestFilterAndListCap(t *testing.T) {
+	r := big(t)
+	got := r.h.List(false, "GUEST 1")
+	// Guest 1, Guest 10..19: case-insensitive match on the name.
+	if got[0] != backLine || got[1] != `! 11 machines match "GUEST 1"` || len(got) != 2+11 {
+		t.Errorf("%d lines: %q", len(got), got)
+	}
+	if got := r.h.List(false, "vmhost"); len(got) != 3 || !strings.Contains(got[2], "vmhost-1") {
+		t.Errorf("by id: %q", got)
+	}
+	if got := r.h.List(false, "no such thing"); len(got) != 2 || got[1] != `! 0 machines match "no such thing"` {
+		t.Errorf("none: %q", got)
+	}
+	r.h.set.ListMax = 5
+	flat := r.h.List(true, "")
+	if len(flat) != 1+5+1 || flat[6] != "! 20 more not shown; type more letters to narrow the search" {
+		t.Errorf("capped flat list: %q", flat)
+	}
+	// Opening a group is capped too, and a "more" line is never a pick.
+	r.h.Pick("   + Guests of vmhost-1 (20 machines, 2 down)")
+	grouped := strings.Join(r.h.List(false, ""), "\n")
+	if !strings.Contains(grouped, "      ! 15 more in this group not shown; use the search") {
+		t.Errorf("group cap missing:\n%s", grouped)
+	}
+	if res := r.h.Pick("      ! 15 more in this group not shown; use the search"); res.Action != "ignored" {
+		t.Errorf("%+v", res)
 	}
 }

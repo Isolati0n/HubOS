@@ -56,7 +56,8 @@ func slice2(name string, args []string, stdout, stderr io.Writer) int {
 	case "menu":
 		return menu(fs, args, stdout, stderr)
 	}
-	flat := fs.Bool("flat", false, "list: every machine in one list")
+	flat := fs.Bool("flat", false, "list: machines in one flat list")
+	filter := fs.String("filter", "", "list: only machines whose id or name contains this text")
 	sock := socketFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -84,7 +85,7 @@ func slice2(name string, args []string, stdout, stderr io.Writer) int {
 		if !need(0) {
 			return exitFailure
 		}
-		r, err := hub.Call(path, hub.Request{Cmd: "list", Flat: *flat})
+		r, err := hub.Call(path, hub.Request{Cmd: "list", Flat: *flat, Filter: *filter})
 		if err != nil {
 			fmt.Fprintln(stderr, "hubd:", err)
 			return exitFailure
@@ -149,6 +150,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	ptimeout := fs.Duration("probe-timeout", def.ProbeTimeout, "limit for one machine's check")
 	wait := fs.Duration("window-wait", def.WindowWait, "how long to wait for a started viewer's window")
 	fold := fs.Int("fold", def.FoldThreshold, "groups with more machines than this start folded")
+	listMax := fs.Int("list-max", def.ListMax, "most machine lines in one menu list")
 	tipcap := fs.Int("tooltip-cap", def.TooltipCap, "most down machines named in the tooltip")
 	ttl := fs.Duration("message-ttl", def.MessageTTL, "how long a message stays on the bar item")
 	logRounds := fs.Bool("log-rounds", false, "print one line per check round (how long it took, how many up and down)")
@@ -219,7 +221,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	}
 	set := hub.Settings{
 		ProbeCap: *cap_, ProbeInterval: *interval, ProbeTimeout: *ptimeout, WindowWait: *wait,
-		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, TooltipCap: *tipcap,
+		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, ListMax: *listMax, TooltipCap: *tipcap,
 		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit,
 	}
 	if *logRounds {
@@ -294,22 +296,14 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	if syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB) != nil {
 		return exitOK
 	}
-	flat := false
+	flat, filter := false, ""
 	for {
-		r, err := hub.Call(path, hub.Request{Cmd: "list", Flat: flat})
+		r, err := hub.Call(path, hub.Request{Cmd: "list", Flat: flat, Filter: filter})
 		if err != nil {
 			fmt.Fprintln(stderr, "hubd:", err)
 			return exitFailure
 		}
-		cmd := exec.Command(*launcher, "--dmenu", "--cache-file", "/dev/null", "--insensitive",
-			"--lines", "12", "--width", "560", "--location", "top_left", "--yoffset", "0", "--prompt", "hub")
-		cmd.Env = append(os.Environ(), "LC_ALL=C.UTF-8")
-		cmd.Stdin = strings.NewReader(strings.Join(r.Lines, "\n") + "\n")
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		cmd.Stderr = stderr
-		cmd.Run() // a non-zero exit with no output means Escape was pressed
-		pick := strings.TrimRight(out.String(), "\n")
+		pick := runLauncher(*launcher, r.Lines, stderr)
 		if pick == "" {
 			return exitOK
 		}
@@ -324,6 +318,29 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		if !pr.Reopen {
 			return exitOK
 		}
-		flat = pr.Flat
+		flat, filter = pr.Flat, ""
+		if pr.Ask {
+			// wofi gives back what was typed when nothing in the list matches.
+			typed := runLauncher(*launcher, []string{hub.SearchHint}, stderr)
+			if typed == "" || typed == hub.SearchHint {
+				flat = false
+				continue
+			}
+			filter = typed
+		}
 	}
+}
+
+// runLauncher shows the lines and returns the line picked (or the text typed
+// when nothing matched). Empty means Escape.
+func runLauncher(launcher string, lines []string, stderr io.Writer) string {
+	cmd := exec.Command(launcher, "--dmenu", "--cache-file", "/dev/null", "--insensitive",
+		"--lines", "12", "--width", "560", "--location", "top_left", "--yoffset", "0", "--prompt", "hub")
+	cmd.Env = append(os.Environ(), "LC_ALL=C.UTF-8")
+	cmd.Stdin = strings.NewReader(strings.Join(lines, "\n") + "\n")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = stderr
+	cmd.Run() // a non-zero exit with no output means Escape was pressed
+	return strings.TrimRight(out.String(), "\n")
 }

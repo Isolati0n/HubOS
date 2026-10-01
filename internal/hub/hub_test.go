@@ -307,7 +307,7 @@ func TestDownMachineRefusedAndMessageShown(t *testing.T) {
 	if st.Class != "alert" || !strings.HasPrefix(st.Tooltip, "AI Box is down, not opened") {
 		t.Errorf("status: %+v", st)
 	}
-	if l := r.h.List(false); l[0] != "! AI Box is down, not opened" {
+	if l := r.h.List(false, ""); l[0] != "! AI Box is down, not opened" {
 		t.Errorf("first menu line: %q", l[0])
 	}
 }

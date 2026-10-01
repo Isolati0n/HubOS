@@ -134,14 +134,17 @@ var roleLabel = map[string]string{
 // Lines of the menu use this grammar (parsed again in Pick):
 //
 //	"! text"           a message; ignored if picked
-//	"? search ..."     switch to the flat list of every machine
+//	"? search ..."     ask for text, then show a flat list of the matches
 //	"< back ..."       switch back to the groups
 //	"- Label (...)"    an open group heading; picking it folds the group
 //	"+ Label (...)"    a folded group heading; picking it opens the group
 //	"   id  name  S"   a machine; the first word is the machine id
 const (
-	searchLine = "? search all machines..."
+	searchLine = "? search by id or name..."
 	backLine   = "< back to groups"
+	// SearchHint is the one line shown when the menu asks for text to search
+	// for. If it comes back unchanged, nothing was typed.
+	SearchHint = "type part of an id or name, then press Enter"
 )
 
 type group struct {
@@ -259,20 +262,35 @@ func (h *Hub) groupsLocked() []*group {
 	return out
 }
 
-// List returns the menu lines. flat lists every machine in one run, down
-// first, so typing in the launcher searches all of them.
-func (h *Hub) List(flat bool) []string {
+// List returns the menu lines. flat lists machines in one run, down first;
+// filter (case-insensitive, matched against id and name) narrows that list.
+// No list is longer than Settings.ListMax machine lines: wofi's start-up
+// time grows much faster than the number of lines (docs/hubd-slice2.md).
+func (h *Hub) List(flat bool, filter string) []string {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	var lines []string
 	if m := h.activeMessageLocked(); m != "" {
 		lines = append(lines, "! "+m)
 	}
-	if flat {
+	if flat || filter != "" {
 		lines = append(lines, backLine)
-		all := append([]*mstate(nil), h.ms...)
+		var all []*mstate
+		f := strings.ToLower(filter)
+		for _, s := range h.ms {
+			if f == "" || strings.Contains(strings.ToLower(s.m.ID), f) || strings.Contains(strings.ToLower(s.m.Name), f) {
+				all = append(all, s)
+			}
+		}
 		sortMembers(all)
-		for _, s := range all {
+		if filter != "" {
+			lines = append(lines, fmt.Sprintf("! %d machines match %q", len(all), filter))
+		}
+		for i, s := range all {
+			if i == h.set.ListMax {
+				lines = append(lines, fmt.Sprintf("! %d more not shown; type more letters to narrow the search", len(all)-i))
+				break
+			}
 			lines = append(lines, h.entryLocked(s, 3))
 		}
 		return lines
@@ -288,7 +306,11 @@ func (h *Hub) List(flat bool) []string {
 		if !open {
 			continue
 		}
-		for _, s := range g.members {
+		for i, s := range g.members {
+			if i == h.set.ListMax {
+				lines = append(lines, fmt.Sprintf("   ! %d more in this group not shown; use the search", len(g.members)-i))
+				break
+			}
 			lines = append(lines, h.entryLocked(s, 3))
 			if c := g.children[s.m.ID]; c != nil {
 				copen := h.isOpenLocked(c.key, len(c.members))
@@ -298,7 +320,11 @@ func (h *Hub) List(flat bool) []string {
 				}
 				lines = append(lines, strings.Repeat(" ", c.indent)+cmark+" "+headingText(c.label, c.members))
 				if copen {
-					for _, gs := range c.members {
+					for j, gs := range c.members {
+						if j == h.set.ListMax {
+							lines = append(lines, fmt.Sprintf("      ! %d more in this group not shown; use the search", len(c.members)-j))
+							break
+						}
 						lines = append(lines, h.entryLocked(gs, 6))
 					}
 				}
@@ -314,6 +340,7 @@ type PickResult struct {
 	Message string `json:"message,omitempty"` // plain words for the owner
 	Reopen  bool   `json:"reopen"`            // show the menu again at once
 	Flat    bool   `json:"flat"`              // ... as the flat list
+	Ask     bool   `json:"ask,omitempty"`     // ... after asking for text to search for
 }
 
 // Pick handles one line chosen in the launcher. It acts only on a line that
@@ -328,7 +355,7 @@ func (h *Hub) Pick(line string) PickResult {
 	indented := len(trim) < len(line)
 	switch {
 	case trim == searchLine && !indented:
-		return PickResult{Action: "search", Reopen: true, Flat: true}
+		return PickResult{Action: "search", Reopen: true, Flat: true, Ask: true}
 	case trim == backLine && !indented:
 		return PickResult{Action: "back", Reopen: true}
 	case strings.HasPrefix(trim, "+ ") || strings.HasPrefix(trim, "- "):
