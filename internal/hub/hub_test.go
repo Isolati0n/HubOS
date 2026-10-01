@@ -134,7 +134,7 @@ type fakeLauncher struct {
 	script func(args []string) // what windows to create; default: one named by --app-id=
 }
 
-func (l *fakeLauncher) launch(args []string) (*Proc, error) {
+func (l *fakeLauncher) launch(id string, args []string) (*Proc, error) {
 	l.mu.Lock()
 	l.calls = append(l.calls, args)
 	l.mu.Unlock()

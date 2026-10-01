@@ -9,9 +9,7 @@ package hub
 
 import (
 	"context"
-	"os/exec"
 	"sync"
-	"syscall"
 	"time"
 
 	"hubos/internal/driftwm"
@@ -37,23 +35,8 @@ type Proc struct {
 	Exited <-chan error
 }
 
-// Launcher starts a viewer from an argument list.
-type Launcher func(args []string) (*Proc, error)
-
-// ExecLauncher starts the program directly (no shell), in its own process
-// group, with no input and output, so it survives hubd and is never tied to
-// hubd's terminal.
-func ExecLauncher(args []string) (*Proc, error) {
-	cmd := exec.Command(args[0], args[1:]...)
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setpgid: true}
-	cmd.Stdin, cmd.Stdout, cmd.Stderr = nil, nil, nil
-	if err := cmd.Start(); err != nil {
-		return nil, err
-	}
-	ch := make(chan error, 1)
-	go func() { ch <- cmd.Wait() }()
-	return &Proc{Exited: ch}, nil
-}
+// Launcher starts a viewer for a machine from an argument list.
+type Launcher func(machineID string, args []string) (*Proc, error)
 
 // Settings are the numbers hubd runs with. The defaults are proposals from
 // measurement (docs/hubd-slice2.md), not decisions.
@@ -63,6 +46,8 @@ type Settings struct {
 	ProbeTimeout  time.Duration                                                                                                         // limit for one machine's check (slice 1: 2 s)
 	WindowWait    time.Duration                                                                                                         // how long to wait for a started viewer's window
 	Settle        time.Duration                                                                                                         // extra wait after the first window, to catch a second
+	LogDir        string                                                                                                                // where viewer logs go ("" = discard viewer output)
+	LogMax        int64                                                                                                                 // most bytes in one viewer log before it is rotated
 	CloseWait     time.Duration                                                                                                         // how long `end` waits for a window to go
 	FoldThreshold int                                                                                                                   // groups with more machines than this start folded
 	ListMax       int                                                                                                                   // most machine lines in one menu list (wofi gets very slow far above 1000)
@@ -80,7 +65,7 @@ func DefaultSettings() Settings {
 	return Settings{
 		ProbeCap: 200, ProbeInterval: 10 * time.Second, ProbeTimeout: 2 * time.Second,
 		WindowWait: 10 * time.Second, Settle: 500 * time.Millisecond, CloseWait: 3 * time.Second,
-		FoldThreshold: 12, ListMax: 1000, DownMax: 50, TooltipCap: 10, MessageTTL: 15 * time.Second,
+		FoldThreshold: 12, ListMax: 1000, DownMax: 50, TooltipCap: 10, MessageTTL: 15 * time.Second, LogMax: 128 << 10,
 	}
 }
 

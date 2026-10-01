@@ -162,7 +162,7 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 	for _, w := range before.Windows {
 		known[w.ID] = true
 	}
-	proc, err := h.launch(args)
+	proc, err := h.launch(s.m.ID, args)
 	if err != nil {
 		return h.done("failed", "could not start %s for %s: %v", args[0], name, err)
 	}
@@ -196,7 +196,11 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 		case err := <-proc.Exited:
 			proc.Exited = nil // a clean exit may be a hand-over to a running copy
 			if err != nil {
-				return h.done("failed", "%s exited (%v) before showing a window for %s", args[0], err, name)
+				msg := fmt.Sprintf("%s exited (%v) before showing a window for %s", args[0], err, name)
+				if lp := h.LogPath(s.m.ID); lp != "" {
+					msg += "; its output is in " + lp
+				}
+				return h.done("failed", "%s", msg)
 			}
 		default:
 		}

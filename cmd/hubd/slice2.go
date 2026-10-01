@@ -229,8 +229,9 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "hubd: round %d took %s: %d up, %d down, %d not checked\n", round, took.Round(time.Millisecond), c.Up, c.Down, c.NotChecked)
 		}
 	}
+	set.LogDir = strings.TrimSuffix(socket, ".sock") + ".viewer-logs"
 	dw := &driftwm.Client{Path: dwPath}
-	h := hub.New(inv, vt, dw, hub.ExecLauncher, set, strings.TrimSuffix(socket, ".sock")+".record.json")
+	h := hub.New(inv, vt, dw, hub.NewExecLauncher(set.LogDir, set.LogMax), set, strings.TrimSuffix(socket, ".sock")+".record.json")
 
 	l, err := hub.Listen(socket)
 	if err != nil {
@@ -262,6 +263,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	go h.Serve(l)
 	go h.RunProbes(ctx)
 	go h.RunWatch(ctx)
+	go h.RunLogTrim(ctx)
 	<-ctx.Done()
 	l.Close()
 	fmt.Fprintln(stderr, "hubd: stopped (windows it started were left alone)")
