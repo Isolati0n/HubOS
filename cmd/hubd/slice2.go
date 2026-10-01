@@ -151,6 +151,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	fold := fs.Int("fold", def.FoldThreshold, "groups with more machines than this start folded")
 	tipcap := fs.Int("tooltip-cap", def.TooltipCap, "most down machines named in the tooltip")
 	ttl := fs.Duration("message-ttl", def.MessageTTL, "how long a message stays on the bar item")
+	logRounds := fs.Bool("log-rounds", false, "print one line per check round (how long it took, how many up and down)")
 	sock := socketFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -220,6 +221,13 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		ProbeCap: *cap_, ProbeInterval: *interval, ProbeTimeout: *ptimeout, WindowWait: *wait,
 		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, TooltipCap: *tipcap,
 		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit,
+	}
+	if *logRounds {
+		round := 0
+		set.OnRound = func(took time.Duration, c hub.Counts) {
+			round++
+			fmt.Fprintf(stderr, "hubd: round %d took %s: %d up, %d down, %d not checked\n", round, took.Round(time.Millisecond), c.Up, c.Down, c.NotChecked)
+		}
 	}
 	dw := &driftwm.Client{Path: dwPath}
 	h := hub.New(inv, vt, dw, hub.ExecLauncher, set, strings.TrimSuffix(socket, ".sock")+".record.json")

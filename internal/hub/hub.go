@@ -57,18 +57,19 @@ func ExecLauncher(args []string) (*Proc, error) {
 // Settings are the numbers hubd runs with. The defaults are proposals from
 // measurement (docs/hubd-slice2.md), not decisions.
 type Settings struct {
-	ProbeCap      int           // most checks in flight at once
-	ProbeInterval time.Duration // time between the starts of two rounds
-	ProbeTimeout  time.Duration // limit for one machine's check (slice 1: 2 s)
-	WindowWait    time.Duration // how long to wait for a started viewer's window
-	Settle        time.Duration // extra wait after the first window, to catch a second
-	CloseWait     time.Duration // how long `end` waits for a window to go
-	FoldThreshold int           // groups with more machines than this start folded
-	TooltipCap    int           // most down machines named in the tooltip
-	MessageTTL    time.Duration // how long a message stays on the bar item
-	BarHeight     int           // pixels the bar reserves; 0 = none or unknown
-	FileLimit     uint64        // soft limit on open files (0 = unknown); caps ProbeCap
-	StaleAfter    time.Duration // 0 = derived from ProbeInterval
+	ProbeCap      int                                // most checks in flight at once
+	ProbeInterval time.Duration                      // time between the starts of two rounds
+	ProbeTimeout  time.Duration                      // limit for one machine's check (slice 1: 2 s)
+	WindowWait    time.Duration                      // how long to wait for a started viewer's window
+	Settle        time.Duration                      // extra wait after the first window, to catch a second
+	CloseWait     time.Duration                      // how long `end` waits for a window to go
+	FoldThreshold int                                // groups with more machines than this start folded
+	TooltipCap    int                                // most down machines named in the tooltip
+	MessageTTL    time.Duration                      // how long a message stays on the bar item
+	BarHeight     int                                // pixels the bar reserves; 0 = none or unknown
+	FileLimit     uint64                             // soft limit on open files (0 = unknown); caps ProbeCap
+	StaleAfter    time.Duration                      // 0 = derived from ProbeInterval
+	OnRound       func(took time.Duration, c Counts) // called after each round (optional)
 }
 
 // DefaultSettings are the proposed values.

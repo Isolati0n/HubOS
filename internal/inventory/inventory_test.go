@@ -254,3 +254,22 @@ func TestControlCharactersAreRefusedInEveryTextField(t *testing.T) {
 		}
 	}
 }
+
+// BenchmarkParse reads the file named by HUBOS_BENCH_INVENTORY (see
+// docs/hubd-slice2.md) and measures reading plus checking it.
+func BenchmarkParse(b *testing.B) {
+	path := os.Getenv("HUBOS_BENCH_INVENTORY")
+	if path == "" {
+		b.Skip("set HUBOS_BENCH_INVENTORY to a generated inventory")
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.SetBytes(int64(len(data)))
+	for i := 0; i < b.N; i++ {
+		if _, ps := Parse(data); len(ps) != 0 {
+			b.Fatal(ps[0])
+		}
+	}
+}

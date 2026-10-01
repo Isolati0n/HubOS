@@ -12,6 +12,7 @@ import (
 // Settings.ProbeCap checks in flight. Each result is applied as soon as it
 // arrives, so a slow machine never holds up the others.
 func (h *Hub) ProbeRound(ctx context.Context) {
+	began := time.Now()
 	type target struct {
 		s *mstate
 		t probe.Target
@@ -51,7 +52,11 @@ func (h *Hub) ProbeRound(ctx context.Context) {
 	h.rounds++
 	h.lastRound = h.now()
 	h.notifyLocked()
+	c, _ := h.countLocked()
 	h.mu.Unlock()
+	if h.set.OnRound != nil {
+		h.set.OnRound(time.Since(began), c)
+	}
 }
 
 // RunProbes runs rounds until ctx ends. Rounds start ProbeInterval apart; a

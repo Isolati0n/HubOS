@@ -23,12 +23,13 @@ func main() {
 	nodesPath := flag.String("nodes", "", "where to write the host:port list of UP machines (required)")
 	downEvery := flag.Int("down-every", 20, "every k-th machine is left DOWN (0 = none)")
 	port := flag.Int("port", 21000, "the fake port of every machine")
+	unreachable := flag.Bool("unreachable", false, "use 192.0.2.x addresses that nothing answers (checks time out) and list no nodes")
 	flag.Parse()
 	if *invPath == "" || *nodesPath == "" || *n < 1 {
 		fmt.Fprintln(os.Stderr, "usage: geninv -n N -inventory FILE -nodes FILE [-down-every K] [-port P]")
 		os.Exit(1)
 	}
-	if err := generate(*n, *downEvery, *port, *invPath, *nodesPath); err != nil {
+	if err := generate(*n, *downEvery, *port, *unreachable, *invPath, *nodesPath); err != nil {
 		fmt.Fprintln(os.Stderr, "geninv:", err)
 		os.Exit(1)
 	}
@@ -62,7 +63,7 @@ func plan(n int) []spec {
 	return out[:n]
 }
 
-func generate(n, downEvery, port int, invPath, nodesPath string) error {
+func generate(n, downEvery, port int, unreachable bool, invPath, nodesPath string) error {
 	inv, err := os.Create(invPath)
 	if err != nil {
 		return err
@@ -78,10 +79,17 @@ func generate(n, downEvery, port int, invPath, nodesPath string) error {
 	fmt.Fprintf(iw, "[[machine]]\nid = \"hub\"\nname = \"Hub\"\nrole = \"hub\"\naddress = \"127.0.0.10\"\nopen = [\"none\"]\nhome = { x = -300, y = -300 }\n\n")
 	for i, s := range plan(n) {
 		addr := fmt.Sprintf("127.1.%d.%d", i/250, i%250+1)
+		mport := port
+		if unreachable {
+			// 192.0.2.0/24 is reserved for documentation; nothing answers, so
+			// every check runs into its time limit. Ports differ so that
+			// every machine still has its own address and port pair.
+			addr, mport = fmt.Sprintf("192.0.2.%d", i%250+1), port+i/250
+		}
 		fmt.Fprintf(iw, "[[machine]]\nid = %q\nname = %q\nrole = %q\naddress = %q\nopen = [%q]\nport = %d\nhome = { x = %d, y = %d }\n%s\n",
-			s.id, s.name, s.role, addr, s.open, port, (i%100)*300, (i/100)*300, s.extra)
-		if downEvery == 0 || (i+1)%downEvery != 0 {
-			fmt.Fprintf(nw, "%s:%d\n", addr, port)
+			s.id, s.name, s.role, addr, s.open, mport, (i%100)*300, (i/100)*300, s.extra)
+		if !unreachable && (downEvery == 0 || (i+1)%downEvery != 0) {
+			fmt.Fprintf(nw, "%s:%d\n", addr, mport)
 		}
 	}
 	if err := iw.Flush(); err != nil {
