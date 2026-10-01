@@ -41,7 +41,7 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 - `host` and `lifetime` are required on guests, and refused on every other role.
 - `host` must point at a machine whose role is `vm-host`.
 - Two machines may not share the same `home` position.
-- Only one machine may have the role `hub`.
+- Exactly one hub is required: exactly one machine must have the role `hub`. A file with no hub, or with more than one, is an error.
 - An unknown field is an error. `hubd` stops and names the field.
 - Secrets never appear in this file.
 

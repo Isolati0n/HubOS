@@ -205,6 +205,43 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 
 **Overall finish line (owner's words):** Hub OS boots the whole cluster. Every machine runs the Hub OS system, and the hub shows all of them as tiles that open their windows.
 
+## Health: what "ready" means
+
+Ready means the machine's session server is accepting connections:
+
+- Moonlight machines (gaming, AI, desktop): Sunshine accepts connections.
+- Guests: SSH or the SPICE/VNC port answers.
+- NAS and backup NAS: the share or SSH answers.
+- VM host: SSH answers.
+- The hub is the machine hubd runs on and is not checked.
+
+"Machine is up" never means "the hypervisor says running". Real port numbers are unverified and not yet decided.
+
+## Repo layout
+
+```
+HubOS/
+├── CLAUDE.md
+├── HUB-OS.md
+├── docs/
+│   └── inventory-format.md
+├── examples/
+│   └── inventory.example.toml        (192.0.2.x addresses; never reachable)
+├── go.mod                            (one module for the whole repo)
+├── cmd/
+│   └── hubd/
+│       └── main.go                   (flags, wiring, printing, exit code)
+├── internal/
+│   ├── inventory/                    (read + validate; no network)
+│   └── probe/                        (up/down checks; no inventory knowledge)
+├── testdata/
+│   ├── inventory.fake.toml           (valid; points at 127.0.0.x fake nodes)
+│   └── broken/                       (one deliberately broken file per rule)
+└── tools/
+    └── fakenode/
+        └── main.go                   (tiny program that pretends to be a machine)
+```
+
 ---
 
 ## Rules for the bot
@@ -268,3 +305,4 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **2026-10-01 (later):** systemd banned permanently; custom compositor and custom file manager allowed after design discussion; docs/DECISIONS.md removed; Erlang/Elixir recorded as parked.
 - **2026-10-01 (later):** Inventory file format approved; see docs/inventory-format.md.
 - **2026-10-01 (later):** Inventory format amended: real inventory lives on the hub's own disk with a NAS backup copy; added validation rules; defined behavior for unknown format versions.
+- **2026-10-01 (later):** Added health definition and repo layout; hubd first-slice design approved; exactly one hub required.
