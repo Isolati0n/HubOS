@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -98,5 +99,39 @@ func TestReasonWording(t *testing.T) {
 		if got := reason(c.err, 2*time.Second); got != c.want {
 			t.Errorf("reason(%v) = %q, want %q", c.err, got, c.want)
 		}
+	}
+}
+
+func TestCheckLimitedNeverRunsMoreThanLimit(t *testing.T) {
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer l.Close()
+	go func() {
+		for {
+			c, err := l.Accept()
+			if err != nil {
+				return
+			}
+			c.Close()
+		}
+	}()
+	port := l.Addr().(*net.TCPAddr).Port
+	targets := make([]Target, 50)
+	for i := range targets {
+		targets[i] = Target{Address: "127.0.0.1", Port: port}
+	}
+	var mu sync.Mutex
+	up := 0
+	CheckLimited(context.Background(), targets, time.Second, 4, func(i int, r Result) {
+		mu.Lock()
+		defer mu.Unlock()
+		if r.Up {
+			up++
+		}
+	})
+	if up != 50 {
+		t.Errorf("up = %d, want 50", up)
 	}
 }

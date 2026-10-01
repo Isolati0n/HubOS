@@ -27,6 +27,10 @@ type Target struct {
 type Result struct {
 	Up     bool
 	Reason string
+	// Unchecked is true when the check could not be made at all because hubd
+	// ran out of file handles. That says nothing about the machine, so the
+	// panel must not show it as down.
+	Unchecked bool
 }
 
 // Check opens one TCP connection to the target and closes it again without
@@ -41,6 +45,9 @@ func Check(ctx context.Context, t Target, timeout time.Duration) Result {
 	if err != nil {
 		if ctx.Err() != nil {
 			return Result{Reason: "overall time limit reached before it answered"}
+		}
+		if errors.Is(err, syscall.EMFILE) || errors.Is(err, syscall.ENFILE) {
+			return Result{Reason: "hubd is out of file handles (raise ulimit -n)", Unchecked: true}
 		}
 		return Result{Reason: reason(err, timeout)}
 	}
@@ -81,4 +88,31 @@ func reason(err error, timeout time.Duration) string {
 		return fmt.Sprintf("no answer within %s", timeout)
 	}
 	return err.Error()
+}
+
+// CheckLimited checks the targets with at most limit checks in flight at
+// once. For each finished check it calls done(index, result) (from several
+// goroutines at once; done must be safe for that). It returns when all are
+// finished or ctx has ended; targets not reached before ctx ended get the
+// "overall time limit" result.
+func CheckLimited(ctx context.Context, targets []Target, timeout time.Duration, limit int, done func(i int, r Result)) {
+	if limit < 1 {
+		limit = 1
+	}
+	next := make(chan int)
+	var wg sync.WaitGroup
+	for w := 0; w < limit && w < len(targets); w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := range next {
+				done(i, Check(ctx, targets[i], timeout))
+			}
+		}()
+	}
+	for i := range targets {
+		next <- i
+	}
+	close(next)
+	wg.Wait()
 }
