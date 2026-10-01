@@ -201,6 +201,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 
 1. **Phase A (now, phone only):** design documents, plus `hubd` with fake nodes. Finish line: the panel's tiles work for fake nodes (up/down, click opens the right program).
 2. **Phase B:** the bot builds the Hub OS system and boots it in virtual machines in the cloud.
+   - Runs under software emulation only (no hardware virtualization in the build environment). Use very small images first. Performance, latency and jitter cannot be measured there; those tests wait for Phase C.
 3. **Phase C (December 2026):** real hardware.
 
 **Overall finish line (owner's words):** Hub OS boots the whole cluster. Every machine runs the Hub OS system, and the hub shows all of them as tiles that open their windows.
@@ -226,7 +227,7 @@ HubOS/
 ├── docs/
 │   └── inventory-format.md
 ├── examples/
-│   └── inventory.example.toml        (192.0.2.x addresses; never reachable)
+│   └── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
 ├── go.mod                            (one module for the whole repo)
 ├── cmd/
 │   └── hubd/
@@ -274,6 +275,7 @@ HubOS/
 - Whether a bare TCP connect-then-close disturbs a real Sunshine, SPICE or VNC session
 - The hubd time limits (2 s per machine, 5 s total) are guesses, not measured on a real network
 - Whether /etc/hubos/inventory.toml is where per-machine config will live on the Hub OS image
+- Whether the input forwarder can be tested at all: /dev/uinput is absent in the build environment (a test would need a virtual machine with a kernel built with uinput)
 
 ## Open questions for the owner
 
@@ -309,3 +311,4 @@ HubOS/
 - **2026-10-01 (later):** Inventory format amended: real inventory lives on the hub's own disk with a NAS backup copy; added validation rules; defined behavior for unknown format versions.
 - **2026-10-01 (later):** Added health definition and repo layout; hubd first-slice design approved; exactly one hub required.
 - **2026-10-01 (later):** hubd first slice reviewed; extra validation rules documented; hub excluded from the up count; unverified list extended.
+- **2026-10-01 (later):** Build environment audited; findings in docs/environment.md; Phase B limits recorded.
