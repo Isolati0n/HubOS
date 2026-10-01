@@ -43,6 +43,9 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 - Two machines may not share the same `home` position.
 - Exactly one hub is required: exactly one machine must have the role `hub`. A file with no hub, or with more than one, is an error.
 - An unknown field is an error. `hubd` stops and names the field.
+- `port`, when present, must be a whole number from 1 to 65535.
+- The `x` and `y` of `home` must be whole numbers. This is provisional until the canvas unit is verified.
+- `lifetime` must be exactly `ephemeral` or `persistent`.
 - Secrets never appear in this file.
 
 ## Unverified
