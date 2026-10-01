@@ -1,234 +1,258 @@
 # Hub OS — Project Brief
 
-This file is the source of truth for Hub OS. If a later chat invents a web portal, a new streaming codec, a custom file manager, or streaming of gaming PCs, that chat is wrong. Read this whole file before writing code or architecture.
+This file is the source of truth for Hub OS. If any other file, chat, or session disagrees with it, this file wins. Only the owner changes it, through the design discussion, and every change is recorded in the Change log at the bottom.
 
-**Date of this snapshot:** 2026-09-30  
-**Owner:** single user, not a cluster operator yet. Daily Linux use is Mint / Xubuntu. Has never used Proxmox, Moonlight, or Sunshine. Owns no cluster hardware yet. Will have AI assistants write most of the code. Hardware purchase is *not* a prerequisite for starting the software; fake nodes and local VMs are enough.
-
----
-
-## One-sentence definition
-
-Hub OS is a thin broker on a desk Linux machine: it knows the other computers in a personal rack cluster, checks that they are reachable, and opens the correct **existing native program** so that machine appears as a normal window on an infinite-canvas desktop.
-
-## What it is not
-
-- Not a hypervisor
-- Not a job scheduler
-- Not a streaming codec
-- Not a from-scratch file manager
-- Not a from-scratch window manager
-- Not a browser dashboard
-- Not a remote-play path for the gaming PCs
-
-## Core principle (never violate)
-
-> The hub is a client to each node’s session server. It does not render workloads itself.
-
-The hub must not re-encode video, must not proxy pixels unless a chosen tool already works that way, and must not become the machine that runs Blender, trains models, or stores the main file pool.
+**Rewritten:** 2026-10-01 (replaces the 2026-09-30 brief)
 
 ---
 
-## The human setup (intent)
+## The owner and the situation
 
-A rack-scale personal cluster. Budget and noise are not design limits. Non-gaming nodes are meant to stay powered on.
-
-The user sits at the **hub** as the daily driver. **Gaming PCs** each have their own monitor and cable for tournament play. Everything else should be reachable from the hub as a window.
-
-**driftwm** is the intended hub desktop: an experimental infinite-canvas Wayland compositor. The screen is a camera over a large desk. Hub OS places normal program windows on that canvas. Hub OS does not replace driftwm.
-
-Long-term wish: a window slot for every non-gaming node, and tablet/other-device access to the hub.  
-v1 does **not** keep every node as a live video stream 24/7 (that is a video wall and will fail). v1: a tile per node; live video only for nodes the user actually opened.
-
-If the hub restarts, **do not auto-reopen viewers**. The user will click again.
-
-No Home Assistant / house dashboards in v1.
+- Single owner. New to running clusters. Explanations in the product and in sessions must stay plain.
+- Right now the owner has only a phone. No PCs, no cluster hardware, no access to either.
+- All hardware will be bought at once in December 2026.
+- Until then, work only on what does not need hardware: design, documents, code tested against fake nodes, and our own system booted inside virtual machines in the cloud.
+- The bot (Claude Code) builds. Design is decided between the owner and Claude (manager), then handed to the bot.
 
 ---
 
-## Planned cluster roles
+## What Hub OS is
 
-| Role | Intent | On the hub? |
+Hub OS has two parts:
+
+1. **A custom Linux-based operating system** that runs on every machine in a personal rack cluster. Each machine is purpose-built for its one role.
+2. **On the hub** (the machine at the desk), a thin broker that checks which machines are reachable and opens each machine's display as a normal native window on the driftwm infinite canvas.
+
+The hub is the owner's daily driver. Every capability is outsourced to a specialized node. The hub runs nothing but viewers.
+
+## Core principles
+
+- **The hub is a client.** It never runs workloads, never stores the main file pool, and never re-encodes or proxies video. It runs only viewers: Moonlight, virt-viewer/Remmina, a terminal used as an SSH client, and the file manager used as a NAS client. Even the web browser and text editor run on a node.
+- **Every workload node is purpose-built for its job.**
+- **Build it ourselves when it measurably improves Hub OS.** For every part we replace, state what our version does better for this cluster and verify it. If a proven part does the job equally well, use it.
+- **The Linux kernel stays.** Moonlight, driftwm, and GPU drivers depend on it.
+- **glibc everywhere** (required by Steam/Proton and likely by GPU drivers).
+- **Say when something is unverified.** Never present a guess as fact. Never invent a protocol.
+
+---
+
+## Physical setup
+
+- The rack sits next to the desk.
+- **Hub display:** one ultra-short-throw projector. The hub has a single view of the canvas.
+- **Gaming monitors:** one or two, cabled directly to the gaming box's GPU. They are not part of the hub.
+- **Input:** one keyboard and one mouse, plugged into the gaming box (see Input sharing). A spare keyboard and mouse in a drawer can be plugged into the hub in an emergency.
+- **Network:** a fast wired network (10GbE-class) between machines. Every machine may reach the internet.
+- **Power:** treated as unlimited, free, and never failing. No battery backup (UPS). Electricity cost is not a design factor.
+
+---
+
+## Machine roles (current list; more may be added later; counts TBD)
+
+| Role | Purpose | How the hub shows it |
 |---|---|---|
-| Gaming (several) | One game per machine, own HDMI monitor | **No stream for play.** May show in inventory later as “exists.” |
-| Hub | Daily driver desk PC | This machine runs Hub OS |
-| AI / LLM / GPU | Training, inference, Blender, ParaView, CUDA | Yes — remote desktop |
-| NAS | Cluster files | Yes — file app and/or terminal |
-| Experiment / custom-OS | Many small systems at once | Yes — terminal or remote desktop |
-| Observability | Logs and metrics for the whole rack | Later |
-| Dev / staging | Build and test software | Later |
-| Compile farm | Batch builds | Later |
+| Hub | Daily driver; runs only viewers | This machine runs the broker |
+| Gaming box (one) | All games, Linux only | Moonlight window for casual play; competitive play on its own monitors |
+| AI / GPU box | Training, inference, Blender, ParaView, CUDA | Moonlight window (Sunshine on the node) |
+| General desktop node | Web browser, text editor, everyday apps | Moonlight window |
+| NAS | Cluster file storage | File manager (opens on click) and/or terminal |
+| Backup NAS | Local backup copy of the NAS | Listed; opened like the NAS |
+| VM host | Operating system development and experiments | Its guests open with virt-viewer/Remmina or SSH |
 
-### Wave-1 *roles* (design against these four)
-
-Hardware SKUs below are examples, not a purchase requirement.
-
-1. **Hub** — desk. Strong CPU, enough RAM, a modest GPU so a few remote screens decode cleanly, fast NIC.
-2. **NAS** — TrueNAS-style file server, ECC RAM, HBA in IT/pass-through mode, redundant disks.
-3. **AI** — high-VRAM GPU machine running Sunshine; viewed with Moonlight.
-4. **Experiment** — one host that can run several guest systems (Proxmox is the default assumption). Guests are viewed with virt-viewer / Remmina or SSH.
-
-A 10GbE-class network is assumed between them. Do not design as if they share a slow consumer Wi-Fi hop as the happy path.
+Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 
 ---
 
-## Protocol map (locked)
+## The Hub OS system (all machines)
 
-These tools are **out of scope** for the whole project unless the owner explicitly reverses this: **Selkies, Apache Guacamole, NICE/Amazon DCV.**
+- **Immutable and declarative.** One configuration describes each machine.
+- **Whole-system image.** An update is written to a second slot and the machine reboots into it. If it fails, the machine boots the previous slot.
+- **Per-machine settings live outside the image** in a small config: tuning profile, inventory, secrets. Changing them does not require a new image.
+- **Each node keeps its own system on its own disk.** A node can restart without the hub.
+- **Updates come from the hub over the network, only when the owner chooses.**
+- **First install of a new machine: network boot.**
+- **Images are digitally signed.** A machine refuses an image that is not signed by the owner.
+- **A machine refuses to update or restart while a game or long job is running.**
+- **Master copies of the code and every built image live on the NAS.** GitHub is a convenience mirror. Long term, builds happen on a machine inside the cluster, so the cluster can rebuild itself if GitHub disappears.
+- **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. Whether systemd is used at all: **owner to confirm**.
+- **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
+- **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
 
-| Job | Node side | Hub side (normal window) |
-|---|---|---|
-| AI / GPU desktop | Sunshine | Moonlight |
-| Guest / experiment desktop | SPICE or VNC on the guest | virt-viewer or Remmina |
-| Commands | sshd | terminal (whatever the hub already has) |
-| Files | NAS share (SMB or NFS) | normal file manager already on the hub |
-| A product that is only a website | that website | one browser window — only when unavoidable |
+### Parts we write ourselves
 
-Do not invent a new remoting protocol.
-
----
-
-## v1 contract (definition of done)
-
-A user sits at the hub, sees a small panel of tiles (hub + NAS + AI + one experiment guest), clicks a tile, and the correct native program opens as a real window on driftwm (or a boring Wayland/X11 desktop if driftwm is not installed). If the target is down, the tile says so and nothing fake opens. If the hub process restarts, tiles return; windows do not come back by themselves.
-
-That is the finish line. Nothing else is v1.
-
----
-
-## Architecture
-
-```
-[ user ]
-    |
-[ driftwm ]          existing compositor — layout only
-[ hub-panel ]        small UI: tiles, status, Open
-[ hubd ]             one background program (Go)
-[ inventory file ]   list of nodes
-[ secrets dir ]      mode 600 files — tokens, keys, passwords
-    |
-    +-- ping / SSH helper on nodes
-    +-- Proxmox API for guests (experiment host)
-    +-- exec: moonlight | virt-viewer | remmina | terminal | file manager
-    |
-[ NAS ]   [ AI + Sunshine ]   [ Experiment host + guests ]
-```
-
-### Components
-
-| Piece | Responsibility | Notes |
-|---|---|---|
-| driftwm | Canvas, pan/zoom, window placement | Configure; do not fork unless it is truly unusable |
-| hub-panel | The only Hub OS UI | Native. Not a website. Can be a tiny toolkit app or even a scripted menu at first |
-| hubd | Inventory, health, launch, record of what was started | Go, standard library + small router if an API is needed |
-| inventory | Name, role, address, how to open, optional guest id | YAML or similar, one file |
-| secrets | Proxmox token, SSH key path, Sunshine/Moonlight pairing leftovers | `/etc/hubos/secrets.d/` or `~/.config/hubos/secrets.d/`, mode 600 |
-| node helper | Tiny script: status / start-sunshine / stop-sunshine | Called over SSH. Not a second operating system |
-| existing viewers | All pixels and input | Hub OS only starts them |
-
-### Session rules
-
-- hubd may remember “AI is supposed to be open” for the panel. It must not spawn a pile of duplicate viewers on a second click without asking.
-- Ending a session from the panel should close the local viewer. It should stop Sunshine or a guest **only** if that session was started for this click and the inventory says that is safe. Never power off the whole AI machine just to close a window.
-- Hub reboot: no auto-reopen of viewers.
-
-### Health
-
-“Node is up” is not “Proxmox says running.” Ready means:
-
-- AI: Sunshine is accepting connections
-- Guest: SSH or the SPICE/VNC port answers
-- NAS: the share or SSH answers
-
-### Window integration
-
-v1 launches ordinary programs. Those programs *are* the windows. No webview embeds. No custom compositor protocol.
-
-driftwm is preferred. Fallback: any working desktop on the hub so development can continue.
+- The image build and update tool
+- `hubd` (Go): inventory, health checks, launching viewers, record of what was started
+- The panel (bar item and dropdown)
+- The node helper (status, start/stop session servers)
+- The input forwarder
+- The game picker
+- The game tuner
+- Anything else that measurably improves Hub OS (decided case by case with the owner)
 
 ---
 
-## Data the hub must keep
+## Hub behavior
 
-**Inventory (not secret)**  
-Per node: `id`, `name`, `role` (`hub` \| `ai` \| `nas` \| `experiment-host` \| `guest` \| `gaming`), `kind` (`ssh-host` \| `proxmox-vm` \| `proxmox-lxc` \| `local`), `address`, `open` method (`moonlight` \| `spice` \| `vnc` \| `ssh` \| `files` \| `none`), optional `vmid`, optional `share`.
+### Windows and sessions
+- Each machine opens as its **whole desktop in one window**, not individual apps.
+- **Closing a window leaves the machine's session alive.** Clicking again returns to it.
+- Clicking a machine that is already open **goes to its existing window**. Never open duplicates.
+- **Every machine stays logged in**, so clicking lands straight on its desktop.
+- Copy-paste works across all windows, including the hub.
+- **No auto-reopen of windows after a hub restart.** The panel returns; windows do not.
 
-Gaming entries: `open: none`.
+### Canvas
+- driftwm is **essential**. If it does not work on our system, we wait until it does. There is no fallback desktop.
+- Each machine has a **fixed home position** on the canvas, assigned in the inventory.
+- Windows stay on the canvas. You can zoom in, and you can maximize a window (not fullscreen).
+- Navigation is by mouse.
 
-**Secrets (secret)**  
-Never in the inventory file. Never in git.
+### Panel
+- An always-visible bar item that opens a scrollable dropdown, grouped by role. Guests are nested under their host.
+- The bar program is chosen once driftwm compatibility is known.
+- When a machine is down, the **bar item itself shows an alert** (for example, "3 of 4 up" in red).
+- A machine that is off just shows as down. No wake-on-LAN.
+- If a machine drops while its window is open, leave the window alone. Only the alert changes.
+- The bar shows which machine currently owns the keyboard and mouse (hub or gaming box).
+- No alerts are sent to the owner's phone.
 
-**Runtime state (can be SQLite or a small file)**  
-Last health, last error, whether a viewer was launched and its local process id if known.
+### Leaving a window
+- **Desktop-style windows** (AI box, general desktop, NAS, VM guests): the pointer stays free; leave by clicking outside the window.
+- **Game-style windows** (casual play through the hub): for v1, use Moonlight's built-in Ctrl + Alt + Shift + Z to release mouse and keyboard. A custom exit chord may come later, after testing how driftwm handles shortcuts.
+
+### Power actions (after the first working slice)
+- Each machine gets Restart and Shut down, with a confirmation that names what will be lost (for example, "this ends the open desktop session on the AI box").
+
+### Adding machines
+- v1: hand-edit the inventory file. A guided "add machine" step may come later.
 
 ---
 
-## Lifecycle (AI tile)
+## Input sharing
 
-1. User clicks Open on AI.  
-2. hubd reads inventory + secrets.  
-3. Health check. Fail → show error.  
-4. If Sunshine is down and the helper can start it, start it and wait until it listens. Timeout → fail.  
-5. Start Moonlight pointed at that host.  
-6. User works in that window.  
-7. User clicks End → close Moonlight. Do not default to shutting down the AI box.  
-8. Hub crash → user clicks Open again.
-
-Guest tile: same, but step 4 may be “ensure Proxmox guest is running,” and step 5 is virt-viewer/Remmina or SSH.
-
-NAS tile: skip remoting; open files or SSH.
+- One keyboard and one mouse plug into the **gaming box**, so the gaming path has nothing in between.
+- **Super + Ctrl + Shift** flips input between the gaming box and the hub.
+- When input is on the hub, the gaming box forwards keystrokes and mouse movement over the network with **our own forwarder**.
+- The forwarder hides the chord from games, and sends a "release all keys" on every flip so no key stays stuck.
+- After a restart, input goes to the hub by default.
+- If the gaming box is down, use the spare keyboard and mouse on the hub.
 
 ---
 
-## Explicit cuts (do not build)
+## Gaming box
 
-- Selkies, Guacamole, DCV
-- Browser-based control plane as the product
-- Custom file manager
-- Custom window manager (beyond config for driftwm)
-- Multi-scheduler abstraction (Slurm + Kubernetes + Proxmox)
-- Multi-user / fancy access control
-- Tablet remote access (after desk v1 works)
-- Observability stack, compile farm, twelve physical OS minis
+- **Linux only.**
+- **Games:** Diablo II: Resurrected (through Proton; needs a Battle.net account), Slippi (Super Smash Bros. Melee netplay), emulators for every console from Atari through PS2, GameCube, and original Xbox, Soul Calibur II netplay (emulator TBD), and Minecraft (edition TBD).
+- **Design goal:** remove I/O chokepoints and bottlenecks, and minimize jitter. Network latency is ignored in this design.
+- **Boots straight into a game picker:** a menu of games, each with its own optimized profile. Nothing else runs.
+- **Two layers of tuning:**
+  - Per machine, set at boot (real-time kernel, reserved CPU cores, and similar), measured on the actual hardware.
+  - Per game, set at launch (CPU governor, priority, core assignment, emulator settings).
+- **Game tuner:** an advanced built-in tuner that measures and suggests settings. It writes the same profile files the owner can edit by hand. When delay and smoothness conflict, the default is the **steadiest picture**, overridable per game. The profile file format comes first; the tuner comes after the first working version.
+- The tuner can measure what the box can see (frame-time consistency, scheduling delay). True click-to-screen delay needs external measuring hardware.
+- **Game files live on the box's own SSD.** Saves are copied to the NAS automatically.
+- **Competitive play** happens on the gaming monitors, with zero streaming delay.
+- **Casual play** can happen in a Moonlight window on the hub, showing the same picker.
+
+---
+
+## NAS and backups
+
+- **Full protection:** redundant disks, detection and repair of silent corruption, snapshots, ECC memory. Engineering effort and budget are not limits.
+- **Filesystem:** ZFS or Btrfs, to be researched.
+- **Workloads that need different tuning** (for example, AI datasets) get separately tuned areas on the same NAS. The AI box keeps its active dataset on its own fast SSD; the NAS holds the master copy.
+- Opens on click in the hub's file manager. Non-Linux devices do not need access.
+- **Backups:** a local backup NAS, plus a copy off-site or in another room. No encryption.
+
+## VM host
+
+- Runs both operating systems the owner writes and existing ones.
+- Built on Linux's built-in virtual machine support (KVM), with our own management.
+- **Per guest:** ephemeral (reset to a clean copy) or persistent (keeps changes, can be custom-built for a workload).
+- A guest whose workload needs it can move to its own hardware node.
+
+## Remote access
+
+- Allowed for **non-gaming nodes only**, after the first working version, as a separate locked-down piece with a real login and encryption. It may use a web interface; this is the only exception to the no-web rule.
+
+---
+
+## Explicitly out
+
+- Selkies, Apache Guacamole, NICE/Amazon DCV
+- Any new streaming protocol
+- A web dashboard as the hub's control plane (except the remote-access exception above)
+- A custom kernel
+- TrueNAS, Proxmox
+- A multi-scheduler layer (Slurm + Kubernetes + Proxmox)
+- Auto-reopening windows after a hub restart
 - Always-on live video for every node
-- Auto-restore of viewer windows after hub reboot
-- Streaming gaming PCs for play
+- Wake-on-LAN
+- Phone alerts
+- Battery backup (UPS)
 
 ---
 
-## Ground truth already established
+## Phases
 
-- Open OnDemand already does “submit, wait, open a stream” for HPC. That is not the gap. The gap is a **personal desk broker** across mixed machines with **native windows**, not another web portal.
-- Moonlight/Sunshine: native window, GPU encode on the node. Desktop inside a Sunshine session dies if that session is destroyed; keep the node process up while the user cares about that desktop.
-- virt-viewer / Remmina / SSH: boring and sufficient for guests and the NAS.
-- driftwm exists and is experimental (Wayland, infinite canvas, AI-assisted codebase). Treat it as a dependency that can break.
+1. **Phase A (now, phone only):** design documents, plus `hubd` with fake nodes. Finish line: the panel's tiles work for fake nodes (up/down, click opens the right program).
+2. **Phase B:** the bot builds the Hub OS system and boots it in virtual machines in the cloud.
+3. **Phase C (December 2026):** real hardware.
 
----
-
-## How to work
-
-- Prefer concrete files and commands over diagrams.
-- If something is unsolved in existing tools, say so. Do not invent a protocol.
-- Go for hubd unless there is a hard reason not to.
-- First runnable slice: inventory + up/down + click opens a terminal to a fake node. Then viewers. Then Proxmox. Then driftwm layout polish.
-- The owner is new to clusters. Explanations in the product UI must stay plain.
+**Overall finish line (owner's words):** Hub OS boots the whole cluster. Every machine runs the Hub OS system, and the hub shows all of them as tiles that open their windows.
 
 ---
 
-## Suggested repo layout (when code starts)
+## Rules for the bot
 
-```
-hubos/
-  cmd/hubd/
-  cmd/hub-panel/     # or a later folder if panel starts as a script
-  internal/
-  configs/inventory.example.yaml
-  scripts/node-helper.sh
-  docs/
-```
-
-No monorepo for a custom compositor and file manager.
+- **Ask the owner before every choice.** Questions may be batched.
+- Do only the task given. Do not redesign.
+- Never invent architecture or protocols. Mark anything unverified.
+- Secrets never go in the inventory or in git.
+- Speak plainly.
+- Do not edit this file unless the owner asks, and record every change in the Change log.
 
 ---
 
-*End of brief. When in doubt, do less, keep the hub a client, open a real window.*
+## Unverified — must be tested
+
+- How Hub OS jumps to, or places, a specific window in driftwm; maximize behavior
+- Whether driftwm works with a status bar
+- How driftwm behaves on a projector, and how readable small text is
+- Whether driftwm and PipeWire run without systemd
+- How Moonlight and driftwm hand keyboard and mouse input back and forth
+- Whether a Sunshine session stays alive after the viewer closes
+- What the gaming monitors show while the gaming box is being streamed
+- Clipboard and audio support in each viewer
+- Streaming delay on the real network and hardware
+- The input forwarder approach (reading raw input devices and creating virtual ones)
+- How much management software the VM host needs on top of KVM
+- Whether NVIDIA's driver requires glibc
+- Which per-game settings can change at launch without side effects
+- A report of Slippi dropping frames on Linux where Windows was smooth (one user's report)
+
+## Open questions for the owner
+
+- Is systemd used at all?
+- GPU brands for each machine
+- The full hardware list (research before December), including a keyboard and mouse that keep their polling rate through the forwarder
+- Number of machines per role
+- Soul Calibur II emulator; Minecraft Java or Bedrock
+- ZFS or Btrfs
+- A custom exit chord for game-style windows
+- The bot's first task after this rewrite
+- Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
+
+---
+
+## Change log
+
+- **2026-09-30:** Original brief.
+- **2026-10-01:** Full rewrite after design discussion. Major changes from the original:
+  - A custom Linux-based system for every machine is now in scope (the original ruled out a custom distro).
+  - Gaming is streamed to the hub for casual play; competitive play stays on direct monitors (the original ruled out streaming gaming PCs).
+  - One gaming box replaces several gaming PCs.
+  - TrueNAS and Proxmox removed; NAS and VM host run Hub OS.
+  - No fallback desktop: driftwm is essential.
+  - Hub uses a single projector instead of multiple monitors.
+  - A custom init is allowed if justified; start with an existing one.
