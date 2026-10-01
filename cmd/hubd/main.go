@@ -1,7 +1,12 @@
-// Command hubd is the first slice of the Hub OS broker. It reads the
-// inventory, checks it against every rule in docs/inventory-format.md,
-// checks whether each machine is up, and prints the result. It opens no
-// windows and starts no viewers.
+// Command hubd is the Hub OS broker.
+//
+// First slice (hubd check, or hubd with no command): read the inventory,
+// check it against every rule in docs/inventory-format.md, check whether each
+// machine is up, and print the result. It opens no windows and starts no
+// viewers.
+//
+// Second slice (slice2.go, docs/hubd-slice2.md): serve, feed, list, menu,
+// pick, open, end.
 package main
 
 import (
@@ -41,7 +46,7 @@ type config struct {
 var defaultConfig = config{perMachine: 2 * time.Second, total: 5 * time.Second}
 
 func main() {
-	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr, defaultConfig))
+	os.Exit(dispatch(os.Args[1:], os.Stdout, os.Stderr))
 }
 
 func run(args []string, stdout, stderr io.Writer, cfg config) int {

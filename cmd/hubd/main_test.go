@@ -236,3 +236,21 @@ func TestHubIsShownButNotCounted(t *testing.T) {
 		t.Errorf("exit %d\n%s", code, out)
 	}
 }
+
+// "hubd check" and "hubd" with no command are the same slice 1 program.
+func TestCheckSubcommandIsSliceOne(t *testing.T) {
+	n := startNode(t, "127.0.0.21")
+	inv := writeInventory(t,
+		machine("hub", "hub", "127.0.0.10", `["none"]`, 0, "", 0, 0),
+		machine("ai-1", "ai", "127.0.0.21", `["moonlight"]`, n.port, "", 1, 1))
+	var a, b, e bytes.Buffer
+	if code := dispatch([]string{"--inventory", inv}, &a, &e); code != 0 {
+		t.Fatalf("plain: %d %s", code, e.String())
+	}
+	if code := dispatch([]string{"check", "--inventory", inv}, &b, &e); code != 0 {
+		t.Fatalf("check: %d %s", code, e.String())
+	}
+	if a.String() != b.String() || !strings.Contains(a.String(), "1 of 1 up") {
+		t.Errorf("differ:\n%s\n---\n%s", a.String(), b.String())
+	}
+}
