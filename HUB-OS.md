@@ -16,7 +16,6 @@ Hub OS is a thin broker on a desk Linux machine: it knows the other computers in
 - Not a hypervisor
 - Not a job scheduler
 - Not a streaming codec
-- Not a from-scratch Linux distribution (v1)
 - Not a from-scratch file manager
 - Not a from-scratch window manager
 - Not a browser dashboard
@@ -187,7 +186,6 @@ NAS tile: skip remoting; open files or SSH.
 - Browser-based control plane as the product
 - Custom file manager
 - Custom window manager (beyond config for driftwm)
-- Custom Linux ISO as v1
 - Multi-scheduler abstraction (Slurm + Kubernetes + Proxmox)
 - Multi-user / fancy access control
 - Tablet remote access (after desk v1 works)
@@ -229,7 +227,7 @@ hubos/
   docs/
 ```
 
-No monorepo for a custom distro, compositor, and file manager.
+No monorepo for a custom compositor and file manager.
 
 ---
 

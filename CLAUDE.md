@@ -16,7 +16,7 @@ If either file is missing, stop and tell the owner. Do not guess its contents.
 ## Hard rules
 
 - `hubd` is written in Go.
-- Do **not** build: a window manager, a file manager, a Linux distro, a streaming protocol, a web dashboard.
+- Do **not** build: a window manager, a file manager, a streaming protocol, a web dashboard.
 - Do **not** use: Selkies, Apache Guacamole, NICE/Amazon DCV.
 - Secrets never go in the inventory file and never go in git.
 
