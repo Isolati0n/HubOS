@@ -86,3 +86,11 @@ func mustRead(t *testing.T) string {
 	}
 	return string(b)
 }
+
+func TestTestdataViewerFilesAreValid(t *testing.T) {
+	for _, p := range []string{"../../testdata/viewers/ambiguous.toml", "../../testdata/viewers/ignores-name.toml"} {
+		if _, ps, err := Load(p); err != nil || len(ps) != 0 {
+			t.Errorf("%s: %v %q", p, err, ps)
+		}
+	}
+}
