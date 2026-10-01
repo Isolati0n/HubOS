@@ -142,10 +142,23 @@ func checkFormat(v any) *Problem {
 		}
 	}
 	found := fmt.Sprint(v)
-	if s, ok := v.(string); ok {
-		found = strconv.Quote(s)
+	switch x := v.(type) {
+	case string:
+		found = strconv.Quote(x)
+	case float64:
+		found = decimalText(x) + " (a decimal number)"
 	}
 	return &Problem{"file", fmt.Sprintf("format version %s is not supported; supported format versions: %s", found, list)}
+}
+
+// decimalText writes a decimal number so it still looks like one: 1 becomes
+// "1.0", 1.5 stays "1.5". Infinity and not-a-number are left as they are.
+func decimalText(f float64) string {
+	t := strconv.FormatFloat(f, 'f', -1, 64)
+	if !strings.ContainsAny(t, ".IN") {
+		t += ".0"
+	}
+	return t
 }
 
 // wrongKind matches the library's message for a value of the wrong type, so

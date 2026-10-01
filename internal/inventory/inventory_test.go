@@ -113,7 +113,9 @@ func TestFormatChecksStopEverythingElse(t *testing.T) {
 	for _, tc := range []struct{ name, line, found string }{
 		{"text", `format = "1"`, `"1"`},
 		{"zero", `format = 0`, `0`},
-		{"float", `format = 1.0`, `1`},
+		{"decimal one", `format = 1.0`, `1.0 (a decimal number)`},
+		{"decimal", `format = 1.5`, `1.5 (a decimal number)`},
+		{"exponent", `format = 1e3`, `1000.0 (a decimal number)`},
 	} {
 		_, ps := Parse([]byte(tc.line + "\n" + validHub))
 		if len(ps) != 1 || !strings.Contains(ps[0].Msg, "format version "+tc.found+" is not supported") {
