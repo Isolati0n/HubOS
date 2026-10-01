@@ -199,13 +199,13 @@ func TestFilterAndListCap(t *testing.T) {
 	r := big(t)
 	got := r.h.List(false, "GUEST 1")
 	// Guest 1, Guest 10..19: case-insensitive match on the name.
-	if got[0] != backLine || got[1] != `! 11 machines match "GUEST 1"` || len(got) != 2+11 {
+	if got[0] != backLine || got[1] != `! 11 match "GUEST 1"` || len(got) != 2+11 {
 		t.Errorf("%d lines: %q", len(got), got)
 	}
 	if got := r.h.List(false, "vmhost"); len(got) != 3 || !strings.Contains(got[2], "vmhost-1") {
 		t.Errorf("by id: %q", got)
 	}
-	if got := r.h.List(false, "no such thing"); len(got) != 2 || got[1] != `! 0 machines match "no such thing"` {
+	if got := r.h.List(false, "no such thing"); len(got) != 2 || got[1] != `! 0 match "no such thing"` {
 		t.Errorf("none: %q", got)
 	}
 	r.h.set.ListMax = 5

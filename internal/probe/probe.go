@@ -47,7 +47,9 @@ func Check(ctx context.Context, t Target, timeout time.Duration) Result {
 			return Result{Reason: "overall time limit reached before it answered"}
 		}
 		if errors.Is(err, syscall.EMFILE) || errors.Is(err, syscall.ENFILE) {
-			return Result{Reason: "hubd is out of file handles (raise ulimit -n)", Unchecked: true}
+			// The reason text stays what slice 1 always printed; only the
+			// new flag tells the daemon this says nothing about the machine.
+			return Result{Reason: reason(err, timeout), Unchecked: true}
 		}
 		return Result{Reason: reason(err, timeout)}
 	}

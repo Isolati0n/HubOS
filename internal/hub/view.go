@@ -284,7 +284,7 @@ func (h *Hub) List(flat bool, filter string) []string {
 		}
 		sortMembers(all)
 		if filter != "" {
-			lines = append(lines, fmt.Sprintf("! %d machines match %q", len(all), filter))
+			lines = append(lines, fmt.Sprintf("! %d match %q", len(all), filter))
 		}
 		for i, s := range all {
 			if i == h.set.ListMax {
