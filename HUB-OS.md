@@ -1,6 +1,6 @@
 # Hub OS — Project Brief
 
-This file is the source of truth for Hub OS. If a later chat invents a web portal, a new streaming codec, a custom init system, a custom file manager, or streaming of gaming PCs, that chat is wrong. Read this whole file before writing code or architecture.
+This file is the source of truth for Hub OS. If a later chat invents a web portal, a new streaming codec, a custom file manager, or streaming of gaming PCs, that chat is wrong. Read this whole file before writing code or architecture.
 
 **Date of this snapshot:** 2026-09-30  
 **Owner:** single user, not a cluster operator yet. Daily Linux use is Mint / Xubuntu. Has never used Proxmox, Moonlight, or Sunshine. Owns no cluster hardware yet. Will have AI assistants write most of the code. Hardware purchase is *not* a prerequisite for starting the software; fake nodes and local VMs are enough.
@@ -17,7 +17,6 @@ Hub OS is a thin broker on a desk Linux machine: it knows the other computers in
 - Not a job scheduler
 - Not a streaming codec
 - Not a from-scratch Linux distribution (v1)
-- Not a from-scratch init / PID 1
 - Not a from-scratch file manager
 - Not a from-scratch window manager
 - Not a browser dashboard
@@ -130,7 +129,7 @@ That is the finish line. Nothing else is v1.
 
 ### Init / service supervisor
 
-Use the host’s existing supervisor (systemd is fine). If a smaller supervisor is wanted later, use **s6** or **dinit**. **Do not write PID 1.** A custom init does not make remote windows better. It is a second project.
+Use the host’s existing supervisor (systemd is fine). If a smaller supervisor is wanted later, use **s6** or **dinit**.
 
 ### Session rules
 
@@ -190,7 +189,6 @@ NAS tile: skip remoting; open files or SSH.
 
 - Selkies, Guacamole, DCV
 - Browser-based control plane as the product
-- Custom init system
 - Custom file manager
 - Custom window manager (beyond config for driftwm)
 - Custom Linux ISO as v1
@@ -210,7 +208,6 @@ NAS tile: skip remoting; open files or SSH.
 - Moonlight/Sunshine: native window, GPU encode on the node. Desktop inside a Sunshine session dies if that session is destroyed; keep the node process up while the user cares about that desktop.
 - virt-viewer / Remmina / SSH: boring and sufficient for guests and the NAS.
 - driftwm exists and is experimental (Wayland, infinite canvas, AI-assisted codebase). Treat it as a dependency that can break.
-- Writing PID 1 from scratch is worth almost nothing to this product.
 
 ---
 
@@ -236,7 +233,7 @@ hubos/
   docs/
 ```
 
-No monorepo for a custom distro, init, compositor, and file manager.
+No monorepo for a custom distro, compositor, and file manager.
 
 ---
 
