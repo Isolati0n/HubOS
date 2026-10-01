@@ -1,0 +1,11 @@
+# TEST ONLY. A viewer that prints to its standard output and error before it
+# opens a terminal window, to test the viewer logs. The shell sees only the
+# window name (hubos-<id>, safe characters) as $0, never inventory text pasted
+# into the script.
+format = 1
+
+[[viewer]]
+id        = "chatty"
+programs  = ["moonlight", "spice", "vnc", "ssh", "files"]
+command   = ["sh", "-c", "echo viewer says hello; echo viewer complains >&2; exec foot \"--app-id=$0\" -- sleep infinity", "{app_id}"]
+sets_name = true

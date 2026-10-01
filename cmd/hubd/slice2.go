@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -274,6 +275,9 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 // the answer is "show it again" (opening or folding a group, search).
 func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	launcher := fs.String("wofi", "wofi", "the list launcher program")
+	style := fs.String("style", defaultWofiStyle, "wofi style file (CSS); used only if the file exists")
+	width := fs.Int("width", 720, "menu width in pixels")
+	single := fs.Bool("single-click", false, "pick with a single mouse click (wofi's default is a double click)")
 	sock := socketFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -296,6 +300,10 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	if syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB) != nil {
 		return exitOK
 	}
+	opts := launcherOpts{program: *launcher, width: *width, singleClick: *single}
+	if _, err := os.Stat(*style); err == nil {
+		opts.style = *style
+	}
 	flat, filter := false, ""
 	for {
 		r, err := hub.Call(path, hub.Request{Cmd: "list", Flat: flat, Filter: filter})
@@ -303,7 +311,7 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintln(stderr, "hubd:", err)
 			return exitFailure
 		}
-		pick := runLauncher(*launcher, r.Lines, stderr)
+		pick := runLauncher(opts, r.Lines, stderr)
 		if pick == "" {
 			return exitOK
 		}
@@ -321,7 +329,7 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		flat, filter = pr.Flat, ""
 		if pr.Ask {
 			// wofi gives back what was typed when nothing in the list matches.
-			typed := runLauncher(*launcher, []string{hub.SearchHint}, stderr)
+			typed := runLauncher(opts, []string{hub.SearchHint}, stderr)
 			if typed == "" || typed == hub.SearchHint {
 				flat = false
 				continue
@@ -331,11 +339,28 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	}
 }
 
+// defaultWofiStyle is where the menu look is read from if the file exists.
+const defaultWofiStyle = "/etc/hubos/wofi.css"
+
+type launcherOpts struct {
+	program     string
+	style       string
+	width       int
+	singleClick bool
+}
+
 // runLauncher shows the lines and returns the line picked (or the text typed
 // when nothing matched). Empty means Escape.
-func runLauncher(launcher string, lines []string, stderr io.Writer) string {
-	cmd := exec.Command(launcher, "--dmenu", "--cache-file", "/dev/null", "--insensitive",
-		"--lines", "12", "--width", "560", "--location", "top_left", "--yoffset", "0", "--prompt", "hub")
+func runLauncher(o launcherOpts, lines []string, stderr io.Writer) string {
+	args := []string{"--dmenu", "--cache-file", "/dev/null", "--insensitive",
+		"--lines", "12", "--width", strconv.Itoa(o.width), "--location", "top_left", "--yoffset", "0", "--prompt", "hub"}
+	if o.style != "" {
+		args = append(args, "--style", o.style)
+	}
+	if o.singleClick {
+		args = append(args, "-D", "single_click=true")
+	}
+	cmd := exec.Command(o.program, args...)
 	cmd.Env = append(os.Environ(), "LC_ALL=C.UTF-8")
 	cmd.Stdin = strings.NewReader(strings.Join(lines, "\n") + "\n")
 	var out bytes.Buffer
