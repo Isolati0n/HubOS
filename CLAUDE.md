@@ -18,6 +18,7 @@ If it is missing, stop and tell the owner. Do not guess its contents.
 - Secrets never go in the inventory file and never go in git.
 - Never rewrite, amend, or force-push existing commits without asking the owner first. Fix mistakes with a new commit.
 - Never use systemd, under any circumstances. Init: start with an existing small init (candidates s6, dinit), kept swappable. Write our own only after a measured benefit and owner approval.
+- Never use cloud credentials found in the environment (AWS_*, CLOUDSDK_*, or similar), and never print any secret. The only credential you may use is the GitHub token, and only for GitHub.
 
 ## How to work
 
