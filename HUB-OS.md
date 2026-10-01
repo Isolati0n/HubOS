@@ -34,6 +34,7 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 - **glibc everywhere** (required by Steam/Proton and likely by GPU drivers).
 - **Say when something is unverified.** Never present a guess as fact. Never invent a protocol.
 - No systemd, ever.
+- **Scale:** the panel and hubd are designed for 100 machines. 5000 is a stretch target: it must not break, and the measured numbers are recorded before anything is claimed.
 
 ---
 
@@ -78,6 +79,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used, under any circumstances.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
+- A D-Bus session bus (dbus-daemon alone, no systemd) is allowed on the hub, because Waybar will not start without one.
 
 ### Parts we write ourselves
 
@@ -110,12 +112,14 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Each machine has a **fixed home position** on the canvas, assigned in the inventory.
 - Windows stay on the canvas. driftwm never magnifies: zoom stops at 100%, so 'zoom in' only means back to native size. Larger text comes from the output's scale setting and from window size, and is untested. 'Maximize' means driftwm's fit-to-viewport.
 - Navigation is by mouse.
+- hubd keeps windows it places clear of the bar, and expects the camera to be offset by half the bar height.
 - hubd controls driftwm through its local socket (list windows, place a window, move the view, focus, resize, fit). The socket is only for the same user. See docs/driftwm-findings.md.
 - driftwm is pinned to one exact commit (352333a8fa1b22171492d4b71a54102045c9a19d, version 0.19.0). It is GPL-3.0-or-later; anything changed in it is published under that licence. It is a single-maintainer, pre-1.0, AI-built project, so expect to carry patches. Game-style windows use the per-window pass_keys = true rule; no patch for the shortcut-inhibit protocol for now.
 
 ### Panel
 - An always-visible bar item that opens a scrollable dropdown, grouped by role. Guests are nested under their host.
-- The bar program is chosen once driftwm compatibility is known.
+- The bar is Waybar, on the top edge. The alert is a Waybar custom module fed by hubd. The dropdown is a list launcher (wofi) opened by a click on the bar item and filled by hubd; lines that are group headings are ignored if picked. A bespoke panel may replace this later. See docs/bar-findings.md.
+- Fullscreen hides the bar and its alert, so Moonlight windows use driftwm's fit-to-viewport by default, not fullscreen.
 - When a machine is down, the **bar item itself shows an alert** (for example, "3 of 4 up" in red).
 - A machine that is off just shows as down. No wake-on-LAN.
 - If a machine drops while its window is open, leave the window alone. Only the alert changes.
@@ -228,6 +232,7 @@ HubOS/
 ├── CLAUDE.md
 ├── HUB-OS.md
 ├── docs/
+│   ├── bar-findings.md
 │   ├── driftwm-findings.md
 │   ├── environment.md
 │   └── inventory-format.md
@@ -280,11 +285,13 @@ HubOS/
 - Whether /etc/hubos/inventory.toml is where per-machine config will live on the Hub OS image
 - Whether the input forwarder can be tested at all: /dev/uinput is absent in the build environment (a test would need a virtual machine with a kernel built with uinput)
 - driftwm's real-display backend on a real or virtual GPU (only the nested software mode was run)
-- Waybar and bars that reserve screen space with driftwm
 - The window names (app_id) Moonlight, virt-viewer, Remmina and the terminal report
 - Pointer constraints with a real Moonlight session
 - Text readability on the projector, and output scale
 - A release build of driftwm: speed and memory
+- Waybar as a non-root user under s6 or dinit
+- Mouse clicks on entries in wofi
+- hubd, the panel and wofi at 100 and at 5000 machines
 
 ## Open questions for the owner
 
@@ -322,3 +329,4 @@ HubOS/
 - **2026-10-01 (later):** hubd first slice reviewed; extra validation rules documented; hub excluded from the up count; unverified list extended.
 - **2026-10-01 (later):** Build environment audited; findings in docs/environment.md; Phase B limits recorded.
 - **2026-10-01 (later):** driftwm investigated; findings in docs/driftwm-findings.md; zoom wording corrected (never magnifies); modifier requirement added for the forwarder; unverified list updated.
+- **2026-10-01 (later):** Bar investigated; findings in docs/bar-findings.md; panel decisions recorded (Waybar alert plus wofi list, top edge, fit instead of fullscreen, D-Bus session bus allowed); scale target 100, stretch 5000.
