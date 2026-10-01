@@ -293,15 +293,47 @@ func (h *Hub) place(s *mstate, w driftwm.Window) string {
 	}
 	if err := h.comp.Focus(w.ID); err != nil {
 		notes = append(notes, fmt.Sprintf("could not bring the view to it: %v", err))
-	} else if after, err := h.comp.State(); err == nil && after.Camera != camBefore && h.set.BarHeight > 0 {
-		// driftwm centres the view on the area below the bar, which is half
-		// the bar height off the screen centre (docs/bar-findings.md section 7).
-		want := float64(y) + float64(h.set.BarHeight)/2
-		if d := after.Camera[1] - want; d > 2 || d < -2 {
-			notes = append(notes, fmt.Sprintf("the view is at y=%.1f, not %.1f (home plus half the bar height); the bar offset may be different from what hubd expects", after.Camera[1], want))
+	} else if h.set.BarHeight > 0 {
+		// driftwm pans the view with an animation, so wait until the camera
+		// has stopped before reading it. It centres the view on the area
+		// below the bar, which is half the bar height off the screen centre
+		// (docs/bar-findings.md section 7).
+		if cam, ok := h.settledCamera(camBefore); ok && cam != camBefore {
+			want := float64(y) + float64(h.set.BarHeight)/2
+			if d := cam[1] - want; d > 2 || d < -2 {
+				notes = append(notes, fmt.Sprintf("the view is at y=%.1f, not %.1f (home plus half the bar height); the bar offset may be different from what hubd expects", cam[1], want))
+			}
 		}
 	}
 	return strings.Join(notes, "; ")
+}
+
+// settledCamera reads the camera until two reads in a row agree, for at
+// most a second.
+func (h *Hub) settledCamera(start [2]float64) ([2]float64, bool) {
+	prev := start
+	deadline := time.Now().Add(time.Second)
+	same := 0
+	for time.Now().Before(deadline) {
+		time.Sleep(60 * time.Millisecond)
+		st, err := h.comp.State()
+		if err != nil {
+			return prev, false
+		}
+		if st.Camera == prev {
+			same++
+			if same >= 2 && prev != start {
+				return prev, true
+			}
+			if same >= 3 { // it never moved: the window was already in view
+				return prev, false
+			}
+		} else {
+			same = 0
+		}
+		prev = st.Camera
+	}
+	return prev, prev != start
 }
 
 // End closes the local window of a machine. It asks driftwm to close the
