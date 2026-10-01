@@ -12,7 +12,7 @@ import (
 // Settings.ProbeCap checks in flight. Each result is applied as soon as it
 // arrives, so a slow machine never holds up the others.
 func (h *Hub) ProbeRound(ctx context.Context) {
-	began := time.Now()
+	began := h.now()
 	type target struct {
 		s *mstate
 		t probe.Target
@@ -27,7 +27,11 @@ func (h *Hub) ProbeRound(ctx context.Context) {
 		ts = append(ts, target{s, t})
 		targets = append(targets, t)
 	}
-	probe.CheckLimited(ctx, targets, h.set.ProbeTimeout, h.set.ProbeCap, func(i int, r probe.Result) {
+	prober := h.set.Prober
+	if prober == nil {
+		prober = probe.CheckLimited
+	}
+	prober(ctx, targets, h.set.ProbeTimeout, h.set.ProbeCap, func(i int, r probe.Result) {
 		s := ts[i].s
 		if ctx.Err() != nil && !r.Up {
 			return // the round was cancelled; learn nothing
@@ -51,29 +55,24 @@ func (h *Hub) ProbeRound(ctx context.Context) {
 	h.mu.Lock()
 	h.rounds++
 	h.lastRound = h.now()
-	h.lastTook = time.Since(began)
+	h.lastTook = h.now().Sub(began)
 	h.notifyLocked()
 	c, _ := h.countLocked()
 	h.mu.Unlock()
 	if h.set.OnRound != nil {
-		h.set.OnRound(time.Since(began), c)
+		h.set.OnRound(h.lastTookCopy(began), c)
 	}
 }
 
-// RunProbes runs rounds until ctx ends. Rounds start ProbeInterval apart; a
-// round that takes longer is followed at once by the next.
+// RunProbes runs rounds until ctx ends. A round starts one interval after
+// the previous round finished.
 func (h *Hub) RunProbes(ctx context.Context) {
 	for {
-		start := time.Now()
 		h.ProbeRound(ctx)
-		wait := h.set.ProbeInterval - time.Since(start)
-		if wait < 0 {
-			wait = 0
-		}
 		select {
 		case <-ctx.Done():
 			return
-		case <-time.After(wait):
+		case <-time.After(h.set.ProbeInterval):
 		}
 	}
 }
@@ -86,3 +85,5 @@ func (h *Hub) RoundCount() int {
 }
 
 func itoa(n int) string { return strconv.Itoa(n) }
+
+func (h *Hub) lastTookCopy(began time.Time) time.Duration { return h.now().Sub(began) }

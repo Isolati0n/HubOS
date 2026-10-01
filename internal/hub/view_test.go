@@ -1,10 +1,14 @@
 package hub
 
 import (
+	"context"
 	"fmt"
 	"strings"
+	"sync"
 	"testing"
 	"time"
+
+	"hubos/internal/probe"
 )
 
 func big(t *testing.T) *rig {
@@ -159,12 +163,6 @@ func TestStatusLineBeforeFirstRoundNotCheckedAndStale(t *testing.T) {
 	if st.Text != "1 of 1 up" || !strings.Contains(st.Tooltip, "1 not checked") {
 		t.Errorf("one up: %+v", st)
 	}
-	r.h.mu.Lock()
-	r.h.byID["a"].checkedAt = time.Now().Add(-10 * time.Minute)
-	r.h.mu.Unlock()
-	if st := r.h.Status(); st.Class != "alert" || !strings.Contains(st.Tooltip, "stale") {
-		t.Errorf("stale: %+v", st)
-	}
 }
 
 func TestOutOfFileHandlesIsNeverShownAsDown(t *testing.T) {
@@ -224,19 +222,102 @@ func TestFilterAndListCap(t *testing.T) {
 	}
 }
 
-func TestSlowRoundsAreNotStale(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
-	r.setStatus("a", statusUp)
-	r.h.mu.Lock()
-	r.h.byID["a"].checkedAt = time.Now().Add(-100 * time.Second)
-	r.h.mu.Unlock()
-	if !r.h.Counts().Stale {
-		t.Error("100 s old answers with 10 s rounds should be stale")
+// A fake clock and a fake checker, so a 5000-machine round that takes 10 s or
+// 40 s can be tested without waiting.
+type fakeClock struct {
+	mu sync.Mutex
+	t  time.Time
+}
+
+func (c *fakeClock) now() time.Time { c.mu.Lock(); defer c.mu.Unlock(); return c.t }
+func (c *fakeClock) add(d time.Duration) {
+	c.mu.Lock()
+	c.t = c.t.Add(d)
+	c.mu.Unlock()
+}
+
+func rig5000(t *testing.T, roundLen time.Duration) (*rig, *fakeClock) {
+	t.Helper()
+	var parts []string
+	for i := 1; i <= 5000; i++ {
+		parts = append(parts, machineDoc(fmt.Sprintf("m%04d", i), fmt.Sprintf("Machine %d", i), "desktop", "moonlight", 21000, i, 7, ""))
 	}
-	r.h.mu.Lock()
-	r.h.lastTook = 60 * time.Second // a round of 60 s: 3*60+2 = 182 s allowed
-	r.h.mu.Unlock()
-	if r.h.Counts().Stale {
-		t.Error("answers inside three slow rounds are not stale")
+	r := newRig(t, parts...)
+	clk := &fakeClock{t: time.Date(2026, 10, 1, 12, 0, 0, 0, time.UTC)}
+	r.h.now = clk.now
+	r.h.set.ProbeInterval = 10 * time.Second
+	// Every machine silent: all checks run into their limit, so the round
+	// takes roundLen (10 s at cap 1000, about 40 s at cap 200: docs/hubd-slice2.md).
+	r.h.set.Prober = func(ctx context.Context, ts []probe.Target, to time.Duration, limit int, done func(int, probe.Result)) {
+		for i := range ts {
+			done(i, probe.Result{Reason: "no answer"})
+		}
+		clk.add(roundLen)
+	}
+	return r, clk
+}
+
+func TestStaleRuleAt5000MachinesWithSlowAndFastRounds(t *testing.T) {
+	// Fast rounds (cap 1000: 10 s). Rounds finish 20 s apart (10 s round + 10 s wait).
+	r, clk := rig5000(t, 10*time.Second)
+	r.h.ProbeRound(r.ctx)
+	st := r.h.Status()
+	if st.Text != "0 of 5000 up" || !strings.Contains(st.Tooltip, "last check round took 10s") || strings.Contains(st.Tooltip, "STALE") {
+		t.Fatalf("after the first round: %+v", st)
+	}
+	clk.add(19 * time.Second) // the second round is still running, 19 s since the last one ended
+	if st := r.h.Status(); strings.Contains(st.Text, "STALE") {
+		t.Errorf("19 s after a finished round is not stale: %+v", st)
+	}
+	clk.add(12 * time.Second) // 31 s > 3 intervals
+	st = r.h.Status()
+	if !strings.HasPrefix(st.Text, "STALE: ") || st.Class != "alert" || !strings.Contains(st.Tooltip, "STALE: the last finished check round ended 31s ago (limit: 3 intervals = 30s)") {
+		t.Errorf("31 s later: %+v", st)
+	}
+
+	// Slow rounds (cap 200: about 40 s): by the time the second round ends,
+	// the last finished one is 50 s old, so the status is STALE while hubd is
+	// working. The tooltip says why: the round took 40 s.
+	r, clk = rig5000(t, 40*time.Second)
+	r.h.ProbeRound(r.ctx)
+	clk.add(45 * time.Second)
+	st = r.h.Status()
+	if !strings.HasPrefix(st.Text, "STALE: ") || !strings.Contains(st.Tooltip, "last check round took 40s") {
+		t.Errorf("slow rounds: %+v", st)
+	}
+	// And when a round has finished, the status is fresh again.
+	r.h.ProbeRound(r.ctx)
+	if st := r.h.Status(); strings.Contains(st.Text, "STALE") {
+		t.Errorf("right after a round: %+v", st)
+	}
+}
+
+func TestRoundStartsOneIntervalAfterTheLastFinished(t *testing.T) {
+	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r.h.set.ProbeInterval = 300 * time.Millisecond
+	var mu sync.Mutex
+	var starts, ends []time.Time
+	r.h.set.Prober = func(ctx context.Context, ts []probe.Target, to time.Duration, limit int, done func(int, probe.Result)) {
+		mu.Lock()
+		starts = append(starts, time.Now())
+		mu.Unlock()
+		time.Sleep(200 * time.Millisecond)
+		for i := range ts {
+			done(i, probe.Result{Up: true})
+		}
+		mu.Lock()
+		ends = append(ends, time.Now())
+		mu.Unlock()
+	}
+	ctx, cancel := context.WithTimeout(r.ctx, 1200*time.Millisecond)
+	defer cancel()
+	r.h.RunProbes(ctx)
+	mu.Lock()
+	defer mu.Unlock()
+	if len(starts) < 2 {
+		t.Fatalf("only %d rounds", len(starts))
+	}
+	if gap := starts[1].Sub(ends[0]); gap < 280*time.Millisecond {
+		t.Errorf("second round started %s after the first finished, want about one interval (300ms)", gap)
 	}
 }

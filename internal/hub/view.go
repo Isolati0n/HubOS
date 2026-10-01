@@ -29,21 +29,7 @@ type Counts struct {
 	Stale                          bool
 }
 
-func (h *Hub) staleAfterLocked() time.Duration {
-	if h.set.StaleAfter > 0 {
-		return h.set.StaleAfter
-	}
-	// Rounds that take longer than the interval (thousands of machines that
-	// are all off) must not make a working hubd look stale.
-	round := h.set.ProbeInterval
-	if h.lastTook > round {
-		round = h.lastTook
-	}
-	return 3*round + h.set.ProbeTimeout
-}
-
 func (h *Hub) countLocked() (c Counts, down []*mstate) {
-	var oldest time.Time
 	for _, s := range h.ms {
 		if s.m.Role == "hub" {
 			continue
@@ -59,15 +45,11 @@ func (h *Hub) countLocked() (c Counts, down []*mstate) {
 		case statusChecking:
 			c.Checking++
 		}
-		if !s.checkedAt.IsZero() && (oldest.IsZero() || s.checkedAt.Before(oldest)) {
-			oldest = s.checkedAt
-		}
 	}
-	// Stale: the oldest answer is older than the rounds should allow. A
-	// round that is itself slow counts too, because answers arrive during it.
-	if !oldest.IsZero() && h.now().Sub(oldest) > h.staleAfterLocked() {
-		c.Stale = true
-	}
+	// STALE: the last round that finished ended more than three intervals
+	// ago. (A round starts one interval after the previous one finishes, so
+	// rounds that take longer than two intervals show as stale.)
+	c.Stale = h.rounds > 0 && h.now().Sub(h.lastRound) > 3*h.set.ProbeInterval
 	return
 }
 
@@ -84,13 +66,17 @@ func (h *Hub) Status() StatusLine {
 		tip = append(tip, "driftwm is not reachable: windows cannot be opened")
 	}
 	if c.Stale {
-		tip = append(tip, "status is stale: checks are not finishing in time")
+		tip = append(tip, fmt.Sprintf("STALE: the last finished check round ended %s ago (limit: 3 intervals = %s)",
+			h.now().Sub(h.lastRound).Round(time.Second), 3*h.set.ProbeInterval))
 	}
 	line := StatusLine{Class: "ok"}
 	if h.rounds == 0 && c.Up == 0 && c.Down == 0 {
 		line.Text = "checking..."
 	} else {
 		line.Text = fmt.Sprintf("%d of %d up", c.Up, c.Up+c.Down)
+	}
+	if c.Stale {
+		line.Text = "STALE: " + line.Text
 	}
 	if c.Down > 0 || c.Stale || h.activeMessageLocked() != "" {
 		line.Class = "alert"
@@ -115,6 +101,9 @@ func (h *Hub) Status() StatusLine {
 	}
 	if len(tip) == 0 {
 		tip = append(tip, "all machines up")
+	}
+	if h.rounds > 0 {
+		tip = append(tip, fmt.Sprintf("last check round took %s", h.lastTook.Round(time.Millisecond)))
 	}
 	line.Tooltip = strings.Join(tip, "\n")
 	return line
