@@ -226,3 +226,31 @@ func TestIPv6AddressIsAllowed(t *testing.T) {
 		t.Errorf("got %q", problemLines(ps))
 	}
 }
+
+func TestControlCharactersAreRefusedInEveryTextField(t *testing.T) {
+	for _, tc := range []struct{ field, from, to string }{
+		{"id", `id = "hub"`, `id = "hu\tb"`},
+		{"name", `name = "Hub"`, `name = "Hu\nb"`},
+		{"address", `address = "127.0.0.1"`, `address = "host\n.lan"`},
+		{"name", `name = "Hub"`, `name = "Hu b"`},
+		{"name", `name = "Hub"`, `name = "Hu\u0007b"`},
+	} {
+		doc := "format = 1\n" + strings.Replace(validHub, tc.from, tc.to, 1)
+		_, ps := Parse([]byte(doc))
+		want := tc.field + " must not contain control characters or line breaks"
+		if len(ps) != 1 || ps[0].Msg != want {
+			t.Errorf("%s: got %q, want one problem %q", tc.to, problemLines(ps), want)
+		}
+	}
+	for _, field := range []string{"user", "share"} {
+		doc := "format = 1\n" + strings.Replace(validHub, `open = ["none"]`, `open = ["files"]`+"\n"+field+` = "a\nb"`, 1)
+		_, ps := Parse([]byte(doc))
+		found := false
+		for _, p := range ps {
+			found = found || p.Msg == field+" must not contain control characters or line breaks"
+		}
+		if !found {
+			t.Errorf("%s: got %q", field, problemLines(ps))
+		}
+	}
+}
