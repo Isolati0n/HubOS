@@ -51,6 +51,7 @@ func (h *Hub) ProbeRound(ctx context.Context) {
 	h.mu.Lock()
 	h.rounds++
 	h.lastRound = h.now()
+	h.lastTook = time.Since(began)
 	h.notifyLocked()
 	c, _ := h.countLocked()
 	h.mu.Unlock()

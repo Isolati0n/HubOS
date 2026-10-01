@@ -223,3 +223,20 @@ func TestFilterAndListCap(t *testing.T) {
 		t.Errorf("%+v", res)
 	}
 }
+
+func TestSlowRoundsAreNotStale(t *testing.T) {
+	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r.setStatus("a", statusUp)
+	r.h.mu.Lock()
+	r.h.byID["a"].checkedAt = time.Now().Add(-100 * time.Second)
+	r.h.mu.Unlock()
+	if !r.h.Counts().Stale {
+		t.Error("100 s old answers with 10 s rounds should be stale")
+	}
+	r.h.mu.Lock()
+	r.h.lastTook = 60 * time.Second // a round of 60 s: 3*60+2 = 182 s allowed
+	r.h.mu.Unlock()
+	if r.h.Counts().Stale {
+		t.Error("answers inside three slow rounds are not stale")
+	}
+}

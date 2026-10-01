@@ -33,7 +33,13 @@ func (h *Hub) staleAfterLocked() time.Duration {
 	if h.set.StaleAfter > 0 {
 		return h.set.StaleAfter
 	}
-	return 3*h.set.ProbeInterval + h.set.ProbeTimeout
+	// Rounds that take longer than the interval (thousands of machines that
+	// are all off) must not make a working hubd look stale.
+	round := h.set.ProbeInterval
+	if h.lastTook > round {
+		round = h.lastTook
+	}
+	return 3*round + h.set.ProbeTimeout
 }
 
 func (h *Hub) countLocked() (c Counts, down []*mstate) {

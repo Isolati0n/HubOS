@@ -139,6 +139,7 @@ type Hub struct {
 	lastRound time.Time
 	subs      map[chan struct{}]struct{}
 	now       func() time.Time
+	lastTook  time.Duration // how long the latest check round took
 }
 
 // New builds a Hub. recPath is where the record file goes ("" = none).
