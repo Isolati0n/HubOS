@@ -1,0 +1,19 @@
+# BROKEN ON PURPOSE: the format line is missing.
+# EXPECT: file: there is no "format" line; supported format versions: 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "192.0.2.20"
+open    = ["files", "ssh"]
+home    = { x = -2000, y = 0 }
+share   = "pool"

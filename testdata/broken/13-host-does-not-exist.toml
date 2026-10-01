@@ -1,0 +1,30 @@
+# BROKEN ON PURPOSE: host must point at a machine that exists.
+# EXPECT: scratch-os: host "vmhost-9" does not exist
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "vmhost-1"
+name    = "VM Host"
+role    = "vm-host"
+address = "192.0.2.40"
+open    = ["ssh"]
+home    = { x = 0, y = 1500 }
+
+[[machine]]
+id       = "scratch-os"
+name     = "Scratch OS (test guest)"
+role     = "guest"
+address  = "192.0.2.41"
+open     = ["spice"]
+home     = { x = 2000, y = 1500 }
+host     = "vmhost-9"
+lifetime = "ephemeral"

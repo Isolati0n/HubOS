@@ -1,0 +1,22 @@
+# BROKEN ON PURPOSE: port must be 1 to 65535.
+# EXPECT: nas-1: port 70000 is out of range (1 to 65535)
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "192.0.2.20"
+open    = ["files", "ssh"]
+home    = { x = -2000, y = 0 }
+share   = "pool"
+port    = 70000

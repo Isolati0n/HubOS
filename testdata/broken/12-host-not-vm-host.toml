@@ -1,0 +1,31 @@
+# BROKEN ON PURPOSE: host must point at a vm-host.
+# EXPECT: scratch-os: host "nas-1" has role "nas", but a guest's host must have role "vm-host"
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "192.0.2.20"
+open    = ["files", "ssh"]
+home    = { x = -2000, y = 0 }
+share   = "pool"
+
+[[machine]]
+id       = "scratch-os"
+name     = "Scratch OS (test guest)"
+role     = "guest"
+address  = "192.0.2.41"
+open     = ["spice"]
+home     = { x = 2000, y = 1500 }
+host     = "nas-1"
+lifetime = "ephemeral"

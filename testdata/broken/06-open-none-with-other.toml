@@ -1,0 +1,20 @@
+# BROKEN ON PURPOSE: none only as the sole entry in open.
+# EXPECT: nas-1: "none" must be the only entry in open (found: none, ssh)
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "192.0.2.20"
+open    = ["none", "ssh"]
+home    = { x = -2000, y = 0 }

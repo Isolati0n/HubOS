@@ -1,0 +1,13 @@
+# BROKEN ON PURPOSE: exactly one hub: none.
+# EXPECT: file: no machine has role "hub"; exactly one is required
+
+format = 1
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "192.0.2.20"
+open    = ["files", "ssh"]
+home    = { x = -2000, y = 0 }
+share   = "pool"
