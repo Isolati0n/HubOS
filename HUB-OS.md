@@ -174,6 +174,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Workloads that need different tuning** (for example, AI datasets) get separately tuned areas on the same NAS. The AI box keeps its active dataset on its own fast SSD; the NAS holds the master copy.
 - Opens on click in the hub's file manager. Non-Linux devices do not need access.
 - **Backups:** a local backup NAS, plus a copy off-site or in another room. No encryption.
+- The inventory and viewers.toml get the NAS backup copy. Secrets do not; secrets handling is a separate step.
 
 ## VM host
 
@@ -311,6 +312,7 @@ HubOS/
 - ZFS or Btrfs
 - A custom exit chord for game-style windows
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
+- Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
 
 ---
 
@@ -340,3 +342,4 @@ HubOS/
 - **2026-10-01 (later):** driftwm investigated; findings in docs/driftwm-findings.md; zoom wording corrected (never magnifies); modifier requirement added for the forwarder; unverified list updated.
 - **2026-10-01 (later):** Bar investigated; findings in docs/bar-findings.md; panel decisions recorded (Waybar alert plus wofi list, top edge, fit instead of fullscreen, D-Bus session bus allowed); scale target 100, stretch 5000.
 - **2026-10-01 (later):** hubd second slice: feed, list, menu, pick, open, end; scale tested at 100 and 5000; see docs/hubd-slice2.md.
+- **2026-10-01 (later):** hubd slice 2 follow-ups: bounded check, down-machines group, forget command, viewer logs, stale-round rule.

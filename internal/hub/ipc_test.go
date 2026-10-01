@@ -132,3 +132,31 @@ func TestStaleSocketFileIsReplaced(t *testing.T) {
 	}
 	l.Close()
 }
+
+// STALE comes from the clock, not from an event: the feed must notice it.
+func TestFeedShowsStaleWhenTimePassesWithNoEvent(t *testing.T) {
+	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r.setStatus("a", statusUp)
+	r.h.set.ProbeInterval = 200 * time.Millisecond // stale after 600 ms
+	r.h.mu.Lock()
+	r.h.rounds, r.h.lastRound, r.h.lastTook = 1, time.Now(), 5*time.Millisecond
+	r.h.mu.Unlock()
+	sock, _ := SocketPath(shortDir(t))
+	l, _ := Listen(sock)
+	defer l.Close()
+	go r.h.Serve(l)
+	lines := make(chan string, 10)
+	go Feed(sock, func(s string) { lines <- s })
+	first := <-lines
+	if strings.Contains(first, "STALE") {
+		t.Fatalf("stale at once: %s", first)
+	}
+	select {
+	case next := <-lines:
+		if !strings.Contains(next, `"text":"STALE: 1 of 1 up"`) || !strings.Contains(next, `"class":"alert"`) {
+			t.Errorf("got %s", next)
+		}
+	case <-time.After(3 * time.Second):
+		t.Fatal("no STALE line although no round finished")
+	}
+}

@@ -160,6 +160,9 @@ func (h *Hub) feed(c net.Conn) {
 		select {
 		case <-ch:
 			time.Sleep(100 * time.Millisecond)
+		case <-time.After(time.Second):
+			// Nothing changed, but time passes: STALE and the message time
+			// run out without any event, so look again every second.
 		case <-gone:
 			return
 		}
