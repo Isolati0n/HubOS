@@ -205,6 +205,43 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 
 **Overall finish line (owner's words):** Hub OS boots the whole cluster. Every machine runs the Hub OS system, and the hub shows all of them as tiles that open their windows.
 
+## Health: what "ready" means
+
+Ready means the machine's session server is accepting connections:
+
+- Moonlight machines (gaming, AI, desktop): Sunshine accepts connections.
+- Guests: SSH or the SPICE/VNC port answers.
+- NAS and backup NAS: the share or SSH answers.
+- VM host: SSH answers.
+- The hub is the machine hubd runs on and is not checked.
+
+"Machine is up" never means "the hypervisor says running". Real port numbers are unverified and not yet decided.
+
+## Repo layout
+
+```
+HubOS/
+├── CLAUDE.md
+├── HUB-OS.md
+├── docs/
+│   └── inventory-format.md
+├── examples/
+│   └── inventory.example.toml        (192.0.2.x addresses; never reachable)
+├── go.mod                            (one module for the whole repo)
+├── cmd/
+│   └── hubd/
+│       └── main.go                   (flags, wiring, printing, exit code)
+├── internal/
+│   ├── inventory/                    (read + validate; no network)
+│   └── probe/                        (up/down checks; no inventory knowledge)
+├── testdata/
+│   ├── inventory.fake.toml           (valid; points at 127.0.0.x fake nodes)
+│   └── broken/                       (one deliberately broken file per rule)
+└── tools/
+    └── fakenode/
+        └── main.go                   (tiny program that pretends to be a machine)
+```
+
 ---
 
 ## Rules for the bot
@@ -234,6 +271,9 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Whether NVIDIA's driver requires glibc
 - Which per-game settings can change at launch without side effects
 - A report of Slippi dropping frames on Linux where Windows was smooth (one user's report)
+- Whether a bare TCP connect-then-close disturbs a real Sunshine, SPICE or VNC session
+- The hubd time limits (2 s per machine, 5 s total) are guesses, not measured on a real network
+- Whether /etc/hubos/inventory.toml is where per-machine config will live on the Hub OS image
 
 ## Open questions for the owner
 
@@ -243,7 +283,6 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Soul Calibur II emulator; Minecraft Java or Bedrock
 - ZFS or Btrfs
 - A custom exit chord for game-style windows
-- The bot's first task after this rewrite
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
 
 ---
@@ -268,3 +307,5 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **2026-10-01 (later):** systemd banned permanently; custom compositor and custom file manager allowed after design discussion; docs/DECISIONS.md removed; Erlang/Elixir recorded as parked.
 - **2026-10-01 (later):** Inventory file format approved; see docs/inventory-format.md.
 - **2026-10-01 (later):** Inventory format amended: real inventory lives on the hub's own disk with a NAS backup copy; added validation rules; defined behavior for unknown format versions.
+- **2026-10-01 (later):** Added health definition and repo layout; hubd first-slice design approved; exactly one hub required.
+- **2026-10-01 (later):** hubd first slice reviewed; extra validation rules documented; hub excluded from the up count; unverified list extended.

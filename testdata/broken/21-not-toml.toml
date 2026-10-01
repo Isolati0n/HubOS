@@ -1,0 +1,12 @@
+# BROKEN ON PURPOSE: the file is not valid TOML.
+# EXPECT: file: line 4, column 10: unexpected character U+003D '=' at start of value
+
+format = = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }

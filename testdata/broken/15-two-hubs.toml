@@ -1,0 +1,20 @@
+# BROKEN ON PURPOSE: exactly one hub: more than one.
+# EXPECT: file: more than one machine has role "hub" (hub, hub-2); exactly one is required
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "hub-2"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 500, y = 0 }

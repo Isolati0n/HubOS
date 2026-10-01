@@ -1,0 +1,21 @@
+# BROKEN ON PURPOSE: role must be one of the eight.
+# EXPECT: nas-1: role "toaster" is not one of: hub, gaming, ai, desktop, nas, backup-nas, vm-host, guest
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "toaster"
+address = "192.0.2.20"
+open    = ["files", "ssh"]
+home    = { x = -2000, y = 0 }
+share   = "pool"
