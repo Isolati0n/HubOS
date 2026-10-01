@@ -116,7 +116,7 @@ func TestUpDownAndNotChecked(t *testing.T) {
 			t.Errorf("%s: want status %q, got line %q", id, status, l)
 		}
 	}
-	if !strings.Contains(out, "\n4 of 6 up, 1 not checked\n") {
+	if !strings.Contains(out, "\n3 of 5 up, 1 not checked\n") {
 		t.Errorf("wrong summary in:\n%s", out)
 	}
 }
@@ -153,12 +153,12 @@ func TestStoppingANodeChangesTheNextRun(t *testing.T) {
 		machine("ai-1", "ai", n.addr, `["moonlight"]`, n.port, "", 1, 1),
 	)
 	_, out, _ := runHubd("--inventory", path)
-	if !strings.Contains(out, "\n2 of 2 up\n") {
+	if !strings.Contains(out, "\n1 of 1 up\n") {
 		t.Errorf("first run:\n%s", out)
 	}
 	n.stop()
 	code, out, _ := runHubd("--inventory", path)
-	if code != 0 || !strings.Contains(out, "\n1 of 2 up\n") || !strings.HasSuffix(line(t, out, "ai-1"), "DOWN (connection refused)") {
+	if code != 0 || !strings.Contains(out, "\n0 of 1 up\n") || !strings.HasSuffix(line(t, out, "ai-1"), "DOWN (connection refused)") {
 		t.Errorf("second run (exit %d):\n%s", code, out)
 	}
 }
@@ -225,5 +225,14 @@ func TestHelpNamesTheDefaultPath(t *testing.T) {
 func TestDefaultPathIsTheApprovedOne(t *testing.T) {
 	if defaultInventory != "/etc/hubos/inventory.toml" {
 		t.Errorf("default path changed to %q", defaultInventory)
+	}
+}
+
+func TestHubIsShownButNotCounted(t *testing.T) {
+	// Only the hub: shown as UP, but the totals are 0 of 0.
+	path := writeInventory(t, machine("hub", "hub", "127.0.0.40", `["none"]`, 0, "", 0, 0))
+	code, out, _ := runHubd("--inventory", path)
+	if code != 0 || !strings.HasSuffix(line(t, out, "hub"), "UP (this machine, not checked)") || !strings.Contains(out, "\n0 of 0 up\n") {
+		t.Errorf("exit %d\n%s", code, out)
 	}
 }

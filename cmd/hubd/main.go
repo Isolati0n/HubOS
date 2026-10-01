@@ -99,6 +99,9 @@ func run(args []string, stdout, stderr io.Writer, cfg config) int {
 	for i, m := range inv.Machines {
 		r := rows[i]
 		fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%s\t%s\n", m.ID, m.Name, m.Role, m.Open[0], r.target, r.status)
+		if m.Role == "hub" {
+			continue // the hub is shown, but is not counted in "N of M up"
+		}
 		switch r.state {
 		case stateUp:
 			up++
@@ -108,7 +111,9 @@ func run(args []string, stdout, stderr io.Writer, cfg config) int {
 	}
 	tw.Flush()
 
-	summary := fmt.Sprintf("%d of %d up", up, len(inv.Machines)-notChecked)
+	// The hub is excluded from both numbers, so M is the other machines
+	// that were checked.
+	summary := fmt.Sprintf("%d of %d up", up, len(inv.Machines)-1-notChecked)
 	if notChecked > 0 {
 		summary += fmt.Sprintf(", %d not checked", notChecked)
 	}
