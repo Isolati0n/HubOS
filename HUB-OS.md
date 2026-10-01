@@ -271,6 +271,9 @@ HubOS/
 - Whether NVIDIA's driver requires glibc
 - Which per-game settings can change at launch without side effects
 - A report of Slippi dropping frames on Linux where Windows was smooth (one user's report)
+- Whether a bare TCP connect-then-close disturbs a real Sunshine, SPICE or VNC session
+- The hubd time limits (2 s per machine, 5 s total) are guesses, not measured on a real network
+- Whether /etc/hubos/inventory.toml is where per-machine config will live on the Hub OS image
 
 ## Open questions for the owner
 
@@ -280,7 +283,6 @@ HubOS/
 - Soul Calibur II emulator; Minecraft Java or Bedrock
 - ZFS or Btrfs
 - A custom exit chord for game-style windows
-- The bot's first task after this rewrite
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
 
 ---
@@ -306,3 +308,4 @@ HubOS/
 - **2026-10-01 (later):** Inventory file format approved; see docs/inventory-format.md.
 - **2026-10-01 (later):** Inventory format amended: real inventory lives on the hub's own disk with a NAS backup copy; added validation rules; defined behavior for unknown format versions.
 - **2026-10-01 (later):** Added health definition and repo layout; hubd first-slice design approved; exactly one hub required.
+- **2026-10-01 (later):** hubd first slice reviewed; extra validation rules documented; hub excluded from the up count; unverified list extended.
