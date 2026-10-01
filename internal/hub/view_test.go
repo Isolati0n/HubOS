@@ -321,3 +321,64 @@ func TestRoundStartsOneIntervalAfterTheLastFinished(t *testing.T) {
 		t.Errorf("second round started %s after the first finished, want about one interval (300ms)", gap)
 	}
 }
+
+func TestDownMachinesGroupAtTheTopWithCapAndMoreLine(t *testing.T) {
+	r := big(t) // ai-2, g05, g06 are down
+	lines := r.h.List(false, "")
+	if lines[0] != searchLine || lines[1] != "- Down machines (3)" {
+		t.Fatalf("top of the list: %q", lines[:3])
+	}
+	for i, id := range []string{"ai-2", "g05", "g06"} {
+		if !strings.Contains(lines[2+i], id) || !strings.Contains(lines[2+i], "DOWN") {
+			t.Errorf("line %d: %q", 2+i, lines[2+i])
+		}
+	}
+	if !strings.HasPrefix(lines[5], "- Hub") {
+		t.Errorf("after the down group: %q", lines[5])
+	}
+	// Cap: with DownMax 2 the third is replaced by a visible line.
+	r.h.set.DownMax = 2
+	lines = r.h.List(false, "")
+	if lines[4] != "   ! and 1 more down machines; use the search" {
+		t.Errorf("more line: %q", lines[4])
+	}
+	// Folding it leaves its heading with the count.
+	r.h.Pick("- Down machines (3)")
+	lines = r.h.List(false, "")
+	if lines[1] != "+ Down machines (3)" || strings.Contains(lines[2], "DOWN") {
+		t.Errorf("folded: %q", lines[:3])
+	}
+	// No down machines: no group.
+	for _, id := range []string{"ai-2", "g05", "g06"} {
+		r.setStatus(id, statusUp)
+	}
+	if l := r.h.List(false, ""); strings.Contains(strings.Join(l, "\n"), "Down machines") {
+		t.Errorf("group shown with nothing down: %q", l[:3])
+	}
+}
+
+func TestDownGroupAt5000Machines(t *testing.T) {
+	var parts []string
+	for i := 1; i <= 5000; i++ {
+		parts = append(parts, machineDoc(fmt.Sprintf("m%04d", i), fmt.Sprintf("Machine %d", i), "desktop", "moonlight", 21000, i, 7, ""))
+	}
+	r := newRig(t, parts...)
+	for i, s := range r.h.ms {
+		if s.m.Role != "hub" {
+			st := statusUp
+			if i%20 == 0 {
+				st = statusDown // 250 down
+			}
+			r.setStatus(s.m.ID, st)
+		}
+	}
+	lines := r.h.List(false, "")
+	text := strings.Join(lines, "\n")
+	if !strings.Contains(text, "- Down machines (250)") || !strings.Contains(text, "   ! and 200 more down machines; use the search") {
+		t.Errorf("down group:\n%s", strings.Join(lines[:4], "\n"))
+	}
+	// 50 down lines + the more line; the big desktop group is folded and says how many it hides.
+	if !strings.Contains(text, "+ Desktop (5000 machines, 250 down)") || len(lines) > 60 {
+		t.Errorf("%d lines; folded heading missing", len(lines))
+	}
+}

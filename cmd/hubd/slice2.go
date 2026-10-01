@@ -151,6 +151,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	ptimeout := fs.Duration("probe-timeout", def.ProbeTimeout, "limit for one machine's check")
 	wait := fs.Duration("window-wait", def.WindowWait, "how long to wait for a started viewer's window")
 	fold := fs.Int("fold", def.FoldThreshold, "groups with more machines than this start folded")
+	downMax := fs.Int("down-max", def.DownMax, "most machine lines in the Down machines group")
 	listMax := fs.Int("list-max", def.ListMax, "most machine lines in one menu list")
 	tipcap := fs.Int("tooltip-cap", def.TooltipCap, "most down machines named in the tooltip")
 	ttl := fs.Duration("message-ttl", def.MessageTTL, "how long a message stays on the bar item")
@@ -218,7 +219,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	limit := probe.FileLimit()
 	set := hub.Settings{
 		ProbeCap: *cap_, ProbeInterval: *interval, ProbeTimeout: *ptimeout, WindowWait: *wait,
-		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, ListMax: *listMax, TooltipCap: *tipcap,
+		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, ListMax: *listMax, DownMax: *downMax, TooltipCap: *tipcap,
 		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit,
 	}
 	if *logRounds {

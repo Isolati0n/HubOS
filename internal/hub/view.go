@@ -257,6 +257,45 @@ func (h *Hub) groupsLocked() []*group {
 	return out
 }
 
+// DownLabel is the heading of the group of machines that are down.
+const DownLabel = "Down machines"
+
+// downGroupLocked is the "Down machines" group at the top of the list: every
+// machine that is down (the hub excepted), at most Settings.DownMax lines,
+// then a line saying how many more there are. It is open unless the owner
+// folded it. Nothing is hidden without a line that says so.
+func (h *Hub) downGroupLocked() []string {
+	var down []*mstate
+	for _, s := range h.ms {
+		if s.m.Role != "hub" && s.status == statusDown {
+			down = append(down, s)
+		}
+	}
+	if len(down) == 0 {
+		return nil
+	}
+	open := true
+	if v, ok := h.expanded["down"]; ok {
+		open = v
+	}
+	mark := "-"
+	if !open {
+		mark = "+"
+	}
+	lines := []string{fmt.Sprintf("%s %s (%d)", mark, DownLabel, len(down))}
+	if !open {
+		return lines
+	}
+	for i, s := range down {
+		if i == h.set.DownMax {
+			lines = append(lines, fmt.Sprintf("   ! and %d more down machines; use the search", len(down)-i))
+			break
+		}
+		lines = append(lines, h.entryLocked(s, 3))
+	}
+	return lines
+}
+
 // List returns the menu lines. flat lists machines in one run, down first;
 // filter (case-insensitive, matched against id and name) narrows that list.
 // No list is longer than Settings.ListMax machine lines: wofi's start-up
@@ -291,6 +330,7 @@ func (h *Hub) List(flat bool, filter string) []string {
 		return lines
 	}
 	lines = append(lines, searchLine)
+	lines = append(lines, h.downGroupLocked()...)
 	for _, g := range h.groupsLocked() {
 		open := h.isOpenLocked(g.key, len(g.members))
 		mark := "+"
@@ -360,6 +400,15 @@ func (h *Hub) Pick(line string) PickResult {
 		}
 		h.mu.Lock()
 		defer h.mu.Unlock()
+		if label == DownLabel && len(h.downGroupLocked()) > 0 {
+			open := true
+			if v, ok := h.expanded["down"]; ok {
+				open = v
+			}
+			h.expanded["down"] = !open
+			h.notifyLocked()
+			return PickResult{Action: "toggle", Reopen: true}
+		}
 		for _, g := range h.groupsLocked() {
 			for _, gg := range append([]*group{g}, childGroups(g)...) {
 				if gg.label == label {
