@@ -266,3 +266,4 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
   - Hub uses a single projector instead of multiple monitors.
   - A custom init is allowed if justified; start with an existing one.
 - **2026-10-01 (later):** systemd banned permanently; custom compositor and custom file manager allowed after design discussion; docs/DECISIONS.md removed; Erlang/Elixir recorded as parked.
+- **2026-10-01 (later):** Inventory file format approved; see docs/inventory-format.md.

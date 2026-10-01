@@ -1,0 +1,54 @@
+# Hub OS inventory — EXAMPLE ONLY. Fake names, fake addresses.
+# 192.0.2.x is a range reserved for documentation; it is never a real network.
+# No secrets in this file, ever. Format: docs/inventory-format.md
+# The real inventory lives on the NAS, never in this repo.
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "192.0.2.20"
+open    = ["files", "ssh"]
+home    = { x = -2000, y = 0 }
+user    = "owner"
+share   = "pool"
+
+[[machine]]
+id      = "ai-1"
+name    = "AI Box"
+role    = "ai"
+address = "192.0.2.30"
+open    = ["moonlight", "ssh"]
+home    = { x = 2000, y = 0 }
+user    = "owner"
+
+[[machine]]
+id      = "vmhost-1"
+name    = "VM Host"
+role    = "vm-host"
+address = "192.0.2.40"
+open    = ["ssh"]
+home    = { x = 0, y = 1500 }
+user    = "owner"
+
+# Guest address and port meaning is provisional until the VM host is designed.
+[[machine]]
+id       = "scratch-os"
+name     = "Scratch OS (test guest)"
+role     = "guest"
+address  = "192.0.2.41"
+open     = ["spice"]
+home     = { x = 2000, y = 1500 }
+port     = 5930
+host     = "vmhost-1"
+lifetime = "ephemeral"
