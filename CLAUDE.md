@@ -1,28 +1,28 @@
 # CLAUDE.md — rules for every session
 
-Read these files in full before doing anything else:
+Read `HUB-OS.md` (the project brief) in full before doing anything else. `HUB-OS.md` is the source of truth. If anything disagrees with it, `HUB-OS.md` wins.
 
-1. `HUB-OS.md` — the project brief.
-2. `docs/DECISIONS.md` — the owner's later decisions. **Where it conflicts with `HUB-OS.md`, `docs/DECISIONS.md` wins.**
-
-If either file is missing, stop and tell the owner. Do not guess its contents.
+If it is missing, stop and tell the owner. Do not guess its contents.
 
 ## What Hub OS is
 
-- A thin broker on a desk Linux machine (the hub).
+- Hub OS is a custom Linux-based system for every machine in the cluster, plus a thin broker on the hub that opens each machine as a native window.
 - It checks that other machines are reachable and opens the correct **existing native program** for each one (Moonlight, virt-viewer/Remmina, a terminal, a file manager) as a normal window.
 - The hub is only a client. It never renders workloads and never proxies or re-encodes video.
 
 ## Hard rules
 
 - `hubd` is written in Go.
-- Do **not** build: a window manager, a file manager, a streaming protocol, a web dashboard.
+- Do not build: a new streaming protocol, or a web dashboard as the hub's control plane. A custom compositor (replacing driftwm) or a custom file manager may be built only after a design discussion with the owner.
 - Do **not** use: Selkies, Apache Guacamole, NICE/Amazon DCV.
 - Secrets never go in the inventory file and never go in git.
+- Never use systemd, under any circumstances. Init: start with an existing small init (candidates s6, dinit), kept swappable. Write our own only after a measured benefit and owner approval.
 
 ## How to work
 
 - Do only the task the owner gives you. Nothing extra.
+- Ask the owner before every choice (questions may be batched).
+- Do not edit HUB-OS.md unless asked; record every change in its Change log.
 - If something is unsolved or unverified, say so plainly. Do not invent architecture or protocols.
 - Speak plainly. The owner is not a cluster operator.
-- You cannot reach the owner's real machines. Use fake nodes only for development and tests.
+- You cannot reach the owner's real machines. Use fake nodes and virtual machines only.

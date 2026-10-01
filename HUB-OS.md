@@ -33,6 +33,7 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 - **The Linux kernel stays.** Moonlight, driftwm, and GPU drivers depend on it.
 - **glibc everywhere** (required by Steam/Proton and likely by GPU drivers).
 - **Say when something is unverified.** Never present a guess as fact. Never invent a protocol.
+- No systemd, ever.
 
 ---
 
@@ -74,7 +75,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Images are digitally signed.** A machine refuses an image that is not signed by the owner.
 - **A machine refuses to update or restart while a game or long job is running.**
 - **Master copies of the code and every built image live on the NAS.** GitHub is a convenience mirror. Long term, builds happen on a machine inside the cluster, so the cluster can rebuild itself if GitHub disappears.
-- **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. Whether systemd is used at all: **owner to confirm**.
+- **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used, under any circumstances.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
 
@@ -87,6 +88,8 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - The input forwarder
 - The game picker
 - The game tuner
+- A bespoke file manager for Hub OS (likely; design discussion first)
+- Possibly our own compositor (only after a design discussion)
 - Anything else that measurably improves Hub OS (decided case by case with the owner)
 
 ---
@@ -103,6 +106,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 
 ### Canvas
 - driftwm is **essential**. If it does not work on our system, we wait until it does. There is no fallback desktop.
+- Writing our own compositor to replace driftwm is allowed if it is better and improves Hub OS, but only after a design discussion with the owner.
 - Each machine has a **fixed home position** on the canvas, assigned in the inventory.
 - Windows stay on the canvas. You can zoom in, and you can maximize a window (not fullscreen).
 - Navigation is by mouse.
@@ -219,7 +223,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - How Hub OS jumps to, or places, a specific window in driftwm; maximize behavior
 - Whether driftwm works with a status bar
 - How driftwm behaves on a projector, and how readable small text is
-- Whether driftwm and PipeWire run without systemd
+- Whether driftwm and PipeWire run without systemd (critical: driftwm is essential and systemd is banned)
 - How Moonlight and driftwm hand keyboard and mouse input back and forth
 - Whether a Sunshine session stays alive after the viewer closes
 - What the gaming monitors show while the gaming box is being streamed
@@ -233,7 +237,6 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 
 ## Open questions for the owner
 
-- Is systemd used at all?
 - GPU brands for each machine
 - The full hardware list (research before December), including a keyboard and mouse that keep their polling rate through the forwarder
 - Number of machines per role
@@ -242,6 +245,12 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - A custom exit chord for game-style windows
 - The bot's first task after this rewrite
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
+
+---
+
+## Parked ideas
+
+- Erlang/Elixir for uptime: parked; revisit later. v1 uses Go.
 
 ---
 
@@ -256,3 +265,4 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
   - No fallback desktop: driftwm is essential.
   - Hub uses a single projector instead of multiple monitors.
   - A custom init is allowed if justified; start with an existing one.
+- **2026-10-01 (later):** systemd banned permanently; custom compositor and custom file manager allowed after design discussion; docs/DECISIONS.md removed; Erlang/Elixir recorded as parked.
