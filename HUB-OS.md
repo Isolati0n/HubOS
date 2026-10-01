@@ -267,3 +267,4 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
   - A custom init is allowed if justified; start with an existing one.
 - **2026-10-01 (later):** systemd banned permanently; custom compositor and custom file manager allowed after design discussion; docs/DECISIONS.md removed; Erlang/Elixir recorded as parked.
 - **2026-10-01 (later):** Inventory file format approved; see docs/inventory-format.md.
+- **2026-10-01 (later):** Inventory format amended: real inventory lives on the hub's own disk with a NAS backup copy; added validation rules; defined behavior for unknown format versions.

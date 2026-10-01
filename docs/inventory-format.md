@@ -4,7 +4,7 @@
 
 The inventory is the list of machines `hubd` knows about. It is one plain-text file. It is **not secret**, and secrets never go in it.
 
-The real inventory lives on the NAS, never in this repo. The repo holds only a fake example: `examples/inventory.example.toml`.
+The real inventory lives on the hub's own disk, in its per-machine config outside the system image. The NAS holds a backup copy. It is never committed to this repo. The repo holds only a fake example: `examples/inventory.example.toml`.
 
 ---
 
@@ -33,6 +33,11 @@ The real inventory lives on the NAS, never in this repo. The repo holds only a f
 
 ## Rules `hubd` must enforce when it reads the file
 
+- The `format` line must be present, and its value must be one that `hubd` supports (currently only `1`). Otherwise `hubd` refuses to run and names the version it found and the versions it supports.
+- `id` must be unique and use only lowercase letters, digits and dashes.
+- `open` must not be empty.
+- `none` is allowed only as the sole entry in `open` (for example `["none"]`, never `["none", "ssh"]`).
+- `share` is allowed only when `open` includes `files`, and is an error otherwise.
 - `host` and `lifetime` are required on guests, and refused on every other role.
 - `host` must point at a machine whose role is `vm-host`.
 - Two machines may not share the same `home` position.
@@ -49,4 +54,4 @@ The real inventory lives on the NAS, never in this repo. The repo holds only a f
 
 - Go's standard library does not read TOML, so a third-party TOML library will be needed. The owner approves using one. When coding starts, the bot proposes which library and asks the owner first.
 - Secrets handling is a separate, later step. It is not part of this format.
-- The real inventory lives on the NAS, never in this repo. The example uses fake names and `192.0.2.x` addresses (a range reserved for documentation) only.
+- The real inventory lives on the hub's own disk, in its per-machine config outside the system image. The NAS holds a backup copy. It is never committed to this repo. The example uses fake names and `192.0.2.x` addresses (a range reserved for documentation) only.

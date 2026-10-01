@@ -1,7 +1,8 @@
 # Hub OS inventory — EXAMPLE ONLY. Fake names, fake addresses.
 # 192.0.2.x is a range reserved for documentation; it is never a real network.
 # No secrets in this file, ever. Format: docs/inventory-format.md
-# The real inventory lives on the NAS, never in this repo.
+# The real inventory lives on the hub's own disk, in its per-machine config
+# outside the system image. The NAS holds a backup copy. Never in this repo.
 
 format = 1
 
