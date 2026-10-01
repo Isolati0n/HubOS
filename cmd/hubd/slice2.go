@@ -222,7 +222,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit,
 	}
 	dw := &driftwm.Client{Path: dwPath}
-	h := hub.New(inv, vt, dw, hub.ExecLauncher, set, filepath.Join(filepath.Dir(socket), "record.json"))
+	h := hub.New(inv, vt, dw, hub.ExecLauncher, set, strings.TrimSuffix(socket, ".sock")+".record.json")
 
 	l, err := hub.Listen(socket)
 	if err != nil {
@@ -277,7 +277,7 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		return exitFailure
 	}
 	// One menu at a time: a second click on the bar item does nothing.
-	lock, err := os.OpenFile(filepath.Join(filepath.Dir(path), "menu.lock"), os.O_CREATE|os.O_RDWR, 0o600)
+	lock, err := os.OpenFile(strings.TrimSuffix(path, ".sock")+".menu.lock", os.O_CREATE|os.O_RDWR, 0o600)
 	if err != nil {
 		fmt.Fprintln(stderr, "hubd:", err)
 		return exitFailure

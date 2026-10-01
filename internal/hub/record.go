@@ -3,7 +3,6 @@ package hub
 import (
 	"encoding/json"
 	"os"
-	"path/filepath"
 )
 
 // record is the small file of windows hubd started. It lives in the runtime
@@ -29,7 +28,7 @@ func writeRecord(path string, r record) {
 	if err != nil {
 		return
 	}
-	tmp := filepath.Join(filepath.Dir(path), ".record.tmp")
+	tmp := path + ".tmp"
 	if os.WriteFile(tmp, b, 0o600) == nil {
 		os.Rename(tmp, path)
 	}
