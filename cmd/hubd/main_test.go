@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -252,5 +253,72 @@ func TestCheckSubcommandIsSliceOne(t *testing.T) {
 	}
 	if a.String() != b.String() || !strings.Contains(a.String(), "1 of 1 up") {
 		t.Errorf("differ:\n%s\n---\n%s", a.String(), b.String())
+	}
+}
+
+// Reproduces the finding of docs/hubd-slice2.md section 7.3: with 5000
+// generated machines and "ulimit -n 1024", the first slice used to show
+// thousands of working machines as DOWN ("too many open files"). A check that
+// cannot be made must be NOT CHECKED, never DOWN, and with the bounded
+// checking here every check is made.
+func TestCheckWith5000MachinesAndSmallFileLimitHasNoFalseDown(t *testing.T) {
+	if testing.Short() {
+		t.Skip("builds three programs and starts 4750 fake machines")
+	}
+	if _, err := exec.LookPath("sh"); err != nil {
+		t.Skip("no sh")
+	}
+	bin := t.TempDir()
+	build := func(name, pkg string) string {
+		out := filepath.Join(bin, name)
+		cmd := exec.Command("go", "build", "-o", out, pkg)
+		if b, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("build %s: %v\n%s", pkg, err, b)
+		}
+		return out
+	}
+	hubd := build("hubd", "hubos/cmd/hubd")
+	geninv := build("geninv", "hubos/tools/geninv")
+	fakenode := build("fakenode", "hubos/tools/fakenode")
+
+	inv, nodes := filepath.Join(bin, "inventory.toml"), filepath.Join(bin, "nodes.txt")
+	if b, err := exec.Command(geninv, "-n", "5000", "-inventory", inv, "-nodes", nodes).CombinedOutput(); err != nil {
+		t.Fatalf("geninv: %v\n%s", err, b)
+	}
+	raw, _ := os.ReadFile(nodes)
+	addrs := strings.Fields(string(raw))
+	if len(addrs) != 4750 {
+		t.Fatalf("%d fake machines to start, want 4750", len(addrs))
+	}
+	// The fake machines need many file handles; they run in their own
+	// process with a high limit. Only hubd gets the small limit.
+	nodeCmd := exec.Command("sh", append([]string{"-c", "ulimit -n 20000; exec \"$0\" \"$@\"", fakenode}, addrs...)...)
+	if err := nodeCmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { nodeCmd.Process.Kill(); nodeCmd.Wait() })
+	for i := 0; ; i++ {
+		c, err := net.DialTimeout("tcp", addrs[len(addrs)-1], 200*time.Millisecond)
+		if err == nil {
+			c.Close()
+			break
+		}
+		if i > 100 {
+			t.Fatal("fake machines did not start")
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	out, err := exec.Command("sh", "-c", "ulimit -n 1024; exec \"$0\" check --inventory \"$1\"", hubd, inv).CombinedOutput()
+	if err != nil {
+		t.Fatalf("hubd check: %v\n%s", err, out)
+	}
+	text := string(out)
+	down := strings.Count(text, "  DOWN (")
+	if down != 250 || strings.Contains(text, "too many open files") || strings.Contains(text, "NOT CHECKED (hubd") {
+		t.Errorf("DOWN lines: %d (want exactly the 250 machines with no fake node); output tail:\n%s", down, text[max(0, len(text)-300):])
+	}
+	if !strings.Contains(text, "\n4750 of 5000 up\n") {
+		t.Errorf("summary wrong; output tail:\n%s", text[max(0, len(text)-200):])
 	}
 }

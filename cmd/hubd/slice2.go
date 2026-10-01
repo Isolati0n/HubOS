@@ -18,6 +18,7 @@ import (
 	"hubos/internal/driftwm"
 	"hubos/internal/hub"
 	"hubos/internal/inventory"
+	"hubos/internal/probe"
 	"hubos/internal/viewers"
 )
 
@@ -214,11 +215,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "hubd: warning: driftwm's socket path is %d bytes (limit %d); driftwm fails to start its socket on a path that long, so windows cannot be opened until XDG_RUNTIME_DIR is shorter\n", len(dwPath), driftwm.MaxSocketPath)
 	}
 
-	var rl syscall.Rlimit
-	var limit uint64
-	if syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rl) == nil {
-		limit = rl.Cur
-	}
+	limit := probe.FileLimit()
 	set := hub.Settings{
 		ProbeCap: *cap_, ProbeInterval: *interval, ProbeTimeout: *ptimeout, WindowWait: *wait,
 		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, ListMax: *listMax, TooltipCap: *tipcap,

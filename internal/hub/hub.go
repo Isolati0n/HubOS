@@ -16,6 +16,7 @@ import (
 
 	"hubos/internal/driftwm"
 	"hubos/internal/inventory"
+	"hubos/internal/probe"
 	"hubos/internal/viewers"
 )
 
@@ -163,13 +164,7 @@ func New(inv *inventory.Inventory, vt *viewers.Table, comp Compositor, launch La
 		h.byID[m.ID] = s
 	}
 	// Stay under the open-file limit: each check holds one socket.
-	if set.FileLimit > 0 && uint64(h.set.ProbeCap) > set.FileLimit-64 {
-		if set.FileLimit > 65 {
-			h.set.ProbeCap = int(set.FileLimit - 64)
-		} else {
-			h.set.ProbeCap = 1
-		}
-	}
+	h.set.ProbeCap = probe.SafeCap(set.ProbeCap, set.FileLimit)
 	return h
 }
 

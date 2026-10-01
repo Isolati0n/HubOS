@@ -92,6 +92,31 @@ func reason(err error, timeout time.Duration) string {
 	return err.Error()
 }
 
+// SafeCap is how many checks may be in flight at once: the wanted number, but
+// never more than the open-file limit minus 64 (kept for other sockets).
+// fileLimit 0 means unknown, and the wanted number is used.
+func SafeCap(want int, fileLimit uint64) int {
+	if want < 1 {
+		want = 1
+	}
+	if fileLimit == 0 || uint64(want) <= fileLimit-min(fileLimit, 64) {
+		return want
+	}
+	if fileLimit > 65 {
+		return int(fileLimit - 64)
+	}
+	return 1
+}
+
+// FileLimit is the soft limit on open files (0 if it cannot be read).
+func FileLimit() uint64 {
+	var rl syscall.Rlimit
+	if syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rl) != nil {
+		return 0
+	}
+	return rl.Cur
+}
+
 // CheckLimited checks the targets with at most limit checks in flight at
 // once. For each finished check it calls done(index, result) (from several
 // goroutines at once; done must be safe for that). It returns when all are

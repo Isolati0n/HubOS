@@ -17,6 +17,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"sync"
 	"text/tabwriter"
 	"time"
 
@@ -42,6 +43,9 @@ type config struct {
 	perMachine time.Duration // limit for one machine's check
 	total      time.Duration // limit for the whole run
 }
+
+// checkCap is how many checks run at once in hubd check (same as the daemon).
+const checkCap = 200
 
 var defaultConfig = config{perMachine: 2 * time.Second, total: 5 * time.Second}
 
@@ -171,15 +175,25 @@ func check(machines []inventory.Machine, cfg config) []row {
 		}
 	}
 
+	// Bounded, like the daemon: at most checkCap checks at once, never more
+	// than the open-file limit allows. A check that could not be made (out
+	// of file handles, or not reached before the overall limit) is NOT
+	// CHECKED, never DOWN.
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.total)
 	defer cancel()
-	for k, res := range probe.CheckAll(ctx, targets, cfg.perMachine) {
+	var mu sync.Mutex
+	probe.CheckLimited(ctx, targets, cfg.perMachine, probe.SafeCap(checkCap, probe.FileLimit()), func(k int, res probe.Result) {
+		mu.Lock()
+		defer mu.Unlock()
 		i := index[k]
-		if res.Up {
+		switch {
+		case res.Up:
 			rows[i].state, rows[i].status = stateUp, "UP"
-		} else {
+		case res.Unchecked:
+			rows[i].state, rows[i].status = stateNotChecked, "NOT CHECKED ("+res.Reason+")"
+		default:
 			rows[i].state, rows[i].status = stateDown, "DOWN ("+res.Reason+")"
 		}
-	}
+	})
 	return rows
 }
