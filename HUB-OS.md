@@ -127,10 +127,6 @@ That is the finish line. Nothing else is v1.
 | node helper | Tiny script: status / start-sunshine / stop-sunshine | Called over SSH. Not a second operating system |
 | existing viewers | All pixels and input | Hub OS only starts them |
 
-### Init / service supervisor
-
-Use the host’s existing supervisor (systemd is fine). If a smaller supervisor is wanted later, use **s6** or **dinit**.
-
 ### Session rules
 
 - hubd may remember “AI is supposed to be open” for the panel. It must not spawn a pile of duplicate viewers on a second click without asking.

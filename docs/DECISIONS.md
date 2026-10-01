@@ -43,7 +43,7 @@ Owner decisions made after `HUB-OS.md` was written.
 
 ### Out of scope as design factors
 - Electricity and power cost are not design factors.
-- Erlang/Elixir is parked. Stay with Go and systemd.
+- Erlang/Elixir is parked. Stay with Go.
 
 ## Where this overrides HUB-OS.md
 
