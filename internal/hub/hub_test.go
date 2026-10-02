@@ -220,12 +220,17 @@ func testSettings() Settings {
 
 func newRig(t *testing.T, machines ...string) *rig {
 	t.Helper()
+	return newRigViewers(t, viewersDoc, machines...)
+}
+
+func newRigViewers(t *testing.T, vdoc string, machines ...string) *rig {
+	t.Helper()
 	doc := "format = 1\n" + machineDoc("hub", "Hub", "hub", "none", 0, 0, 0, "") + strings.Join(machines, "")
 	inv, ps := inventory.Parse([]byte(doc))
 	if len(ps) > 0 {
 		t.Fatalf("test inventory invalid: %q", ps)
 	}
-	vt, vps := viewers.Parse([]byte(viewersDoc))
+	vt, vps := viewers.Parse([]byte(vdoc))
 	if len(vps) > 0 {
 		t.Fatalf("test viewers invalid: %q", vps)
 	}

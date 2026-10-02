@@ -1,6 +1,6 @@
 # Deliberately broken inventory files
 
-Each file breaks exactly one rule from `docs/inventory-format.md` and is otherwise valid. The exact message `hubd` must print is in the `# EXPECT:` line at the top of the file; `go test ./internal/inventory` fails if the real output differs. Files 22 to 24 test rules taken from the field table (allowed values, no port in the address, port range). File 25 checks that a decimal format number is described as a decimal number. File 26 tests the control-character rule. Files 27 and 28 test the leading-dash rules.
+Each file breaks exactly one rule from `docs/inventory-format.md` and is otherwise valid. The exact message `hubd` must print is in the `# EXPECT:` line at the top of the file; `go test ./internal/inventory` fails if the real output differs. Files 22 to 24 test rules taken from the field table (allowed values, no port in the address, port range). File 25 checks that a decimal format number is described as a decimal number. File 26 tests the control-character rule. Files 27 and 28 test the leading-dash rules. Files 29 to 31 test the `session` field (control characters, leading dash, and only with `moonlight`).
 
 | File | Rule it breaks |
 |---|---|
@@ -32,3 +32,6 @@ Each file breaks exactly one rule from `docs/inventory-format.md` and is otherwi
 | `26-control-character.toml` | id, name, user, share and address have no control characters or line breaks |
 | `27-address-starts-with-dash.toml` | address, user and share must not start with a dash |
 | `28-id-starts-with-dash.toml` | id must start with a letter or digit |
+| `29-session-control-character.toml` | session has no control characters or line breaks |
+| `30-session-starts-with-dash.toml` | session must not start with a dash |
+| `31-session-without-moonlight.toml` | session only when open includes moonlight |

@@ -2,6 +2,7 @@ package hub
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -101,11 +102,16 @@ func (h *Hub) open(id string, mayRetry bool) OpenResult {
 		return h.refuse("refused", "no viewer is set for %q in viewers.toml, so %s cannot be opened", prog, name)
 	}
 	args, err := v.Args(s.m)
+	if err == nil {
+		_, _, err = v.MatchTitle(s.m)
+	}
 	if err != nil {
 		h.mu.Unlock()
 		return h.refuse("refused", "%s cannot be opened: %v", name, err)
 	}
-	if !v.SetsName && h.lateComparison > 0 {
+	// A title-matched viewer's window is told apart by its title, so the
+	// late-window comparison lock does not apply to it.
+	if !v.SetsName && v.TitleMatch == "" && h.lateComparison > 0 {
 		// A window that shows up late cannot be told from the new viewer's.
 		var other string
 		for _, o := range h.ms {
@@ -128,7 +134,7 @@ func (h *Hub) open(id string, mayRetry bool) OpenResult {
 	}
 	h.notifyLocked()
 	h.mu.Unlock()
-	if r.Action != "open" {
+	if r.Action != "open" && r.Action != "late" { // waiting is not an alert
 		h.mu.Lock()
 		h.setMessageLocked(r.Message)
 		h.mu.Unlock()
@@ -163,10 +169,16 @@ func (h *Hub) goTo(w winRec) (ok bool, err error) {
 // "the window that is new" is never ambiguous because of another launch of
 // ours.
 func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenResult {
-	h.launchMu.Lock()
-	defer h.launchMu.Unlock()
 	name := s.m.Name
 	appID := viewers.AppID(s.m.ID)
+	title, _, _ := v.MatchTitle(s.m)
+	if title == "" {
+		// One launch at a time, so "the window that is new" is never
+		// ambiguous. A title-matched window is told apart by its title, so
+		// those launches do not wait for each other.
+		h.launchMu.Lock()
+		defer h.launchMu.Unlock()
+	}
 
 	before, err := h.comp.State()
 	if err != nil {
@@ -187,24 +199,26 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 	}
 	deadline := time.Now().Add(wait)
 	var cands, others []driftwm.Window
-	exited := false
+	cleanExit := false
 	for {
 		select {
 		case err := <-proc.Exited:
-			exited = true
-			proc.Exited = nil // a clean exit may be a hand-over to a running copy
+			proc.Exited = nil
 			if err != nil {
 				return h.done("failed", "%s", h.exitMessage(s, args[0], err))
 			}
+			// A clean exit (status 0) may be a hand-over to a copy that is
+			// already running: the window can still come, so keep waiting.
+			cleanExit = true
 		default:
 		}
 		st, err := h.comp.State()
 		if err == nil {
-			cands, others = h.candidates(st, known, v, appID)
+			cands, others = h.candidates(st, known, v, appID, title)
 			if len(cands) > 0 {
 				time.Sleep(h.set.Settle)
 				if st, err = h.comp.State(); err == nil {
-					cands, others = h.candidates(st, known, v, appID)
+					cands, others = h.candidates(st, known, v, appID, title)
 				}
 				break
 			}
@@ -213,13 +227,22 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 			msg := fmt.Sprintf("no window appeared for %s within %s", name, wait)
 			if len(others) > 0 {
 				w := others[0]
-				msg += fmt.Sprintf("; a new window appeared but is named %q, not %q: this viewer may ignore the chosen name (set sets_name = false in viewers.toml to match by comparison)", w.AppID, appID)
+				if title != "" {
+					msg += fmt.Sprintf("; a new window appeared but its title is %q, not %q: check title_match in viewers.toml", w.Title, title)
+				} else {
+					msg += fmt.Sprintf("; a new window appeared but is named %q, not %q: this viewer may ignore the chosen name (set sets_name = false in viewers.toml to match by comparison)", w.AppID, appID)
+				}
 			}
-			if !exited && h.set.LateGrace > 0 {
-				// The viewer is still running: keep waiting for its window,
-				// and let nothing start a second viewer meanwhile.
-				h.beginLate(s, v, proc, known, appID, args[0])
-				return h.done("late", "%s; the viewer is still running, so hubd keeps waiting for its window for up to %s (the machine is in the \"late window\" state; hubd forget %s stops the wait)", msg, h.set.LateGrace, s.m.ID)
+			if grace := h.graceFor(v); grace > 0 {
+				// The viewer is still running (or exited cleanly): keep
+				// waiting for its window, and let nothing start a second
+				// viewer meanwhile.
+				h.beginLate(s, v, proc, cleanExit, grace, known, appID, title, args[0])
+				state := "the viewer is still running"
+				if cleanExit {
+					state = "the viewer process has exited cleanly (it may have handed over to a copy that is already running)"
+				}
+				return h.done("late", "%s; %s, so hubd keeps waiting for its window for up to %s (the machine is in the \"late window\" state; hubd forget %s stops the wait)", msg, state, grace, s.m.ID)
 			}
 			if lp := h.LogPath(s.m.ID); lp != "" {
 				msg += "; the viewer's output is in " + lp
@@ -236,15 +259,18 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 		h.mu.Lock()
 		s.phase = phaseUnmatched
 		h.mu.Unlock()
-		return h.done("failed", "%s", ambiguousMessage(name, cands))
+		return h.done("failed", "%s", ambiguousMessage(name, cands, title))
 	}
 	return h.recordWindow(s, v, cands[0], "")
 }
 
-func ambiguousMessage(name string, cands []driftwm.Window) string {
+func ambiguousMessage(name string, cands []driftwm.Window, title string) string {
 	titles := make([]string, len(cands))
 	for i, w := range cands {
 		titles[i] = fmt.Sprintf("#%d %q", w.ID, w.AppID)
+	}
+	if title != "" {
+		return fmt.Sprintf("%d new windows are titled %q while opening %s (%s); I cannot tell which one is its window, so I left them all alone and placed and recorded nothing", len(cands), title, name, strings.Join(titles, ", "))
 	}
 	return fmt.Sprintf("%d new windows appeared while opening %s (%s); I cannot tell which one is its window, so I left them all alone and placed and recorded nothing", len(cands), name, strings.Join(titles, ", "))
 }
@@ -258,8 +284,9 @@ func (h *Hub) exitMessage(s *mstate, prog string, err error) string {
 }
 
 // candidates are the new windows nobody has claimed: for a viewer that sets
-// its name, only those with that name (others lists the rest).
-func (h *Hub) candidates(st *driftwm.State, known map[int]bool, v *viewers.Viewer, appID string) (cands, others []driftwm.Window) {
+// its name, only those with that name; for a title-matched viewer (title is
+// not empty), only those whose title is exactly that (others lists the rest).
+func (h *Hub) candidates(st *driftwm.State, known map[int]bool, v *viewers.Viewer, appID, title string) (cands, others []driftwm.Window) {
 	h.mu.Lock()
 	claimed := map[int]bool{}
 	for _, o := range h.ms {
@@ -271,6 +298,20 @@ func (h *Hub) candidates(st *driftwm.State, known map[int]bool, v *viewers.Viewe
 	for _, w := range st.Windows {
 		if known[w.ID] || claimed[w.ID] {
 			continue
+		}
+		if title != "" {
+			if w.Title != title {
+				others = append(others, w)
+			} else {
+				cands = append(cands, w)
+			}
+			continue
+		}
+		if !v.SetsName && slices.Contains(h.set.IgnoreAppIDs, w.AppID) {
+			continue // never a candidate for comparison matching
+		}
+		if !v.SetsName && len(h.titleIDs[w.Title]) > 0 {
+			continue // belongs to a title-matched machine, not to this viewer
 		}
 		if v.SetsName && w.AppID != appID {
 			others = append(others, w)
@@ -285,8 +326,11 @@ func (h *Hub) candidates(st *driftwm.State, known map[int]bool, v *viewers.Viewe
 // a normal open, or a few words for a window that came late.
 func (h *Hub) recordWindow(s *mstate, v *viewers.Viewer, w driftwm.Window, late string) OpenResult {
 	by := "comparison"
-	if v.SetsName {
+	switch {
+	case v.SetsName:
 		by = "name"
+	case v.TitleMatch != "":
+		by = "title"
 	}
 	note := h.place(s, w)
 	h.mu.Lock()
@@ -309,17 +353,30 @@ func (h *Hub) recordWindow(s *mstate, v *viewers.Viewer, w driftwm.Window, late 
 
 // ---- the late-window state ----
 
+// graceFor is how long to keep waiting for this viewer's late window.
+func (h *Hub) graceFor(v *viewers.Viewer) time.Duration {
+	if v.LateGrace > 0 {
+		return v.LateGrace
+	}
+	return h.set.LateGrace
+}
+
 // beginLate puts the machine in the late-window state and starts watching.
-func (h *Hub) beginLate(s *mstate, v *viewers.Viewer, proc *Proc, known map[int]bool, appID, prog string) {
+func (h *Hub) beginLate(s *mstate, v *viewers.Viewer, proc *Proc, cleanExit bool, grace time.Duration, known map[int]bool, appID, title, prog string) {
 	cancel := make(chan struct{})
 	h.mu.Lock()
-	s.phase, s.lateCancel, s.lateCmp = phaseLate, cancel, !v.SetsName
+	s.phase, s.lateCancel, s.lateCmp = phaseLate, cancel, !v.SetsName && v.TitleMatch == ""
+	s.lateEnd = h.now().Add(grace)
 	if s.lateCmp {
 		h.lateComparison++
 	}
 	h.notifyLocked()
 	h.mu.Unlock()
-	go h.watchLate(s, v, proc.Exited, known, appID, prog, cancel)
+	exitCh := proc.Exited
+	if cleanExit {
+		exitCh = nil // already gone; a nil channel never fires
+	}
+	go h.watchLate(s, v, exitCh, grace, known, appID, title, prog, cancel)
 }
 
 // leaveLateLocked ends the late-window state (caller holds h.mu).
@@ -353,25 +410,31 @@ func (h *Hub) finishLate(s *mstate, cancel chan struct{}, next phase, message st
 
 // watchLate waits, for up to Settings.LateGrace, for the window of a viewer
 // that is still running. A window that shows up is adopted and placed. If the
-// process exits first, that is a failure (with the log path). If the time
+// process exits with an error first, that is a failure (with the log path); a
+// clean exit (status 0) does not end the wait. If the time
 // runs out with the process alive and no window, the machine becomes
 // "unidentified" (hubd forget is the way out). It never kills anything.
-func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, known map[int]bool, appID, prog string, cancel chan struct{}) {
+func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, grace time.Duration, known map[int]bool, appID, title, prog string, cancel chan struct{}) {
 	name := s.m.Name
-	end := time.Now().Add(h.set.LateGrace)
+	end := time.Now().Add(grace)
 	for {
 		select {
 		case <-cancel:
 			return
 		case err := <-exitedCh:
-			if h.finishLate(s, cancel, phaseIdle, h.exitMessage(s, prog, err)) {
-				return
+			if err == nil {
+				// A clean exit (status 0) may be a hand-over to a copy that
+				// is already running: the window can still come, so keep
+				// waiting until the grace ends or a window appears.
+				exitedCh = nil
+				continue
 			}
+			h.finishLate(s, cancel, phaseIdle, h.exitMessage(s, prog, err))
 			return
 		case <-time.After(100 * time.Millisecond):
 		}
 		if st, err := h.comp.State(); err == nil {
-			if cands, _ := h.candidates(st, known, v, appID); len(cands) > 0 {
+			if cands, _ := h.candidates(st, known, v, appID, title); len(cands) > 0 {
 				select {
 				case <-cancel:
 					return
@@ -381,7 +444,7 @@ func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, kno
 				if err != nil {
 					continue
 				}
-				cands, _ = h.candidates(st, known, v, appID)
+				cands, _ = h.candidates(st, known, v, appID, title)
 				switch len(cands) {
 				case 0:
 					continue
@@ -398,13 +461,13 @@ func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, kno
 					h.finishLate(s, cancel, phaseIdle, r.Message)
 					return
 				default:
-					h.finishLate(s, cancel, phaseUnmatched, ambiguousMessage(name, cands))
+					h.finishLate(s, cancel, phaseUnmatched, ambiguousMessage(name, cands, title))
 					return
 				}
 			}
 		}
 		if time.Now().After(end) {
-			h.finishLate(s, cancel, phaseUnmatched, fmt.Sprintf("the viewer for %s is still running but no window appeared during the %s of waiting after the window wait; hubd stopped waiting and killed nothing. Close the viewer by hand, then run: hubd forget %s", name, h.set.LateGrace, s.m.ID))
+			h.finishLate(s, cancel, phaseUnmatched, fmt.Sprintf("the viewer for %s showed no window during the %s of waiting after the window wait; hubd stopped waiting and killed nothing. Close the viewer by hand (if it is still running), then run: hubd forget %s", name, grace, s.m.ID))
 			return
 		}
 	}
@@ -504,6 +567,10 @@ func (h *Hub) End(id string) OpenResult {
 	}
 	name := s.m.Name
 	if s.win == nil {
+		if s.phase == phaseLate {
+			h.mu.Unlock()
+			return h.done("refused", "the viewer for %s is still starting, so there is no window to close. hubd end cannot cancel a viewer (hubd never kills one). To stop waiting for its window, run: hubd forget %s", name, id)
+		}
 		if s.phase == phaseUnmatched {
 			h.mu.Unlock()
 			return h.done("refused", "hubd does not know which window is the one of %s, so it will not close any; close it by hand, then run: hubd forget %s", name, id)

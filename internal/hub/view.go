@@ -85,6 +85,7 @@ func (h *Hub) Status() StatusLine {
 	}
 	warnings := h.dupWarningsLocked()
 	tip = append(tip, warnings...)
+	tip = append(tip, h.waitingLinesLocked()...)
 	if !h.driftwmUp {
 		tip = append(tip, "driftwm is not reachable: windows cannot be opened")
 	}
@@ -172,6 +173,7 @@ var roleLabel = map[string]string{
 //	"   id  name  S"   a machine; the first word is the machine id
 const (
 	forgetPrefix = "x forget unknown window for "
+	stopPrefix   = "x stop waiting for "
 	searchLine   = "? search by id or name..."
 	backLine     = "< back to groups"
 	// SearchHint is the one line shown when the menu asks for text to search
@@ -302,9 +304,31 @@ func (h *Hub) groupsLocked() []*group {
 func (h *Hub) forgetLinesLocked() []string {
 	var out []string
 	for _, s := range h.ms {
-		if s.phase == phaseUnmatched {
+		switch s.phase {
+		case phaseUnmatched:
 			out = append(out, fmt.Sprintf("%s%s (%s)", forgetPrefix, s.m.Name, s.m.ID))
+		case phaseLate:
+			out = append(out, fmt.Sprintf("%s%s's window (%s)", stopPrefix, s.m.Name, s.m.ID))
 		}
+	}
+	return out
+}
+
+// waitingLinesLocked has one tooltip line for each machine in the late-window
+// state: "waiting for X's window (up to N s more)", N rounded up to 10 s steps
+// so the tooltip changes at most every 10 s. It is information, not an alert.
+func (h *Hub) waitingLinesLocked() []string {
+	var out []string
+	for _, s := range h.ms {
+		if s.phase != phaseLate {
+			continue
+		}
+		left := s.lateEnd.Sub(h.now())
+		if left < 0 {
+			left = 0
+		}
+		secs := int((left + 9*time.Second) / (10 * time.Second) * 10)
+		out = append(out, fmt.Sprintf("waiting for %s's window (up to %d s more)", s.m.Name, secs))
 	}
 	return out
 }
@@ -449,7 +473,7 @@ func (h *Hub) Pick(line string) PickResult {
 		return PickResult{Action: "search", Reopen: true, Flat: true, Ask: true}
 	case trim == backLine && !indented:
 		return PickResult{Action: "back", Reopen: true}
-	case !indented && strings.HasPrefix(trim, forgetPrefix):
+	case !indented && (strings.HasPrefix(trim, forgetPrefix) || strings.HasPrefix(trim, stopPrefix)):
 		i, j := strings.LastIndex(trim, "("), strings.LastIndex(trim, ")")
 		if i < 0 || j != len(trim)-1 || j < i {
 			return PickResult{Action: "ignored"}

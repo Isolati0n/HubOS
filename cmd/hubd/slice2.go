@@ -152,6 +152,8 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	ptimeout := fs.Duration("check-timeout", def.ProbeTimeout, "limit for one machine's check (more than 0, at most "+maxCheckTimeout.String()+")")
 	wait := fs.Duration("window-wait", def.WindowWait, "how long to wait for a started viewer's window (a viewer in viewers.toml can set its own window_wait)")
 	grace := fs.Duration("late-grace", def.LateGrace, "how long to keep waiting for a window after the window wait ran out with the viewer still running (0 = do not wait)")
+	var ignore appIDList
+	fs.Var(&ignore, "ignore-app-id", "a window app-id that is never taken for a viewer's window when windows are matched by comparison (repeatable; default none)")
 	noEscape := fs.Bool("no-escape", false, "do not escape markup in the status line (only for a Waybar that escapes by itself; otherwise names with & or < show wrongly or blank the tooltip)")
 	fold := fs.Int("fold", def.FoldThreshold, "groups with more machines than this start folded")
 	downMax := fs.Int("down-max", def.DownMax, "most machine lines in the Down machines group")
@@ -231,7 +233,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	set := hub.Settings{
 		ProbeCap: *cap_, ProbeInterval: *interval, ProbeTimeout: *ptimeout, WindowWait: *wait,
 		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, ListMax: *listMax, DownMax: *downMax, TooltipCap: *tipcap,
-		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit, LateGrace: *grace, NoEscape: *noEscape,
+		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit, LateGrace: *grace, NoEscape: *noEscape, IgnoreAppIDs: ignore,
 	}
 	if *logRounds {
 		round := 0
@@ -399,5 +401,17 @@ func checkTimeoutError(d, total time.Duration) error {
 	case total > 0 && d > total:
 		return fmt.Errorf("--check-timeout %s is longer than the total limit of this command (%s), so it could never be used", d, total)
 	}
+	return nil
+}
+
+// appIDList is a repeatable string flag.
+type appIDList []string
+
+func (l *appIDList) String() string { return strings.Join(*l, ",") }
+func (l *appIDList) Set(v string) error {
+	if v == "" {
+		return errors.New("an empty app-id")
+	}
+	*l = append(*l, v)
 	return nil
 }
