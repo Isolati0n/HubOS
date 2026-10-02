@@ -89,7 +89,7 @@ func mustRead(t *testing.T) string {
 }
 
 func TestTestdataViewerFilesAreValid(t *testing.T) {
-	for _, p := range []string{"../../testdata/viewers/ambiguous.toml", "../../testdata/viewers/ignores-name.toml", "../../testdata/viewers/chatty.toml"} {
+	for _, p := range []string{"../../testdata/viewers/ambiguous.toml", "../../testdata/viewers/ignores-name.toml", "../../testdata/viewers/chatty.toml", "../../testdata/viewers/late.toml"} {
 		if _, ps, err := Load(p); err != nil || len(ps) != 0 {
 			t.Errorf("%s: %v %q", p, err, ps)
 		}

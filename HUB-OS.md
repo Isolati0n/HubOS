@@ -346,3 +346,4 @@ HubOS/
 - **2026-10-01 (later):** hubd second slice: feed, list, menu, pick, open, end; scale tested at 100 and 5000; see docs/hubd-slice2.md.
 - **2026-10-01 (later):** hubd slice 2 follow-ups: bounded check, down-machines group, forget command, viewer logs, stale-round rule.
 - **2026-10-01 (later):** hubd slice 2 reviewed and merged; STALE rule, first-round display, safety fixes and viewer-log cap.
+- **2026-10-01 (later):** hubd slice 2: late-window state for slow viewers, per-viewer window_wait, escape and timeout flags.

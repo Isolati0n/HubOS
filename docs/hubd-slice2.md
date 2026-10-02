@@ -55,6 +55,7 @@ id        = "fake"
 programs  = ["moonlight", "spice", "vnc", "ssh", "files"]      # inventory "open" entries this viewer serves
 command   = ["foot", "--app-id={app_id}", "--title={title}", "--", "sleep", "infinity"]
 sets_name = true                                                # the command makes the window carry {app_id}
+window_wait = "10s"                                              # optional: how long to wait for this viewer's window (default: the hub's 10 s)
 ```
 
 - `command` is a list: the first entry is the program (fixed text, no placeholders); each other entry is one argument.
@@ -333,7 +334,7 @@ The ten numbers proposed in the first review were **approved by the owner as pro
 |---|---|---|
 | Check cap (`--probe-cap`) | **200; 1000 above 1000 machines; at most 80% of `ulimit -n`** (second review) | 100 machines: a worst-case round (all silent) is 2.0 s. At 5000 it is 40 s (cap 200), 18 s (500), 10 s (1000); open files are cap + 8; fine under the usual 1024. For a cluster beyond ~1000 machines use 1000 and raise `ulimit -n` to 2048. |
 | Check interval (`--probe-interval`) | **10 s** | A change shows within one interval plus the round (0.9–1.9 s seen with 2 s). 5000 machines at 10 s is 500 connects a second, which the sandbox handled in 0.1 s per round. |
-| Per-machine limit (`--probe-timeout`) | **2 s** (unchanged from slice 1) | Not measured on a real network (still a guess; HUB-OS.md lists it). |
+| Per-machine limit (`--check-timeout`) | **2 s** (unchanged from slice 1) | Not measured on a real network (still a guess; HUB-OS.md lists it). |
 | Window wait (`--window-wait`) | **10 s** | The fake viewer's window appeared in well under a second; opening took about 0.8 s end to end (0.5 s is the settle wait). Real viewers are unknown, so this is generous. |
 | Settle (after the first window) | **500 ms** | To catch a second window of the same launch. Fixed in code (`Settings.Settle`), not a flag. |
 | Fold threshold (`--fold`) | **12** | wofi shows 12 rows without scrolling; a group of 12 or fewer is never folded. |
@@ -413,7 +414,7 @@ A bug found on the way: STALE comes from the clock, not from an event, so the fi
    - **A. The window appears after the failure; the owner clicks again later.** First click: `no window appeared for A within 300ms`; the machine shows idle, nothing recorded. The first viewer's window then appears (`#0 hubos-a`), unrecorded and unknown to hubd. Second click: a **second viewer is started**; its window (`#1 hubos-a`) is recorded; hubd says `opened A at home (1, 1), matched by name`. **Two viewers and two windows exist, both named `hubos-a`; hubd knows only #1.** Nothing warns about #0.
    - **B. The late window arrives while the second click waits, and the second viewer is quick** (inside the 500 ms settle): two new windows with the same name → `2 new windows appeared while opening A (#0 "hubos-a", #1 "hubos-a"); I cannot tell which one is its window…`; the machine is blocked until `hubd forget`.
    - **C. The same, but the second viewer is slow** (slower than the settle): hubd takes the **first** viewer's late window (#0) for the second viewer and says `opened A … matched by name`; the second viewer's window (#1) appears later and is unrecorded. Two windows, hubd knows #0.
-   - Behaviour not changed; a fix is proposed in the review reply.
+   - Behaviour not changed in that review; the fix is in section 12.
 
 ### 11.3 Measurements after these changes
 
@@ -431,3 +432,66 @@ A bug found on the way: STALE comes from the clock, not from an event, so the fi
 | 5000, none reachable, **cap 200**, interval 10 s, live feed over 135 s | rounds 41.3 s and 40.6 s; **43 feed lines, never STALE** (results kept arriving); first round: at most one line per second (15 lines in the first 15 s); the tooltip ends `last check round took 41.329s` / `note: that is longer than two intervals (20s); a bigger check cap or interval may fit this many machines better`; class `alert` only because every machine is down |
 
 In section 10 the same case (cap 200) was STALE for about 20 s of every 50 under the old rule; under the new rule it never is.
+
+---
+
+## 12. Third review: the late-window state, and three flags
+
+### 12.1 Slow viewers (the orphan viewer, fixed)
+
+**`window_wait` in `viewers.toml`** (optional, per viewer, a positive duration such as `"10s"` or `"1m30s"`; default is the hub's `--window-wait`, 10 s). A bad value stops `hubd serve` before anything starts (`window_wait "soon" must be a positive duration like "10s" or "1m30s"`). Documented in `examples/viewers.example.toml`.
+
+**What happens when the window wait runs out.**
+- If the viewer process has **exited** (also with status 0), it is the old failure: `no window appeared for X within 10s`, with the log path.
+- If the process is **still alive**, the machine enters the **late-window state** for the grace period (`--late-grace`, default 60 s, a hub setting; 0 turns it off):
+  - `hubd open` answers `no window appeared for X within 1s; the viewer is still running, so hubd keeps waiting for its window for up to 20s (…; hubd forget ID stops the wait)` (exit 1). The list shows `[waiting for its window]`.
+  - A new `open` says `the viewer for X is still starting; waiting for its window` and **starts nothing**.
+  - A window that appears is **adopted automatically** and placed at home: matched by name for viewers with `sets_name = true`; for the others, exactly one new unclaimed window (several → the machine becomes unidentified, nothing is touched). The bar and menu say `opened X at home (…), matched by name (its window came late)`.
+  - If the **process exits first**: failure, `sh exited (exit status 3) before showing a window for X; its output is in <log>`; the machine is idle again.
+  - If the **grace ends with the process alive and no window**: the existing "unidentified" state (`the viewer for X is still running but no window appeared during the 20s of waiting after the window wait; hubd stopped waiting and killed nothing. Close the viewer by hand, then run: hubd forget X`). **No process is ever killed.** `hubd forget X` is the way out, also during the late state (it stops the wait; the viewer is not touched).
+  - While a machine is late and its viewer is matched **by comparison**, no other comparison-matched viewer is started (`…its window cannot be told apart from this one's; wait for it…`), because a late window could not be told from the new one's.
+- **Same-name warning.** If two or more windows carry the same `hubos-<id>` name, the menu's first line and the tooltip say `WARNING: 2 windows are named hubos-m5 (Up <u>one</u> & 'ok'); hubd knows window #1; close the extra one by hand`, and the bar item turns red. `forget` and `end` keep working on the window hubd knows (`end` closes only that one).
+
+**Cases A, B and C of the review, now.** (`internal/hub/late_test.go`, window wait 300 ms, settle 500 ms; case A also live with `foot` behind a 3 s delay.)
+
+| Case | Before the fix | Now |
+|---|---|---|
+| A. The window shows up after the wait; the owner clicks again | A second viewer started; two windows named `hubos-a`; hubd knew only the second | The click during the late state starts nothing; the late window is adopted at home; a click afterwards says `went to the open window`; **1 viewer, 1 window** (`TestLateCaseA_NoSecondViewer`) |
+| B. The late window arrives while the second click waits; the second viewer is quick | Two viewers; `cannot tell which one`; the machine was blocked | The second click starts nothing; **1 viewer, 1 window**, adopted (`TestLateCaseB_SecondClickStartsNothing`) |
+| C. The same with a slow second viewer | The first viewer's late window was taken for the second viewer's; the second window stayed unknown | There is no second viewer, so the window that comes is the right one: window #0 recorded, **1 viewer, 1 window** after 1.8 s more (`TestLateCaseC_NoWrongWindowAdopted`) |
+
+More tests: the grace ends (unidentified, nothing killed, forget works), the viewer exits first (log path, can open again), forget during the wait, a late window for a comparison-matched viewer (the window that was there before is ignored; a second comparison viewer is refused), two same-name late windows (not guessed), per-viewer `window_wait` over the hub default, the same-name warning.
+
+Live run (the fake inventory, `testdata/viewers/late.toml`: window 3 s after start, `window_wait` 1 s, grace 20 s): first click → the late message after 1.0 s (exit 1); second click → `still starting`; list `[waiting for its window]`; 4 s later `[open]`, one `foot`, window at `[2000, -1500]` (its home); third click `went to the open window`. Grace test (viewer sleeping 30 s, grace 4 s): after 5.5 s the menu shows the `killed nothing` message and `x forget unknown window…`; a click is refused; `forget` works; the viewer process was still alive before and after. Viewer exiting at 3 s: the failure message with the log path on the bar tooltip and the menu.
+
+### 12.2 Flags
+
+- **`--no-escape`** (`hubd serve`): do not escape the status line. By default hubd escapes `&`, `<`, `>`, `"` and `'` in the bar text and tooltip, because Waybar 0.9.24 reads them as markup (section 11). **A newer Waybar that escapes by itself would show the default's escaped text double-escaped** (`&amp;` instead of `&`), so use `--no-escape` with such a Waybar. **With Waybar 0.9.24 `--no-escape` is wrong for names with `&` or `<`**: tested live, the tooltip is a blank box and Waybar's log says `Failed to set text … from markup due to error parsing markup … Entity did not end with a semicolon` (10 errors in 3 s). Tested: `TestNoEscapeFlagLeavesTheTextAlone` (default escapes, the flag does not).
+- **`--check-timeout D`** (`hubd serve` and `hubd check`; replaces `--probe-timeout`): the per-machine limit, default 2 s. It must be more than 0 and at most 1 minute; for `hubd check` it must also not be longer than that command's total limit (5 s). Otherwise hubd stops with `--check-timeout must be more than 0`, `… at most 1m0s` or `… longer than the total limit of this command (5s)`. Tested in `TestCheckTimeoutFlagIsValidated`. Effect: see 12.4.
+- **`--late-grace D`**: see 12.1. `--window-wait` must be more than 0 and `--probe-interval` more than 0.
+
+### 12.3 STALE tooltip
+
+`STALE: no check result for 40s (limit: 3 intervals = 30s); the last check round finished 40s ago`, both ages in 10 s steps; before any round has finished: `…; no check round has finished yet` (`TestStaleTooltipShowsBothAges`).
+
+### 12.4 Measurements after these changes
+
+(Same commands as section 7; `/tmp/hs2/measure.sh`.)
+
+| Case | Result |
+|---|---|
+| 100, local fakes | rounds 7, 2, 3 ms; peak open files 8; memory 8.8 MB; list 39 lines, 1,648 bytes; status line 135 bytes |
+| 5000, local fakes, automatic cap 1000 | rounds 223, 134, 137 ms; peak open files 908; memory 31.6 MB; list 62 lines, 2,897 bytes; status line 182 bytes |
+| 5000, local fakes, `--check-timeout 500ms` | rounds 205, 145 ms (no change: local checks end at once) |
+| 5000, none reachable, cap 1000, `--check-timeout 2s` (default) | round **10.07 s**; peak open files 1007; memory 32.8 MB |
+| 5000, none reachable, cap 1000, `--check-timeout 1s` | round **5.03 s**; peak open files 1007; memory 33.1 MB |
+| 100, none reachable, cap 200, `--check-timeout 1s` | round 1.004 s (2.003 s at the default) |
+| `hubd check`, 100 none reachable | 1,024 ms with `--check-timeout 1s`; 2,027 ms at the default |
+
+So the round time with silent machines is (machines / cap) x timeout, as expected: the timeout halves it. A shorter timeout on a LAN is safe only where a live machine answers a connect well within it (a real network was not measured).
+
+### 12.5 Not changed, not tested
+
+- The late-window state with **real** viewers: how long Moonlight, virt-viewer or Remmina really take to show a window is UNKNOWN; `window_wait` and `--late-grace` are guesses (10 s and 60 s as decided).
+- A late window of a comparison-matched viewer while **other, unrelated programs** also open windows (not launched by hubd): hubd would take the single new window for the viewer's. This is the same limit as the normal comparison path.
+- The same-name warning counts only windows named `hubos-<id>` for machines in the inventory.

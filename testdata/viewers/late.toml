@@ -1,0 +1,12 @@
+# TEST ONLY. A viewer whose window comes 3 seconds after it starts, with a
+# window_wait of 1 second, to test the late-window state. The shell sees only
+# the window name (hubos-<id>, safe characters) as $0 and the fixed "3" as $1,
+# never inventory text pasted into the script.
+format = 1
+
+[[viewer]]
+id          = "late"
+programs    = ["moonlight", "spice", "vnc", "ssh", "files"]
+command     = ["sh", "-c", "sleep \"$1\"; exec foot \"--app-id=$0\" -- sleep infinity", "{app_id}", "3"]
+sets_name   = true
+window_wait = "1s"

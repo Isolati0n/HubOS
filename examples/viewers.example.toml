@@ -27,3 +27,10 @@ id        = "fake"
 programs  = ["moonlight", "spice", "vnc", "ssh", "files"]
 command   = ["foot", "--app-id={app_id}", "--title={title}", "--", "sleep", "infinity"]
 sets_name = true
+# Optional: how long hubd waits for this viewer's window before it starts the
+# "late window" grace period (a positive duration like "10s" or "1m30s").
+# Without it the hub default applies (10 s, hubd serve --window-wait). A slow
+# viewer (a big remote desktop) can need more. While the grace period runs
+# (60 s, hubd serve --late-grace) hubd starts no second viewer for the machine
+# and adopts the window when it comes.
+window_wait = "10s"
