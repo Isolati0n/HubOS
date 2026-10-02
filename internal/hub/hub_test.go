@@ -593,3 +593,100 @@ func TestSecondLaunchWaitsForTheFirst(t *testing.T) {
 		}
 	}
 }
+
+// The orphan viewer: a viewer whose window appears later than the window
+// wait. This test records what hubd does TODAY (it is not a statement of what
+// it should do; see docs/hubd-slice2.md section 11 and the owner's decision).
+// The settle wait is the production value (500 ms) so that the timing is real.
+func TestOrphanViewerWindowAfterTheWait(t *testing.T) {
+	lateWindow := func(r *rig, after time.Duration) func([]string) {
+		return func(args []string) {
+			go func() {
+				time.Sleep(after)
+				r.f.add("hubos-a", "A")
+			}()
+		}
+	}
+	newOrphanRig := func(t *testing.T) *rig {
+		r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+		r.setStatus("a", statusUp)
+		r.h.set.WindowWait = 300 * time.Millisecond
+		r.h.set.Settle = 500 * time.Millisecond
+		return r
+	}
+	count := func(r *rig) int { r.f.mu.Lock(); defer r.f.mu.Unlock(); return len(r.f.windows) }
+
+	t.Run("A: the window shows up after the failure; the owner clicks again later", func(t *testing.T) {
+		r := newOrphanRig(t)
+		r.l.script = lateWindow(r, 600*time.Millisecond)
+		first := r.h.Open("a")
+		t.Logf("1st click (fails at 0.3 s): %+v", first)
+		time.Sleep(500 * time.Millisecond) // the first viewer's window appears at 0.6 s
+		t.Logf("before the 2nd click: windows %v, recorded %v, machine shows idle: %v", names(r.f), recorded(r.h, "a"), r.h.byID["a"].win == nil)
+		r.l.script = nil // the second viewer's window appears at once
+		second := r.h.Open("a")
+		t.Logf("2nd click: %+v", second)
+		t.Logf("viewers started: %d, windows: %v, recorded window: %v", r.l.count(), names(r.f), recorded(r.h, "a"))
+		if first.Action != "failed" || !strings.Contains(first.Message, "no window appeared") {
+			t.Errorf("first: %+v", first)
+		}
+		if r.l.count() != 2 || count(r) != 2 {
+			t.Errorf("today a second viewer starts and two windows exist; got launches=%d windows=%d", r.l.count(), count(r))
+		}
+		if second.Action != "open" {
+			t.Errorf("second: %+v", second)
+		}
+		if id, ok := r.h.WindowOf("a"); !ok || id != 1 {
+			t.Errorf("today the NEW window (id 1) is recorded and the first (id 0) stays unrecorded; got %d %v", id, ok)
+		}
+	})
+
+	t.Run("B: the late window arrives while the second click waits, the second viewer is quick", func(t *testing.T) {
+		r := newOrphanRig(t)
+		r.l.script = lateWindow(r, 450*time.Millisecond) // first viewer: window at 0.45 s
+		first := r.h.Open("a")                           // fails at 0.3 s
+		t.Logf("1st click: %+v", first)
+		r.l.script = lateWindow(r, 300*time.Millisecond) // second viewer: window 0.3 s after the 2nd click (inside the 0.5 s settle)
+		second := r.h.Open("a")
+		t.Logf("2nd click: %+v", second)
+		t.Logf("viewers started: %d, windows: %v, recorded window: %v, blocked as unidentified: %v", r.l.count(), names(r.f), recorded(r.h, "a"), r.h.byID["a"].phase == phaseUnmatched)
+		if second.Action != "failed" || !strings.Contains(second.Message, "cannot tell which one") || count(r) != 2 {
+			t.Errorf("second: %+v windows=%d", second, count(r))
+		}
+	})
+
+	t.Run("C: the late window arrives while the second click waits, the second viewer is slow", func(t *testing.T) {
+		r := newOrphanRig(t)
+		r.l.script = lateWindow(r, 450*time.Millisecond)
+		first := r.h.Open("a")
+		t.Logf("1st click: %+v", first)
+		r.l.script = lateWindow(r, 1500*time.Millisecond) // second viewer: window 1.5 s after the 2nd click
+		second := r.h.Open("a")
+		t.Logf("2nd click: %+v", second)
+		time.Sleep(1700 * time.Millisecond)
+		t.Logf("later: viewers started: %d, windows: %v, recorded window: %v", r.l.count(), names(r.f), recorded(r.h, "a"))
+		if second.Action != "open" || count(r) != 2 {
+			t.Errorf("second: %+v windows=%d", second, count(r))
+		}
+		if id, ok := r.h.WindowOf("a"); !ok || id != 0 {
+			t.Errorf("today the FIRST viewer's late window (id 0) is taken for the second viewer's, and the second window (id 1) stays unrecorded; got %d %v", id, ok)
+		}
+	})
+}
+
+func recorded(h *Hub, id string) any {
+	if w, ok := h.WindowOf(id); ok {
+		return w
+	}
+	return "none"
+}
+
+func names(f *fakeComp) []string {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	var out []string
+	for _, w := range f.windows {
+		out = append(out, fmt.Sprintf("#%d %s", w.ID, w.AppID))
+	}
+	return out
+}
