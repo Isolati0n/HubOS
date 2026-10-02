@@ -2,6 +2,7 @@ package hub
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
@@ -386,5 +387,23 @@ func TestRoundStartsOneIntervalAfterTheLastFinished(t *testing.T) {
 	}
 	if gap := starts[1].Sub(ends[0]); gap < 280*time.Millisecond {
 		t.Errorf("second round started %s after the first finished, want about one interval (300ms)", gap)
+	}
+}
+
+func TestStatusLineJSONEscapesMarkupForWaybar(t *testing.T) {
+	line := StatusLine{Text: `STALE: <b>1</b> & "2" 'x'`, Class: "alert", Tooltip: "A<b>bold</b> & Co\nSay \"hi\" It's"}
+	got := line.JSON()
+	for _, want := range []string{`STALE: \u0026lt;b\u0026gt;1`, `A\u0026lt;b\u0026gt;bold`, `\u0026amp; Co\nSay \u0026quot;hi\u0026quot; It\u0026#39;s`} {
+		if !strings.Contains(got, want) {
+			t.Errorf("missing %s in %s", want, got)
+		}
+	}
+	// Decoded by a reader, the text is plain escaped markup.
+	var back StatusLine
+	if err := json.Unmarshal([]byte(got), &back); err != nil || back.Tooltip != "A&lt;b&gt;bold&lt;/b&gt; &amp; Co\nSay &quot;hi&quot; It&#39;s" {
+		t.Errorf("decoded: %q %v", back.Tooltip, err)
+	}
+	if strings.Contains(got, "\n") && !strings.Contains(got, `\n`) {
+		t.Error("raw newline in the line")
 	}
 }

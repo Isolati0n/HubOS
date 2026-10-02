@@ -17,8 +17,15 @@ type StatusLine struct {
 	Tooltip string `json:"tooltip"`
 }
 
-// JSON is the one-line form.
+// markupEscaper makes text safe for Pango markup, which Waybar 0.9.24 reads in
+// the bar text and in the tooltip: without it a "&" or "<" in a machine name
+// makes GTK refuse the text and the tooltip is blank (docs/hubd-slice2.md).
+var markupEscaper = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;", "'", "&#39;")
+
+// JSON is the one-line form for Waybar: the text and tooltip are escaped for
+// markup, so the module must be configured without Waybar's own "escape".
 func (s StatusLine) JSON() string {
+	s.Text, s.Tooltip = markupEscaper.Replace(s.Text), markupEscaper.Replace(s.Tooltip)
 	b, _ := json.Marshal(s)
 	return string(b)
 }
