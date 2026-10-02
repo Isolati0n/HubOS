@@ -17,13 +17,14 @@ import (
 // Moonlight", so the fake viewer sets exactly those two and nothing else.
 
 const moonDoc = `format = 1
+[default_ports]
+moonlight = 47989
 [[viewer]]
 id = "moon"
 programs = ["moonlight"]
 command = ["foot", "--app-id=com.moonlight_stream.Moonlight", "--title={id} - Moonlight", "--", "sleep", "infinity"]
 sets_name = false
 title_match = "{id} - Moonlight"
-default_port = 47989
 [[viewer]]
 id = "other"
 programs = ["files"]
@@ -288,12 +289,13 @@ func TestTitleMatchNoWindowWithTheRightTitleSaysSo(t *testing.T) {
 
 func TestMachineWithoutSessionIsRefusedBeforeAnythingStarts(t *testing.T) {
 	vdoc := `format = 1
+[default_ports]
+moonlight = 47989
 [[viewer]]
 id = "moon"
 programs = ["moonlight"]
 command = ["foot", "--title={id} - Moonlight", "--", "moonlight", "stream", "{address}", "{session}"]
 title_match = "{id} - Moonlight"
-default_port = 47989
 `
 	r := newRigViewers(t, vdoc, moonMachines()[0], machineDoc("b", "B", "ai", "moonlight", 0, 2, 2, "session = \"Desktop\"\n"))
 	r.setStatus("a", statusUp)
@@ -310,20 +312,27 @@ default_port = 47989
 
 // ---- default check ports ----
 
-func TestCheckPortIsTheMachinesOwnOrTheViewersDefault(t *testing.T) {
-	r := moonRig(t,
-		machineDoc("a", "A", "ai", "moonlight", 0, 1, 1, ""),    // viewer default 47989
+func TestCheckPortIsTheMachinesOwnOrTheDefaultPortsTable(t *testing.T) {
+	vdoc := strings.Replace(moonDoc, "moonlight = 47989\n", "moonlight = 47989\nfiles = 445\n", 1) + `
+[[viewer]]
+id = "rv"
+programs = ["spice", "ssh"]
+command = ["foot", "--", "sleep", "infinity"]
+`
+	r := newRigViewers(t, vdoc,
+		machineDoc("a", "A", "ai", "moonlight", 0, 1, 1, ""),    // table: moonlight 47989
 		machineDoc("b", "B", "ai", "moonlight", 4000, 2, 2, ""), // own port wins
-		machineDoc("g", "G", "nas", "files", 0, 3, 3, ""),       // viewer has no default
+		machineDoc("n", "NAS", "nas", "files", 0, 3, 3, ""),     // table: files 445
+		machineDoc("h", "Host", "vm-host", "ssh", 22, 4, 4, ""),
+		machineDoc("g", "G", "guest", "spice", 0, 5, 5, "host = \"h\"\nlifetime = \"ephemeral\"\n"), // no spice default
 	)
-	got := map[string]int{}
+	r.h.set.ProbeCap = 8
 	var mu sync.Mutex
-	r.h.set.Prober = nil
-	r.h.set.ProbeCap = 4
+	got := map[string]bool{}
 	r.h.set.Prober = func(ctx context.Context, targets []probe.Target, timeout time.Duration, limit int, done func(i int, r probe.Result)) {
 		mu.Lock()
 		for _, tg := range targets {
-			got[tg.Address+"-"+itoa(tg.Port)] = tg.Port
+			got[tg.Address+":"+itoa(tg.Port)] = true
 		}
 		mu.Unlock()
 		for i := range targets {
@@ -331,19 +340,30 @@ func TestCheckPortIsTheMachinesOwnOrTheViewersDefault(t *testing.T) {
 		}
 	}
 	r.h.ProbeRound(r.ctx)
-	if len(got) != 2 || got["127.0.0.1-47989"] != 47989 || got["127.0.0.1-4000"] != 4000 {
+	want := map[string]bool{"127.0.0.1:47989": true, "127.0.0.1:4000": true, "127.0.0.1:445": true, "127.0.0.1:22": true}
+	if len(got) != len(want) {
 		t.Errorf("targets: %v", got)
+	}
+	for k := range want {
+		if !got[k] {
+			t.Errorf("missing target %s in %v", k, got)
+		}
 	}
 	r.h.mu.Lock()
 	s := r.h.byID["g"]
 	st, reason := s.status, s.reason
 	r.h.mu.Unlock()
-	if st != statusNotChecked || reason != "no port in the inventory and no default port for files" {
-		t.Errorf("g: status %v reason %q", st, reason)
+	if st != statusNotChecked || reason != "no port in the inventory and no default port for spice" {
+		t.Errorf("guest: status %v reason %q", st, reason)
 	}
 	// It is counted as not checked, not as down.
-	if c := r.h.Counts(); c.NotChecked != 1 || c.Up != 2 || c.Down != 0 {
+	if c := r.h.Counts(); c.NotChecked != 1 || c.Up != 4 || c.Down != 0 {
 		t.Errorf("counts: %+v", c)
+	}
+	// The NAS is opened with the table port in {port}-less commands too: it is checked, so it can be opened.
+	r.setStatus("n", statusUp)
+	if res := r.h.Open("n"); res.Action == "refused" && strings.Contains(res.Message, "no port") {
+		t.Errorf("%+v", res)
 	}
 }
 

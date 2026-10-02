@@ -27,7 +27,7 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 
 ## Core principles
 
-- **The hub is a client.** It never runs workloads, never stores the main file pool, and never re-encodes or proxies video. It runs only viewers: Moonlight, virt-viewer/Remmina, a terminal used as an SSH client, and the file manager used as a NAS client. Even the web browser and text editor run on a node.
+- **The hub is a client.** It never runs workloads, never stores the main file pool, and never re-encodes or proxies video. It runs only viewers: Moonlight, remote-viewer (virt-viewer), a terminal used as an SSH client, and the file manager used as a NAS client. Even the web browser and text editor run on a node.
 - **Every workload node is purpose-built for its job.**
 - **Build it ourselves when it measurably improves Hub OS.** For every part we replace, state what our version does better for this cluster and verify it. If a proven part does the job equally well, use it.
 - **The Linux kernel stays.** Moonlight, driftwm, and GPU drivers depend on it.
@@ -59,7 +59,7 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 | General desktop node | Web browser, text editor, everyday apps | Moonlight window |
 | NAS | Cluster file storage | File manager (opens on click) and/or terminal |
 | Backup NAS | Local backup copy of the NAS | Listed; opened like the NAS |
-| VM host | Operating system development and experiments | Its guests open with virt-viewer/Remmina or SSH |
+| VM host | Operating system development and experiments | Its guests open with remote-viewer (virt-viewer) or ssh |
 
 Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 
@@ -104,7 +104,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Closing a window leaves the machine's session alive.** Clicking again returns to it.
 - Clicking a machine that is already open **goes to its existing window**. Never open duplicates.
 - **Every machine stays logged in**, so clicking lands straight on its desktop.
-- Copy-paste works across all windows, including the hub.
+- Copy-paste across windows is a goal. v1 limit: Moonlight windows only type the hub's text onto the machine; a clipboard bridge comes later.
 - **No auto-reopen of windows after a hub restart.** The panel returns; windows do not.
 - Moonlight windows are matched by their title '<machine id> - Moonlight'; every node sets Sunshine's name to its machine id. The inventory's optional session names the Sunshine app to stream.
 - Machines opened with ssh run a terminal multiplexer (tmux) on the machine so closing the window leaves the session alive.
@@ -230,7 +230,7 @@ Ready means the machine's session server is accepting connections:
 - VM host: SSH answers.
 - The hub is the machine hubd runs on and is not checked.
 
-"Machine is up" never means "the hypervisor says running". Default check ports (from docs/viewers-research.md; unverified on hardware): Sunshine 47989, ssh 22, SMB 445. VM guests have no default port; the inventory gives it.
+"Machine is up" never means "the hypervisor says running". Default check ports come from the [default_ports] table in viewers.toml (examples/viewers.real.example.toml: Sunshine 47989, ssh 22, SMB 445; unverified on hardware). VM guests have no default; the inventory gives the port.
 
 ## Repo layout
 
@@ -238,36 +238,55 @@ Ready means the machine's session server is accepting connections:
 HubOS/
 ├── CLAUDE.md
 ├── HUB-OS.md
+├── go.mod                            (one module for the whole repo)
+├── go.sum
 ├── docs/
 │   ├── bar-findings.md
 │   ├── driftwm-findings.md
 │   ├── environment.md
 │   ├── hubd-slice2.md
-│   └── inventory-format.md
+│   ├── inventory-format.md
+│   └── viewers-research.md           (what was read and tested about each viewer; sources and labels)
 ├── examples/
 │   ├── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
-│   ├── viewers.example.toml          (the fake viewer only; no real viewer command lines)
+│   ├── viewers.example.toml          (the fake viewer only; no real viewer command lines; used by tests)
+│   ├── viewers.real.example.toml     (ssh, spice, vnc, moonlight and [default_ports]; all unverified on hardware)
 │   └── wofi.style.css                (menu look: fixed-width font; copy to /etc/hubos/wofi.css)
-├── go.mod                            (one module for the whole repo)
 ├── cmd/
 │   └── hubd/
 │       ├── main.go                   (slice 1: flags, wiring, printing, exit code; routes subcommands)
+│       ├── main_test.go
+│       ├── menu_test.go
 │       └── slice2.go                 (slice 2: serve, feed, list, menu, pick, open, end, forget)
 ├── internal/
 │   ├── driftwm/                      (driftwm socket client)
+│   │   ├── driftwm.go
+│   │   └── driftwm_test.go
 │   ├── hub/                          (state, checks, menu list, open/end, record, socket)
+│   │   ├── hub.go  ipc.go  open.go  probes.go  record.go  view.go  viewerlog.go  watch.go
+│   │   └── hub_test.go  ipc_test.go  late_test.go  title_test.go  view_test.go  viewerlog_test.go
 │   ├── inventory/                    (read + validate; no network)
+│   │   ├── inventory.go  validate.go
+│   │   └── inventory_test.go
 │   ├── probe/                        (up/down checks; no inventory knowledge)
+│   │   ├── probe.go
+│   │   └── probe_test.go
 │   └── viewers/                      (viewers.toml reader)
+│       ├── viewers.go
+│       └── real_test.go  viewers_test.go
 ├── testdata/
 │   ├── inventory.fake.toml           (valid; points at 127.0.0.x fake nodes)
-│   ├── broken/                       (one deliberately broken file per rule)
+│   ├── broken/                       (one deliberately broken file per rule: 01 to 31, and a README.md)
 │   └── viewers/                      (test viewer tables and a fake two-window viewer)
+│       ├── ambiguous.toml  chatty.toml  handover.toml  ignores-name.toml  late.toml
+│       └── two-windows.sh
 └── tools/
-    ├── fakenode/
-    │   └── main.go                   (tiny program that pretends to be a machine)
-    └── geninv/
-        └── main.go                   (writes big fake inventories at run time for scale tests)
+    ├── fakenode/                     (tiny program that pretends to be a machine)
+    │   ├── main.go
+    │   └── main_test.go
+    └── geninv/                       (writes big fake inventories at run time for scale tests)
+        ├── main.go
+        └── main_test.go
 ```
 
 ---
@@ -359,3 +378,4 @@ HubOS/
 - **2026-10-01 (later):** hubd slice 2: late-window follow-ups (end message, stop-waiting menu line, per-viewer late_grace, clean exit keeps waiting, ignore list).
 - **2026-10-01 (later):** owner decisions on viewers recorded: title matching for Moonlight, session field, tmux for ssh, remote-viewer for guests, default check ports, clipboard limit accepted for v1.
 - **2026-10-01 (later):** Unverified list: Moonlight clipboard limit and the remote-viewer error dialog added.
+- **2026-10-01 (later):** default check ports moved to a [default_ports] table; HUB-OS.md contradictions fixed (guest viewer, clipboard line, repo layout).

@@ -47,11 +47,14 @@ func TestRealExampleLoadsAndRendersTheChosenCommandLines(t *testing.T) {
 			t.Errorf("%s: got %q err %v\nwant %q", tc.m.Open[0], got, err, tc.want)
 		}
 	}
-	// The defaults: ssh 22 and moonlight 47989; spice and vnc have none.
-	for prog, want := range map[string]int{"ssh": 22, "moonlight": 47989} {
+	// The defaults table: moonlight 47989, ssh 22, files 445; spice and vnc have none.
+	for prog, want := range map[string]int{"ssh": 22, "moonlight": 47989, "files": 445} {
 		if p, ok := tab.CheckPort(inventory.Machine{Open: []string{prog}}); !ok || p != want {
 			t.Errorf("%s default port = %d %v, want %d", prog, p, ok, want)
 		}
+	}
+	if len(tab.DefaultPorts) != 3 {
+		t.Errorf("table: %v", tab.DefaultPorts)
 	}
 	for _, prog := range []string{"spice", "vnc"} {
 		if _, ok := tab.CheckPort(inventory.Machine{Open: []string{prog}}); ok {

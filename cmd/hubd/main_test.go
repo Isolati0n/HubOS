@@ -101,7 +101,9 @@ func TestUpDownAndNotChecked(t *testing.T) {
 	)
 
 	code, out, errOut := runHubd("--inventory", path)
-	if code != 0 || errOut != "" {
+	// No viewers file next to the inventory: exactly one line says so.
+	wantLine := "hubd: no viewers file was found at " + filepath.Join(filepath.Dir(path), "viewers.toml") + " (the default place), so machines without a port in the inventory are not checked\n"
+	if code != 0 || errOut != wantLine {
 		t.Fatalf("exit %d, stderr %q\n%s", code, errOut, out)
 	}
 	want := map[string]string{
@@ -371,39 +373,42 @@ func TestIgnoreAppIDFlagIsRepeatable(t *testing.T) {
 	}
 }
 
-// A machine without a port is checked at the default_port of its viewer, and
-// "not checked" (with the program named) when there is none. Guests with
-// spice or vnc have no default.
-func TestCheckUsesTheViewersDefaultPort(t *testing.T) {
+// A machine without a port is checked at the [default_ports] entry for its
+// first open entry, and "not checked" (with the program named) when there is
+// none. Spice and vnc have no default.
+func TestCheckUsesTheDefaultPortsTable(t *testing.T) {
 	sun := startNode(t, "127.0.0.51")
 	ssh := startNode(t, "127.0.0.52")
 	own := startNode(t, "127.0.0.53")
+	smb := startNode(t, "127.0.0.55")
 	path := writeInventory(t,
 		machine("hub", "hub", "127.0.0.50", `["none"]`, 0, "", 0, 0),
 		machine("pc", "desktop", sun.addr, `["moonlight"]`, 0, "", 1, 1),
 		machine("box", "vm-host", ssh.addr, `["ssh"]`, 0, "", 2, 2),
 		machine("own", "ai", own.addr, `["moonlight"]`, own.port, "", 3, 3),
+		machine("nas", "nas", smb.addr, `["files"]`, 0, "", 5, 5),
 		machine("vm", "guest", "127.0.0.54", `["spice"]`, 0, "host = \"box\"\nlifetime = \"ephemeral\"\n", 4, 4),
 	)
 	viewers := fmt.Sprintf(`format = 1
+[default_ports]
+moonlight = %d
+ssh = %d
+files = %d
 [[viewer]]
 id = "moon"
 programs = ["moonlight"]
 command = ["moonlight", "stream", "{address}"]
-sets_name = false
-default_port = %d
 [[viewer]]
 id = "term"
-programs = ["ssh"]
+programs = ["ssh", "files"]
 command = ["foot", "--app-id={app_id}", "--", "ssh", "{address}"]
 sets_name = true
-default_port = %d
 [[viewer]]
 id = "rv"
 programs = ["spice", "vnc"]
 command = ["remote-viewer", "--name={app_id}", "spice://{address}:{port}"]
 sets_name = true
-`, sun.port, ssh.port)
+`, sun.port, ssh.port, smb.port)
 	vpath := filepath.Join(filepath.Dir(path), "viewers.toml")
 	if err := os.WriteFile(vpath, []byte(viewers), 0o600); err != nil {
 		t.Fatal(err)
@@ -417,6 +422,7 @@ sets_name = true
 		"pc":  "UP",
 		"box": "UP",
 		"own": "UP",
+		"nas": "UP",
 		"vm":  "NOT CHECKED (no port in the inventory and no default port for spice)",
 	} {
 		if l := line(t, out, id); !strings.HasSuffix(l, status) {
@@ -426,6 +432,9 @@ sets_name = true
 	if l := line(t, out, "pc"); !strings.Contains(l, fmt.Sprintf("%s:%d", sun.addr, sun.port)) {
 		t.Errorf("pc target should be the default port: %q", l)
 	}
+	if l := line(t, out, "nas"); !strings.Contains(l, fmt.Sprintf("%s:%d", smb.addr, smb.port)) {
+		t.Errorf("nas (files) target should be the files default: %q", l)
+	}
 	// The machine's own port wins over the default.
 	if l := line(t, out, "own"); !strings.Contains(l, fmt.Sprintf(":%d", own.port)) {
 		t.Errorf("own: %q", l)
@@ -434,8 +443,43 @@ sets_name = true
 	if code, _, errOut := runHubd("--inventory", path, "--viewers", filepath.Join(t.TempDir(), "nope.toml")); code != exitBadInventory || !strings.Contains(errOut, "there is no viewers file") {
 		t.Errorf("missing viewers file: exit %d %q", code, errOut)
 	}
-	os.WriteFile(vpath, []byte("format = 1\n[[viewer]]\nid = \"x\"\nprograms = [\"ssh\"]\ncommand = [\"foot\"]\ndefault_port = 70000\n"), 0o600)
-	if code, _, errOut := runHubd("--inventory", path); code != exitBadInventory || !strings.Contains(errOut, "default_port 70000 is out of range") {
+	os.WriteFile(vpath, []byte("format = 1\n[default_ports]\nssh = 70000\n"), 0o600)
+	if code, _, errOut := runHubd("--inventory", path); code != exitBadInventory || !strings.Contains(errOut, `the port for "ssh" must be a whole number from 1 to 65535`) {
 		t.Errorf("broken viewers file: exit %d %q", code, errOut)
+	}
+	os.WriteFile(vpath, []byte("format = 1\n[default_ports]\nnone = 5\n"), 0o600)
+	if code, _, errOut := runHubd("--inventory", path); code != exitBadInventory || !strings.Contains(errOut, `"none" is not a program that has a port`) {
+		t.Errorf("none in the table: exit %d %q", code, errOut)
+	}
+}
+
+// The default viewers file is missing: one line on stderr says so, the
+// machines without a port are not checked, and the exit code is 0. An
+// explicit --viewers path that is missing is exit 2 (tested above).
+func TestCheckWithoutAViewersFileSaysSoInOneLine(t *testing.T) {
+	n := startNode(t, "127.0.0.61")
+	path := writeInventory(t,
+		machine("hub", "hub", "127.0.0.60", `["none"]`, 0, "", 0, 0),
+		machine("a", "ai", n.addr, `["moonlight"]`, n.port, "", 1, 1),
+		machine("b", "desktop", "127.0.0.62", `["moonlight"]`, 0, "", 2, 2),
+	)
+	code, out, errOut := runHubd("--inventory", path)
+	if code != 0 {
+		t.Fatalf("exit %d\n%s", code, errOut)
+	}
+	if strings.Count(errOut, "\n") != 1 || !strings.Contains(errOut, "no viewers file was found at") || !strings.Contains(errOut, "so machines without a port in the inventory are not checked") {
+		t.Errorf("stderr: %q", errOut)
+	}
+	if l := line(t, out, "b"); !strings.HasSuffix(l, "NOT CHECKED (no port in the inventory and no default port for moonlight)") {
+		t.Errorf("b: %q", l)
+	}
+	if l := line(t, out, "a"); !strings.HasSuffix(l, "UP") {
+		t.Errorf("a: %q", l)
+	}
+	// With a viewers file present there is no line.
+	vpath := filepath.Join(filepath.Dir(path), "viewers.toml")
+	os.WriteFile(vpath, []byte("format = 1\n"), 0o600)
+	if _, _, errOut := runHubd("--inventory", path); errOut != "" {
+		t.Errorf("stderr with a file: %q", errOut)
 	}
 }
