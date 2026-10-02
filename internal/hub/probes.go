@@ -20,10 +20,10 @@ func (h *Hub) ProbeRound(ctx context.Context) {
 	var ts []target
 	var targets []probe.Target
 	for _, s := range h.ms {
-		if s.m.Role == "hub" || s.m.Open[0] == "none" || s.m.Port == nil {
+		if s.m.Role == "hub" || s.m.Open[0] == "none" || s.port == 0 {
 			continue
 		}
-		t := probe.Target{Address: s.m.Address, Port: *s.m.Port}
+		t := probe.Target{Address: s.m.Address, Port: s.port}
 		ts = append(ts, target{s, t})
 		targets = append(targets, t)
 	}

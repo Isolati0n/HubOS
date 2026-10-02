@@ -48,6 +48,7 @@ type Machine struct {
 	Port     *int     `toml:"port"`
 	User     string   `toml:"user"`
 	Share    string   `toml:"share"`
+	Session  string   `toml:"session"` // the Sunshine app to stream (moonlight only)
 	Host     string   `toml:"host"`
 	Lifetime string   `toml:"lifetime"`
 }

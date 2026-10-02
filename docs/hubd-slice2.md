@@ -57,11 +57,13 @@ command   = ["foot", "--app-id={app_id}", "--title={title}", "--", "sleep", "inf
 sets_name = true                                                # the command makes the window carry {app_id}
 window_wait = "10s"                                              # optional: how long to wait for this viewer's window (default: the hub's 10 s)
 late_grace  = "60s"                                              # optional: how long to keep waiting after that (default: the hub's 60 s)
+default_port = 22                                                # optional (1 to 65535): the port for {port} and for the up/down check when the machine has none
+title_match  = "{id} - Moonlight"                                # optional, only with sets_name = false: find the window by this exact title (section 14)
 ```
 
 - `command` is a list: the first entry is the program (fixed text, no placeholders); each other entry is one argument.
-- Placeholders: `{id} {name} {address} {port} {user} {share}` from the inventory, `{app_id}` (= `hubos-<id>`), `{title}` (= the machine's name). A placeholder for a value the machine lacks makes that machine unopenable with a message; it is never guessed. Substituted text is never scanned again.
-- Checked at start-up: unknown fields, unknown placeholders, empty `programs`, `none` as a program, one program served by two viewers, `sets_name = true` without `{app_id}`. A bad file stops `hubd serve` before anything starts.
+- Placeholders: `{id} {name} {address} {port} {user} {share} {session}` from the inventory, `{app_id}` (= `hubos-<id>`), `{title}` (= the machine's name). `{port}` is the machine's own port, otherwise the viewer's `default_port`. A placeholder for a value the machine lacks (no port and no `default_port`, no `user`, `share` or `session`) makes that machine unopenable with a message (`<id> has no session in the inventory, and its viewer command needs one`); it is never guessed. Substituted text is never scanned again.
+- Checked at start-up: unknown fields, unknown placeholders (in `command` and in `title_match`), empty `programs`, `none` as a program, one program served by two viewers, `sets_name = true` without `{app_id}`, `default_port` outside 1 to 65535, `title_match` together with `sets_name = true`. A bad file stops `hubd serve` before anything starts.
 - `sets_name = true` means: find the window by its name `hubos-<id>`. `false` means: find it by comparing the window list before and after the launch (section 3).
 
 Test viewers (in the repo, test only): `testdata/viewers/ambiguous.toml` (opens two windows at once), `testdata/viewers/ignores-name.toml` (ignores the name), `testdata/viewers/chatty.toml` (prints to standard output and error first). Example menu style: `examples/wofi.style.css`.
@@ -127,6 +129,7 @@ Each started viewer's standard output and error go to `$XDG_RUNTIME_DIR/hubos/hu
 
 - `sets_name = true`: the new window must be named `hubos-<id>`. A new window with another name is reported in the failure message ("this viewer may ignore the chosen name; set `sets_name = false`").
 - `sets_name = false`: any new window counts.
+- `sets_name = false` with `title_match`: only a new window whose title is **exactly** the rendered `title_match` counts (section 14).
 - Exactly one candidate → matched. **More than one → nothing is moved, focused, closed or recorded**, the machine becomes `unmatched`, and the message says what appeared. Zero → "no window appeared within …".
 - driftwm's `state` has no process id, so matching by process is not possible.
 
@@ -142,7 +145,7 @@ After a match: `move` to the machine's `home` (window centre, Y up — `docs/inv
 
 | What restarts | What happens | Test |
 |---|---|---|
-| `hubd` only | New `hubd` adopts windows: from the record file if it belongs to the same driftwm (the entry must still exist with the same app_id and title), and windows named `hubos-<known id>` if exactly one has that name. It starts nothing. | TESTED live: `kill -9`, start again, `foot` count unchanged, list shows `[open]`, `open` goes to the window. Unit: `TestRestartAdoptsAndOpensNothing` |
+| `hubd` only | New `hubd` adopts windows: from the record file if it belongs to the same driftwm (the entry must still exist with the same app_id and title), and windows named `hubos-<known id>` if exactly one has that name, and, for a title-matched viewer, a window whose title is exactly the machine's title if exactly one has it (section 14). It starts nothing. | TESTED live: `kill -9`, start again, `foot` count unchanged, list shows `[open]`, `open` goes to the window. Unit: `TestRestartAdoptsAndOpensNothing` |
 | driftwm | The stream from driftwm ends; the record is cleared (file too); the bar shows "driftwm is not reachable" until it is back. All viewers die with it (live: `foot` count 0). | TESTED live; unit: `TestDriftwmRestartClearsRecord` |
 | The hub | The runtime folder is empty. Nothing is reopened. | BELIEVED (the folder is memory-backed on Linux); not tested by rebooting |
 
@@ -169,7 +172,7 @@ x forget unknown window for <name> (<id>)   clears the block on that machine (on
 - A group with more than `--fold` machines starts folded. Fold choices are kept in `hubd`'s memory (gone when it restarts).
 - No list has more than `--list-max` machine lines; the rest are replaced by a `! N more … not shown` line.
 - **Pick** (`hubd pick LINE`): acts only if the line is exactly a switch line, a group heading, or an **indented** machine line whose first word is an existing id. Anything else — a heading with an unknown name, an unknown id, an id without indent, a `!` line, an empty line — does nothing. TESTED: `TestPickIgnoresHeadingsUnknownAndEmptyLines` (a heading, an unknown line, an empty line, and six more).
-- Status texts: `UP`, `DOWN`, `checking...`, `NOT CHECKED (no port in the inventory)`, `NOT CHECKED (nothing to open)`, `NOT CHECKED (out of file handles)`, `THIS HUB`, plus ` [open]`, ` [opening]`, ` [window not identified]`.
+- Status texts: `UP`, `DOWN`, `checking...`, `NOT CHECKED (no port in the inventory and no default port for <program>)`, `NOT CHECKED (nothing to open)`, `NOT CHECKED (out of file handles)`, `THIS HUB`, plus ` [open]`, ` [opening]`, ` [window not identified]`.
 - wofi is always started with `--cache-file /dev/null` (otherwise it re-orders by past picks) and `LC_ALL=C.UTF-8`. With `examples/wofi.style.css` as `/etc/hubos/wofi.css` the list uses a fixed-width font (DejaVu Sans Mono) so the columns line up (TESTED, screenshot: id, name and status columns aligned).
 
 ---
@@ -349,7 +352,7 @@ The ten numbers proposed in the first review were **approved by the owner as pro
 
 ## 9. Unverified
 
-- **Real viewers.** The command lines, window names (app_id and title), whether they accept a chosen name, how they behave on a close request, and whether closing one leaves the Sunshine session alive: all UNKNOWN. Only `foot` was used. `viewers.toml` has no Moonlight, virt-viewer or Remmina entry for that reason.
+- **Real viewers.** The command lines, window names (app_id and title), whether they accept a chosen name, how they behave on a close request, and whether closing one leaves the Sunshine session alive: mostly UNKNOWN. Only `foot` was used with hubd. `docs/viewers-research.md` has what was read and tested about each viewer; `examples/viewers.real.example.toml` has the command shapes the owner chose, all UNVERIFIED on hardware. `examples/viewers.example.toml` stays the fake viewer (used by tests).
 - **Matching by comparison with real viewers** (a viewer that hands over to an already running copy and shows its window late, or shows a splash first). The timing is a guess (`window-wait`); the two-window case is refused, not guessed.
 - **Window ids.** Whether driftwm re-uses a window id after it closes is UNKNOWN. The record is checked against the window's name and title to guard against it.
 - **The driftwm identity** (socket inode and change time) as a way to tell driftwm runs apart: TESTED once with a restart; BELIEVED beyond that.
@@ -517,3 +520,58 @@ So the round time with silent machines is (machines / cap) x timeout, as expecte
 - *`--ignore-app-id`* (a viewer that opens a pop-up window `popup` and its own window `whatever` at once, matched by comparison): without the flag `2 new windows appeared … (#2 "whatever", #1 "popup"); I cannot tell which one is its window…`; with `--ignore-app-id popup`: `opened AI Box at home (2000, -1500), matched by comparison`.
 
 **Measurements after these changes** (same commands as section 7; they are not affected by this change, and were rerun to be sure): 100 machines, local: rounds 9, 10, 3 ms, memory 9.2 MB, list 39 lines / 1,648 bytes, status line 135 bytes. 5000, local, automatic cap 1000: rounds 220, 138, 144 ms, peak open files 959, memory 30.0 MB, list 62 lines / 2,897 bytes, status line 182 bytes. 5000, none reachable, cap 1000: round 10.10 s, peak open files 1007, memory 31.5 MB.
+
+---
+
+## 14. Fifth review: owner decisions on real viewers
+
+Built on the branch of the fourth review (section 13), as new commits.
+
+### 14.1 The clean-exit bug in the late wait (fixed)
+
+Section 13 item 4 said a clean exit keeps waiting. That held only when the viewer had **already** exited cleanly when the window wait ran out. If the viewer was still running at that moment and exited with status 0 **during** the late grace, `watchLate` treated it as a failure and ended the wait. Now a clean exit during the grace is ignored (the wait goes on until the grace ends or a window appears); a non-zero exit during the grace is still a failure with the log path. Tests: `TestCleanExitDuringTheGraceKeepsWaitingAndAdoptsTheLateWindow` (clean exit 400 ms after the grace began, window 1.2 s later: adopted, one viewer; clean exit and no window: the wait ends only when the grace ends, not at the exit), `TestNonZeroExitDuringTheGraceIsAFailureWithTheLogPath`. The first test fails when the fix is taken out (checked by hand).
+
+### 14.2 Inventory: `session`
+
+Optional text, the name of the Sunshine app to stream. Same rules as `share`: no control characters or line breaks, must not start with a dash, and only allowed when `open` includes `moonlight`. Broken files 29, 30 and 31. See `docs/inventory-format.md`.
+
+### 14.3 viewers.toml
+
+- `default_port` (optional, 1 to 65535): `{port}` falls back to it when the machine has no port. An error only when neither exists. It is also the port of the up/down check (14.5).
+- `{session}`: the machine's `session`; if missing: `<id> has no session in the inventory, and its viewer command needs one` (nothing is started).
+- `title_match` (optional, only with `sets_name = false`): a template such as `"{id} - Moonlight"`. The candidate windows are only those whose title equals the rendered text **exactly**, and the machine's window is recorded as matched by **title**. `sets_name = true` together with `title_match` is refused at start-up. If no window has the title but another new window appeared, the failure message says so (`its title is "Moonlight", not "a - Moonlight": check title_match`).
+- Because the windows of title-matched machines can be told apart, **the late-window comparison lock does not apply to them**: a title-matched machine that is late does not block comparison-matched viewers, and two title-matched machines can be opened at the same moment (they do not wait for each other; the one-launch-at-a-time lock is only for viewers matched by comparison or by name). The other way round, a comparison-matched viewer ignores windows whose title belongs to a title-matched machine, so it cannot take one for its own.
+- After a hubd restart (and when hubd starts), a title-matched machine adopts a window by title only when **exactly one** window has its title and no other machine has the same title. Two or more windows with the title: nothing is adopted and the existing duplicate warning is shown, now worded `WARNING: 2 windows are titled "a - Moonlight" (A); hubd knows none of them; close the extra one by hand`. When opening, two new windows with the title: nothing is touched, the machine becomes "unidentified" (`hubd forget` is the way out), as for the other kinds.
+
+Tests (`internal/hub/title_test.go`; the fake viewer sets the fixed app-id `com.moonlight_stream.Moonlight` and the title `<id> - Moonlight` the way Moonlight would): `TestTitleMatchTwoMachinesOpenedAtOnceGetTheirOwnWindows`, `TestTitleMatchTwoWindowsWithTheSameTitleGiveAWarningAndNoGuess`, `TestTitleMatchAdoptionAfterHubdIsKilled` (a new hub with no record file; the record path also), `TestTitleMatchLateWindowIsAdoptedAndDoesNotLockComparisonViewers` (both directions), `TestTitleMatchNoWindowWithTheRightTitleSaysSo`, `TestMachineWithoutSessionIsRefusedBeforeAnythingStarts`; and in `internal/viewers` `TestDefaultPortSessionAndTitleMatch`. These use the fake compositor and a fake launcher, **not** a real `foot` under driftwm (not run in this round; see 14.7).
+
+### 14.4 Default check ports
+
+The check port of a machine is its own `port`, otherwise the `default_port` of the viewer for its **first** `open` entry. If neither exists the machine is `not checked` with the reason `no port in the inventory and no default port for <program>`. Applied in `hubd serve` and in `hubd check`. `hubd check` reads `viewers.toml` for this: `--viewers PATH`, default next to the inventory. A missing file at the default place is not an error (machines without a port are then not checked); a file that was asked for and is missing, or one that is invalid, stops `hubd check` (exit 2). Spice and vnc have no default in the real example (a guest's console port is set per guest); a guest whose first entry is `ssh` would get the ssh default, which is provisional like the rest of the guest address rules. Tests: `TestCheckUsesTheViewersDefaultPort` (`cmd/hubd`), `TestCheckPortIsTheMachinesOwnOrTheViewersDefault` (`internal/hub`), `TestCheckPortRules` (`internal/viewers`).
+
+### 14.5 Real viewer examples
+
+`examples/viewers.real.example.toml`: ssh (foot with a tmux session), spice and vnc (remote-viewer), moonlight, in the exact shapes the owner chose. Every entry says UNVERIFIED on hardware. Tested: the file loads and validates; each command renders the right argument list for a sample machine; for the ssh shape, `ssh -G` from the unpacked openssh-client 9.6p1 package (nothing installed) reads host, port, user and "request a terminal" as intended, and a hostile address after `--` is treated as a host name, not an option. **Not tested:** the tmux part (`tmux new-session -A -s hubos` needs a real server), Moonlight (never run), remote-viewer against a real guest. `go test` skips the `ssh -G` test unless an `ssh` is on the PATH or `SSH_BIN` names one.
+
+### 14.6 Measurements (rerun now, with default ports in use)
+
+`tools/geninv -viewers FILE` writes a viewers table with `default_port` and leaves the port out of every machine except guests. Commands as in section 7; script `measure.sh` (throw-away). Sandbox as before.
+
+| Case | Result |
+|---|---|
+| 100, own ports | rounds 4 (first, fake nodes still starting), 2, 3 ms; peak open files 6; memory 8.5 MB; list 39 lines / 1,648 bytes |
+| 100, **default ports** | rounds 5, 3, 2 ms; 95 up, 5 down, 0 not checked; peak open files 6; memory 8.2 MB; list 39 lines / 1,648 bytes |
+| 5000, own ports, cap 1000 | rounds 171, 119, 132 ms; peak open files 984; memory 30.6 MB (peak 32.3); list 62 lines / 2,897 bytes |
+| 5000, **default ports** (3,948 machines without a port), cap 1000 | rounds 170, 131, 130 ms; 4750 up, 250 down, 0 not checked; peak open files 856; memory 31.7 MB; list 62 lines / 2,897 bytes |
+| 5000, default ports, `ulimit -n 1024` | rounds 142, 132 ms; peak open files 708 |
+| `hubd check`, 5000, default ports, `ulimit -n` 20000 / 1024 / 256 | 4750 of 5000 up; 317 / 318 / 251 ms |
+| `hubd check`, 100, default ports | 95 of 100 up; 16 ms |
+| 5000, none reachable, default ports, cap 1000 | rounds 10.05 s and 10.02 s; peak open files 1006; memory 37.1 MB |
+
+Nothing got slower: the default is looked up once when hubd starts. The status line is longer than in section 13 only because driftwm was not running in this run (`driftwm is not reachable: windows cannot be opened` is part of the tooltip).
+
+### 14.7 Not changed, not tested
+
+- A live run with `foot` as a fake Moonlight under driftwm (two machines opened at once, adoption after `kill -9`) was **not** done in this round; the tests above use a fake compositor. The window names and titles in them are what Moonlight is read to use (docs/viewers-research.md), not something seen.
+- Moonlight, Sunshine, the tmux session, remote-viewer against a real guest: UNVERIFIED on hardware.
+- A title-matched window whose title changes while it is open (Moonlight might change it): UNKNOWN; hubd records the title at the moment it is matched and checks the window by its window id and app-id afterwards.

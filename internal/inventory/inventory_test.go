@@ -296,3 +296,30 @@ func TestLeadingDashRules(t *testing.T) {
 		}
 	}
 }
+
+func TestSessionIsAcceptedWithMoonlight(t *testing.T) {
+	doc := `format = 1
+[[machine]]
+id = "hub"
+name = "Hub"
+role = "hub"
+address = "192.0.2.10"
+open = ["none"]
+home = { x = 0, y = 0 }
+[[machine]]
+id = "ai-1"
+name = "AI"
+role = "ai"
+address = "192.0.2.30"
+open = ["ssh", "moonlight"]
+home = { x = 1, y = 1 }
+session = "Desktop"
+`
+	inv, ps := Parse([]byte(doc))
+	if len(ps) > 0 {
+		t.Fatalf("problems: %v", ps)
+	}
+	if inv.Machines[1].Session != "Desktop" {
+		t.Errorf("session = %q", inv.Machines[1].Session)
+	}
+}

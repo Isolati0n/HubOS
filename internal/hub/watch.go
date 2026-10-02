@@ -91,6 +91,10 @@ func (h *Hub) syncWindows(st *driftwm.State) {
 		if id, ok := strings.CutPrefix(w.AppID, viewers.AppIDPrefix); ok && h.byID[id] != nil {
 			counts[id]++
 		}
+		// Title-matched machines: their windows carry a title, not a name.
+		for _, id := range h.titleIDs[w.Title] {
+			counts[id]++
+		}
 	}
 	dups := map[string]int{}
 	for id, n := range counts {
@@ -133,15 +137,21 @@ func (h *Hub) dupWarningsLocked() []string {
 		if s.win != nil {
 			known = fmt.Sprintf("hubd knows window #%d", s.win.Window)
 		}
+		if title, ok := h.titleOf[s.m.ID]; ok {
+			out = append(out, fmt.Sprintf("WARNING: %d windows are titled %q (%s); %s; close the extra one by hand", n, title, s.m.Name, known))
+			continue
+		}
 		out = append(out, fmt.Sprintf("WARNING: %d windows are named %s (%s); %s; close the extra one by hand", n, viewers.AppID(s.m.ID), s.m.Name, known))
 	}
 	return out
 }
 
 // adopt picks up windows hubd started before it was restarted. It opens
-// nothing. Two sources, both checked against driftwm's own list:
+// nothing. Three sources, all checked against driftwm's own list:
 //   - the record file, if it belongs to this same driftwm instance;
-//   - windows whose name is hubos-<machine id>, if exactly one has that name.
+//   - windows whose name is hubos-<machine id>, if exactly one has that name;
+//   - for a title-matched viewer (title_match), windows whose title is exactly
+//     the machine's title, if exactly one has it and no other machine has it.
 func (h *Hub) adopt(st *driftwm.State) {
 	identity := h.identityLocked()
 	h.mu.Lock()
@@ -170,6 +180,28 @@ func (h *Hub) adopt(st *driftwm.State) {
 			continue // unknown machine, already known, or two windows: not guessed
 		}
 		s.win = &winRec{Machine: id, Window: ws[0].ID, AppID: ws[0].AppID, Title: ws[0].Title, By: "name"}
+	}
+	if len(h.titleOf) > 0 {
+		claimed := map[int]bool{}
+		for _, s := range h.ms {
+			if s.win != nil {
+				claimed[s.win.Window] = true
+			}
+		}
+		byTitle := map[string][]driftwm.Window{}
+		for _, w := range st.Windows {
+			if len(h.titleIDs[w.Title]) > 0 && !claimed[w.ID] {
+				byTitle[w.Title] = append(byTitle[w.Title], w)
+			}
+		}
+		for id, title := range h.titleOf {
+			s := h.byID[id]
+			ws := byTitle[title]
+			if s.win != nil || len(ws) != 1 || len(h.titleIDs[title]) != 1 {
+				continue // already known, none, two or more windows (not guessed), or two machines share the title
+			}
+			s.win = &winRec{Machine: id, Window: ws[0].ID, AppID: ws[0].AppID, Title: ws[0].Title, By: "title"}
+		}
 	}
 	h.saveLocked(identity)
 	h.notifyLocked()

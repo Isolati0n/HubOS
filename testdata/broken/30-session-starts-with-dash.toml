@@ -1,0 +1,21 @@
+# BROKEN ON PURPOSE: session must not start with a dash.
+# EXPECT: ai-1: session "-Desktop" must not start with a dash
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "ai-1"
+name    = "AI box"
+role    = "ai"
+address = "192.0.2.30"
+open    = ["moonlight"]
+home    = { x = 2000, y = -1500 }
+session = "-Desktop"

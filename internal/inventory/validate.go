@@ -62,7 +62,7 @@ func validate(inv *Inventory) []Problem {
 		// No control characters or line breaks in text that reaches the
 		// panel, the logs and viewer command lines.
 		for _, f := range []struct{ name, val string }{
-			{"id", m.ID}, {"name", m.Name}, {"user", m.User}, {"share", m.Share}, {"address", m.Address},
+			{"id", m.ID}, {"name", m.Name}, {"user", m.User}, {"share", m.Share}, {"session", m.Session}, {"address", m.Address},
 		} {
 			if hasControl(f.val) {
 				add(w, "%s must not contain control characters or line breaks", f.name)
@@ -71,7 +71,7 @@ func validate(inv *Inventory) []Problem {
 
 		// A text that starts with a dash could be read as an option by a
 		// program it is passed to.
-		for _, f := range []struct{ name, val string }{{"address", m.Address}, {"user", m.User}, {"share", m.Share}} {
+		for _, f := range []struct{ name, val string }{{"address", m.Address}, {"user", m.User}, {"share", m.Share}, {"session", m.Session}} {
 			if strings.HasPrefix(f.val, "-") {
 				add(w, "%s %q must not start with a dash", f.name, f.val)
 			}
@@ -129,6 +129,11 @@ func validate(inv *Inventory) []Problem {
 		// share only with "files".
 		if m.Share != "" && !slices.Contains(m.Open, "files") {
 			add(w, `share is set but open does not include "files"`)
+		}
+
+		// session only with "moonlight".
+		if m.Session != "" && !slices.Contains(m.Open, "moonlight") {
+			add(w, `session is set but open does not include "moonlight"`)
 		}
 
 		// home: present, both parts, not shared with another machine.

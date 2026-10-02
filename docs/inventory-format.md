@@ -25,9 +25,10 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 | `address` | required | Where to reach the machine: a name (like `nas-1.lan`) or a number address. No port in it. |
 | `open` | required | A list of one or more of: `moonlight`, `spice`, `vnc`, `ssh`, `files`, `none`. The **first** entry is what a click opens. The rest are extra options. |
 | `home` | required | The machine's fixed spot on the canvas, written `{ x = ..., y = ... }`. |
-| `port` | optional | For programs that need a port other than their default. |
+| `port` | optional | For programs that need a port other than their default. Without it, the up/down check uses the `default_port` of the viewer for the first `open` entry in `viewers.toml` (`docs/hubd-slice2.md` section 14); with neither, the machine is "not checked". |
 | `user` | optional | Login name. Never a password or key. |
 | `share` | optional | The shared folder a `files` opening should use. |
+| `session` | optional | The name of the Sunshine app to stream. Only with `moonlight` in `open`. Never a password or key. |
 | `host` | guests only | The id of the VM host this guest runs on. |
 | `lifetime` | guests only | `ephemeral` (resets to a clean copy) or `persistent` (keeps its changes). |
 
@@ -38,6 +39,7 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 - `open` must not be empty.
 - `none` is allowed only as the sole entry in `open` (for example `["none"]`, never `["none", "ssh"]`).
 - `share` is allowed only when `open` includes `files`, and is an error otherwise.
+- `session` is allowed only when `open` includes `moonlight`, and is an error otherwise.
 - `host` and `lifetime` are required on guests, and refused on every other role.
 - `host` must point at a machine whose role is `vm-host`.
 - Two machines may not share the same `home` position.
@@ -46,8 +48,8 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 - `port`, when present, must be a whole number from 1 to 65535.
 - The `x` and `y` of `home` must be whole numbers. This is provisional until the canvas unit is verified.
 - `lifetime` must be exactly `ephemeral` or `persistent`.
-- `id` must start with a letter or digit, not a dash. `address`, `user` and `share` must not start with a dash (a text that starts with a dash could be read as an option by the program it is given to).
-- `id`, `name`, `user`, `share` and `address` must not contain control characters or line breaks (tabs, newlines, and the like). hubd puts these texts in menus, logs and viewer command lines, one argument each; a line break would break a menu line.
+- `id` must start with a letter or digit, not a dash. `address`, `user`, `share` and `session` must not start with a dash (a text that starts with a dash could be read as an option by the program it is given to).
+- `id`, `name`, `user`, `share`, `session` and `address` must not contain control characters or line breaks (tabs, newlines, and the like). hubd puts these texts in menus, logs and viewer command lines, one argument each; a line break would break a menu line.
 - Secrets never appear in this file.
 
 ## Unverified

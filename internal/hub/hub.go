@@ -113,6 +113,7 @@ type mstate struct {
 	lateCancel chan struct{}
 	lateCmp    bool
 	lateEnd    time.Time // when the wait ends
+	port       int       // the port the check uses: the machine's own, else its viewer's default_port (0 = none)
 }
 
 // Hub is the running state.
@@ -136,12 +137,14 @@ type Hub struct {
 	lastRound      time.Time
 	subs           map[chan struct{}]struct{}
 	now            func() time.Time
-	lateComparison int            // machines in the late-window state whose viewer is matched by comparison
-	dups           map[string]int // machine id -> how many windows carry its hubos- name (only when 2 or more)
-	lastResult     time.Time      // when a check result last arrived (or the round last ended, or hubd started)
-	firstDone      int            // machines answered during the first round
-	checkable      int            // machines that can be checked at all
-	lastTook       time.Duration  // how long the latest check round took
+	lateComparison int                 // machines in the late-window state whose viewer is matched by comparison
+	dups           map[string]int      // machine id -> how many windows carry its hubos- name (only when 2 or more)
+	lastResult     time.Time           // when a check result last arrived (or the round last ended, or hubd started)
+	firstDone      int                 // machines answered during the first round
+	checkable      int                 // machines that can be checked at all
+	lastTook       time.Duration       // how long the latest check round took
+	titleOf        map[string]string   // machine id -> the exact window title its viewer's title_match gives (title-matched machines only)
+	titleIDs       map[string][]string // the same, the other way round
 }
 
 // New builds a Hub. recPath is where the record file goes ("" = none).
@@ -158,8 +161,12 @@ func New(inv *inventory.Inventory, vt *viewers.Table, comp Compositor, launch La
 			s.status = statusUp
 		case m.Open[0] == "none":
 			s.status, s.reason = statusNotChecked, "nothing to open"
-		case m.Port == nil:
-			s.status, s.reason = statusNotChecked, "no port in the inventory"
+		default:
+			if p, ok := vt.CheckPort(m); ok {
+				s.port = p
+			} else {
+				s.status, s.reason = statusNotChecked, viewers.NoPortReason(m)
+			}
 		}
 		h.ms = append(h.ms, s)
 		h.byID[m.ID] = s
@@ -171,8 +178,19 @@ func New(inv *inventory.Inventory, vt *viewers.Table, comp Compositor, launch La
 	h.set.ProbeCap = probe.SafeCap(h.set.ProbeCap, set.FileLimit)
 	h.lastResult = h.now()
 	for _, s := range h.ms {
-		if s.m.Role != "hub" && s.m.Open[0] != "none" && s.m.Port != nil {
+		if s.port > 0 && s.m.Role != "hub" && s.m.Open[0] != "none" {
 			h.checkable++
+		}
+		if s.m.Role != "hub" && s.m.Open[0] != "none" {
+			if v := vt.For(s.m.Open[0]); v != nil {
+				if title, ok, _ := v.MatchTitle(s.m); ok {
+					if h.titleOf == nil {
+						h.titleOf, h.titleIDs = map[string]string{}, map[string][]string{}
+					}
+					h.titleOf[s.m.ID] = title
+					h.titleIDs[title] = append(h.titleIDs[title], s.m.ID)
+				}
+			}
 		}
 	}
 	return h

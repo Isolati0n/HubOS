@@ -91,6 +91,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - The game picker
 - The game tuner
 - A bespoke file manager for Hub OS (likely; design discussion first)
+- A clipboard bridge between the hub and the machines (design discussion first)
 - Possibly our own compositor (only after a design discussion)
 - Anything else that measurably improves Hub OS (decided case by case with the owner)
 
@@ -105,6 +106,10 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Every machine stays logged in**, so clicking lands straight on its desktop.
 - Copy-paste works across all windows, including the hub.
 - **No auto-reopen of windows after a hub restart.** The panel returns; windows do not.
+- Moonlight windows are matched by their title '<machine id> - Moonlight'; every node sets Sunshine's name to its machine id. The inventory's optional session names the Sunshine app to stream.
+- Machines opened with ssh run a terminal multiplexer (tmux) on the machine so closing the window leaves the session alive.
+- VM guests are opened with remote-viewer (virt-viewer), not Remmina.
+- Copy-paste: v1 accepts that Moonlight windows only type the hub's text onto the machine; a clipboard bridge comes later.
 
 ### Canvas
 - driftwm is **essential**. If it does not work on our system, we wait until it does. There is no fallback desktop.
@@ -225,7 +230,7 @@ Ready means the machine's session server is accepting connections:
 - VM host: SSH answers.
 - The hub is the machine hubd runs on and is not checked.
 
-"Machine is up" never means "the hypervisor says running". Real port numbers are unverified and not yet decided.
+"Machine is up" never means "the hypervisor says running". Default check ports (from docs/viewers-research.md; unverified on hardware): Sunshine 47989, ssh 22, SMB 445. VM guests have no default port; the inventory gives it.
 
 ## Repo layout
 
@@ -304,6 +309,10 @@ HubOS/
 - Waybar as a non-root user under s6 or dinit
 - wofi single-click selection was tested with xdotool in the build environment only
 - hubd, the panel and wofi at 100 and at 5000 machines
+- Copy-paste across windows: Moonlight does not share the clipboard from the machine back to the hub (it only types the hub's clipboard text on the machine); see docs/viewers-research.md
+- remote-viewer shows a small error dialog that carries the chosen app-id when the connection fails; hubd cannot tell it from the viewer window
+- Moonlight window title '<id> - Moonlight' with Sunshine's name set to the machine id (read from source; Moonlight was never run)
+- tmux new-session -A -s hubos over ssh (not run against a real server)
 
 ## Open questions for the owner
 
@@ -348,3 +357,5 @@ HubOS/
 - **2026-10-01 (later):** hubd slice 2 reviewed and merged; STALE rule, first-round display, safety fixes and viewer-log cap.
 - **2026-10-01 (later):** hubd slice 2: late-window state for slow viewers, per-viewer window_wait, escape and timeout flags.
 - **2026-10-01 (later):** hubd slice 2: late-window follow-ups (end message, stop-waiting menu line, per-viewer late_grace, clean exit keeps waiting, ignore list).
+- **2026-10-01 (later):** owner decisions on viewers recorded: title matching for Moonlight, session field, tmux for ssh, remote-viewer for guests, default check ports, clipboard limit accepted for v1.
+- **2026-10-01 (later):** Unverified list: Moonlight clipboard limit and the remote-viewer error dialog added.

@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"strconv"
 	"sync"
 	"text/tabwriter"
@@ -23,6 +24,7 @@ import (
 
 	"hubos/internal/inventory"
 	"hubos/internal/probe"
+	"hubos/internal/viewers"
 )
 
 // defaultInventory is where the real inventory lives on the hub: its own
@@ -54,9 +56,10 @@ func run(args []string, stdout, stderr io.Writer, cfg config) int {
 	fs := flag.NewFlagSet("hubd", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	path := fs.String("inventory", defaultInventory, "path to the inventory file")
+	viewersPath := fs.String("viewers", "", "path to viewers.toml, for the default ports (default: next to the inventory; without it only the inventory's own ports are used)")
 	timeout := fs.Duration("check-timeout", cfg.perMachine, "limit for one machine's check (more than 0, at most 1m, and not longer than the total limit of "+cfg.total.String()+")")
 	fs.Usage = func() {
-		fmt.Fprintf(stderr, "usage: hubd [--inventory PATH] [--check-timeout D]\n\n"+
+		fmt.Fprintf(stderr, "usage: hubd [--inventory PATH] [--viewers PATH] [--check-timeout D]\n\n"+
 			"Reads the inventory, checks it, checks which machines are up, and prints the result.\n"+
 			"Without --inventory, the file is read from %s\n", defaultInventory)
 	}
@@ -108,7 +111,34 @@ func run(args []string, stdout, stderr io.Writer, cfg config) int {
 		return exitBadInventory
 	}
 
-	rows := check(inv.Machines, cfg)
+	// The default ports come from viewers.toml. A missing file at the default
+	// place is not an error (the machines without a port are then "not
+	// checked"); a file that was asked for, or that is invalid, is.
+	vgiven := *viewersPath != ""
+	vp := *viewersPath
+	if vp == "" {
+		vp = filepath.Join(filepath.Dir(*path), "viewers.toml")
+	}
+	vt, vproblems, verr := viewers.Load(vp)
+	switch {
+	case errors.Is(verr, viewers.ErrNotFound):
+		if vgiven {
+			fmt.Fprintf(stderr, "hubd: there is no viewers file at %s\n", vp)
+			return exitBadInventory
+		}
+		vt = nil
+	case verr != nil:
+		fmt.Fprintf(stderr, "hubd: cannot read %s: %v\n", vp, verr)
+		return exitBadInventory
+	case len(vproblems) > 0:
+		fmt.Fprintf(stderr, "hubd: %s is not valid (%d problems). No machines were checked.\n", vp, len(vproblems))
+		for _, p := range vproblems {
+			fmt.Fprintf(stderr, "  %s\n", p)
+		}
+		return exitBadInventory
+	}
+
+	rows := check(inv.Machines, vt, cfg)
 
 	fmt.Fprintf(stdout, "hubd: inventory %s (format %d, %d machines)\n\n", *path, inv.Format, len(inv.Machines))
 	tw := tabwriter.NewWriter(stdout, 0, 0, 2, ' ', 0)
@@ -158,12 +188,13 @@ type row struct {
 // The rules (approved by the owner):
 //   - The hub is the machine hubd runs on. It is reported UP without a check.
 //   - The check uses the first entry of "open" as the program, and the
-//     machine's own address and port. If that entry is "none", or the
-//     machine has no port, it is NOT CHECKED. hubd has no default port for
-//     any program and never guesses one.
+//     machine's own address. The port is the machine's own port, otherwise the
+//     default_port of the viewer for that program in viewers.toml. If that entry
+//     is "none", or there is neither, it is NOT CHECKED. hubd has no port of
+//     its own for any program and never guesses one.
 //   - Guests are checked at their own address and port (provisional; see the
 //     "Unverified" section of docs/inventory-format.md).
-func check(machines []inventory.Machine, cfg config) []row {
+func check(machines []inventory.Machine, vt *viewers.Table, cfg config) []row {
 	rows := make([]row, len(machines))
 	var targets []probe.Target
 	var index []int // index[k] is the machine that targets[k] belongs to
@@ -174,10 +205,13 @@ func check(machines []inventory.Machine, cfg config) []row {
 			rows[i] = row{stateUp, "-", "UP (this machine, not checked)"}
 		case m.Open[0] == "none":
 			rows[i] = row{stateNotChecked, "-", "NOT CHECKED (nothing to open)"}
-		case m.Port == nil:
-			rows[i] = row{stateNotChecked, "-", "NOT CHECKED (no port in the inventory)"}
 		default:
-			t := probe.Target{Address: m.Address, Port: *m.Port}
+			port, ok := vt.CheckPort(m)
+			if !ok {
+				rows[i] = row{stateNotChecked, "-", "NOT CHECKED (" + viewers.NoPortReason(m) + ")"}
+				continue
+			}
+			t := probe.Target{Address: m.Address, Port: port}
 			rows[i].target = t.Address + ":" + strconv.Itoa(t.Port)
 			targets = append(targets, t)
 			index = append(index, i)

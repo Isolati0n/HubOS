@@ -147,3 +147,101 @@ func TestLateGrace(t *testing.T) {
 		t.Error("a bare number must be refused")
 	}
 }
+
+func TestDefaultPortSessionAndTitleMatch(t *testing.T) {
+	doc := func(v string) string {
+		return "format = 1\n[[viewer]]\nid=\"a\"\nprograms=[\"moonlight\"]\ncommand=[\"x\",\"{address}:{port}\",\"{session}\"]\n" + v
+	}
+	// default_port: used for {port} only when the machine has none.
+	tab, ps := Parse([]byte(doc("default_port = 47989")))
+	if len(ps) != 0 {
+		t.Fatalf("%q", ps)
+	}
+	v := &tab.Viewers[0]
+	m := inventory.Machine{ID: "m", Address: "h", Session: "Desktop"}
+	if got, err := v.Args(m); err != nil || !reflect.DeepEqual(got, []string{"x", "h:47989", "Desktop"}) {
+		t.Errorf("default port: %q %v", got, err)
+	}
+	m.Port = port(1234)
+	if got, _ := v.Args(m); got[1] != "h:1234" {
+		t.Errorf("the machine's own port must win: %q", got)
+	}
+	// Neither a port nor a default: an error, never a guess.
+	tab, _ = Parse([]byte(doc("")))
+	if _, err := tab.Viewers[0].Args(inventory.Machine{ID: "m", Address: "h", Session: "s"}); err == nil || !strings.Contains(err.Error(), "m has no port in the inventory") {
+		t.Errorf("no port anywhere: %v", err)
+	}
+	// {session} missing is an error with the plain sentence.
+	if _, err := v.Args(inventory.Machine{ID: "m", Address: "h"}); err == nil || err.Error() != "m has no session in the inventory, and its viewer command needs one" {
+		t.Errorf("no session: %v", err)
+	}
+	for _, bad := range []string{"default_port = 0", "default_port = 65536", "default_port = -1"} {
+		if _, ps := Parse([]byte(doc(bad))); len(ps) != 1 || !strings.Contains(ps[0], "default_port") || !strings.Contains(ps[0], "out of range (1 to 65535)") {
+			t.Errorf("%s: %q", bad, ps)
+		}
+	}
+	if _, ps := Parse([]byte(doc(`default_port = "22"`))); len(ps) == 0 {
+		t.Error("text instead of a number must be refused")
+	}
+
+	// title_match.
+	tab, ps = Parse([]byte(doc(`title_match = "{id} - Moonlight"`)))
+	if len(ps) != 0 {
+		t.Fatalf("%q", ps)
+	}
+	title, ok, err := tab.Viewers[0].MatchTitle(inventory.Machine{ID: "ai-1"})
+	if !ok || err != nil || title != "ai-1 - Moonlight" {
+		t.Errorf("title %q %v %v", title, ok, err)
+	}
+	if _, ok, _ := tab.Viewers[0].MatchTitle(inventory.Machine{}); !ok {
+		t.Error("a title template that needs nothing must render")
+	}
+	if _, ok, err := (&Viewer{}).MatchTitle(inventory.Machine{ID: "x"}); ok || err != nil {
+		t.Error("no title_match means no title")
+	}
+	// A title that needs a value the machine lacks is an error.
+	tab, _ = Parse([]byte(doc(`title_match = "{session} - Moonlight"`)))
+	if _, _, err := tab.Viewers[0].MatchTitle(inventory.Machine{ID: "m"}); err == nil || !strings.Contains(err.Error(), "no session") {
+		t.Errorf("title needing a session: %v", err)
+	}
+	// title_match together with sets_name = true is refused; bad placeholders too.
+	bad := "format = 1\n[[viewer]]\nid=\"a\"\nprograms=[\"moonlight\"]\ncommand=[\"x\",\"{app_id}\"]\nsets_name=true\ntitle_match=\"{id}\"\n"
+	if _, ps := Parse([]byte(bad)); len(ps) != 1 || !strings.Contains(ps[0], "title_match cannot be used with sets_name = true") {
+		t.Errorf("title_match with sets_name: %q", ps)
+	}
+	if _, ps := Parse([]byte(doc(`title_match = "{nope}"`))); len(ps) != 1 || (!strings.Contains(ps[0], "unknown placeholder {nope}") || !strings.Contains(ps[0], "in title_match")) {
+		t.Errorf("unknown placeholder in title_match: %q", ps)
+	}
+}
+
+func TestCheckPortRules(t *testing.T) {
+	tab, ps := Parse([]byte("format = 1\n[[viewer]]\nid=\"s\"\nprograms=[\"ssh\"]\ncommand=[\"x\"]\ndefault_port=22\n[[viewer]]\nid=\"v\"\nprograms=[\"vnc\"]\ncommand=[\"x\"]\n"))
+	if len(ps) != 0 {
+		t.Fatal(ps)
+	}
+	cases := []struct {
+		m    inventory.Machine
+		port int
+		ok   bool
+	}{
+		{inventory.Machine{Open: []string{"ssh"}}, 22, true},
+		{inventory.Machine{Open: []string{"ssh"}, Port: port(2222)}, 2222, true},
+		{inventory.Machine{Open: []string{"vnc"}}, 0, false},
+		{inventory.Machine{Open: []string{"vnc"}, Port: port(5901)}, 5901, true},
+		{inventory.Machine{Open: []string{"files"}}, 0, false},      // no viewer for it
+		{inventory.Machine{Open: []string{"ssh", "vnc"}}, 22, true}, // the first entry decides
+		{inventory.Machine{Open: []string{"vnc", "ssh"}}, 0, false},
+	}
+	for _, c := range cases {
+		if p, ok := tab.CheckPort(c.m); p != c.port || ok != c.ok {
+			t.Errorf("%v port %v: got %d %v, want %d %v", c.m.Open, c.m.Port, p, ok, c.port, c.ok)
+		}
+	}
+	var none *Table
+	if _, ok := none.CheckPort(inventory.Machine{Open: []string{"ssh"}}); ok {
+		t.Error("a missing table has no defaults")
+	}
+	if got := NoPortReason(inventory.Machine{Open: []string{"vnc"}}); got != "no port in the inventory and no default port for vnc" {
+		t.Errorf("reason: %q", got)
+	}
+}
