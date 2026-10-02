@@ -10,13 +10,25 @@
 #
 # Placeholders: {id} {name} {address} {port} {user} {share} {session}
 #   {app_id} (hubos-<id>)  {title} (the machine's name)
-# {port} is the machine's port from the inventory, or the viewer's
-# default_port; a machine with neither cannot be opened with a command that
-# uses {port}. {session} is the inventory's "session" (the Sunshine app name).
-# default_port is also the port of the up/down check for a machine that has
-# no port of its own.
+# {port} is the machine's port from the inventory, or the [default_ports]
+# entry for the machine's first "open" entry; a machine with neither cannot
+# be opened with a command that uses {port}. {session} is the inventory's
+# "session" (the Sunshine app name). [default_ports] is also the port of the
+# up/down check for a machine that has no port of its own.
 
 format = 1
+
+# ---- default ports ----
+# UNVERIFIED on hardware. These ports come from docs/viewers-research.md
+# (Sunshine's main port 47989, the standard ssh port 22, the standard SMB port
+# 445); none was tried against a real machine. There is deliberately NO entry
+# for spice and vnc: a VM guest's console port is chosen per guest, so the
+# inventory gives it. A machine with no port of its own and no entry here is
+# "not checked".
+[default_ports]
+moonlight = 47989
+ssh       = 22
+files     = 445
 
 # ---- ssh: a terminal (foot) running ssh, with tmux on the machine ----
 # UNVERIFIED on hardware. Tested here: the file loads, the argument list is
@@ -33,12 +45,11 @@ id           = "ssh"
 programs     = ["ssh"]
 command      = ["foot", "--app-id={app_id}", "--title={title}", "--hold", "--", "ssh", "-p", "{port}", "-l", "{user}", "-t", "--", "{address}", "tmux", "new-session", "-A", "-s", "hubos"]
 sets_name    = true
-default_port = 22
 
 # ---- spice: a VM guest's console in remote-viewer (virt-viewer) ----
 # UNVERIFIED on hardware (remote-viewer was run only against a fake address
-# under a nested compositor). No default_port: a guest's console port is set
-# per guest, so the inventory gives it. If the connection fails, remote-viewer
+# under a nested compositor). No [default_ports] entry: a guest's console port is
+# set per guest, so the inventory gives it. If the connection fails, remote-viewer
 # shows a small error dialog that carries the chosen name (HUB-OS.md,
 # "Unverified").
 [[viewer]]
@@ -48,7 +59,7 @@ command   = ["remote-viewer", "--name={app_id}", "--title={title}", "--", "spice
 sets_name = true
 
 # ---- vnc: a VM guest's console in remote-viewer (virt-viewer) ----
-# UNVERIFIED on hardware, same as spice. No default_port.
+# UNVERIFIED on hardware, same as spice. No [default_ports] entry.
 [[viewer]]
 id        = "vnc"
 programs  = ["vnc"]
@@ -71,4 +82,3 @@ sets_name    = false
 title_match  = "{id} - Moonlight"
 window_wait  = "30s"
 late_grace   = "60s"
-default_port = 47989

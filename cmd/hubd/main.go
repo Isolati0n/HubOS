@@ -126,6 +126,7 @@ func run(args []string, stdout, stderr io.Writer, cfg config) int {
 			fmt.Fprintf(stderr, "hubd: there is no viewers file at %s\n", vp)
 			return exitBadInventory
 		}
+		fmt.Fprintf(stderr, "hubd: no viewers file was found at %s (the default place), so machines without a port in the inventory are not checked\n", vp)
 		vt = nil
 	case verr != nil:
 		fmt.Fprintf(stderr, "hubd: cannot read %s: %v\n", vp, verr)
@@ -189,7 +190,7 @@ type row struct {
 //   - The hub is the machine hubd runs on. It is reported UP without a check.
 //   - The check uses the first entry of "open" as the program, and the
 //     machine's own address. The port is the machine's own port, otherwise the
-//     default_port of the viewer for that program in viewers.toml. If that entry
+//     [default_ports] entry for that program in viewers.toml. If that entry
 //     is "none", or there is neither, it is NOT CHECKED. hubd has no port of
 //     its own for any program and never guesses one.
 //   - Guests are checked at their own address and port (provisional; see the

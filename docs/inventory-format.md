@@ -25,7 +25,7 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 | `address` | required | Where to reach the machine: a name (like `nas-1.lan`) or a number address. No port in it. |
 | `open` | required | A list of one or more of: `moonlight`, `spice`, `vnc`, `ssh`, `files`, `none`. The **first** entry is what a click opens. The rest are extra options. |
 | `home` | required | The machine's fixed spot on the canvas, written `{ x = ..., y = ... }`. |
-| `port` | optional | For programs that need a port other than their default. Without it, the up/down check uses the `default_port` of the viewer for the first `open` entry in `viewers.toml` (`docs/hubd-slice2.md` section 14); with neither, the machine is "not checked". |
+| `port` | optional | For programs that need a port other than their default. Without it, the up/down check uses the entry of the `[default_ports]` table in `viewers.toml` for the first `open` entry (`docs/hubd-slice2.md` section 14); with neither, the machine is "not checked". |
 | `user` | optional | Login name. Never a password or key. |
 | `share` | optional | The shared folder a `files` opening should use. |
 | `session` | optional | The name of the Sunshine app to stream. Only with `moonlight` in `open`. Never a password or key. |

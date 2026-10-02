@@ -113,7 +113,7 @@ type mstate struct {
 	lateCancel chan struct{}
 	lateCmp    bool
 	lateEnd    time.Time // when the wait ends
-	port       int       // the port the check uses: the machine's own, else its viewer's default_port (0 = none)
+	port       int       // the port the check uses: the machine's own, else default_ports[its first open entry] (0 = none)
 }
 
 // Hub is the running state.

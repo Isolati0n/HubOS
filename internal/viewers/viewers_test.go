@@ -148,40 +148,59 @@ func TestLateGrace(t *testing.T) {
 	}
 }
 
-func TestDefaultPortSessionAndTitleMatch(t *testing.T) {
-	doc := func(v string) string {
-		return "format = 1\n[[viewer]]\nid=\"a\"\nprograms=[\"moonlight\"]\ncommand=[\"x\",\"{address}:{port}\",\"{session}\"]\n" + v
-	}
-	// default_port: used for {port} only when the machine has none.
-	tab, ps := Parse([]byte(doc("default_port = 47989")))
+func TestDefaultPortsSessionAndTitleMatch(t *testing.T) {
+	body := "[[viewer]]\nid=\"a\"\nprograms=[\"moonlight\"]\ncommand=[\"x\",\"{address}:{port}\",\"{session}\"]\n"
+	doc := func(v string) string { return "format = 1\n" + body + v }
+	// default_ports: used for {port} only when the machine has no port.
+	tab, ps := Parse([]byte("format = 1\n[default_ports]\nmoonlight = 47989\nssh = 22\n" + body))
 	if len(ps) != 0 {
 		t.Fatalf("%q", ps)
 	}
+	if tab.DefaultPorts["moonlight"] != 47989 || tab.DefaultPorts["ssh"] != 22 || len(tab.DefaultPorts) != 2 {
+		t.Errorf("table: %v", tab.DefaultPorts)
+	}
 	v := &tab.Viewers[0]
-	m := inventory.Machine{ID: "m", Address: "h", Session: "Desktop"}
+	m := inventory.Machine{ID: "m", Address: "h", Session: "Desktop", Open: []string{"moonlight"}}
 	if got, err := v.Args(m); err != nil || !reflect.DeepEqual(got, []string{"x", "h:47989", "Desktop"}) {
 		t.Errorf("default port: %q %v", got, err)
+	}
+	// The table entry of the machine's FIRST open entry is used, not the viewer's program.
+	m2 := m
+	m2.Open = []string{"ssh", "moonlight"}
+	if got, _ := v.Args(m2); got[1] != "h:22" {
+		t.Errorf("first open entry decides: %q", got)
 	}
 	m.Port = port(1234)
 	if got, _ := v.Args(m); got[1] != "h:1234" {
 		t.Errorf("the machine's own port must win: %q", got)
 	}
-	// Neither a port nor a default: an error, never a guess.
+	// Neither a port nor a table entry: an error, never a guess.
 	tab, _ = Parse([]byte(doc("")))
-	if _, err := tab.Viewers[0].Args(inventory.Machine{ID: "m", Address: "h", Session: "s"}); err == nil || !strings.Contains(err.Error(), "m has no port in the inventory") {
+	if _, err := tab.Viewers[0].Args(inventory.Machine{ID: "m", Address: "h", Session: "s", Open: []string{"moonlight"}}); err == nil || !strings.Contains(err.Error(), "m has no port in the inventory") {
 		t.Errorf("no port anywhere: %v", err)
 	}
 	// {session} missing is an error with the plain sentence.
-	if _, err := v.Args(inventory.Machine{ID: "m", Address: "h"}); err == nil || err.Error() != "m has no session in the inventory, and its viewer command needs one" {
+	if _, err := v.Args(inventory.Machine{ID: "m", Address: "h", Open: []string{"moonlight"}}); err == nil || err.Error() != "m has no session in the inventory, and its viewer command needs one" {
 		t.Errorf("no session: %v", err)
 	}
-	for _, bad := range []string{"default_port = 0", "default_port = 65536", "default_port = -1"} {
-		if _, ps := Parse([]byte(doc(bad))); len(ps) != 1 || !strings.Contains(ps[0], "default_port") || !strings.Contains(ps[0], "out of range (1 to 65535)") {
-			t.Errorf("%s: %q", bad, ps)
+	// Plain-words errors for the table.
+	for doc, want := range map[string]string{
+		"[default_ports]\nssh = 0\n":        `the port for "ssh" must be a whole number from 1 to 65535 (found: 0)`,
+		"[default_ports]\nssh = 65536\n":    `the port for "ssh" must be a whole number from 1 to 65535 (found: 65536)`,
+		"[default_ports]\nssh = -1\n":       `the port for "ssh" must be a whole number from 1 to 65535`,
+		"[default_ports]\nssh = \"22\"\n":   `the port for "ssh" must be a whole number from 1 to 65535 (found: 22)`,
+		"[default_ports]\nssh = 22.5\n":     `the port for "ssh" must be a whole number from 1 to 65535 (found: 22.5)`,
+		"[default_ports]\nnone = 22\n":      `default_ports: "none" is not a program that has a port`,
+		"[default_ports]\nremmina = 3389\n": `default_ports: "remmina" is not a program that has a port (one of: moonlight, spice, vnc, ssh, files)`,
+	} {
+		_, ps := Parse([]byte("format = 1\n" + doc + body))
+		if len(ps) != 1 || !strings.Contains(ps[0], want) {
+			t.Errorf("%q: got %q, want %q", doc, ps, want)
 		}
 	}
-	if _, ps := Parse([]byte(doc(`default_port = "22"`))); len(ps) == 0 {
-		t.Error("text instead of a number must be refused")
+	// The per-viewer default_port of the first draft is gone: an unknown field.
+	if _, ps := Parse([]byte(doc("default_port = 22\n"))); len(ps) != 1 || !strings.Contains(ps[0], `unknown field "viewer.default_port"`) {
+		t.Errorf("default_port on a viewer: %q", ps)
 	}
 
 	// title_match.
@@ -215,7 +234,7 @@ func TestDefaultPortSessionAndTitleMatch(t *testing.T) {
 }
 
 func TestCheckPortRules(t *testing.T) {
-	tab, ps := Parse([]byte("format = 1\n[[viewer]]\nid=\"s\"\nprograms=[\"ssh\"]\ncommand=[\"x\"]\ndefault_port=22\n[[viewer]]\nid=\"v\"\nprograms=[\"vnc\"]\ncommand=[\"x\"]\n"))
+	tab, ps := Parse([]byte("format = 1\n[default_ports]\nssh = 22\nfiles = 445\n[[viewer]]\nid=\"s\"\nprograms=[\"ssh\"]\ncommand=[\"x\"]\n[[viewer]]\nid=\"v\"\nprograms=[\"vnc\"]\ncommand=[\"x\"]\n"))
 	if len(ps) != 0 {
 		t.Fatal(ps)
 	}
@@ -228,7 +247,7 @@ func TestCheckPortRules(t *testing.T) {
 		{inventory.Machine{Open: []string{"ssh"}, Port: port(2222)}, 2222, true},
 		{inventory.Machine{Open: []string{"vnc"}}, 0, false},
 		{inventory.Machine{Open: []string{"vnc"}, Port: port(5901)}, 5901, true},
-		{inventory.Machine{Open: []string{"files"}}, 0, false},      // no viewer for it
+		{inventory.Machine{Open: []string{"files"}}, 445, true},     // a table entry needs no viewer
 		{inventory.Machine{Open: []string{"ssh", "vnc"}}, 22, true}, // the first entry decides
 		{inventory.Machine{Open: []string{"vnc", "ssh"}}, 0, false},
 	}

@@ -46,24 +46,28 @@ type Viewer struct {
 	GraceText string `toml:"late_grace"`
 	// LateGrace is GraceText parsed (0 when not given).
 	LateGrace time.Duration `toml:"-"`
-	// DefaultPort is the port used for {port} (and for the up/down check) when
-	// the machine has no port of its own. nil = the viewer has no default.
-	DefaultPort *int `toml:"default_port"`
 	// TitleMatch is a template for the exact window title of a viewer that
 	// cannot set its own window name (sets_name = false), for example
 	// "{id} - Moonlight". With it, hubd picks the window by that title instead
 	// of by comparing window lists. Empty = not used.
 	TitleMatch string `toml:"title_match"`
+
+	defaults map[string]int // the table's default_ports, set by Parse (for {port})
 }
 
 // Table is a valid viewers.toml.
 type Table struct {
 	Viewers []Viewer
+	// DefaultPorts maps a program (an inventory "open" entry) to the port used
+	// for {port} and for the up/down check when a machine has no port of its
+	// own. Programs without an entry have no default.
+	DefaultPorts map[string]int
 }
 
 type file struct {
-	Format any      `toml:"format"`
-	Viewer []Viewer `toml:"viewer"`
+	Format       any            `toml:"format"`
+	DefaultPorts map[string]any `toml:"default_ports"`
+	Viewer       []Viewer       `toml:"viewer"`
 }
 
 var placeholders = []string{"id", "name", "address", "port", "user", "share", "session", "app_id", "title"}
@@ -108,6 +112,24 @@ func Parse(data []byte) (*Table, []string) {
 	}
 
 	var ps []string
+	defaults := map[string]int{}
+	keys := make([]string, 0, len(f.DefaultPorts))
+	for k := range f.DefaultPorts {
+		keys = append(keys, k)
+	}
+	slices.Sort(keys)
+	for _, k := range keys {
+		if !slices.Contains(inventory.Programs, k) || k == "none" {
+			ps = append(ps, fmt.Sprintf("default_ports: %q is not a program that has a port (one of: %s)", k, strings.Join(slices.DeleteFunc(slices.Clone(inventory.Programs), func(s string) bool { return s == "none" }), ", ")))
+			continue
+		}
+		n, ok := f.DefaultPorts[k].(int64)
+		if !ok || n < 1 || n > 65535 {
+			ps = append(ps, fmt.Sprintf("default_ports: the port for %q must be a whole number from 1 to 65535 (found: %v)", k, f.DefaultPorts[k]))
+			continue
+		}
+		defaults[k] = int(n)
+	}
 	seenID := map[string]bool{}
 	seenProg := map[string]string{}
 	for i, v := range f.Viewer {
@@ -157,9 +179,6 @@ func Parse(data []byte) (*Table, []string) {
 				f.Viewer[i].LateGrace = d
 			}
 		}
-		if v.DefaultPort != nil && (*v.DefaultPort < 1 || *v.DefaultPort > 65535) {
-			ps = append(ps, fmt.Sprintf("%s: default_port %d is out of range (1 to 65535)", w, *v.DefaultPort))
-		}
 		if v.TitleMatch != "" {
 			if v.SetsName {
 				ps = append(ps, w+": title_match cannot be used with sets_name = true (a viewer that sets the window name is matched by that name)")
@@ -185,7 +204,10 @@ func Parse(data []byte) (*Table, []string) {
 	if len(ps) > 0 {
 		return nil, ps
 	}
-	return &Table{Viewers: f.Viewer}, nil
+	for i := range f.Viewer {
+		f.Viewer[i].defaults = defaults
+	}
+	return &Table{Viewers: f.Viewer, DefaultPorts: defaults}, nil
 }
 
 // scan returns the placeholder names in one argument, and a problem text if
@@ -226,7 +248,7 @@ func AppID(machineID string) string { return AppIDPrefix + machineID }
 
 // values are what the placeholders stand for, for one machine. A value the
 // machine does not have is left out, so using it is an error, never a guess.
-// {port} falls back to the viewer's default_port.
+// {port} falls back to default_ports[the machine's first open entry].
 func (v *Viewer) values(m inventory.Machine) map[string]string {
 	values := map[string]string{
 		"id": m.ID, "name": m.Name, "address": m.Address,
@@ -235,8 +257,8 @@ func (v *Viewer) values(m inventory.Machine) map[string]string {
 	switch {
 	case m.Port != nil:
 		values["port"] = strconv.Itoa(*m.Port)
-	case v.DefaultPort != nil:
-		values["port"] = strconv.Itoa(*v.DefaultPort)
+	case len(m.Open) > 0 && v.defaults[m.Open[0]] > 0:
+		values["port"] = strconv.Itoa(v.defaults[m.Open[0]])
 	}
 	if m.User != "" {
 		values["user"] = m.User
@@ -252,7 +274,7 @@ func (v *Viewer) values(m inventory.Machine) map[string]string {
 
 // Args builds the argument list for a machine. Each entry of the command
 // becomes exactly one argument. A placeholder for a value the machine does
-// not have ({port} with no default_port, {user}, {share}, {session}) is an
+// not have ({port} with no default_ports entry, {user}, {share}, {session}) is an
 // error, so hubd never guesses.
 func (v *Viewer) Args(m inventory.Machine) ([]string, error) {
 	values := v.values(m)
@@ -300,16 +322,15 @@ func (v *Viewer) render(tmpl, machine string, values map[string]string) (string,
 }
 
 // CheckPort is the port the up/down check uses for a machine: its own port,
-// otherwise the default_port of the viewer for its first "open" entry. ok is
-// false when neither exists (the machine is then "not checked"). A nil table
-// has no defaults.
+// otherwise default_ports[its first "open" entry]. ok is false when neither
+// exists (the machine is then "not checked"). A nil table has no defaults.
 func (t *Table) CheckPort(m inventory.Machine) (port int, ok bool) {
 	if m.Port != nil {
 		return *m.Port, true
 	}
 	if t != nil && len(m.Open) > 0 {
-		if v := t.For(m.Open[0]); v != nil && v.DefaultPort != nil {
-			return *v.DefaultPort, true
+		if p := t.DefaultPorts[m.Open[0]]; p > 0 {
+			return p, true
 		}
 	}
 	return 0, false
