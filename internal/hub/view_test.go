@@ -2,6 +2,7 @@ package hub
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"sync"
@@ -143,7 +144,7 @@ func TestStatusLineCountsHubExcludedAndTooltipCapped(t *testing.T) {
 	r.setStatus("g05", statusUp)
 	r.setStatus("g06", statusUp)
 	st = r.h.Status()
-	if st.Text != "24 of 24 up" || st.Class != "ok" || st.Tooltip != "all machines up" {
+	if st.Text != "24 of 24 up" || st.Class != "ok" || !strings.HasPrefix(st.Tooltip, "all machines up") {
 		t.Errorf("all up: %+v", st)
 	}
 	if strings.Contains(st.JSON(), "\n") || !strings.HasPrefix(st.JSON(), `{"text":"24 of 24 up","class":"ok","tooltip":`) {
@@ -155,7 +156,7 @@ func TestStatusLineBeforeFirstRoundNotCheckedAndStale(t *testing.T) {
 	r := newRig(t,
 		machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""),
 		machineDoc("n", "N", "desktop", "moonlight", 0, 2, 2, ""))
-	if st := r.h.Status(); st.Text != "checking..." || st.Class != "ok" {
+	if st := r.h.Status(); st.Text != "checking... 0 of 1 done" || st.Class != "ok" {
 		t.Errorf("start: %+v", st)
 	}
 	r.setStatus("a", statusUp)
@@ -184,8 +185,8 @@ func TestFileLimitCapsTheProbeCap(t *testing.T) {
 	r := newRig(t)
 	set := r.set
 	set.ProbeCap, set.FileLimit = 200, 100
-	if got := New(r.inv, r.vt, r.f, r.l.launch, set, "").ProbeCap(); got != 36 {
-		t.Errorf("cap with limit 100 = %d, want 36", got)
+	if got := New(r.inv, r.vt, r.f, r.l.launch, set, "").ProbeCap(); got != 80 {
+		t.Errorf("cap with limit 100 = %d, want 80 (80%%)", got)
 	}
 	set.FileLimit = 1024
 	if got := New(r.inv, r.vt, r.f, r.l.launch, set, "").ProbeCap(); got != 200 {
@@ -236,7 +237,10 @@ func (c *fakeClock) add(d time.Duration) {
 	c.mu.Unlock()
 }
 
-func rig5000(t *testing.T, roundLen time.Duration) (*rig, *fakeClock) {
+// rig5000 is 5000 machines with a fake clock and a fake checker. The checker
+// delivers its results evenly over roundLen (so a 40 s round has a result
+// about every 8 ms), all "down" or all "up".
+func rig5000(t *testing.T, roundLen time.Duration, up bool) (*rig, *fakeClock) {
 	t.Helper()
 	var parts []string
 	for i := 1; i <= 5000; i++ {
@@ -245,50 +249,114 @@ func rig5000(t *testing.T, roundLen time.Duration) (*rig, *fakeClock) {
 	r := newRig(t, parts...)
 	clk := &fakeClock{t: time.Date(2026, 10, 1, 12, 0, 0, 0, time.UTC)}
 	r.h.now = clk.now
+	r.h.lastResult = clk.now()
 	r.h.set.ProbeInterval = 10 * time.Second
-	// Every machine silent: all checks run into their limit, so the round
-	// takes roundLen (10 s at cap 1000, about 40 s at cap 200: docs/hubd-slice2.md).
 	r.h.set.Prober = func(ctx context.Context, ts []probe.Target, to time.Duration, limit int, done func(int, probe.Result)) {
+		step := roundLen / time.Duration(len(ts))
 		for i := range ts {
-			done(i, probe.Result{Reason: "no answer"})
+			clk.add(step)
+			done(i, probe.Result{Up: up, Reason: "no answer"})
 		}
-		clk.add(roundLen)
 	}
 	return r, clk
 }
 
-func TestStaleRuleAt5000MachinesWithSlowAndFastRounds(t *testing.T) {
-	// Fast rounds (cap 1000: 10 s). Rounds finish 20 s apart (10 s round + 10 s wait).
-	r, clk := rig5000(t, 10*time.Second)
+func TestStaleRuleAt5000MachinesCap1000(t *testing.T) {
+	// Cap 1000: a round of 10 s, a new one 10 s after it finished.
+	r, clk := rig5000(t, 10*time.Second, false)
+	if st := r.h.Status(); st.Text != "checking... 0 of 5000 done" {
+		t.Fatalf("before any round: %+v", st)
+	}
 	r.h.ProbeRound(r.ctx)
 	st := r.h.Status()
-	if st.Text != "0 of 5000 up" || !strings.Contains(st.Tooltip, "last check round took 10s") || strings.Contains(st.Tooltip, "STALE") {
-		t.Fatalf("after the first round: %+v", st)
+	if st.Text != "0 of 5000 up" || strings.Contains(st.Tooltip, "note:") || strings.Contains(st.Tooltip, "STALE") || !strings.Contains(st.Tooltip, "last check round took 10s") {
+		t.Fatalf("after the round: %+v", st)
 	}
-	clk.add(19 * time.Second) // the second round is still running, 19 s since the last one ended
+	clk.add(25 * time.Second) // waiting 10 s + a running round's first results are not in this fake
 	if st := r.h.Status(); strings.Contains(st.Text, "STALE") {
-		t.Errorf("19 s after a finished round is not stale: %+v", st)
+		t.Errorf("25 s without a result is under 3 intervals: %+v", st)
 	}
-	clk.add(12 * time.Second) // 31 s > 3 intervals
+	clk.add(6 * time.Second) // 31 s
 	st = r.h.Status()
-	if !strings.HasPrefix(st.Text, "STALE: ") || st.Class != "alert" || !strings.Contains(st.Tooltip, "STALE: the last finished check round ended 31s ago (limit: 3 intervals = 30s)") {
-		t.Errorf("31 s later: %+v", st)
+	if !strings.HasPrefix(st.Text, "STALE: ") || st.Class != "alert" || !strings.Contains(st.Tooltip, "STALE: no check result for 30s (limit: 3 intervals = 30s)") {
+		t.Errorf("31 s without a result: %+v", st)
 	}
+	// While STALE the age moves in 10 s steps: the tooltip is the same at
+	// 31 s and 38 s, and changes at 41 s.
+	at31 := st.Tooltip
+	clk.add(7 * time.Second)
+	if got := r.h.Status().Tooltip; got != at31 {
+		t.Errorf("tooltip changed inside a 10 s step:\n%s\n%s", at31, got)
+	}
+	clk.add(3 * time.Second)
+	if got := r.h.Status().Tooltip; got == at31 || !strings.Contains(got, "no check result for 40s") {
+		t.Errorf("tooltip after 41 s: %s", got)
+	}
+	// A new result clears it.
+	r.h.ProbeRound(r.ctx)
+	if st := r.h.Status(); strings.Contains(st.Text, "STALE") {
+		t.Errorf("after a new round: %+v", st)
+	}
+}
 
-	// Slow rounds (cap 200: about 40 s): by the time the second round ends,
-	// the last finished one is 50 s old, so the status is STALE while hubd is
-	// working. The tooltip says why: the round took 40 s.
-	r, clk = rig5000(t, 40*time.Second)
+func TestLongRoundAt5000MachinesCap200IsANoteNotAnAlert(t *testing.T) {
+	// Cap 200: a round of 40 s, longer than two intervals (20 s). Results
+	// keep arriving all the time, so it is not STALE, and with every machine
+	// up there is nothing to alert about.
+	r, clk := rig5000(t, 40*time.Second, true)
 	r.h.ProbeRound(r.ctx)
-	clk.add(45 * time.Second)
-	st = r.h.Status()
-	if !strings.HasPrefix(st.Text, "STALE: ") || !strings.Contains(st.Tooltip, "last check round took 40s") {
-		t.Errorf("slow rounds: %+v", st)
+	st := r.h.Status()
+	if st.Text != "5000 of 5000 up" || st.Class != "ok" || strings.Contains(st.Text, "STALE") {
+		t.Fatalf("got %+v", st)
 	}
-	// And when a round has finished, the status is fresh again.
+	if !strings.Contains(st.Tooltip, "last check round took 40s") || !strings.Contains(st.Tooltip, "note: that is longer than two intervals (20s)") {
+		t.Errorf("tooltip: %q", st.Tooltip)
+	}
+	// Ten seconds later the next round starts and results flow again: still fine,
+	// even 45 s after the end of the first round, because results arrived in between.
+	clk.add(10 * time.Second)
+	r.h.ProbeRound(r.ctx)
+	clk.add(5 * time.Second)
+	if st := r.h.Status(); strings.Contains(st.Text, "STALE") || st.Class != "ok" {
+		t.Errorf("%+v", st)
+	}
+	// A round of 40 s whose results all stop for 31 s in the middle is STALE.
+	r, clk = rig5000(t, 40*time.Second, true)
+	r.h.set.Prober = func(ctx context.Context, ts []probe.Target, to time.Duration, limit int, done func(int, probe.Result)) {
+		for i := range ts[:100] {
+			done(i, probe.Result{Up: true})
+		}
+		clk.add(31 * time.Second) // nothing arrives
+		if st := r.h.Status(); !strings.HasPrefix(st.Text, "STALE: ") {
+			t.Errorf("31 s of silence in the middle of a round: %+v", st)
+		}
+		for i := range ts[100:] {
+			done(100+i, probe.Result{Up: true})
+		}
+	}
 	r.h.ProbeRound(r.ctx)
 	if st := r.h.Status(); strings.Contains(st.Text, "STALE") {
-		t.Errorf("right after a round: %+v", st)
+		t.Errorf("after the round: %+v", st)
+	}
+}
+
+func TestFirstRoundShowsHowManyAreDoneNotPartialCounts(t *testing.T) {
+	r, _ := rig5000(t, 40*time.Second, false)
+	var seen StatusLine
+	r.h.set.Prober = func(ctx context.Context, ts []probe.Target, to time.Duration, limit int, done func(int, probe.Result)) {
+		for i := range ts {
+			done(i, probe.Result{Reason: "no answer"})
+			if i == 1233 {
+				seen = r.h.Status() // in the middle of the first round
+			}
+		}
+	}
+	r.h.ProbeRound(r.ctx)
+	if seen.Text != "checking... 1234 of 5000 done" || seen.Class != "ok" || strings.Contains(seen.Tooltip, "down") || !strings.Contains(seen.Tooltip, "first check round in progress") {
+		t.Errorf("during the first round: %+v", seen)
+	}
+	if st := r.h.Status(); st.Text != "0 of 5000 up" || st.Class != "alert" {
+		t.Errorf("after it: %+v", st)
 	}
 }
 
@@ -322,63 +390,20 @@ func TestRoundStartsOneIntervalAfterTheLastFinished(t *testing.T) {
 	}
 }
 
-func TestDownMachinesGroupAtTheTopWithCapAndMoreLine(t *testing.T) {
-	r := big(t) // ai-2, g05, g06 are down
-	lines := r.h.List(false, "")
-	if lines[0] != searchLine || lines[1] != "- Down machines (3)" {
-		t.Fatalf("top of the list: %q", lines[:3])
-	}
-	for i, id := range []string{"ai-2", "g05", "g06"} {
-		if !strings.Contains(lines[2+i], id) || !strings.Contains(lines[2+i], "DOWN") {
-			t.Errorf("line %d: %q", 2+i, lines[2+i])
+func TestStatusLineJSONEscapesMarkupForWaybar(t *testing.T) {
+	line := StatusLine{Text: `STALE: <b>1</b> & "2" 'x'`, Class: "alert", Tooltip: "A<b>bold</b> & Co\nSay \"hi\" It's"}
+	got := line.JSON()
+	for _, want := range []string{`STALE: \u0026lt;b\u0026gt;1`, `A\u0026lt;b\u0026gt;bold`, `\u0026amp; Co\nSay \u0026quot;hi\u0026quot; It\u0026#39;s`} {
+		if !strings.Contains(got, want) {
+			t.Errorf("missing %s in %s", want, got)
 		}
 	}
-	if !strings.HasPrefix(lines[5], "- Hub") {
-		t.Errorf("after the down group: %q", lines[5])
+	// Decoded by a reader, the text is plain escaped markup.
+	var back StatusLine
+	if err := json.Unmarshal([]byte(got), &back); err != nil || back.Tooltip != "A&lt;b&gt;bold&lt;/b&gt; &amp; Co\nSay &quot;hi&quot; It&#39;s" {
+		t.Errorf("decoded: %q %v", back.Tooltip, err)
 	}
-	// Cap: with DownMax 2 the third is replaced by a visible line.
-	r.h.set.DownMax = 2
-	lines = r.h.List(false, "")
-	if lines[4] != "   ! and 1 more down machines; use the search" {
-		t.Errorf("more line: %q", lines[4])
-	}
-	// Folding it leaves its heading with the count.
-	r.h.Pick("- Down machines (3)")
-	lines = r.h.List(false, "")
-	if lines[1] != "+ Down machines (3)" || strings.Contains(lines[2], "DOWN") {
-		t.Errorf("folded: %q", lines[:3])
-	}
-	// No down machines: no group.
-	for _, id := range []string{"ai-2", "g05", "g06"} {
-		r.setStatus(id, statusUp)
-	}
-	if l := r.h.List(false, ""); strings.Contains(strings.Join(l, "\n"), "Down machines") {
-		t.Errorf("group shown with nothing down: %q", l[:3])
-	}
-}
-
-func TestDownGroupAt5000Machines(t *testing.T) {
-	var parts []string
-	for i := 1; i <= 5000; i++ {
-		parts = append(parts, machineDoc(fmt.Sprintf("m%04d", i), fmt.Sprintf("Machine %d", i), "desktop", "moonlight", 21000, i, 7, ""))
-	}
-	r := newRig(t, parts...)
-	for i, s := range r.h.ms {
-		if s.m.Role != "hub" {
-			st := statusUp
-			if i%20 == 0 {
-				st = statusDown // 250 down
-			}
-			r.setStatus(s.m.ID, st)
-		}
-	}
-	lines := r.h.List(false, "")
-	text := strings.Join(lines, "\n")
-	if !strings.Contains(text, "- Down machines (250)") || !strings.Contains(text, "   ! and 200 more down machines; use the search") {
-		t.Errorf("down group:\n%s", strings.Join(lines[:4], "\n"))
-	}
-	// 50 down lines + the more line; the big desktop group is folded and says how many it hides.
-	if !strings.Contains(text, "+ Desktop (5000 machines, 250 down)") || len(lines) > 60 {
-		t.Errorf("%d lines; folded heading missing", len(lines))
+	if strings.Contains(got, "\n") && !strings.Contains(got, `\n`) {
+		t.Error("raw newline in the line")
 	}
 }

@@ -175,6 +175,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Opens on click in the hub's file manager. Non-Linux devices do not need access.
 - **Backups:** a local backup NAS, plus a copy off-site or in another room. No encryption.
 - The inventory and viewers.toml get the NAS backup copy. Secrets do not; secrets handling is a separate step.
+- /etc/hubos/wofi.css (the menu look) is a backed-up per-machine file too, and gets the NAS backup copy next to the inventory and viewers.toml.
 
 ## VM host
 
@@ -240,12 +241,13 @@ HubOS/
 │   └── inventory-format.md
 ├── examples/
 │   ├── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
-│   └── viewers.example.toml          (the fake viewer only; no real viewer command lines)
+│   ├── viewers.example.toml          (the fake viewer only; no real viewer command lines)
+│   └── wofi.style.css                (menu look: fixed-width font; copy to /etc/hubos/wofi.css)
 ├── go.mod                            (one module for the whole repo)
 ├── cmd/
 │   └── hubd/
 │       ├── main.go                   (slice 1: flags, wiring, printing, exit code; routes subcommands)
-│       └── slice2.go                 (slice 2: serve, feed, list, menu, pick, open, end)
+│       └── slice2.go                 (slice 2: serve, feed, list, menu, pick, open, end, forget)
 ├── internal/
 │   ├── driftwm/                      (driftwm socket client)
 │   ├── hub/                          (state, checks, menu list, open/end, record, socket)
@@ -300,7 +302,7 @@ HubOS/
 - Text readability on the projector, and output scale
 - A release build of driftwm: speed and memory
 - Waybar as a non-root user under s6 or dinit
-- Mouse clicks on entries in wofi
+- wofi single-click selection was tested with xdotool in the build environment only
 - hubd, the panel and wofi at 100 and at 5000 machines
 
 ## Open questions for the owner
@@ -343,3 +345,4 @@ HubOS/
 - **2026-10-01 (later):** Bar investigated; findings in docs/bar-findings.md; panel decisions recorded (Waybar alert plus wofi list, top edge, fit instead of fullscreen, D-Bus session bus allowed); scale target 100, stretch 5000.
 - **2026-10-01 (later):** hubd second slice: feed, list, menu, pick, open, end; scale tested at 100 and 5000; see docs/hubd-slice2.md.
 - **2026-10-01 (later):** hubd slice 2 follow-ups: bounded check, down-machines group, forget command, viewer logs, stale-round rule.
+- **2026-10-01 (later):** hubd slice 2 reviewed and merged; STALE rule, first-round display, safety fixes and viewer-log cap.

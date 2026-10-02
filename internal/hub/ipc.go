@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"syscall"
 	"time"
 )
 
@@ -57,21 +58,32 @@ type Response struct {
 	Ask     bool        `json:"ask,omitempty"`
 }
 
-// Listen opens the socket: directory 0700, socket 0600. If another hubd
-// answers on it, that is an error; a leftover file nobody answers on is
-// removed.
+// Listen opens the socket: directory 0700, socket 0600. It refuses a folder
+// that is not owned by the current user or is not mode 0700 (someone else
+// could then put a file or a socket there). If another hubd answers on the
+// path, that is an error; a leftover *socket* nobody answers on is removed;
+// anything else at that path (a file, a link, a folder) is never removed.
 func Listen(path string) (net.Listener, error) {
 	if err := CheckSocketPath(path); err != nil {
 		return nil, err
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return nil, err
 	}
-	if c, err := net.DialTimeout("unix", path, time.Second); err == nil {
-		c.Close()
-		return nil, fmt.Errorf("another hubd is already running (it answers on %s)", path)
+	if err := checkFolder(dir); err != nil {
+		return nil, err
 	}
-	os.Remove(path)
+	if fi, err := os.Lstat(path); err == nil {
+		if fi.Mode()&os.ModeSocket == 0 {
+			return nil, fmt.Errorf("%s exists and is not a socket (it is %s); hubd will not remove it. Move it away, or give --socket PATH", path, describeMode(fi.Mode()))
+		}
+		if c, err := net.DialTimeout("unix", path, time.Second); err == nil {
+			c.Close()
+			return nil, fmt.Errorf("another hubd is already running (it answers on %s)", path)
+		}
+		os.Remove(path) // a leftover socket that nobody answers on
+	}
 	l, err := net.Listen("unix", path)
 	if err != nil {
 		return nil, err
@@ -81,6 +93,37 @@ func Listen(path string) (net.Listener, error) {
 		return nil, err
 	}
 	return l, nil
+}
+
+func describeMode(m os.FileMode) string {
+	switch {
+	case m.IsDir():
+		return "a folder"
+	case m&os.ModeSymlink != 0:
+		return "a link"
+	case m.IsRegular():
+		return "a plain file"
+	}
+	return "something else"
+}
+
+// checkFolder refuses a folder that is not owned by the user running hubd or
+// whose mode is not exactly 0700.
+func checkFolder(dir string) error {
+	fi, err := os.Stat(dir)
+	if err != nil {
+		return err
+	}
+	if !fi.IsDir() {
+		return fmt.Errorf("%s is not a folder", dir)
+	}
+	if st, ok := fi.Sys().(*syscall.Stat_t); ok && int(st.Uid) != os.Geteuid() {
+		return fmt.Errorf("the folder %s is owned by user %d, not by the user running hubd (%d); refusing to use it for the socket", dir, st.Uid, os.Geteuid())
+	}
+	if perm := fi.Mode().Perm(); perm != 0o700 {
+		return fmt.Errorf("the folder %s has mode %04o, but it must be 0700 (fix it with: chmod 700 %s); refusing to put the socket there", dir, perm, dir)
+	}
+	return nil
 }
 
 // Serve answers connections until the listener is closed.
@@ -137,9 +180,9 @@ func reply(c net.Conn, r Response) {
 	c.Write(append(b, '\n'))
 }
 
-// feed writes a status line now and again whenever it changes. Changes that
-// come close together are sent as one (100 ms), and a line identical to the
-// last one is not sent again.
+// feed writes a status line now and again whenever it changes, but never
+// more than one line per second (the first at once), and never a line
+// identical to the last one.
 func (h *Hub) feed(c net.Conn) {
 	ch, stop := h.Changes()
 	defer stop()
@@ -150,16 +193,27 @@ func (h *Hub) feed(c net.Conn) {
 		close(gone)
 	}()
 	last := ""
+	var sentAt time.Time
 	for {
-		if line := h.Status().JSON(); line != last {
-			if _, err := c.Write([]byte(line + "\n")); err != nil {
-				return
+		line := h.Status().JSON()
+		if line != last {
+			if wait := time.Second - time.Since(sentAt); !sentAt.IsZero() && wait > 0 {
+				select {
+				case <-time.After(wait):
+				case <-gone:
+					return
+				}
+				line = h.Status().JSON() // the newest, after waiting
 			}
-			last = line
+			if line != last {
+				if _, err := c.Write([]byte(line + "\n")); err != nil {
+					return
+				}
+				last, sentAt = line, time.Now()
+			}
 		}
 		select {
 		case <-ch:
-			time.Sleep(100 * time.Millisecond)
 		case <-time.After(time.Second):
 			// Nothing changed, but time passes: STALE and the message time
 			// run out without any event, so look again every second.

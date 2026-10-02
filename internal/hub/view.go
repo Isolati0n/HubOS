@@ -17,8 +17,15 @@ type StatusLine struct {
 	Tooltip string `json:"tooltip"`
 }
 
-// JSON is the one-line form.
+// markupEscaper makes text safe for Pango markup, which Waybar 0.9.24 reads in
+// the bar text and in the tooltip: without it a "&" or "<" in a machine name
+// makes GTK refuse the text and the tooltip is blank (docs/hubd-slice2.md).
+var markupEscaper = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;", "'", "&#39;")
+
+// JSON is the one-line form for Waybar: the text and tooltip are escaped for
+// markup, so the module must be configured without Waybar's own "escape".
 func (s StatusLine) JSON() string {
+	s.Text, s.Tooltip = markupEscaper.Replace(s.Text), markupEscaper.Replace(s.Tooltip)
 	b, _ := json.Marshal(s)
 	return string(b)
 }
@@ -46,10 +53,8 @@ func (h *Hub) countLocked() (c Counts, down []*mstate) {
 			c.Checking++
 		}
 	}
-	// STALE: the last round that finished ended more than three intervals
-	// ago. (A round starts one interval after the previous one finishes, so
-	// rounds that take longer than two intervals show as stale.)
-	c.Stale = h.rounds > 0 && h.now().Sub(h.lastRound) > 3*h.set.ProbeInterval
+	// STALE: no check result has arrived for three intervals.
+	c.Stale = h.now().Sub(h.lastResult) > 3*h.set.ProbeInterval
 	return
 }
 
@@ -66,22 +71,26 @@ func (h *Hub) Status() StatusLine {
 		tip = append(tip, "driftwm is not reachable: windows cannot be opened")
 	}
 	if c.Stale {
-		tip = append(tip, fmt.Sprintf("STALE: the last finished check round ended %s ago (limit: 3 intervals = %s)",
-			h.now().Sub(h.lastRound).Round(time.Second), 3*h.set.ProbeInterval))
+		// The age is shown in 10 s steps so the tooltip changes at most every 10 s.
+		age := h.now().Sub(h.lastResult).Truncate(10 * time.Second)
+		tip = append(tip, fmt.Sprintf("STALE: no check result for %s (limit: 3 intervals = %s)", age, 3*h.set.ProbeInterval))
 	}
 	line := StatusLine{Class: "ok"}
-	if h.rounds == 0 && c.Up == 0 && c.Down == 0 {
-		line.Text = "checking..."
+	first := h.rounds == 0 && h.checkable > 0
+	if first {
+		// No partial up and down numbers while the first round is running.
+		line.Text = fmt.Sprintf("checking... %d of %d done", h.firstDone, h.checkable)
+		tip = append(tip, "first check round in progress")
 	} else {
 		line.Text = fmt.Sprintf("%d of %d up", c.Up, c.Up+c.Down)
 	}
 	if c.Stale {
 		line.Text = "STALE: " + line.Text
 	}
-	if c.Down > 0 || c.Stale || h.activeMessageLocked() != "" {
+	if c.Stale || h.activeMessageLocked() != "" || (!first && c.Down > 0) {
 		line.Class = "alert"
 	}
-	if c.Down > 0 {
+	if c.Down > 0 && !first {
 		sort.SliceStable(down, func(i, j int) bool { return down[i].m.ID < down[j].m.ID })
 		names := make([]string, 0, h.set.TooltipCap)
 		for i, s := range down {
@@ -104,6 +113,10 @@ func (h *Hub) Status() StatusLine {
 	}
 	if h.rounds > 0 {
 		tip = append(tip, fmt.Sprintf("last check round took %s", h.lastTook.Round(time.Millisecond)))
+		if h.lastTook > 2*h.set.ProbeInterval {
+			// A plain note, not an alert: results are still arriving.
+			tip = append(tip, fmt.Sprintf("note: that is longer than two intervals (%s); a bigger check cap or interval may fit this many machines better", 2*h.set.ProbeInterval))
+		}
 	}
 	line.Tooltip = strings.Join(tip, "\n")
 	return line

@@ -92,13 +92,21 @@ func TestMenuLoopSearchAskAndLauncherOptions(t *testing.T) {
 			}
 		}
 	}
-	// Without the style file and flag, neither option is passed.
+	// Without the style file: no --style. Single click is on by default.
 	os.WriteFile(script, []byte("   x  X  UP\n"), 0o600)
 	os.WriteFile(argsLog, nil, 0o600)
 	errb.Reset()
 	dispatch([]string{"menu", "--socket", sock, "--wofi", fake, "--style", filepath.Join(dir, "missing.css")}, &out, &errb)
 	b, _ := os.ReadFile(argsLog)
-	if strings.Contains(string(b), "--style") || strings.Contains(string(b), "single_click") || !strings.Contains(string(b), "--width 720") {
+	if strings.Contains(string(b), "--style") || !strings.Contains(string(b), "-D single_click=true") || !strings.Contains(string(b), "--width 720") {
 		t.Errorf("defaults: %q", b)
+	}
+	// --no-single-click goes back to wofi's double click.
+	os.WriteFile(script, []byte("   x  X  UP\n"), 0o600)
+	os.WriteFile(argsLog, nil, 0o600)
+	dispatch([]string{"menu", "--socket", sock, "--wofi", fake, "--no-single-click"}, &out, &errb)
+	b, _ = os.ReadFile(argsLog)
+	if strings.Contains(string(b), "single_click") {
+		t.Errorf("--no-single-click: %q", b)
 	}
 }

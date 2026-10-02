@@ -1,6 +1,6 @@
 # hubd second slice
 
-**Built and measured: 2026-10-01 — build environment; will change. Includes the follow-ups the owner decided after the first review (section 10).** `HUB-OS.md` wins if anything here disagrees with it. This file describes what the second slice of `hubd` does, how it was tested, what was measured at 100 and at 5000 machines, and what is still unverified. It builds on `docs/inventory-format.md`, `docs/driftwm-findings.md` and `docs/bar-findings.md`.
+**Section 11 (second review) supersedes earlier statements about STALE, the check cap and single click.** **Built and measured: 2026-10-01 — build environment; will change. Includes the follow-ups the owner decided after the first review (section 10).** `HUB-OS.md` wins if anything here disagrees with it. This file describes what the second slice of `hubd` does, how it was tested, what was measured at 100 and at 5000 machines, and what is still unverified. It builds on `docs/inventory-format.md`, `docs/driftwm-findings.md` and `docs/bar-findings.md`.
 
 Everything here ran in the cloud build environment (`docs/environment.md`): a nested driftwm (software rendering, on a virtual X display), Waybar 0.9.24, wofi 1.4.1, `foot` as the **fake viewer**, and fake machines made of tiny listeners on this computer's own addresses. **No real Moonlight, virt-viewer or Remmina was run, no real screen, no real network, no real hardware.**
 
@@ -24,9 +24,9 @@ Labels used: **TESTED** (the command shown was run and gave the result written),
 | `hubd forget ID` | Drops the "window not identified" block of a machine (section 3). Closes nothing, moves nothing, does not touch the machine. |
 | `hubd check` (or `hubd` alone) | Slice 1: reads the inventory, checks every machine once, prints the table. Since the follow-up it checks with the same bounded, file-limit-aware probing as the daemon (section 10); the table, wording and exit codes are the same. |
 
-`hubd menu` also takes `--wofi PROGRAM`, `--style FILE` (wofi style, used only if the file exists; default `/etc/hubos/wofi.css`), `--width PIXELS` (720) and `--single-click`.
+`hubd menu` also takes `--wofi PROGRAM`, `--style FILE` (wofi style, used only if the file exists; default `/etc/hubos/wofi.css`), `--width PIXELS` (720), `--single-click` (the default: one click picks) and `--no-single-click` (pick with a double click, like wofi's own default).
 
-Common flags: `--socket PATH` (default `$XDG_RUNTIME_DIR/hubos/hubd.sock`). `serve` also takes: `--inventory PATH` (default `/etc/hubos/inventory.toml`), `--viewers PATH` (default: `viewers.toml` in the inventory's folder), `--driftwm-socket PATH`, `--bar-height PIXELS`, `--probe-cap N`, `--probe-interval D`, `--probe-timeout D`, `--window-wait D`, `--fold N`, `--list-max N`, `--down-max N`, `--tooltip-cap N`, `--message-ttl D`, `--log-rounds`.
+Common flags: `--socket PATH` (default `$XDG_RUNTIME_DIR/hubos/hubd.sock`). `serve` also takes: `--inventory PATH` (default `/etc/hubos/inventory.toml`), `--viewers PATH` (default: `viewers.toml` in the inventory's folder), `--driftwm-socket PATH`, `--bar-height PIXELS`, `--probe-cap N` (0 = automatic, see section 11), `--probe-interval D`, `--probe-timeout D`, `--window-wait D`, `--fold N`, `--list-max N`, `--down-max N`, `--tooltip-cap N`, `--message-ttl D`, `--log-rounds`.
 
 Exit codes of `open` and `end`: 0 when it did what was asked (`open` also counts "went to the existing window"), 1 otherwise, with the reason printed in plain words.
 
@@ -84,16 +84,17 @@ One JSON request per line, one JSON reply per line (`internal/hub/ipc.go`). `fee
 {"text":"4750 of 5000 up","class":"alert","tooltip":"250 down: ai 119, …, ai 59 and 240 more"}
 ```
 
-- `text`: `N of M up`. The hub and machines that are not checked are in neither number. Before the first round: `checking...`. When the status is stale: `STALE: N of M up`.
+- `text`: `N of M up`. The hub and machines that are not checked are in neither number. **While the first round runs: `checking... N of M done`** (no partial up and down numbers). When the status is stale: `STALE: N of M up`.
 - `class`: `ok`, or `alert` when a machine is down, when a message is showing, or when the status is STALE.
-- `tooltip`, top to bottom: the latest message (for `message-ttl`), "driftwm is not reachable…", "STALE: the last finished check round ended Xs ago (limit: 3 intervals = Ys)", `K down: <names>` (at most `tooltip-cap` names, then "and J more"), `N not checked` (or `all machines up`), and finally `last check round took Z`.
-- **Rounds and STALE.** A check round starts one interval after the previous round **finished**. The status is STALE when the last finished round ended more than three intervals ago. The feed looks again every second, so STALE appears even when nothing else changes.
+- `tooltip`, top to bottom: the latest message (for `message-ttl`), "driftwm is not reachable…", `STALE: no check result for 30s (limit: 3 intervals = 30s)` (the age in 10 s steps, so the tooltip changes at most every 10 s), `first check round in progress` (first round only), `K down: <names>` (at most `tooltip-cap` names, then "and J more"), `N not checked` (or `all machines up`), `last check round took Z`, and, when that round took longer than two intervals, a plain note: `note: that is longer than two intervals (20s); a bigger check cap or interval may fit this many machines better`.
+- **Rounds and STALE.** A check round starts one interval after the previous round **finished**. The status is **STALE when no check result has arrived for three intervals** (any result counts, also those inside a long round). A long round alone is only a note, not an alert. The feed looks again every second, so STALE appears even when nothing else changes, and it **sends at most one line per second**, the first at once.
+- **Markup.** Waybar 0.9.24 reads the bar text and the tooltip as Pango markup, so `hubd feed` escapes `&`, `<`, `>`, `"` and `'` (section 11). Use the module without Waybar's own `escape` option.
 
 ### 2.5 Viewer logs
 
 Each started viewer's standard output and error go to `$XDG_RUNTIME_DIR/hubos/hubd.viewer-logs/viewer-<id>.log` (folder mode 0700, files 0600; the runtime folder is memory-backed, so logs are gone at reboot). The viewer writes to the file directly, not through hubd, so a viewer keeps running — and logging — if hubd is killed. The first line of each start is `--- <time> started: <program>` (the program name only, never the arguments, which contain inventory text).
 
-**Cap and rotation (proposed: 128 KiB per log).** When a viewer starts and its log is over the cap, the old log is moved to `viewer-<id>.log.1` (replacing an older one) and a new log starts. While hubd runs it checks every 5 seconds (and at start-up); a log over the cap is copied to `.1` and emptied, and the viewer goes on writing from the start. So a machine keeps at most about 2 x the cap. **While hubd is not running nothing trims**, so a chatty viewer can grow its log until hubd runs again. When a viewer exits with an error before showing a window, the message names its log file.
+**Cap and rotation (128 KiB per log, 64 MiB for all logs together).** When a viewer starts and its log is over the cap, the old log is moved to `viewer-<id>.log.1` (replacing an older one) and a new log starts. While hubd runs it checks every 5 seconds (and at start-up); a log over the cap is copied to `.1` and emptied, and the viewer goes on writing from the start. So a machine keeps at most about 2 x the cap. **Total cap:** when all the logs together are over 64 MiB, the oldest are removed first: rotated copies (`.1`) are deleted, then current logs, oldest first, are emptied but kept (a viewer may still be writing to one, and deleting it would not free the space until the viewer exits). **While hubd is not running nothing trims**, so a chatty viewer can grow its log until hubd runs again. When a viewer exits with an error before showing a window, the message names its log file.
 
 ---
 
@@ -259,7 +260,7 @@ How fast a change shows on the bar: with a 2 s interval, a fake node stopped at 
 
 ### 7.3 Open files, and what happens above the limit
 
-`hubd` reads `ulimit -n` at start-up and prints it. It never lets the cap exceed the limit minus 64 (kept for sockets to Waybar, the menu and driftwm). Command: `/tmp/hs2/measure.sh /tmp/hs2/s5000 200 5s <ULIMIT> 2`.
+`hubd` reads `ulimit -n` at start-up and prints it. It never lets the cap exceed 80% of the limit (the rest is kept for sockets to Waybar, the menu, driftwm and logs; first version: the limit minus 64). Command: `/tmp/hs2/measure.sh /tmp/hs2/s5000 200 5s <ULIMIT> 2`.
 
 | `ulimit -n` | Check cap used | Round time | Result |
 |---|---|---|---|
@@ -330,7 +331,7 @@ The ten numbers proposed in the first review were **approved by the owner as pro
 
 | Setting | Proposed | Why (from the measurements above) |
 |---|---|---|
-| Check cap (`--probe-cap`) | **200** | 100 machines: a worst-case round (all silent) is 2.0 s. At 5000 it is 40 s (cap 200), 18 s (500), 10 s (1000); open files are cap + 8; fine under the usual 1024. For a cluster beyond ~1000 machines use 1000 and raise `ulimit -n` to 2048. |
+| Check cap (`--probe-cap`) | **200; 1000 above 1000 machines; at most 80% of `ulimit -n`** (second review) | 100 machines: a worst-case round (all silent) is 2.0 s. At 5000 it is 40 s (cap 200), 18 s (500), 10 s (1000); open files are cap + 8; fine under the usual 1024. For a cluster beyond ~1000 machines use 1000 and raise `ulimit -n` to 2048. |
 | Check interval (`--probe-interval`) | **10 s** | A change shows within one interval plus the round (0.9–1.9 s seen with 2 s). 5000 machines at 10 s is 500 connects a second, which the sandbox handled in 0.1 s per round. |
 | Per-machine limit (`--probe-timeout`) | **2 s** (unchanged from slice 1) | Not measured on a real network (still a guess; HUB-OS.md lists it). |
 | Window wait (`--window-wait`) | **10 s** | The fake viewer's window appeared in well under a second; opening took about 0.8 s end to end (0.5 s is the settle wait). Real viewers are unknown, so this is generous. |
@@ -340,7 +341,7 @@ The ten numbers proposed in the first review were **approved by the owner as pro
 | Tooltip cap (`--tooltip-cap`) | **10** | Keeps the tooltip near 100–200 bytes at any size. |
 | Message time (`--message-ttl`) | **15 s** | How long a refused-open message stays on the bar item and at the top of the menu. A guess. |
 | Close wait | **3 s** (fixed in code) | The fake window closed at once. A guess for real viewers. |
-| Stale after | **3 intervals** after the last finished round (owner's rule) | See section 7.6 for the 5000 case. |
+| Stale after | **3 intervals** without any check result (owner's rule, changed in the second review) | Section 11. |
 
 ---
 
@@ -356,7 +357,7 @@ The ten numbers proposed in the first review were **approved by the owner as pro
 - **wofi on the projector**: readability. The fixed-width font style is tested only in the nested window. The style file is optional; without it the columns do not line up.
 - **Viewer logs**: only `sh` and `foot` were run, so the log of a real Moonlight/virt-viewer/Remmina (size, content, secrets in it) is UNKNOWN. Nothing trims while hubd is not running.
 - **STALE while a long first round runs**: before any round has finished the text is `checking...`, then partial counts appear as answers arrive (for example `0 of 3034 up` growing to `0 of 5000 up`); nothing marks those counts as partial.
-- **Mouse in wofi**: a double click picks, a single click only highlights unless `-D single_click=true` is given (`hubd menu --single-click`, off by default).
+- **Mouse in wofi**: a double click picks, a single click only highlights unless `-D single_click=true` is given (`hubd menu` has it on by default since section 11; `--no-single-click` turns it off).
 - **A real network**: the 2 s limit, the cost of 5000 connects every 10 s to real machines, and whether a bare connect disturbs a real Sunshine/SPICE/VNC (already on the list in `HUB-OS.md`).
 - **5000 real windows**, a release build of driftwm, GPU rendering.
 - **Several vm-hosts, several hubs of windows, two monitors.**
@@ -384,3 +385,49 @@ Decided by the owner and built on the same branch, as new commits:
 | cap 200 | 39.7 s, then 41.1 s | `t+40s … last check round took 40.141s`; `t+70s STALE: 0 of 5000 up … STALE: the last finished check round ended 30s ago (limit: 3 intervals = 30s)`; the STALE line repeats every second (the age changes) until `t+91s`, when round 2 finished and the line is fresh again (`took 41.355s`) |
 
 A bug found on the way: STALE comes from the clock, not from an event, so the first version never showed it (the feed only sent a line when something changed). The feed now looks again every second (`TestFeedShowsStaleWhenTimePassesWithNoEvent`).
+
+---
+
+## 11. Second review: decisions, safety fixes, and what was found
+
+### 11.1 Owner decisions built
+
+1. **STALE** means: **no check result has arrived for three intervals.** A round longer than two intervals gets a plain note in the tooltip, not an alert; the length of the last round is always shown. Tested at 5000 machines with caps 200 and 1000 (fake clock: `TestStaleRuleAt5000MachinesCap1000`, `TestLongRoundAt5000MachinesCap200IsANoteNotAnAlert`; live below).
+2. **First round:** `checking... N of M done` instead of partial counts (`TestFirstRoundShowsHowManyAreDoneNotPartialCounts`), and **at most one feed line per second** (`TestFeedSendsAtMostOneLinePerSecondDuringTheFirstRound`).
+3. **Single click is on by default** (`-D single_click=true` is passed to wofi); `--no-single-click` goes back to a double click.
+4. `/etc/hubos/wofi.css` is a backed-up per-machine file (`HUB-OS.md`, NAS and backups).
+5. **Viewer logs:** 128 KiB per log with one rotated copy, plus **64 MiB for all logs together**, oldest removed first (`TestTotalLogCapRemovesTheOldestFirst`: six files, cap 6000 → nothing; 4500 → the two rotated copies go; 2500 → the two oldest current logs are emptied and kept; far under the cap → nothing).
+6. While STALE, the age is shown in **10 s steps**, so the tooltip changes at most every 10 s (tested: the same tooltip at 31 s and 38 s, a new one at 41 s).
+7. **Probe cap:** default 200; **1000 when the inventory has more than 1000 machines**; **always at most 80% of `ulimit -n`**. Big clusters want `ulimit -n` of at least 2048 (1000 / 0.8 = 1250, rounded up to a usual value). `hubd serve` prints the limit and the cap, and says so when it lowered the cap. `hubd check` uses the same rule.
+
+### 11.2 Safety fixes
+
+1. **Inventory (rules and broken files 27, 28):** `address`, `user` and `share` must not start with a dash; `id` must match `^[a-z0-9][a-z0-9-]*$`. Messages: `nas-1: address "-oProxyCommand=x" must not start with a dash`; `-nas: id "-nas" must start with a letter or digit, not a dash`. Documented in `docs/inventory-format.md`. `examples/viewers.example.toml` recommends `--` before arguments derived from the inventory where the viewer supports it.
+2. **Socket:** a leftover file at the socket path is removed **only if it is a socket** (a plain file, a link or a folder there is never removed; hubd refuses and says what it found). hubd also refuses a socket folder that is **not owned by the user running it or not mode 0700**, with the fix in the message (`chmod 700 …`). Tests: `TestListenNeverRemovesWhatIsNotASocket` (file with content kept, link target kept, folder refused, a real leftover socket replaced), `TestListenRefusesAFolderThatIsNotOwnedOrNotMode0700` (0755, 0770 and 0500 refused, 0700 accepted; the other-owner case runs only as root: `chown 12345`).
+3. **Markup** (tested with the installed Waybar 0.9.24 and wofi 1.4.1, names `A<b>bold</b>`, `Fish & Chips`, `Say "hi"`, `It's &amp; <i>done</i>`):
+   - **Bar text:** it holds only counts, the word STALE and `checking... N of M done`; no machine name ever goes into it, so it cannot garble.
+   - **Tooltip, before the fix: garbled.** The tooltip box appeared **blank** (a tiny empty rounded box). Waybar's log: `Failed to set text '…' from markup due to error parsing markup: … Entity did not end with a semicolon; most likely you used an ampersand character without intending to start an entity — escape ampersand as &amp;`. The same blank box with Waybar's documented `"escape": true` option (the manual says only "Option to enable escaping of script output"): `Entity name “ Chips, Say "hi", It's &amp” is not known`. So the documented option did not fix the tooltip in 0.9.24.
+   - **Fix:** `hubd feed` escapes `&`, `<`, `>`, `"` and `'` itself (`&amp; &lt; &gt; &quot; &#39;`), and the module is used without `"escape"`. After the fix the tooltip shows, in words: `Fish & Chips is down, not opened` / `4 down: A<b>bold</b>, Fish & Chips, Say "hi", It's &amp; <i>done</i>` / `last check round took 0s` — every character literal, no bold or italic, no errors in the log (0 markup errors with `escape` false and with `escape` true). (`TestStatusLineJSONEscapesMarkupForWaybar`.)
+   - **wofi list:** plain text by default (no `--allow-markup`), so all four names show literally: `A<b>bold</b>`, `Fish & Chips`, `Say "hi"`, `It's &amp; <i>done</i>`, columns aligned. Nothing garbled.
+4. **Orphan viewer** (a viewer whose window appears after the window wait), recorded as it is **today** in `TestOrphanViewerWindowAfterTheWait` (window wait 300 ms, settle 500 ms as in production):
+   - **A. The window appears after the failure; the owner clicks again later.** First click: `no window appeared for A within 300ms`; the machine shows idle, nothing recorded. The first viewer's window then appears (`#0 hubos-a`), unrecorded and unknown to hubd. Second click: a **second viewer is started**; its window (`#1 hubos-a`) is recorded; hubd says `opened A at home (1, 1), matched by name`. **Two viewers and two windows exist, both named `hubos-a`; hubd knows only #1.** Nothing warns about #0.
+   - **B. The late window arrives while the second click waits, and the second viewer is quick** (inside the 500 ms settle): two new windows with the same name → `2 new windows appeared while opening A (#0 "hubos-a", #1 "hubos-a"); I cannot tell which one is its window…`; the machine is blocked until `hubd forget`.
+   - **C. The same, but the second viewer is slow** (slower than the settle): hubd takes the **first** viewer's late window (#0) for the second viewer and says `opened A … matched by name`; the second viewer's window (#1) appears later and is unrecorded. Two windows, hubd knows #0.
+   - Behaviour not changed; a fix is proposed in the review reply.
+
+### 11.3 Measurements after these changes
+
+(Same commands as section 7; automatic cap.)
+
+| Case | Result |
+|---|---|
+| 100, local fakes, cap 200 | rounds 7, 18, 3 ms; peak open files 67; memory 8.8 MB; list 39 lines / 1,648 bytes; status line 135 bytes |
+| 5000, local fakes, **cap 1000 (automatic)** | rounds 224, 164, 167 ms; peak open files 981; memory 32.9 MB (was 18.5 MB at cap 200); list 62 lines / 2,897 bytes; flat list 1,002 lines; status line 182 bytes |
+| 5000, `ulimit -n` 1024 | cap **819** (80%); round 183 / 138 ms; correct (4750 up, 250 down); peak open files 769 |
+| 5000, `ulimit -n` 256 | cap **204**; round 130 / 118 ms; correct; peak open files 133 |
+| 5000, `ulimit -n` 100 | cap **80**; round 128 / 132 ms; correct; peak open files 74 |
+| `hubd check`, 5000, `ulimit -n` 20000 / 1024 / 256 | 4750 up, 250 DOWN, 0 false, 0 NOT CHECKED; 306 / 286 / 271 ms |
+| 5000, none reachable, **cap 1000 (automatic)**, interval 10 s, live feed over 75 s | rounds 10.07, 10.02, 10.03, 10.02 s; **14 feed lines in all, never STALE**; first round: one line per second at most (11 lines in the first 15 s, one per second); `checking... 10 of 5000 done` at 0 s, `59` at 1.6 s, `1018` at 2.6 s; then `0 of 5000 up`, alert, tooltip ending `last check round took 10.029s` (no note: 10 s is under two intervals) |
+| 5000, none reachable, **cap 200**, interval 10 s, live feed over 135 s | rounds 41.3 s and 40.6 s; **43 feed lines, never STALE** (results kept arriving); first round: at most one line per second (15 lines in the first 15 s); the tooltip ends `last check round took 41.329s` / `note: that is longer than two intervals (20s); a bigger check cap or interval may fit this many machines better`; class `alert` only because every machine is down |
+
+In section 10 the same case (cap 200) was STALE for about 20 s of every 50 under the old rule; under the new rule it never is.

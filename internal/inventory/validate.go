@@ -9,7 +9,11 @@ import (
 	"unicode"
 )
 
-var idPattern = regexp.MustCompile(`^[a-z0-9-]+$`)
+var idPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9-]*$`)
+
+// idCharsPattern is the old character rule, kept so a wrong character and a
+// leading dash get different messages.
+var idCharsPattern = regexp.MustCompile(`^[a-z0-9-]+$`)
 
 // label names a machine in messages: its id, or its position if it has none.
 func label(i int, m Machine) string {
@@ -65,12 +69,25 @@ func validate(inv *Inventory) []Problem {
 			}
 		}
 
+		// A text that starts with a dash could be read as an option by a
+		// program it is passed to.
+		for _, f := range []struct{ name, val string }{{"address", m.Address}, {"user", m.User}, {"share", m.Share}} {
+			if strings.HasPrefix(f.val, "-") {
+				add(w, "%s %q must not start with a dash", f.name, f.val)
+			}
+		}
+
 		// id: present, well-formed, unique.
 		if m.ID == "" {
 			add(w, `required field "id" is missing or empty`)
 		} else {
-			if !idPattern.MatchString(m.ID) && !hasControl(m.ID) {
+			switch {
+			case hasControl(m.ID):
+				// already reported above
+			case !idCharsPattern.MatchString(m.ID):
 				add(w, "id %q must use only lowercase letters, digits and dashes", m.ID)
+			case !idPattern.MatchString(m.ID):
+				add(w, "id %q must start with a letter or digit, not a dash", m.ID)
 			}
 			if first := byID[m.ID]; first != i {
 				add(w, "id is not unique: machine #%d has the same id", first+1)
