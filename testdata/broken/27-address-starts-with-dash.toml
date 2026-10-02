@@ -1,0 +1,21 @@
+# BROKEN ON PURPOSE: address, user and share must not start with a dash.
+# EXPECT: nas-1: address "-oProxyCommand=x" must not start with a dash
+
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "192.0.2.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "-oProxyCommand=x"
+open    = ["files", "ssh"]
+home    = { x = -2000, y = 0 }
+share   = "pool"

@@ -273,3 +273,26 @@ func BenchmarkParse(b *testing.B) {
 		}
 	}
 }
+
+func TestLeadingDashRules(t *testing.T) {
+	for _, tc := range []struct{ field, from, to, want string }{
+		{"user", `open = ["none"]`, "open = [\"none\"]\nuser = \"-oBad\"", `hub: user "-oBad" must not start with a dash`},
+		{"share", `open = ["none"]`, "open = [\"files\"]\nshare = \"-pool\"", `hub: share "-pool" must not start with a dash`},
+		{"address", `address = "127.0.0.1"`, `address = "-x"`, `hub: address "-x" must not start with a dash`},
+		{"id", `id = "hub"`, `id = "-hub"`, `-hub: id "-hub" must start with a letter or digit, not a dash`},
+		{"id lone dash", `id = "hub"`, `id = "-"`, `-: id "-" must start with a letter or digit, not a dash`},
+	} {
+		doc := "format = 1\n" + strings.Replace(validHub, tc.from, tc.to, 1)
+		_, ps := Parse([]byte(doc))
+		if got := problemLines(ps); !reflect.DeepEqual(got, []string{tc.want}) {
+			t.Errorf("%s: got %q want %q", tc.field, got, tc.want)
+		}
+	}
+	// A dash inside, or an id that starts with a digit, is fine.
+	for _, id := range []string{"a-b", "9-lives", "x-"} {
+		doc := "format = 1\n" + strings.Replace(validHub, `id = "hub"`, `id = "`+id+`"`, 1)
+		if _, ps := Parse([]byte(doc)); len(ps) != 0 {
+			t.Errorf("id %q: %q", id, problemLines(ps))
+		}
+	}
+}

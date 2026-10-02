@@ -19,7 +19,7 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 
 | Field | Required? | Meaning |
 |---|---|---|
-| `id` | required | Short permanent label. Lowercase letters, digits and dashes only. Unique. Never changed once set. Other entries refer to a machine by its id. |
+| `id` | required | Short permanent label. Lowercase letters, digits and dashes only, starting with a letter or digit (`^[a-z0-9][a-z0-9-]*$`). Unique. Never changed once set. Other entries refer to a machine by its id. |
 | `name` | required | Friendly name shown in the panel. |
 | `role` | required | Exactly one of: `hub`, `gaming`, `ai`, `desktop`, `nas`, `backup-nas`, `vm-host`, `guest`. |
 | `address` | required | Where to reach the machine: a name (like `nas-1.lan`) or a number address. No port in it. |
@@ -46,6 +46,7 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 - `port`, when present, must be a whole number from 1 to 65535.
 - The `x` and `y` of `home` must be whole numbers. This is provisional until the canvas unit is verified.
 - `lifetime` must be exactly `ephemeral` or `persistent`.
+- `id` must start with a letter or digit, not a dash. `address`, `user` and `share` must not start with a dash (a text that starts with a dash could be read as an option by the program it is given to).
 - `id`, `name`, `user`, `share` and `address` must not contain control characters or line breaks (tabs, newlines, and the like). hubd puts these texts in menus, logs and viewer command lines, one argument each; a line break would break a menu line.
 - Secrets never appear in this file.
 

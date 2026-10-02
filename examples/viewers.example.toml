@@ -10,6 +10,12 @@
 # A placeholder for a value the machine lacks (for example {port} on a
 # machine with no port) stops that machine from opening; hubd never guesses.
 #
+# Safety tip: put "--" before the arguments that come from the inventory
+# ({name}, {address}, {user}, {share}, ...) when the viewer supports it, so a
+# value can never be read as an option. (The inventory already refuses an
+# address, user or share that starts with a dash; "--" is the second lock.)
+# The fake viewer below uses "--" before its own command.
+#
 # There are NO real Moonlight, virt-viewer or Remmina command lines here:
 # their command lines and window names are still unknown (HUB-OS.md,
 # "Unverified"). The fake viewer is a terminal window that just sits there.
