@@ -2,6 +2,7 @@ package hub
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -56,6 +57,7 @@ func (h *Hub) clearAll() {
 	h.mu.Lock()
 	for _, s := range h.ms {
 		s.win = nil
+		h.leaveLateLocked(s, phaseIdle)
 		if s.phase == phaseUnmatched {
 			s.phase = phaseIdle
 		}
@@ -83,10 +85,57 @@ func (h *Hub) syncWindows(st *driftwm.State) {
 			changed = true
 		}
 	}
+	// Two or more windows with the same hubos- name: tell the owner.
+	counts := map[string]int{}
+	for _, w := range st.Windows {
+		if id, ok := strings.CutPrefix(w.AppID, viewers.AppIDPrefix); ok && h.byID[id] != nil {
+			counts[id]++
+		}
+	}
+	dups := map[string]int{}
+	for id, n := range counts {
+		if n >= 2 {
+			dups[id] = n
+		}
+	}
+	if !sameCounts(dups, h.dups) {
+		h.dups = dups
+		changed = true
+	}
 	if changed {
 		h.saveLocked(h.identityLocked())
 		h.notifyLocked()
 	}
+}
+
+func sameCounts(a, b map[string]int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for k, v := range a {
+		if b[k] != v {
+			return false
+		}
+	}
+	return true
+}
+
+// dupWarningsLocked has one plain sentence for each machine that has two or
+// more windows carrying its hubos- name, in machine order.
+func (h *Hub) dupWarningsLocked() []string {
+	var out []string
+	for _, s := range h.ms {
+		n := h.dups[s.m.ID]
+		if n < 2 {
+			continue
+		}
+		known := "hubd knows none of them"
+		if s.win != nil {
+			known = fmt.Sprintf("hubd knows window #%d", s.win.Window)
+		}
+		out = append(out, fmt.Sprintf("WARNING: %d windows are named %s (%s); %s; close the extra one by hand", n, viewers.AppID(s.m.ID), s.m.Name, known))
+	}
+	return out
 }
 
 // adopt picks up windows hubd started before it was restarted. It opens
