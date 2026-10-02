@@ -57,7 +57,7 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 | Gaming box (one) | All games, Linux only | Moonlight window for casual play; competitive play on its own monitors |
 | AI / GPU box | Training, inference, Blender, ParaView, CUDA | Moonlight window (Sunshine on the node) |
 | General desktop node | Web browser, text editor, everyday apps | Moonlight window |
-| NAS | Cluster file storage | File manager (opens on click) and/or terminal |
+| NAS | Cluster file storage | ssh terminal for now; the bespoke file manager comes later |
 | Backup NAS | Local backup copy of the NAS | Listed; opened like the NAS |
 | VM host | Operating system development and experiments | Its guests open with remote-viewer (virt-viewer) or ssh |
 
@@ -109,7 +109,6 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Moonlight windows are matched by their title '<machine id> - Moonlight'; every node sets Sunshine's name to its machine id. The inventory's optional session names the Sunshine app to stream.
 - Machines opened with ssh run a terminal multiplexer (tmux) on the machine so closing the window leaves the session alive.
 - VM guests are opened with remote-viewer (virt-viewer), not Remmina.
-- Copy-paste: v1 accepts that Moonlight windows only type the hub's text onto the machine; a clipboard bridge comes later.
 
 ### Canvas
 - driftwm is **essential**. If it does not work on our system, we wait until it does. There is no fallback desktop.
@@ -321,7 +320,8 @@ HubOS/
 - Whether /etc/hubos/inventory.toml is where per-machine config will live on the Hub OS image
 - Whether the input forwarder can be tested at all: /dev/uinput is absent in the build environment (a test would need a virtual machine with a kernel built with uinput)
 - driftwm's real-display backend on a real or virtual GPU (only the nested software mode was run)
-- The window names (app_id) Moonlight, virt-viewer, Remmina and the terminal report
+- The window names and titles real Moonlight reports (remote-viewer, Remmina, foot and pcmanfm were tested under driftwm; Moonlight is read from source only)
+- Moonlight opens a status window first, with the fixed app-id and a believed title 'Moonlight'; where it appears and what it does is unknown (source only); hubd ignores it
 - Pointer constraints with a real Moonlight session
 - Text readability on the projector, and output scale
 - A release build of driftwm: speed and memory
@@ -343,6 +343,8 @@ HubOS/
 - A custom exit chord for game-style windows
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
 - Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
+- Which command opens a NAS as files (the bespoke file manager is a design discussion)
+- Moonlight pairing is by hand once per node for v1; secrets design later (pairing is scriptable: moonlight pair --pin and Sunshine's PIN API)
 
 ---
 
@@ -379,3 +381,4 @@ HubOS/
 - **2026-10-01 (later):** owner decisions on viewers recorded: title matching for Moonlight, session field, tmux for ssh, remote-viewer for guests, default check ports, clipboard limit accepted for v1.
 - **2026-10-01 (later):** Unverified list: Moonlight clipboard limit and the remote-viewer error dialog added.
 - **2026-10-01 (later):** default check ports moved to a [default_ports] table; HUB-OS.md contradictions fixed (guest viewer, clipboard line, repo layout).
+- **2026-10-01 (later):** HUB-OS.md cleaned up (duplicate clipboard line, Moonlight unverified items); NAS opens with ssh until the bespoke file manager; pairing by hand for v1.
