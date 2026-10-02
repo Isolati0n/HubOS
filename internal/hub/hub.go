@@ -52,6 +52,8 @@ type Settings struct {
 	CloseWait     time.Duration                                                                                                         // how long `end` waits for a window to go
 	FoldThreshold int                                                                                                                   // groups with more machines than this start folded
 	ListMax       int                                                                                                                   // most machine lines in one menu list (wofi gets very slow far above 1000)
+	LateGrace     time.Duration                                                                                                         // how long hubd keeps waiting for a window after the window wait ran out, with the viewer still running
+	NoEscape      bool                                                                                                                  // do not escape markup in the status line (for a Waybar that escapes by itself)
 	DownMax       int                                                                                                                   // most machine lines in the Down machines group
 	TooltipCap    int                                                                                                                   // most down machines named in the tooltip
 	MessageTTL    time.Duration                                                                                                         // how long a message stays on the bar item
@@ -65,7 +67,7 @@ type Settings struct {
 func DefaultSettings() Settings {
 	return Settings{
 		ProbeCap: 0, ProbeInterval: 10 * time.Second, ProbeTimeout: 2 * time.Second,
-		WindowWait: 10 * time.Second, Settle: 500 * time.Millisecond, CloseWait: 3 * time.Second,
+		WindowWait: 10 * time.Second, LateGrace: 60 * time.Second, Settle: 500 * time.Millisecond, CloseWait: 3 * time.Second,
 		FoldThreshold: 12, ListMax: 1000, DownMax: 50, TooltipCap: 10, MessageTTL: 15 * time.Second, LogMax: 128 << 10, LogTotalMax: 64 << 20,
 	}
 }
@@ -86,6 +88,7 @@ const (
 	phaseIdle phase = iota
 	phaseStarting
 	phaseUnmatched // a viewer was started but its window could not be told apart
+	phaseLate      // the window wait ran out with the viewer still running; hubd keeps waiting for its window (grace period)
 )
 
 // winRec is one window hubd knows belongs to a machine.
@@ -104,6 +107,10 @@ type mstate struct {
 	checkedAt time.Time
 	phase     phase
 	win       *winRec
+	// While phase is phaseLate: closing lateCancel stops the wait; lateCmp
+	// says the viewer is matched by comparison (not by name).
+	lateCancel chan struct{}
+	lateCmp    bool
 }
 
 // Hub is the running state.
@@ -116,21 +123,23 @@ type Hub struct {
 	recPath  string
 	launchMu sync.Mutex // one launch at a time, whole hub
 
-	mu         sync.Mutex
-	ms         []*mstate
-	byID       map[string]*mstate
-	expanded   map[string]bool // explicit fold choices by group key
-	msg        string
-	msgUntil   time.Time
-	driftwmUp  bool
-	rounds     int
-	lastRound  time.Time
-	subs       map[chan struct{}]struct{}
-	now        func() time.Time
-	lastResult time.Time     // when a check result last arrived (or the round last ended, or hubd started)
-	firstDone  int           // machines answered during the first round
-	checkable  int           // machines that can be checked at all
-	lastTook   time.Duration // how long the latest check round took
+	mu             sync.Mutex
+	ms             []*mstate
+	byID           map[string]*mstate
+	expanded       map[string]bool // explicit fold choices by group key
+	msg            string
+	msgUntil       time.Time
+	driftwmUp      bool
+	rounds         int
+	lastRound      time.Time
+	subs           map[chan struct{}]struct{}
+	now            func() time.Time
+	lateComparison int            // machines in the late-window state whose viewer is matched by comparison
+	dups           map[string]int // machine id -> how many windows carry its hubos- name (only when 2 or more)
+	lastResult     time.Time      // when a check result last arrived (or the round last ended, or hubd started)
+	firstDone      int            // machines answered during the first round
+	checkable      int            // machines that can be checked at all
+	lastTook       time.Duration  // how long the latest check round took
 }
 
 // New builds a Hub. recPath is where the record file goes ("" = none).

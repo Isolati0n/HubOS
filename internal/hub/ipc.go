@@ -195,7 +195,7 @@ func (h *Hub) feed(c net.Conn) {
 	last := ""
 	var sentAt time.Time
 	for {
-		line := h.Status().JSON()
+		line := h.StatusJSON()
 		if line != last {
 			if wait := time.Second - time.Since(sentAt); !sentAt.IsZero() && wait > 0 {
 				select {
@@ -203,7 +203,7 @@ func (h *Hub) feed(c net.Conn) {
 				case <-gone:
 					return
 				}
-				line = h.Status().JSON() // the newest, after waiting
+				line = h.StatusJSON() // the newest, after waiting
 			}
 			if line != last {
 				if _, err := c.Write([]byte(line + "\n")); err != nil {

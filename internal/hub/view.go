@@ -22,6 +22,22 @@ type StatusLine struct {
 // makes GTK refuse the text and the tooltip is blank (docs/hubd-slice2.md).
 var markupEscaper = strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;", "'", "&#39;")
 
+// RawJSON is the one-line form without markup escaping (hubd serve --no-escape).
+func (s StatusLine) RawJSON() string {
+	b, _ := json.Marshal(s)
+	return string(b)
+}
+
+// StatusJSON is the line the feed sends: escaped for Waybar unless the hub was
+// started with --no-escape.
+func (h *Hub) StatusJSON() string {
+	st := h.Status()
+	if h.set.NoEscape {
+		return st.RawJSON()
+	}
+	return st.JSON()
+}
+
 // JSON is the one-line form for Waybar: the text and tooltip are escaped for
 // markup, so the module must be configured without Waybar's own "escape".
 func (s StatusLine) JSON() string {
@@ -67,13 +83,19 @@ func (h *Hub) Status() StatusLine {
 	if m := h.activeMessageLocked(); m != "" {
 		tip = append(tip, m)
 	}
+	warnings := h.dupWarningsLocked()
+	tip = append(tip, warnings...)
 	if !h.driftwmUp {
 		tip = append(tip, "driftwm is not reachable: windows cannot be opened")
 	}
 	if c.Stale {
-		// The age is shown in 10 s steps so the tooltip changes at most every 10 s.
+		// Ages are shown in 10 s steps so the tooltip changes at most every 10 s.
 		age := h.now().Sub(h.lastResult).Truncate(10 * time.Second)
-		tip = append(tip, fmt.Sprintf("STALE: no check result for %s (limit: 3 intervals = %s)", age, 3*h.set.ProbeInterval))
+		round := "no check round has finished yet"
+		if h.rounds > 0 {
+			round = fmt.Sprintf("the last check round finished %s ago", h.now().Sub(h.lastRound).Truncate(10*time.Second))
+		}
+		tip = append(tip, fmt.Sprintf("STALE: no check result for %s (limit: 3 intervals = %s); %s", age, 3*h.set.ProbeInterval, round))
 	}
 	line := StatusLine{Class: "ok"}
 	first := h.rounds == 0 && h.checkable > 0
@@ -87,7 +109,7 @@ func (h *Hub) Status() StatusLine {
 	if c.Stale {
 		line.Text = "STALE: " + line.Text
 	}
-	if c.Stale || h.activeMessageLocked() != "" || (!first && c.Down > 0) {
+	if c.Stale || len(warnings) > 0 || h.activeMessageLocked() != "" || (!first && c.Down > 0) {
 		line.Class = "alert"
 	}
 	if c.Down > 0 && !first {
@@ -186,6 +208,9 @@ func (h *Hub) statusTextLocked(s *mstate) string {
 	}
 	if s.phase == phaseStarting {
 		t += " [opening]"
+	}
+	if s.phase == phaseLate {
+		t += " [waiting for its window]"
 	}
 	if s.phase == phaseUnmatched {
 		t += " [window not identified]"
@@ -333,6 +358,9 @@ func (h *Hub) List(flat bool, filter string) []string {
 	var lines []string
 	if m := h.activeMessageLocked(); m != "" {
 		lines = append(lines, "! "+m)
+	}
+	for _, w := range h.dupWarningsLocked() {
+		lines = append(lines, "! "+w)
 	}
 	lines = append(lines, h.forgetLinesLocked()...)
 	if flat || filter != "" {

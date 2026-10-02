@@ -149,8 +149,10 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	bar := fs.Int("bar-height", def.BarHeight, "pixels the bar reserves at the screen edge (0 = none or unknown)")
 	cap_ := fs.Int("probe-cap", 0, "most checks in flight at once (0 = automatic: 200, or 1000 above 1000 machines; never above 80% of ulimit -n)")
 	interval := fs.Duration("probe-interval", def.ProbeInterval, "time between the starts of two check rounds")
-	ptimeout := fs.Duration("probe-timeout", def.ProbeTimeout, "limit for one machine's check")
-	wait := fs.Duration("window-wait", def.WindowWait, "how long to wait for a started viewer's window")
+	ptimeout := fs.Duration("check-timeout", def.ProbeTimeout, "limit for one machine's check (more than 0, at most "+maxCheckTimeout.String()+")")
+	wait := fs.Duration("window-wait", def.WindowWait, "how long to wait for a started viewer's window (a viewer in viewers.toml can set its own window_wait)")
+	grace := fs.Duration("late-grace", def.LateGrace, "how long to keep waiting for a window after the window wait ran out with the viewer still running (0 = do not wait)")
+	noEscape := fs.Bool("no-escape", false, "do not escape markup in the status line (only for a Waybar that escapes by itself; otherwise names with & or < show wrongly or blank the tooltip)")
 	fold := fs.Int("fold", def.FoldThreshold, "groups with more machines than this start folded")
 	downMax := fs.Int("down-max", def.DownMax, "most machine lines in the Down machines group")
 	listMax := fs.Int("list-max", def.ListMax, "most machine lines in one menu list")
@@ -166,6 +168,14 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	}
 	if fs.NArg() > 0 {
 		fmt.Fprintln(stderr, "usage: hubd serve [flags]")
+		return exitFailure
+	}
+	if err := checkTimeoutError(*ptimeout, 0); err != nil {
+		fmt.Fprintln(stderr, "hubd:", err)
+		return exitFailure
+	}
+	if *wait <= 0 || *grace < 0 || *interval <= 0 {
+		fmt.Fprintln(stderr, "hubd: --window-wait and --probe-interval must be more than 0, and --late-grace must not be negative")
 		return exitFailure
 	}
 
@@ -221,7 +231,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	set := hub.Settings{
 		ProbeCap: *cap_, ProbeInterval: *interval, ProbeTimeout: *ptimeout, WindowWait: *wait,
 		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, ListMax: *listMax, DownMax: *downMax, TooltipCap: *tipcap,
-		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit,
+		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit, LateGrace: *grace, NoEscape: *noEscape,
 	}
 	if *logRounds {
 		round := 0
@@ -373,4 +383,21 @@ func runLauncher(o launcherOpts, lines []string, stderr io.Writer) string {
 	cmd.Stderr = stderr
 	cmd.Run() // a non-zero exit with no output means Escape was pressed
 	return strings.TrimRight(out.String(), "\n")
+}
+
+// maxCheckTimeout is the longest per-machine limit hubd accepts.
+const maxCheckTimeout = time.Minute
+
+// checkTimeoutError says why a per-machine limit is not acceptable. total is
+// the overall limit of the run (0 = none, as in the daemon).
+func checkTimeoutError(d, total time.Duration) error {
+	switch {
+	case d <= 0:
+		return fmt.Errorf("--check-timeout must be more than 0 (got %s)", d)
+	case d > maxCheckTimeout:
+		return fmt.Errorf("--check-timeout must be at most %s (got %s)", maxCheckTimeout, d)
+	case total > 0 && d > total:
+		return fmt.Errorf("--check-timeout %s is longer than the total limit of this command (%s), so it could never be used", d, total)
+	}
+	return nil
 }
