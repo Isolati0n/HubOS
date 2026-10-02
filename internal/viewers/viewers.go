@@ -15,6 +15,7 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 
 	toml "github.com/pelletier/go-toml/v2"
 
@@ -33,6 +34,12 @@ type Viewer struct {
 	Programs []string `toml:"programs"`  // inventory "open" entries this viewer serves
 	Command  []string `toml:"command"`   // program, then arguments, with {placeholders}
 	SetsName bool     `toml:"sets_name"` // true if the command makes the window carry {app_id}
+	// WaitText is window_wait as written ("10s"): how long hubd waits for the
+	// window before it starts the late-window grace period. Empty means the
+	// hub's default (10 s).
+	WaitText string `toml:"window_wait"`
+	// WindowWait is WaitText parsed (0 when not given).
+	WindowWait time.Duration `toml:"-"`
 }
 
 // Table is a valid viewers.toml.
@@ -119,6 +126,14 @@ func Parse(data []byte) (*Table, []string) {
 		}
 		if strings.Contains(v.Command[0], "{") {
 			ps = append(ps, w+": the program name (first entry of command) must be fixed text, without {placeholders}")
+		}
+		if v.WaitText != "" {
+			d, err := time.ParseDuration(v.WaitText)
+			if err != nil || d <= 0 {
+				ps = append(ps, fmt.Sprintf(`%s: window_wait %q must be a positive duration like "10s" or "1m30s"`, w, v.WaitText))
+			} else {
+				f.Viewer[i].WindowWait = d
+			}
 		}
 		usesAppID := false
 		for _, arg := range v.Command {

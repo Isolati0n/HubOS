@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"hubos/internal/inventory"
 )
@@ -92,5 +93,32 @@ func TestTestdataViewerFilesAreValid(t *testing.T) {
 		if _, ps, err := Load(p); err != nil || len(ps) != 0 {
 			t.Errorf("%s: %v %q", p, err, ps)
 		}
+	}
+}
+
+func TestWindowWait(t *testing.T) {
+	doc := func(v string) string {
+		return "format = 1\n[[viewer]]\nid=\"a\"\nprograms=[\"ssh\"]\ncommand=[\"x\"]\n" + v
+	}
+	tab, ps := Parse([]byte(doc(`window_wait = "25s"`)))
+	if len(ps) != 0 || tab.Viewers[0].WindowWait != 25*time.Second {
+		t.Fatalf("%q %+v", ps, tab)
+	}
+	tab, ps = Parse([]byte(doc(`window_wait = "1m30s"`)))
+	if len(ps) != 0 || tab.Viewers[0].WindowWait != 90*time.Second {
+		t.Fatalf("%q", ps)
+	}
+	tab, ps = Parse([]byte(doc("")))
+	if len(ps) != 0 || tab.Viewers[0].WindowWait != 0 {
+		t.Errorf("not given must stay 0 (the hub default applies): %q", ps)
+	}
+	for _, bad := range []string{`window_wait = "0s"`, `window_wait = "-5s"`, `window_wait = "soon"`, `window_wait = "10"`} {
+		if _, ps := Parse([]byte(doc(bad))); len(ps) != 1 || !strings.Contains(ps[0], "positive duration") {
+			t.Errorf("%s: %q", bad, ps)
+		}
+	}
+	// A number instead of text is the wrong kind of value.
+	if _, ps := Parse([]byte(doc(`window_wait = 10`))); len(ps) == 0 {
+		t.Error("a bare number must be refused")
 	}
 }
