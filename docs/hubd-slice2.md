@@ -56,6 +56,7 @@ programs  = ["moonlight", "spice", "vnc", "ssh", "files"]      # inventory "open
 command   = ["foot", "--app-id={app_id}", "--title={title}", "--", "sleep", "infinity"]
 sets_name = true                                                # the command makes the window carry {app_id}
 window_wait = "10s"                                              # optional: how long to wait for this viewer's window (default: the hub's 10 s)
+late_grace  = "60s"                                              # optional: how long to keep waiting after that (default: the hub's 60 s)
 ```
 
 - `command` is a list: the first entry is the program (fixed text, no placeholders); each other entry is one argument.
@@ -495,3 +496,24 @@ So the round time with silent machines is (machines / cap) x timeout, as expecte
 - The late-window state with **real** viewers: how long Moonlight, virt-viewer or Remmina really take to show a window is UNKNOWN; `window_wait` and `--late-grace` are guesses (10 s and 60 s as decided).
 - A late window of a comparison-matched viewer while **other, unrelated programs** also open windows (not launched by hubd): hubd would take the single new window for the viewer's. This is the same limit as the normal comparison path.
 - The same-name warning counts only windows named `hubos-<id>` for machines in the inventory.
+
+---
+
+## 13. Fourth review: late-window follow-ups
+
+1. **`hubd end` on a machine in the late state** is refused, in plain words: `the viewer for A is still starting, so there is no window to close. hubd end cannot cancel a viewer (hubd never kills one). To stop waiting for its window, run: hubd forget a` (`TestEndOnALateMachineRefusesAndSaysWhy`; nothing is closed and the state does not change).
+2. **A quiet late state.** While a machine is late:
+   - the menu has a line `x stop waiting for <name>'s window (<id>)` that does what `hubd forget` does (it stops the wait; the viewer is not touched, nothing is closed or moved);
+   - the tooltip has `waiting for <name>'s window (up to N s more)`, N rounded **up** to 10 s steps (25 s left shows 30, 14 s shows 20), so it changes at most every 10 s;
+   - **the bar item is not red** for this, and the first "no window yet" answer is no longer put on the bar as a red message (it is still printed by `hubd open`, exit 1).
+   Tested in `TestLateMachineShowsStopWaitingLineAndANonRedTooltip`: class `ok`, tooltip line, the menu line, picking it, and that a pick with an unknown id does nothing.
+3. **`late_grace` per viewer** in `viewers.toml` (optional, a positive duration; default is the hub's `--late-grace`, 60 s). Same validation as `window_wait`: `late_grace "long" must be a positive duration like "60s" or "2m"`. It is in `examples/viewers.example.toml`. Tests: `TestLateGrace` (parse, defaults, bad values, a bare number refused) and `TestPerViewerLateGraceOverridesTheHubSetting` (a 600 ms viewer grace ends in under 3 s although the hub setting is 1 minute; a viewer without it uses the hub's).
+4. **A clean exit (status 0) keeps waiting.** Before the window appears, a viewer process that exits with status 0 (maybe a hand-over to a copy that is already running) no longer fails at once: hubd goes on waiting through the late grace and adopts the window if it comes (message: `…the viewer process has exited cleanly (it may have handed over to a copy that is already running), so hubd keeps waiting…`). A non-zero exit is still a failure at once, with the log path. If the grace ends with no window, the machine is "unidentified" as before (`TestCleanExitKeepsWaitingNonZeroExitFailsAtOnce`: clean exit then a late window is adopted; clean exit and no window ends unidentified; status 3 fails in under 2 s with the log path).
+5. **`hubd serve --ignore-app-id APPID`** (repeatable; default none): a window with one of these app-ids is **never a candidate when windows are matched by comparison** (not for viewers that set their name, which match by name). Use it for programs of your own that open windows now and then (a menu, a notification pop-up) and could otherwise be taken for a viewer's window or make the match ambiguous. It applies to the normal wait and to the late state. Exact match on the app-id. Tests: `TestIgnoredAppIDsAreNeverCandidatesForComparisonMatching` (two new windows are ambiguous without the list; with it the right window is chosen and the ignored one is never moved; same in the late path) and `TestIgnoreAppIDFlagIsRepeatable` (the flag).
+
+**Live checks** (nested driftwm, Waybar, wofi, `foot`; the viewers are the test tables in `testdata/viewers/`):
+- *Late viewer, window 40 s away:* `hubd open ai-1` → the late message (exit 1); `hubd end ai-1` → `the viewer for AI Box is still starting, so there is no window to close. hubd end cannot cancel a viewer…` (exit 1). The feed line is `{"text":"6 of 6 up","class":"ok","tooltip":"waiting for AI Box's window (up to 60 s more)\n1 not checked\nlast check round took 1ms"}`. Screenshots in words: the bar item is **green** "6 of 6 up"; hovering shows a small box with three lines, `waiting for AI Box's window (up to 60 s more)`, `1 not checked`, `last check round took 1ms`; the menu's first, highlighted line is `x stop waiting for AI Box's window (ai-1)`, and the row of ai-1 reads `UP [waiting for its window]`.
+- *Hand-over viewer* (`testdata/viewers/handover.toml`: the process exits at once with status 0, the window comes 3 s later): `hubd open ai-1` → `no window appeared for AI Box within 1s; the viewer process has exited cleanly (it may have handed over to a copy that is already running), so hubd keeps waiting for its window for up to 20s` (exit 1); 4 s later the row says `UP [open]`, one `foot`, window at `[2000, -1500]` (its home).
+- *`--ignore-app-id`* (a viewer that opens a pop-up window `popup` and its own window `whatever` at once, matched by comparison): without the flag `2 new windows appeared … (#2 "whatever", #1 "popup"); I cannot tell which one is its window…`; with `--ignore-app-id popup`: `opened AI Box at home (2000, -1500), matched by comparison`.
+
+**Measurements after these changes** (same commands as section 7; they are not affected by this change, and were rerun to be sure): 100 machines, local: rounds 9, 10, 3 ms, memory 9.2 MB, list 39 lines / 1,648 bytes, status line 135 bytes. 5000, local, automatic cap 1000: rounds 220, 138, 144 ms, peak open files 959, memory 30.0 MB, list 62 lines / 2,897 bytes, status line 182 bytes. 5000, none reachable, cap 1000: round 10.10 s, peak open files 1007, memory 31.5 MB.

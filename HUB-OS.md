@@ -347,3 +347,4 @@ HubOS/
 - **2026-10-01 (later):** hubd slice 2 follow-ups: bounded check, down-machines group, forget command, viewer logs, stale-round rule.
 - **2026-10-01 (later):** hubd slice 2 reviewed and merged; STALE rule, first-round display, safety fixes and viewer-log cap.
 - **2026-10-01 (later):** hubd slice 2: late-window state for slow viewers, per-viewer window_wait, escape and timeout flags.
+- **2026-10-01 (later):** hubd slice 2: late-window follow-ups (end message, stop-waiting menu line, per-viewer late_grace, clean exit keeps waiting, ignore list).

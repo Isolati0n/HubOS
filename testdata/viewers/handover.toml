@@ -1,0 +1,13 @@
+# TEST ONLY. A viewer that behaves like one handing over to a copy that is
+# already running: the process it starts exits at once with status 0, and the
+# window comes 3 seconds later from a background process. window_wait is 1
+# second. The shell sees only the window name (hubos-<id>) as $0 and the fixed
+# "3" as $1, never inventory text pasted into the script.
+format = 1
+
+[[viewer]]
+id          = "handover"
+programs    = ["moonlight", "spice", "vnc", "ssh", "files"]
+command     = ["sh", "-c", "(sleep \"$1\"; exec foot \"--app-id=$0\" -- sleep infinity) >/dev/null 2>&1 & exit 0", "{app_id}", "3"]
+sets_name   = true
+window_wait = "1s"

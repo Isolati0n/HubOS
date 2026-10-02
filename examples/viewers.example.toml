@@ -34,3 +34,8 @@ sets_name = true
 # (60 s, hubd serve --late-grace) hubd starts no second viewer for the machine
 # and adopts the window when it comes.
 window_wait = "10s"
+# Optional: how long hubd keeps waiting for the window after the window wait
+# ran out (a positive duration). Without it the hub default applies (60 s,
+# hubd serve --late-grace). A viewer process that exits cleanly (status 0) is
+# waited for too: it may have handed over to a copy that is already running.
+late_grace = "60s"
