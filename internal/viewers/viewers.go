@@ -40,6 +40,12 @@ type Viewer struct {
 	WaitText string `toml:"window_wait"`
 	// WindowWait is WaitText parsed (0 when not given).
 	WindowWait time.Duration `toml:"-"`
+	// GraceText is late_grace as written ("90s"): how long hubd keeps waiting
+	// for the window after the window wait ran out. Empty means the hub's
+	// --late-grace.
+	GraceText string `toml:"late_grace"`
+	// LateGrace is GraceText parsed (0 when not given).
+	LateGrace time.Duration `toml:"-"`
 }
 
 // Table is a valid viewers.toml.
@@ -133,6 +139,14 @@ func Parse(data []byte) (*Table, []string) {
 				ps = append(ps, fmt.Sprintf(`%s: window_wait %q must be a positive duration like "10s" or "1m30s"`, w, v.WaitText))
 			} else {
 				f.Viewer[i].WindowWait = d
+			}
+		}
+		if v.GraceText != "" {
+			d, err := time.ParseDuration(v.GraceText)
+			if err != nil || d <= 0 {
+				ps = append(ps, fmt.Sprintf(`%s: late_grace %q must be a positive duration like "60s" or "2m"`, w, v.GraceText))
+			} else {
+				f.Viewer[i].LateGrace = d
 			}
 		}
 		usesAppID := false

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"net"
 	"os"
@@ -348,5 +349,24 @@ func TestCheckTimeoutFlagIsValidated(t *testing.T) {
 	errb.Reset()
 	if code := dispatch([]string{"serve", "--inventory", inv, "--check-timeout", "0"}, &out, &errb); code != exitFailure || !strings.Contains(errb.String(), "--check-timeout must be more than 0") {
 		t.Errorf("serve: exit %d %q", code, errb.String())
+	}
+}
+
+func TestIgnoreAppIDFlagIsRepeatable(t *testing.T) {
+	var l appIDList
+	fs := flag.NewFlagSet("x", flag.ContinueOnError)
+	fs.Var(&l, "ignore-app-id", "")
+	if err := fs.Parse([]string{"--ignore-app-id", "waybar", "--ignore-app-id=wofi", "--ignore-app-id", "foot-popup"}); err != nil {
+		t.Fatal(err)
+	}
+	if got := strings.Join(l, ","); got != "waybar,wofi,foot-popup" {
+		t.Errorf("got %q", got)
+	}
+	if err := fs.Parse([]string{"--ignore-app-id", ""}); err == nil {
+		t.Error("an empty app-id must be refused")
+	}
+	var none appIDList
+	if len(none) != 0 {
+		t.Error("default must be none")
 	}
 }

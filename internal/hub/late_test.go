@@ -351,3 +351,192 @@ var _ = fmt.Sprint
 var _ = os.Getenv
 
 func jsonDecode(b []byte, v any) error { return json.Unmarshal(b, v) }
+
+// ---- third round: end message, stop-waiting line, late_grace, clean exit, ignore list ----
+
+func TestEndOnALateMachineRefusesAndSaysWhy(t *testing.T) {
+	r := lateRig(t)
+	r.l.script = func([]string) {}
+	if first := r.h.Open("a"); first.Action != "late" {
+		t.Fatalf("%+v", first)
+	}
+	res := r.h.End("a")
+	want := "the viewer for A is still starting, so there is no window to close. hubd end cannot cancel a viewer (hubd never kills one). To stop waiting for its window, run: hubd forget a"
+	if res.Action != "refused" || res.Message != want {
+		t.Errorf("got %+v", res)
+	}
+	if len(r.f.closed) != 0 || phaseOf(r, "a") != phaseLate {
+		t.Errorf("end changed something: closed=%v phase=%v", r.f.closed, phaseOf(r, "a"))
+	}
+}
+
+func TestLateMachineShowsStopWaitingLineAndANonRedTooltip(t *testing.T) {
+	r := lateRig(t)
+	r.h.set.LateGrace = 25 * time.Second
+	r.l.script = func([]string) {}
+	first := r.h.Open("a")
+	if first.Action != "late" {
+		t.Fatalf("%+v", first)
+	}
+	// The bar item is not red, there is no red message, and the tooltip says what is going on.
+	st := r.h.Status()
+	if st.Class != "ok" || !strings.Contains(st.Tooltip, "waiting for A's window (up to 30 s more)") {
+		t.Errorf("status: %+v", st)
+	}
+	// "up to N s more" moves in 10 s steps (25 s left rounds up to 30, then 20 ...).
+	r.h.mu.Lock()
+	r.h.byID["a"].lateEnd = time.Now().Add(14 * time.Second)
+	r.h.mu.Unlock()
+	if tip := r.h.Status().Tooltip; !strings.Contains(tip, "(up to 20 s more)") {
+		t.Errorf("14 s left: %s", tip)
+	}
+	// The menu offers the way out.
+	menu := strings.Join(r.h.List(false, ""), "\n")
+	if !strings.Contains(menu, "x stop waiting for A's window (a)") || strings.Contains(menu, "forget unknown window") {
+		t.Errorf("menu:\n%s", menu)
+	}
+	if strings.Contains(strings.Join(r.h.List(false, "")[:1], ""), "no window appeared") {
+		t.Error("the waiting message was put at the top of the menu as an alert")
+	}
+	pr := r.h.Pick("x stop waiting for A's window (a)")
+	if pr.Action != "forgot" || !pr.Reopen || !strings.Contains(pr.Message, "stopped waiting") {
+		t.Errorf("pick: %+v", pr)
+	}
+	if phaseOf(r, "a") != phaseIdle || r.l.count() != 1 || len(r.f.closed) != 0 {
+		t.Errorf("phase=%v launches=%d closed=%v", phaseOf(r, "a"), r.l.count(), r.f.closed)
+	}
+	st = r.h.Status()
+	if strings.Contains(st.Tooltip, "waiting for") || strings.Contains(strings.Join(r.h.List(false, ""), "\n"), "stop waiting") {
+		t.Errorf("still shown after stopping: %+v", st)
+	}
+	// An unknown id on such a line is refused, nothing else happens.
+	if pr := r.h.Pick("x stop waiting for Nobody's window (no-such)"); pr.Action == "forgot" {
+		t.Errorf("%+v", pr)
+	}
+}
+
+func TestPerViewerLateGraceOverridesTheHubSetting(t *testing.T) {
+	r := lateRig(t)
+	r.h.set.LateGrace = time.Minute // the hub setting would wait far too long
+	vt, ps := viewers.Parse([]byte("format = 1\n[[viewer]]\nid = \"v\"\nprograms = [\"moonlight\"]\ncommand = [\"foot\", \"--app-id={app_id}\"]\nsets_name = true\nwindow_wait = \"200ms\"\nlate_grace = \"600ms\"\n"))
+	if len(ps) != 0 {
+		t.Fatal(ps)
+	}
+	r.h.vt = vt
+	r.l.script = func([]string) {}
+	res := r.h.Open("a")
+	if res.Action != "late" || !strings.Contains(res.Message, "for up to 600ms") {
+		t.Fatalf("%+v", res)
+	}
+	waitFor(t, "the viewer's own grace to end", 3*time.Second, func() bool { return phaseOf(r, "a") == phaseUnmatched })
+	// And a viewer without late_grace uses the hub's.
+	r2 := lateRig(t)
+	r2.h.set.LateGrace = 7 * time.Second
+	r2.l.script = func([]string) {}
+	if res := r2.h.Open("a"); !strings.Contains(res.Message, "for up to 7s") {
+		t.Errorf("hub default: %+v", res)
+	}
+}
+
+func TestCleanExitKeepsWaitingNonZeroExitFailsAtOnce(t *testing.T) {
+	// Status 0 before the window: keep waiting through the grace, adopt the window.
+	r := lateRig(t)
+	r.h.set.LogDir = t.TempDir()
+	r.l.script = lateWindow(r, 700*time.Millisecond) // after the 300 ms wait
+	done := make(chan OpenResult, 1)
+	go func() { done <- r.h.Open("a") }()
+	waitFor(t, "the launch", time.Second, func() bool { return r.l.count() == 1 })
+	r.l.exit(0, nil) // the process exits cleanly (a hand-over to a copy that is already running)
+	first := <-done
+	t.Logf("first click: %+v", first)
+	if first.Action != "late" || !strings.Contains(first.Message, "exited cleanly") {
+		t.Fatalf("clean exit must keep waiting: %+v", first)
+	}
+	waitFor(t, "adoption after a clean exit", 3*time.Second, func() bool { _, ok := r.h.WindowOf("a"); return ok })
+	if r.l.count() != 1 || windowCount(r) != 1 {
+		t.Errorf("launches=%d windows=%d", r.l.count(), windowCount(r))
+	}
+
+	// A clean exit and no window at all: the grace ends, nothing is killed.
+	r = lateRig(t)
+	r.h.set.LateGrace = 500 * time.Millisecond
+	r.l.script = func([]string) {}
+	go func() { time.Sleep(100 * time.Millisecond); r.l.exit(0, nil) }()
+	if res := r.h.Open("a"); res.Action != "late" {
+		t.Fatalf("%+v", res)
+	}
+	waitFor(t, "the grace to end", 3*time.Second, func() bool { return phaseOf(r, "a") == phaseUnmatched })
+
+	// A non-zero exit during the first wait: failure at once, with the log path.
+	r = lateRig(t)
+	r.h.set.LogDir = t.TempDir()
+	r.h.set.WindowWait = 5 * time.Second
+	r.l.script = func([]string) {}
+	go func() { time.Sleep(150 * time.Millisecond); r.l.exit(0, errors.New("exit status 3")) }()
+	start := time.Now()
+	res := r.h.Open("a")
+	if res.Action != "failed" || !strings.Contains(res.Message, "exit status 3") || !strings.Contains(res.Message, filepath.Join(r.h.set.LogDir, "viewer-a.log")) || time.Since(start) > 2*time.Second {
+		t.Errorf("non-zero exit: %+v after %s", res, time.Since(start))
+	}
+	if phaseOf(r, "a") != phaseIdle {
+		t.Error("not idle after the failure")
+	}
+}
+
+func TestIgnoredAppIDsAreNeverCandidatesForComparisonMatching(t *testing.T) {
+	setup := func(ignore []string) *rig {
+		r := newRig(t, machineDoc("f", "F", "nas", "files", 1, 5, 5, ""))
+		r.setStatus("f", statusUp)
+		r.h.set.Settle = 100 * time.Millisecond
+		r.h.set.IgnoreAppIDs = ignore
+		r.l.script = func([]string) {
+			r.f.add("waybar-popup", "a menu") // appears together with the viewer's window
+			r.f.add("whatever", "F window")
+		}
+		return r
+	}
+	// Without the list: two new windows, not told apart.
+	r := setup(nil)
+	if res := r.h.Open("f"); res.Action != "failed" || !strings.Contains(res.Message, "cannot tell which one") {
+		t.Errorf("without the list: %+v", res)
+	}
+	// With the list: exactly one candidate.
+	r = setup([]string{"waybar-popup"})
+	res := r.h.Open("f")
+	if res.Action != "open" || !strings.Contains(res.Message, "matched by comparison") {
+		t.Fatalf("with the list: %+v", res)
+	}
+	if id, _ := r.h.WindowOf("f"); id != 1 {
+		t.Errorf("recorded window %d, want 1 (not the ignored one)", id)
+	}
+	if len(r.f.moves) != 1 || r.f.moves[0][0] != 1 {
+		t.Errorf("the ignored window was moved: %v", r.f.moves)
+	}
+	// The same in the late state: an ignored window does not end the wait early or get adopted.
+	r = newRig(t, machineDoc("f", "F", "nas", "files", 1, 5, 5, ""))
+	r.setStatus("f", statusUp)
+	r.h.set.WindowWait, r.h.set.LateGrace, r.h.set.Settle = 200*time.Millisecond, 5*time.Second, 100*time.Millisecond
+	r.h.set.IgnoreAppIDs = []string{"waybar-popup"}
+	r.l.script = func([]string) {
+		go func() {
+			time.Sleep(300 * time.Millisecond)
+			r.f.add("waybar-popup", "a menu")
+			time.Sleep(400 * time.Millisecond)
+			r.f.add("whatever", "F window")
+		}()
+	}
+	if res := r.h.Open("f"); res.Action != "late" {
+		t.Fatalf("%+v", res)
+	}
+	waitFor(t, "adoption", 3*time.Second, func() bool { _, ok := r.h.WindowOf("f"); return ok })
+	if id, _ := r.h.WindowOf("f"); id != 1 {
+		t.Errorf("late path adopted window %d, want 1", id)
+	}
+	// A named viewer is not affected by the list.
+	r = newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r.setStatus("a", statusUp)
+	r.h.set.IgnoreAppIDs = []string{"hubos-a"}
+	if res := r.h.Open("a"); res.Action != "open" {
+		t.Errorf("named viewer with its own name in the list: %+v", res)
+	}
+}

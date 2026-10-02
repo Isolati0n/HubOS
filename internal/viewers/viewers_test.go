@@ -122,3 +122,28 @@ func TestWindowWait(t *testing.T) {
 		t.Error("a bare number must be refused")
 	}
 }
+
+func TestLateGrace(t *testing.T) {
+	doc := func(v string) string {
+		return "format = 1\n[[viewer]]\nid=\"a\"\nprograms=[\"ssh\"]\ncommand=[\"x\"]\n" + v
+	}
+	tab, ps := Parse([]byte(doc(`late_grace = "90s"`)))
+	if len(ps) != 0 || tab.Viewers[0].LateGrace != 90*time.Second {
+		t.Fatalf("%q", ps)
+	}
+	tab, ps = Parse([]byte(doc(`late_grace = "2m"` + "\n" + `window_wait = "5s"`)))
+	if len(ps) != 0 || tab.Viewers[0].LateGrace != 2*time.Minute || tab.Viewers[0].WindowWait != 5*time.Second {
+		t.Fatalf("%q", ps)
+	}
+	if tab, ps = Parse([]byte(doc(""))); len(ps) != 0 || tab.Viewers[0].LateGrace != 0 {
+		t.Errorf("not given must stay 0: %q", ps)
+	}
+	for _, bad := range []string{`late_grace = "0s"`, `late_grace = "-1m"`, `late_grace = "long"`, `late_grace = "60"`} {
+		if _, ps := Parse([]byte(doc(bad))); len(ps) != 1 || !strings.Contains(ps[0], `late_grace`) || !strings.Contains(ps[0], "positive duration") {
+			t.Errorf("%s: %q", bad, ps)
+		}
+	}
+	if _, ps := Parse([]byte(doc(`late_grace = 60`))); len(ps) == 0 {
+		t.Error("a bare number must be refused")
+	}
+}

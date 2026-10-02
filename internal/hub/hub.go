@@ -54,6 +54,7 @@ type Settings struct {
 	ListMax       int                                                                                                                   // most machine lines in one menu list (wofi gets very slow far above 1000)
 	LateGrace     time.Duration                                                                                                         // how long hubd keeps waiting for a window after the window wait ran out, with the viewer still running
 	NoEscape      bool                                                                                                                  // do not escape markup in the status line (for a Waybar that escapes by itself)
+	IgnoreAppIDs  []string                                                                                                              // windows with these app-ids are never candidates for comparison matching
 	DownMax       int                                                                                                                   // most machine lines in the Down machines group
 	TooltipCap    int                                                                                                                   // most down machines named in the tooltip
 	MessageTTL    time.Duration                                                                                                         // how long a message stays on the bar item
@@ -111,6 +112,7 @@ type mstate struct {
 	// says the viewer is matched by comparison (not by name).
 	lateCancel chan struct{}
 	lateCmp    bool
+	lateEnd    time.Time // when the wait ends
 }
 
 // Hub is the running state.
