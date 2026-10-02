@@ -1,9 +1,11 @@
 package hub
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 )
@@ -158,5 +160,38 @@ func TestFeedShowsStaleWhenTimePassesWithNoEvent(t *testing.T) {
 		}
 	case <-time.After(3 * time.Second):
 		t.Fatal("no STALE line although no round finished")
+	}
+}
+
+// During the first round hundreds of results arrive each second; the bar
+// must still get at most one line per second.
+func TestFeedSendsAtMostOneLinePerSecondDuringTheFirstRound(t *testing.T) {
+	var parts []string
+	for i := 1; i <= 50; i++ {
+		parts = append(parts, machineDoc(fmt.Sprintf("m%02d", i), "M", "desktop", "moonlight", 21000, i, 7, ""))
+	}
+	r := newRig(t, parts...)
+	sock, _ := SocketPath(shortDir(t))
+	l, _ := Listen(sock)
+	defer l.Close()
+	go r.h.Serve(l)
+	var mu sync.Mutex
+	var got []string
+	go Feed(sock, func(s string) { mu.Lock(); got = append(got, s); mu.Unlock() })
+	deadline := time.Now().Add(2500 * time.Millisecond)
+	for i := 0; time.Now().Before(deadline); i++ {
+		r.h.mu.Lock()
+		r.h.firstDone = i % 50
+		r.h.notifyLocked()
+		r.h.mu.Unlock()
+		time.Sleep(10 * time.Millisecond) // 100 changes a second
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	if len(got) < 2 || len(got) > 4 { // at 0 s, then at most one per second: 0, 1, 2 s
+		t.Errorf("%d lines in 2.5 s: %q", len(got), got)
+	}
+	if !strings.Contains(got[0], "checking... ") {
+		t.Errorf("first line: %s", got[0])
 	}
 }

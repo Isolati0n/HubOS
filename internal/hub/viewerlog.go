@@ -7,6 +7,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"sort"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -16,9 +18,11 @@ import (
 // at reboot, mode 0700; files mode 0600). The viewer writes to the file
 // directly, not through hubd, so it keeps running if hubd is killed.
 //
-// Size cap and rotation (Settings.LogMax, proposed 128 KiB):
+// Size cap and rotation (Settings.LogMax, 128 KiB; Settings.LogTotalMax, 64 MiB for all logs together):
 //   - when a viewer is started and its log is already over the cap, the old
 //     log is moved to viewer-<id>.log.1 (replacing an older .1) and a new one starts;
+//   - when all logs together are over the total cap, the oldest are removed first
+//     (rotated copies, then current logs, which are emptied, not deleted);
 //   - while hubd runs, TrimLogs does the same every few seconds to a log that
 //     grew over the cap (the old text is copied to .1 and the log is emptied;
 //     the viewer keeps writing, at the start).
@@ -78,11 +82,16 @@ func (h *Hub) TrimLogs() {
 	if h.set.LogDir == "" {
 		return
 	}
-	TrimLogs(h.set.LogDir, h.set.LogMax)
+	TrimLogs(h.set.LogDir, h.set.LogMax, h.set.LogTotalMax)
 }
 
-// TrimLogs copies a log that is over max bytes to <log>.1 and empties it.
-func TrimLogs(dir string, max int64) {
+// TrimLogs copies a log that is over max bytes to <log>.1 and empties it, and
+// then, if all the logs together are over total bytes, removes the oldest
+// (by modification time) until they are not: rotated copies (.1) are deleted,
+// and a current log is emptied but kept, because a running viewer may still
+// be writing to it (deleting it would not free the space until the viewer
+// exits). total 0 means no total cap.
+func TrimLogs(dir string, max, total int64) {
 	files, _ := filepath.Glob(filepath.Join(dir, "viewer-*.log"))
 	for _, p := range files {
 		fi, err := os.Stat(p)
@@ -100,6 +109,57 @@ func TrimLogs(dir string, max int64) {
 			os.Truncate(p, 0) // writers use O_APPEND, so they go on from the start
 		}
 		src.Close()
+	}
+	if total > 0 {
+		trimTotal(dir, total)
+	}
+}
+
+func trimTotal(dir string, total int64) {
+	type logFile struct {
+		path string
+		size int64
+		mod  time.Time
+		old  bool // a rotated copy
+	}
+	var files []logFile
+	var sum int64
+	for _, pat := range []string{"viewer-*.log", "viewer-*.log.1"} {
+		matches, _ := filepath.Glob(filepath.Join(dir, pat))
+		for _, p := range matches {
+			if fi, err := os.Stat(p); err == nil && fi.Size() > 0 {
+				files = append(files, logFile{p, fi.Size(), fi.ModTime(), strings.HasSuffix(p, ".1")})
+				sum += fi.Size()
+			}
+		}
+	}
+	if sum <= total {
+		return
+	}
+	sort.Slice(files, func(i, j int) bool { return files[i].mod.Before(files[j].mod) }) // oldest first
+	remove := func(f logFile) {
+		if f.old {
+			os.Remove(f.path)
+		} else {
+			os.Truncate(f.path, 0)
+		}
+		sum -= f.size
+	}
+	for _, f := range files { // rotated copies first, oldest first
+		if sum <= total {
+			return
+		}
+		if f.old {
+			remove(f)
+		}
+	}
+	for _, f := range files { // then current logs, oldest first
+		if sum <= total {
+			return
+		}
+		if !f.old {
+			remove(f)
+		}
 	}
 }
 
