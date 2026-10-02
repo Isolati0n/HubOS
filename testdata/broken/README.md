@@ -1,6 +1,6 @@
 # Deliberately broken inventory files
 
-Each file breaks exactly one rule from `docs/inventory-format.md` and is otherwise valid. The exact message `hubd` must print is in the `# EXPECT:` line at the top of the file; `go test ./internal/inventory` fails if the real output differs. Files 22 to 24 test rules taken from the field table (allowed values, no port in the address, port range). File 25 checks that a decimal format number is described as a decimal number.
+Each file breaks exactly one rule from `docs/inventory-format.md` and is otherwise valid. The exact message `hubd` must print is in the `# EXPECT:` line at the top of the file; `go test ./internal/inventory` fails if the real output differs. Files 22 to 24 test rules taken from the field table (allowed values, no port in the address, port range). File 25 checks that a decimal format number is described as a decimal number. File 26 tests the control-character rule.
 
 | File | Rule it breaks |
 |---|---|
@@ -29,3 +29,4 @@ Each file breaks exactly one rule from `docs/inventory-format.md` and is otherwi
 | `23-address-has-port.toml` | address has no port in it |
 | `24-port-out-of-range.toml` | port must be 1 to 65535 |
 | `25-format-decimal.toml` | a decimal format number is reported as a decimal number |
+| `26-control-character.toml` | id, name, user, share and address have no control characters or line breaks |

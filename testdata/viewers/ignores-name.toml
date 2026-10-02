@@ -1,0 +1,9 @@
+# TEST ONLY. A viewer that ignores the name hubd asks for, so hubd has to
+# find its window by comparing the window list before and after the launch.
+format = 1
+
+[[viewer]]
+id        = "ignores-name"
+programs  = ["moonlight", "spice", "vnc", "ssh", "files"]
+command   = ["foot", "--app-id=ignored-by-design", "--title={name}", "--", "sleep", "infinity"]
+sets_name = false

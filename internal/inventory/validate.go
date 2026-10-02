@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"slices"
 	"strings"
+	"unicode"
 )
 
 var idPattern = regexp.MustCompile(`^[a-z0-9-]+$`)
@@ -16,6 +17,17 @@ func label(i int, m Machine) string {
 		return m.ID
 	}
 	return fmt.Sprintf("machine #%d", i+1)
+}
+
+// hasControl reports whether s has a control character (this includes tabs
+// and line breaks) or the Unicode line and paragraph separators.
+func hasControl(s string) bool {
+	for _, r := range s {
+		if unicode.IsControl(r) || r == '\u2028' || r == '\u2029' {
+			return true
+		}
+	}
+	return false
 }
 
 func quoteAll(items []string) string {
@@ -43,11 +55,21 @@ func validate(inv *Inventory) []Problem {
 	for i, m := range inv.Machines {
 		w := label(i, m)
 
+		// No control characters or line breaks in text that reaches the
+		// panel, the logs and viewer command lines.
+		for _, f := range []struct{ name, val string }{
+			{"id", m.ID}, {"name", m.Name}, {"user", m.User}, {"share", m.Share}, {"address", m.Address},
+		} {
+			if hasControl(f.val) {
+				add(w, "%s must not contain control characters or line breaks", f.name)
+			}
+		}
+
 		// id: present, well-formed, unique.
 		if m.ID == "" {
 			add(w, `required field "id" is missing or empty`)
 		} else {
-			if !idPattern.MatchString(m.ID) {
+			if !idPattern.MatchString(m.ID) && !hasControl(m.ID) {
 				add(w, "id %q must use only lowercase letters, digits and dashes", m.ID)
 			}
 			if first := byID[m.ID]; first != i {
@@ -66,7 +88,7 @@ func validate(inv *Inventory) []Problem {
 		}
 		if m.Address == "" {
 			add(w, `required field "address" is missing or empty`)
-		} else if net.ParseIP(m.Address) == nil && strings.ContainsAny(m.Address, ": /\t") {
+		} else if net.ParseIP(m.Address) == nil && !hasControl(m.Address) && strings.ContainsAny(m.Address, ": /") {
 			add(w, `address %q is not a plain name or IP address (no port, slash or spaces; the port goes in "port")`, m.Address)
 		}
 

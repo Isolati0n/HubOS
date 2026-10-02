@@ -174,6 +174,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Workloads that need different tuning** (for example, AI datasets) get separately tuned areas on the same NAS. The AI box keeps its active dataset on its own fast SSD; the NAS holds the master copy.
 - Opens on click in the hub's file manager. Non-Linux devices do not need access.
 - **Backups:** a local backup NAS, plus a copy off-site or in another room. No encryption.
+- The inventory and viewers.toml get the NAS backup copy. Secrets do not; secrets handling is a separate step.
 
 ## VM host
 
@@ -235,22 +236,31 @@ HubOS/
 │   ├── bar-findings.md
 │   ├── driftwm-findings.md
 │   ├── environment.md
+│   ├── hubd-slice2.md
 │   └── inventory-format.md
 ├── examples/
-│   └── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
+│   ├── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
+│   └── viewers.example.toml          (the fake viewer only; no real viewer command lines)
 ├── go.mod                            (one module for the whole repo)
 ├── cmd/
 │   └── hubd/
-│       └── main.go                   (flags, wiring, printing, exit code)
+│       ├── main.go                   (slice 1: flags, wiring, printing, exit code; routes subcommands)
+│       └── slice2.go                 (slice 2: serve, feed, list, menu, pick, open, end)
 ├── internal/
+│   ├── driftwm/                      (driftwm socket client)
+│   ├── hub/                          (state, checks, menu list, open/end, record, socket)
 │   ├── inventory/                    (read + validate; no network)
-│   └── probe/                        (up/down checks; no inventory knowledge)
+│   ├── probe/                        (up/down checks; no inventory knowledge)
+│   └── viewers/                      (viewers.toml reader)
 ├── testdata/
 │   ├── inventory.fake.toml           (valid; points at 127.0.0.x fake nodes)
-│   └── broken/                       (one deliberately broken file per rule)
+│   ├── broken/                       (one deliberately broken file per rule)
+│   └── viewers/                      (test viewer tables and a fake two-window viewer)
 └── tools/
-    └── fakenode/
-        └── main.go                   (tiny program that pretends to be a machine)
+    ├── fakenode/
+    │   └── main.go                   (tiny program that pretends to be a machine)
+    └── geninv/
+        └── main.go                   (writes big fake inventories at run time for scale tests)
 ```
 
 ---
@@ -302,6 +312,7 @@ HubOS/
 - ZFS or Btrfs
 - A custom exit chord for game-style windows
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
+- Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
 
 ---
 
@@ -330,3 +341,5 @@ HubOS/
 - **2026-10-01 (later):** Build environment audited; findings in docs/environment.md; Phase B limits recorded.
 - **2026-10-01 (later):** driftwm investigated; findings in docs/driftwm-findings.md; zoom wording corrected (never magnifies); modifier requirement added for the forwarder; unverified list updated.
 - **2026-10-01 (later):** Bar investigated; findings in docs/bar-findings.md; panel decisions recorded (Waybar alert plus wofi list, top edge, fit instead of fullscreen, D-Bus session bus allowed); scale target 100, stretch 5000.
+- **2026-10-01 (later):** hubd second slice: feed, list, menu, pick, open, end; scale tested at 100 and 5000; see docs/hubd-slice2.md.
+- **2026-10-01 (later):** hubd slice 2 follow-ups: bounded check, down-machines group, forget command, viewer logs, stale-round rule.

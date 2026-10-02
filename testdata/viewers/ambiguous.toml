@@ -1,0 +1,9 @@
+# TEST ONLY. Every program opens two windows at once and ignores the chosen
+# name, so hubd must refuse to guess. Run from the repo root.
+format = 1
+
+[[viewer]]
+id        = "two-windows"
+programs  = ["moonlight", "spice", "vnc", "ssh", "files"]
+command   = ["testdata/viewers/two-windows.sh"]
+sets_name = false

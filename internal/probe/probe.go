@@ -27,6 +27,10 @@ type Target struct {
 type Result struct {
 	Up     bool
 	Reason string
+	// Unchecked is true when the check could not be made at all because hubd
+	// ran out of file handles. That says nothing about the machine, so the
+	// panel must not show it as down.
+	Unchecked bool
 }
 
 // Check opens one TCP connection to the target and closes it again without
@@ -41,6 +45,11 @@ func Check(ctx context.Context, t Target, timeout time.Duration) Result {
 	if err != nil {
 		if ctx.Err() != nil {
 			return Result{Reason: "overall time limit reached before it answered"}
+		}
+		if errors.Is(err, syscall.EMFILE) || errors.Is(err, syscall.ENFILE) {
+			// The reason text stays what slice 1 always printed; only the
+			// new flag tells the daemon this says nothing about the machine.
+			return Result{Reason: reason(err, timeout), Unchecked: true}
 		}
 		return Result{Reason: reason(err, timeout)}
 	}
@@ -81,4 +90,56 @@ func reason(err error, timeout time.Duration) string {
 		return fmt.Sprintf("no answer within %s", timeout)
 	}
 	return err.Error()
+}
+
+// SafeCap is how many checks may be in flight at once: the wanted number, but
+// never more than the open-file limit minus 64 (kept for other sockets).
+// fileLimit 0 means unknown, and the wanted number is used.
+func SafeCap(want int, fileLimit uint64) int {
+	if want < 1 {
+		want = 1
+	}
+	if fileLimit == 0 || uint64(want) <= fileLimit-min(fileLimit, 64) {
+		return want
+	}
+	if fileLimit > 65 {
+		return int(fileLimit - 64)
+	}
+	return 1
+}
+
+// FileLimit is the soft limit on open files (0 if it cannot be read).
+func FileLimit() uint64 {
+	var rl syscall.Rlimit
+	if syscall.Getrlimit(syscall.RLIMIT_NOFILE, &rl) != nil {
+		return 0
+	}
+	return rl.Cur
+}
+
+// CheckLimited checks the targets with at most limit checks in flight at
+// once. For each finished check it calls done(index, result) (from several
+// goroutines at once; done must be safe for that). It returns when all are
+// finished or ctx has ended; targets not reached before ctx ended get the
+// "overall time limit" result.
+func CheckLimited(ctx context.Context, targets []Target, timeout time.Duration, limit int, done func(i int, r Result)) {
+	if limit < 1 {
+		limit = 1
+	}
+	next := make(chan int)
+	var wg sync.WaitGroup
+	for w := 0; w < limit && w < len(targets); w++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for i := range next {
+				done(i, Check(ctx, targets[i], timeout))
+			}
+		}()
+	}
+	for i := range targets {
+		next <- i
+	}
+	close(next)
+	wg.Wait()
 }

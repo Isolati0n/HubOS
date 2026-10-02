@@ -46,10 +46,12 @@ The real inventory lives on the hub's own disk, in its per-machine config outsid
 - `port`, when present, must be a whole number from 1 to 65535.
 - The `x` and `y` of `home` must be whole numbers. This is provisional until the canvas unit is verified.
 - `lifetime` must be exactly `ephemeral` or `persistent`.
+- `id`, `name`, `user`, `share` and `address` must not contain control characters or line breaks (tabs, newlines, and the like). hubd puts these texts in menus, logs and viewer command lines, one argument each; a line break would break a menu line.
 - Secrets never appear in this file.
 
 ## Unverified
 
+- **`home` convention (provisional).** `home` uses driftwm's own convention: the **centre of the window**, with **Y pointing up**. This is read from driftwm's documents and checked only in a nested test window, not on a real screen. It stays provisional until tested on a real screen.
 - **Canvas unit size.** What one unit of `home` means (pixels or something else) is unknown until driftwm is tested. The numbers in the example are placeholders.
 - **Guest address and port.** A guest's console is likely reached through the VM host's address plus a port. So what `address` and `port` mean for a guest stays provisional until the VM host is designed.
 

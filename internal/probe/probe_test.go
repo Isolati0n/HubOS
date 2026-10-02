@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"net"
+	"os"
+	"sync"
 	"syscall"
 	"testing"
 	"time"
@@ -98,5 +100,95 @@ func TestReasonWording(t *testing.T) {
 		if got := reason(c.err, 2*time.Second); got != c.want {
 			t.Errorf("reason(%v) = %q, want %q", c.err, got, c.want)
 		}
+	}
+}
+
+func TestCheckLimitedNeverRunsMoreThanLimit(t *testing.T) {
+	l, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer l.Close()
+	go func() {
+		for {
+			c, err := l.Accept()
+			if err != nil {
+				return
+			}
+			c.Close()
+		}
+	}()
+	port := l.Addr().(*net.TCPAddr).Port
+	targets := make([]Target, 50)
+	for i := range targets {
+		targets[i] = Target{Address: "127.0.0.1", Port: port}
+	}
+	var mu sync.Mutex
+	up := 0
+	CheckLimited(context.Background(), targets, time.Second, 4, func(i int, r Result) {
+		mu.Lock()
+		defer mu.Unlock()
+		if r.Up {
+			up++
+		}
+	})
+	if up != 50 {
+		t.Errorf("up = %d, want 50", up)
+	}
+}
+
+// With too few file handles, a check that could not even open a socket must
+// say so, and must not claim the machine is down.
+func TestOutOfFileHandlesIsReportedAsUnchecked(t *testing.T) {
+	l := listen(t, "127.0.0.1")
+	port := l.Addr().(*net.TCPAddr).Port
+	var old syscall.Rlimit
+	if err := syscall.Getrlimit(syscall.RLIMIT_NOFILE, &old); err != nil {
+		t.Skip(err)
+	}
+	low := syscall.Rlimit{Cur: 40, Max: old.Max}
+	if err := syscall.Setrlimit(syscall.RLIMIT_NOFILE, &low); err != nil {
+		t.Skip(err)
+	}
+	defer syscall.Setrlimit(syscall.RLIMIT_NOFILE, &old)
+
+	// Hold most of the handles, then ask for far more checks at once.
+	var hold []*os.File
+	for i := 0; i < 20; i++ {
+		f, err := os.Open("/dev/null")
+		if err != nil {
+			break
+		}
+		hold = append(hold, f)
+	}
+	defer func() {
+		for _, f := range hold {
+			f.Close()
+		}
+	}()
+	targets := make([]Target, 200)
+	for i := range targets {
+		targets[i] = Target{Address: "127.0.0.1", Port: port}
+	}
+	var mu sync.Mutex
+	up, unchecked, down := 0, 0, 0
+	CheckLimited(context.Background(), targets, time.Second, 200, func(i int, r Result) {
+		mu.Lock()
+		defer mu.Unlock()
+		switch {
+		case r.Up:
+			up++
+		case r.Unchecked:
+			unchecked++
+		default:
+			down++
+		}
+	})
+	t.Logf("up=%d unchecked=%d down=%d", up, unchecked, down)
+	if unchecked == 0 {
+		t.Error("expected some checks to run out of file handles")
+	}
+	if down != 0 {
+		t.Errorf("%d checks were reported down although the machine is up", down)
 	}
 }
