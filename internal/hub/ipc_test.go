@@ -2,6 +2,7 @@ package hub
 
 import (
 	"fmt"
+	"net"
 	"os"
 	"path/filepath"
 	"strings"
@@ -124,17 +125,6 @@ func TestLongRuntimeDirIsRefusedPlainly(t *testing.T) {
 	}
 }
 
-func TestStaleSocketFileIsReplaced(t *testing.T) {
-	sock, _ := SocketPath(shortDir(t))
-	os.MkdirAll(filepath.Dir(sock), 0o700)
-	os.WriteFile(sock, []byte("left over"), 0o600)
-	l, err := Listen(sock)
-	if err != nil {
-		t.Fatal(err)
-	}
-	l.Close()
-}
-
 // STALE comes from the clock, not from an event: the feed must notice it.
 func TestFeedShowsStaleWhenTimePassesWithNoEvent(t *testing.T) {
 	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
@@ -193,5 +183,97 @@ func TestFeedSendsAtMostOneLinePerSecondDuringTheFirstRound(t *testing.T) {
 	}
 	if !strings.Contains(got[0], "checking... ") {
 		t.Errorf("first line: %s", got[0])
+	}
+}
+
+func TestListenNeverRemovesWhatIsNotASocket(t *testing.T) {
+	dir := shortDir(t)
+	sock, _ := SocketPath(dir)
+	os.MkdirAll(filepath.Dir(sock), 0o700)
+
+	// A plain file with precious content.
+	os.WriteFile(sock, []byte("precious"), 0o600)
+	_, err := Listen(sock)
+	if err == nil || !strings.Contains(err.Error(), "is not a socket (it is a plain file)") || !strings.Contains(err.Error(), "will not remove it") {
+		t.Fatalf("plain file: %v", err)
+	}
+	if b, _ := os.ReadFile(sock); string(b) != "precious" {
+		t.Errorf("the file was touched: %q", b)
+	}
+	os.Remove(sock)
+
+	// A link (to something elsewhere) and a folder.
+	target := filepath.Join(dir, "target")
+	os.WriteFile(target, []byte("keep"), 0o600)
+	os.Symlink(target, sock)
+	if _, err := Listen(sock); err == nil || !strings.Contains(err.Error(), "a link") {
+		t.Errorf("link: %v", err)
+	}
+	if b, _ := os.ReadFile(target); string(b) != "keep" {
+		t.Error("the link target was touched")
+	}
+	os.Remove(sock)
+	os.Mkdir(sock, 0o700)
+	if _, err := Listen(sock); err == nil || !strings.Contains(err.Error(), "a folder") {
+		t.Errorf("folder: %v", err)
+	}
+	os.Remove(sock)
+
+	// A leftover socket nobody answers on is replaced.
+	l, err := net.Listen("unix", sock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	l.(*net.UnixListener).SetUnlinkOnClose(false)
+	l.Close()
+	if fi, err := os.Lstat(sock); err != nil || fi.Mode()&os.ModeSocket == 0 {
+		t.Fatalf("test set-up: %v", err)
+	}
+	l2, err := Listen(sock)
+	if err != nil {
+		t.Fatalf("leftover socket: %v", err)
+	}
+	l2.Close()
+}
+
+func TestListenRefusesAFolderThatIsNotOwnedOrNotMode0700(t *testing.T) {
+	dir := shortDir(t)
+	sock, _ := SocketPath(dir)
+	folder := filepath.Dir(sock)
+	os.MkdirAll(folder, 0o700)
+
+	os.Chmod(folder, 0o755)
+	_, err := Listen(sock)
+	if err == nil || !strings.Contains(err.Error(), "has mode 0755, but it must be 0700") || !strings.Contains(err.Error(), "chmod 700") {
+		t.Errorf("mode 0755: %v", err)
+	}
+	if _, serr := os.Lstat(sock); serr == nil {
+		t.Error("a socket was made in the loose folder")
+	}
+	os.Chmod(folder, 0o770)
+	if _, err := Listen(sock); err == nil {
+		t.Error("mode 0770 accepted")
+	}
+	os.Chmod(folder, 0o500) // owner can only read: not 0700 either
+	if _, err := Listen(sock); err == nil {
+		t.Error("mode 0500 accepted")
+	}
+	os.Chmod(folder, 0o700)
+	l, err := Listen(sock)
+	if err != nil {
+		t.Fatalf("mode 0700: %v", err)
+	}
+	l.Close()
+
+	// Another owner: only a superuser can give a folder away.
+	if os.Geteuid() != 0 {
+		t.Skip("needs to run as root to give the folder to another user")
+	}
+	if err := os.Chown(folder, 12345, 12345); err != nil {
+		t.Skip(err)
+	}
+	_, err = Listen(sock)
+	if err == nil || !strings.Contains(err.Error(), "is owned by user 12345, not by the user running hubd (0)") {
+		t.Errorf("other owner: %v", err)
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"syscall"
 	"time"
 )
 
@@ -57,21 +58,32 @@ type Response struct {
 	Ask     bool        `json:"ask,omitempty"`
 }
 
-// Listen opens the socket: directory 0700, socket 0600. If another hubd
-// answers on it, that is an error; a leftover file nobody answers on is
-// removed.
+// Listen opens the socket: directory 0700, socket 0600. It refuses a folder
+// that is not owned by the current user or is not mode 0700 (someone else
+// could then put a file or a socket there). If another hubd answers on the
+// path, that is an error; a leftover *socket* nobody answers on is removed;
+// anything else at that path (a file, a link, a folder) is never removed.
 func Listen(path string) (net.Listener, error) {
 	if err := CheckSocketPath(path); err != nil {
 		return nil, err
 	}
-	if err := os.MkdirAll(filepath.Dir(path), 0o700); err != nil {
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return nil, err
 	}
-	if c, err := net.DialTimeout("unix", path, time.Second); err == nil {
-		c.Close()
-		return nil, fmt.Errorf("another hubd is already running (it answers on %s)", path)
+	if err := checkFolder(dir); err != nil {
+		return nil, err
 	}
-	os.Remove(path)
+	if fi, err := os.Lstat(path); err == nil {
+		if fi.Mode()&os.ModeSocket == 0 {
+			return nil, fmt.Errorf("%s exists and is not a socket (it is %s); hubd will not remove it. Move it away, or give --socket PATH", path, describeMode(fi.Mode()))
+		}
+		if c, err := net.DialTimeout("unix", path, time.Second); err == nil {
+			c.Close()
+			return nil, fmt.Errorf("another hubd is already running (it answers on %s)", path)
+		}
+		os.Remove(path) // a leftover socket that nobody answers on
+	}
 	l, err := net.Listen("unix", path)
 	if err != nil {
 		return nil, err
@@ -81,6 +93,37 @@ func Listen(path string) (net.Listener, error) {
 		return nil, err
 	}
 	return l, nil
+}
+
+func describeMode(m os.FileMode) string {
+	switch {
+	case m.IsDir():
+		return "a folder"
+	case m&os.ModeSymlink != 0:
+		return "a link"
+	case m.IsRegular():
+		return "a plain file"
+	}
+	return "something else"
+}
+
+// checkFolder refuses a folder that is not owned by the user running hubd or
+// whose mode is not exactly 0700.
+func checkFolder(dir string) error {
+	fi, err := os.Stat(dir)
+	if err != nil {
+		return err
+	}
+	if !fi.IsDir() {
+		return fmt.Errorf("%s is not a folder", dir)
+	}
+	if st, ok := fi.Sys().(*syscall.Stat_t); ok && int(st.Uid) != os.Geteuid() {
+		return fmt.Errorf("the folder %s is owned by user %d, not by the user running hubd (%d); refusing to use it for the socket", dir, st.Uid, os.Geteuid())
+	}
+	if perm := fi.Mode().Perm(); perm != 0o700 {
+		return fmt.Errorf("the folder %s has mode %04o, but it must be 0700 (fix it with: chmod 700 %s); refusing to put the socket there", dir, perm, dir)
+	}
+	return nil
 }
 
 // Serve answers connections until the listener is closed.
