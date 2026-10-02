@@ -322,3 +322,31 @@ func TestCheckWith5000MachinesAndSmallFileLimitHasNoFalseDown(t *testing.T) {
 		t.Errorf("summary wrong; output tail:\n%s", text[max(0, len(text)-200):])
 	}
 }
+
+func TestCheckTimeoutFlagIsValidated(t *testing.T) {
+	n := startNode(t, "127.0.0.31")
+	inv := writeInventory(t,
+		machine("hub", "hub", "127.0.0.10", `["none"]`, 0, "", 0, 0),
+		machine("ai-1", "ai", "127.0.0.31", `["moonlight"]`, n.port, "", 1, 1))
+	for _, tc := range []struct{ arg, want string }{
+		{"0s", "must be more than 0"},
+		{"-1s", "must be more than 0"},
+		{"2m", "must be at most 1m0s"},
+		{"4s", "longer than the total limit of this command (3s)"},
+	} {
+		var out, errb bytes.Buffer
+		code := run([]string{"--inventory", inv, "--check-timeout", tc.arg}, &out, &errb, testConfig)
+		if code != exitFailure || !strings.Contains(errb.String(), tc.want) {
+			t.Errorf("%s: exit %d, %q", tc.arg, code, errb.String())
+		}
+	}
+	var out, errb bytes.Buffer
+	if code := run([]string{"--inventory", inv, "--check-timeout", "500ms"}, &out, &errb, testConfig); code != 0 || !strings.Contains(out.String(), "1 of 1 up") {
+		t.Errorf("valid value: exit %d, %q %q", code, out.String(), errb.String())
+	}
+	// The serve command checks the same way.
+	errb.Reset()
+	if code := dispatch([]string{"serve", "--inventory", inv, "--check-timeout", "0"}, &out, &errb); code != exitFailure || !strings.Contains(errb.String(), "--check-timeout must be more than 0") {
+		t.Errorf("serve: exit %d %q", code, errb.String())
+	}
+}

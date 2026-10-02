@@ -54,8 +54,9 @@ func run(args []string, stdout, stderr io.Writer, cfg config) int {
 	fs := flag.NewFlagSet("hubd", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	path := fs.String("inventory", defaultInventory, "path to the inventory file")
+	timeout := fs.Duration("check-timeout", cfg.perMachine, "limit for one machine's check (more than 0, at most 1m, and not longer than the total limit of "+cfg.total.String()+")")
 	fs.Usage = func() {
-		fmt.Fprintf(stderr, "usage: hubd [--inventory PATH]\n\n"+
+		fmt.Fprintf(stderr, "usage: hubd [--inventory PATH] [--check-timeout D]\n\n"+
 			"Reads the inventory, checks it, checks which machines are up, and prints the result.\n"+
 			"Without --inventory, the file is read from %s\n", defaultInventory)
 	}
@@ -65,6 +66,17 @@ func run(args []string, stdout, stderr io.Writer, cfg config) int {
 		}
 		return exitFailure
 	}
+	timeoutGiven := false
+	fs.Visit(func(f *flag.Flag) { timeoutGiven = timeoutGiven || f.Name == "check-timeout" })
+	total := cfg.total
+	if !timeoutGiven {
+		total = 0 // the built-in value is never refused
+	}
+	if err := checkTimeoutError(*timeout, total); err != nil {
+		fmt.Fprintln(stderr, "hubd:", err)
+		return exitFailure
+	}
+	cfg.perMachine = *timeout
 	if fs.NArg() > 0 || *path == "" {
 		fs.Usage()
 		return exitFailure
