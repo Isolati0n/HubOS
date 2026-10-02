@@ -139,7 +139,7 @@ func TestFeedShowsStaleWhenTimePassesWithNoEvent(t *testing.T) {
 	r.setStatus("a", statusUp)
 	r.h.set.ProbeInterval = 200 * time.Millisecond // stale after 600 ms
 	r.h.mu.Lock()
-	r.h.rounds, r.h.lastRound, r.h.lastTook = 1, time.Now(), 5*time.Millisecond
+	r.h.rounds, r.h.lastResult, r.h.lastTook = 1, time.Now(), 5*time.Millisecond
 	r.h.mu.Unlock()
 	sock, _ := SocketPath(shortDir(t))
 	l, _ := Listen(sock)

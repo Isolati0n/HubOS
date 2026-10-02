@@ -137,9 +137,9 @@ func reply(c net.Conn, r Response) {
 	c.Write(append(b, '\n'))
 }
 
-// feed writes a status line now and again whenever it changes. Changes that
-// come close together are sent as one (100 ms), and a line identical to the
-// last one is not sent again.
+// feed writes a status line now and again whenever it changes, but never
+// more than one line per second (the first at once), and never a line
+// identical to the last one.
 func (h *Hub) feed(c net.Conn) {
 	ch, stop := h.Changes()
 	defer stop()
@@ -150,16 +150,27 @@ func (h *Hub) feed(c net.Conn) {
 		close(gone)
 	}()
 	last := ""
+	var sentAt time.Time
 	for {
-		if line := h.Status().JSON(); line != last {
-			if _, err := c.Write([]byte(line + "\n")); err != nil {
-				return
+		line := h.Status().JSON()
+		if line != last {
+			if wait := time.Second - time.Since(sentAt); !sentAt.IsZero() && wait > 0 {
+				select {
+				case <-time.After(wait):
+				case <-gone:
+					return
+				}
+				line = h.Status().JSON() // the newest, after waiting
 			}
-			last = line
+			if line != last {
+				if _, err := c.Write([]byte(line + "\n")); err != nil {
+					return
+				}
+				last, sentAt = line, time.Now()
+			}
 		}
 		select {
 		case <-ch:
-			time.Sleep(100 * time.Millisecond)
 		case <-time.After(time.Second):
 			// Nothing changed, but time passes: STALE and the message time
 			// run out without any event, so look again every second.

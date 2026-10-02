@@ -47,6 +47,10 @@ func (h *Hub) ProbeRound(ctx context.Context) {
 			s.status, s.reason = statusDown, r.Reason
 		}
 		s.checkedAt = h.now()
+		h.lastResult = s.checkedAt
+		if h.rounds == 0 {
+			h.firstDone++
+		}
 		if s.status != old {
 			h.notifyLocked()
 		}
@@ -55,6 +59,7 @@ func (h *Hub) ProbeRound(ctx context.Context) {
 	h.mu.Lock()
 	h.rounds++
 	h.lastRound = h.now()
+	h.lastResult = h.lastRound
 	h.lastTook = h.now().Sub(began)
 	h.notifyLocked()
 	c, _ := h.countLocked()

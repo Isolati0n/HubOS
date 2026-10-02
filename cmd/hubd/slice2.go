@@ -147,7 +147,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	viewersPath := fs.String("viewers", "", "path to viewers.toml (default: next to the inventory)")
 	dwSock := fs.String("driftwm-socket", "", "driftwm's socket (default from XDG_RUNTIME_DIR and WAYLAND_DISPLAY)")
 	bar := fs.Int("bar-height", def.BarHeight, "pixels the bar reserves at the screen edge (0 = none or unknown)")
-	cap_ := fs.Int("probe-cap", def.ProbeCap, "most checks in flight at once")
+	cap_ := fs.Int("probe-cap", 0, "most checks in flight at once (0 = automatic: 200, or 1000 above 1000 machines; never above 80% of ulimit -n)")
 	interval := fs.Duration("probe-interval", def.ProbeInterval, "time between the starts of two check rounds")
 	ptimeout := fs.Duration("probe-timeout", def.ProbeTimeout, "limit for one machine's check")
 	wait := fs.Duration("window-wait", def.WindowWait, "how long to wait for a started viewer's window")
@@ -231,6 +231,10 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		}
 	}
 	set.LogDir = strings.TrimSuffix(socket, ".sock") + ".viewer-logs"
+	asked := *cap_
+	if asked == 0 {
+		asked = probe.AutoCap(len(inv.Machines))
+	}
 	dw := &driftwm.Client{Path: dwPath}
 	h := hub.New(inv, vt, dw, hub.NewExecLauncher(set.LogDir, set.LogMax), set, strings.TrimSuffix(socket, ".sock")+".record.json")
 
@@ -242,9 +246,9 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	defer os.Remove(socket)
 
 	fmt.Fprintf(stderr, "hubd: serving %d machines on %s; driftwm at %s\n", len(inv.Machines), socket, dwPath)
-	fmt.Fprintf(stderr, "hubd: open-file limit %d; check cap %d (asked for %d); round every %s; per-machine limit %s\n", limit, h.ProbeCap(), *cap_, *interval, *ptimeout)
-	if h.ProbeCap() < *cap_ {
-		fmt.Fprintf(stderr, "hubd: the check cap was lowered to stay under the open-file limit (raise it with ulimit -n)\n")
+	fmt.Fprintf(stderr, "hubd: open-file limit %d; check cap %d (asked for %d); round every %s; per-machine limit %s\n", limit, h.ProbeCap(), asked, *interval, *ptimeout)
+	if h.ProbeCap() < asked {
+		fmt.Fprintln(stderr, "hubd: the check cap was lowered to stay under the open-file limit (it is at most 80% of ulimit -n; big clusters want ulimit -n of at least 2048)")
 	}
 	var noViewer []string
 	for _, m := range inv.Machines {
@@ -277,7 +281,8 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	launcher := fs.String("wofi", "wofi", "the list launcher program")
 	style := fs.String("style", defaultWofiStyle, "wofi style file (CSS); used only if the file exists")
 	width := fs.Int("width", 720, "menu width in pixels")
-	single := fs.Bool("single-click", false, "pick with a single mouse click (wofi's default is a double click)")
+	_ = fs.Bool("single-click", true, "pick with a single mouse click (this is the default)")
+	noSingle := fs.Bool("no-single-click", false, "pick with a double click, like wofi's own default")
 	sock := socketFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		if errors.Is(err, flag.ErrHelp) {
@@ -300,7 +305,7 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	if syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB) != nil {
 		return exitOK
 	}
-	opts := launcherOpts{program: *launcher, width: *width, singleClick: *single}
+	opts := launcherOpts{program: *launcher, width: *width, singleClick: !*noSingle}
 	if _, err := os.Stat(*style); err == nil {
 		opts.style = *style
 	}

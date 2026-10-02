@@ -92,20 +92,34 @@ func reason(err error, timeout time.Duration) string {
 	return err.Error()
 }
 
-// SafeCap is how many checks may be in flight at once: the wanted number, but
-// never more than the open-file limit minus 64 (kept for other sockets).
-// fileLimit 0 means unknown, and the wanted number is used.
+// SafeCap is how many checks may be in flight at once: the wanted number,
+// but never more than 80% of the open-file limit (the rest is kept for other
+// sockets and files). fileLimit 0 means unknown, and the wanted number is used.
 func SafeCap(want int, fileLimit uint64) int {
 	if want < 1 {
 		want = 1
 	}
-	if fileLimit == 0 || uint64(want) <= fileLimit-min(fileLimit, 64) {
+	if fileLimit == 0 {
 		return want
 	}
-	if fileLimit > 65 {
-		return int(fileLimit - 64)
+	most := int(fileLimit * 8 / 10)
+	if most < 1 {
+		most = 1
 	}
-	return 1
+	if want > most {
+		return most
+	}
+	return want
+}
+
+// AutoCap is the default number of checks in flight: 200, or 1000 when there
+// are more than 1000 machines. (Proposed from the measurements in
+// docs/hubd-slice2.md; always cut down by SafeCap.)
+func AutoCap(machines int) int {
+	if machines > 1000 {
+		return 1000
+	}
+	return 200
 }
 
 // FileLimit is the soft limit on open files (0 if it cannot be read).

@@ -48,6 +48,7 @@ type Settings struct {
 	Settle        time.Duration                                                                                                         // extra wait after the first window, to catch a second
 	LogDir        string                                                                                                                // where viewer logs go ("" = discard viewer output)
 	LogMax        int64                                                                                                                 // most bytes in one viewer log before it is rotated
+	LogTotalMax   int64                                                                                                                 // most bytes in all viewer logs together; the oldest go first
 	CloseWait     time.Duration                                                                                                         // how long `end` waits for a window to go
 	FoldThreshold int                                                                                                                   // groups with more machines than this start folded
 	ListMax       int                                                                                                                   // most machine lines in one menu list (wofi gets very slow far above 1000)
@@ -63,9 +64,9 @@ type Settings struct {
 // DefaultSettings are the proposed values.
 func DefaultSettings() Settings {
 	return Settings{
-		ProbeCap: 200, ProbeInterval: 10 * time.Second, ProbeTimeout: 2 * time.Second,
+		ProbeCap: 0, ProbeInterval: 10 * time.Second, ProbeTimeout: 2 * time.Second,
 		WindowWait: 10 * time.Second, Settle: 500 * time.Millisecond, CloseWait: 3 * time.Second,
-		FoldThreshold: 12, ListMax: 1000, DownMax: 50, TooltipCap: 10, MessageTTL: 15 * time.Second, LogMax: 128 << 10,
+		FoldThreshold: 12, ListMax: 1000, DownMax: 50, TooltipCap: 10, MessageTTL: 15 * time.Second, LogMax: 128 << 10, LogTotalMax: 64 << 20,
 	}
 }
 
@@ -115,18 +116,21 @@ type Hub struct {
 	recPath  string
 	launchMu sync.Mutex // one launch at a time, whole hub
 
-	mu        sync.Mutex
-	ms        []*mstate
-	byID      map[string]*mstate
-	expanded  map[string]bool // explicit fold choices by group key
-	msg       string
-	msgUntil  time.Time
-	driftwmUp bool
-	rounds    int
-	lastRound time.Time
-	subs      map[chan struct{}]struct{}
-	now       func() time.Time
-	lastTook  time.Duration // how long the latest check round took
+	mu         sync.Mutex
+	ms         []*mstate
+	byID       map[string]*mstate
+	expanded   map[string]bool // explicit fold choices by group key
+	msg        string
+	msgUntil   time.Time
+	driftwmUp  bool
+	rounds     int
+	lastRound  time.Time
+	subs       map[chan struct{}]struct{}
+	now        func() time.Time
+	lastResult time.Time     // when a check result last arrived (or the round last ended, or hubd started)
+	firstDone  int           // machines answered during the first round
+	checkable  int           // machines that can be checked at all
+	lastTook   time.Duration // how long the latest check round took
 }
 
 // New builds a Hub. recPath is where the record file goes ("" = none).
@@ -149,8 +153,17 @@ func New(inv *inventory.Inventory, vt *viewers.Table, comp Compositor, launch La
 		h.ms = append(h.ms, s)
 		h.byID[m.ID] = s
 	}
-	// Stay under the open-file limit: each check holds one socket.
-	h.set.ProbeCap = probe.SafeCap(set.ProbeCap, set.FileLimit)
+	// 0 means automatic. Either way: at most 80% of the open-file limit.
+	if h.set.ProbeCap == 0 {
+		h.set.ProbeCap = probe.AutoCap(len(inv.Machines))
+	}
+	h.set.ProbeCap = probe.SafeCap(h.set.ProbeCap, set.FileLimit)
+	h.lastResult = h.now()
+	for _, s := range h.ms {
+		if s.m.Role != "hub" && s.m.Open[0] != "none" && s.m.Port != nil {
+			h.checkable++
+		}
+	}
 	return h
 }
 

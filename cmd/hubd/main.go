@@ -44,9 +44,6 @@ type config struct {
 	total      time.Duration // limit for the whole run
 }
 
-// checkCap is how many checks run at once in hubd check (same as the daemon).
-const checkCap = 200
-
 var defaultConfig = config{perMachine: 2 * time.Second, total: 5 * time.Second}
 
 func main() {
@@ -182,7 +179,7 @@ func check(machines []inventory.Machine, cfg config) []row {
 	ctx, cancel := context.WithTimeout(context.Background(), cfg.total)
 	defer cancel()
 	var mu sync.Mutex
-	probe.CheckLimited(ctx, targets, cfg.perMachine, probe.SafeCap(checkCap, probe.FileLimit()), func(k int, res probe.Result) {
+	probe.CheckLimited(ctx, targets, cfg.perMachine, probe.SafeCap(probe.AutoCap(len(machines)), probe.FileLimit()), func(k int, res probe.Result) {
 		mu.Lock()
 		defer mu.Unlock()
 		i := index[k]

@@ -232,6 +232,10 @@ func (r *rig) setStatus(id string, st status) {
 	r.h.mu.Lock()
 	r.h.byID[id].status = st
 	r.h.byID[id].checkedAt = time.Now()
+	if r.h.rounds == 0 {
+		r.h.rounds = 1 // a test that sets a status pretends a round has finished
+	}
+	r.h.lastResult = time.Now()
 	r.h.mu.Unlock()
 }
 
