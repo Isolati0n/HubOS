@@ -1,12 +1,47 @@
 # Phase B, first slice: a tiny bootable Hub OS image
 
-> **PROPOSAL, not approved; nothing here is a decision.**
+> **PROPOSAL; the owner's answers of 2026-10-02 are in the section 'Owner decisions'.**
 
 **Written:** 2026-10-02. **Status of the evidence:** everything marked TESTED was run in the build environment described in `docs/environment.md` (4 CPUs, 16 GB, about 30 GB of disk, **no KVM**: virtual machines run in software emulation, so all times below are emulation times and say nothing about real hardware). Nothing here was run on real hardware. `HUB-OS.md` wins if anything here disagrees with it.
 
 Labels, as in the other documents: **TESTED** (the command and its output are shown or listed in section 13), **SOURCE** (read in a document or source file, link given), **BELIEVED** (reasoned or remembered, not run), **UNKNOWN**.
 
 Nothing was installed on the machine. Packages were downloaded with `apt-get download`/`--print-uris` into a temporary directory (`/tmp/pb`) and unpacked with `dpkg -x`, as in `docs/environment.md` section 1.8. Everything was deleted afterwards. The repo gets only this file: the scripts that were used are printed in the appendices (they are test scaffolding that lived in `/tmp`, not proposed repo code).
+
+## Owner decisions (2026-10-02)
+
+The owner approved my recommendation for all 25 choices of section 12, **except choice 2** (the systemd libraries), and with the additions on choices 19 and 24. The recommendations below are copied from section 12.
+
+1. **Base builder.** Approved: `mmdebstrap` on Ubuntu 24.04 with a pinned snapshot date (25 s; the desktop software we need later is in the archive).
+2. **The two systemd libraries.** **Temporary: keep `libsystemd0` and `libudev1` in the prototype image, undecided; the owner decides after `docs/proposals/systemd-libraries.md`.**
+3. **Ubuntu or Debian.** Approved: Ubuntu 24.04 (already used for the other documents).
+4. **Init.** Approved: s6 with plain `run` scripts now, s6-rc built from source later.
+5. **Where PID 1 comes from.** Approved: a small `/sbin/init` shell script that ends in `exec s6-svscan` (as tested).
+6. **Boot method.** Approved: UEFI only, EFI-stub kernel, firmware `BootNext`/`BootOrder`, no bootloader.
+7. **BIOS support.** Approved: none.
+8. **Stage 0 inside the kernel.** Approved: yes (busybox + a 32-line script).
+9. **Root file system format.** Approved: squashfs with zstd (tested).
+10. **Partition plan.** Approved: (5 partitions, sizes in 4.1). *Alternative:* add a separate `/var/log` partition, or shrink the boot partition.
+11. **Signing tool.** Approved: `signify-openbsd`.
+12. **What is signed.** Approved: a manifest of hashes with a version.
+13. **Rollback protection.** Approved: strictly increasing version plus a floor on the config partition.
+14. **Config format.** Approved: `node.conf` (shell) now, `node.toml` later.
+15. **Update transport.** Approved: HTTP pull from the hub, started by the owner.
+16. **Health definition for "boot succeeded".** Approved: `hubd` answers its socket five times in a row.
+17. **Timeouts.** Approved: confirm timeout 120 s and watchdog heartbeat 120 s on real hardware (the tests used 40 s and 60 s).
+18. **Recovery.** Approved: a firmware boot entry (reachable from the firmware's boot menu).
+19. **Kernel.** Approved, as: **Linux 6.12 LTS as the default kernel; each machine's build config names its kernel version, config fragment and modules; slice 1 has no modules.**
+20. **Language for the base layer.** Approved: shell for slices 0 to 3, then decide.
+21. **Test runner.** Approved: a Go test (like the rest of the repo) that drives QEMU over a pipe.
+22. **Where the code goes.** Approved: `tools/image/` for the build and test scripts, `image/` for the files that go into the root (init, service scripts), and `docs/` for this file once approved.
+23. **Persistent logs.** Approved: `/var/log` on the data partition.
+24. **Key custody.** Approved: an offline key on your computer for now. **No private key is ever committed; tests generate throwaway keys at run time in a temporary directory.**
+25. **A Buildroot image for tiny roles.** Approved: look at it again only for a later tiny role (for example a pure NAS or a guest); not for the hub.
+
+Other decisions the owner made on the same day are in `HUB-OS.md` (independent per-machine kernels, out-of-tree modules only when declared, pinned versions, OpenZFS on the NAS and backup NAS).
+
+---
+
 
 ---
 
