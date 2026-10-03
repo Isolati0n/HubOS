@@ -15,4 +15,8 @@ SNAPSHOT=20261001T000000Z
 # Service directories (image/rootfs/etc/s6/sv/NAME) started on this machine.
 SERVICES="hubd console confirm wd"
 # Seconds an unhealthy trial boot waits before it gives up and reboots.
-CONFIRM_TIMEOUT=40
+CONFIRM_TIMEOUT=30
+# The separate recovery kernel (kernel-recovery.efi): its version (a plain number; the update tool installs a
+# bundle's recovery kernel only when this is newer than the installed one) and its built-in command line.
+RECOVERY_VERSION=1
+RECOVERY_CMDLINE="console=ttyS0 ro loglevel=4 panic=5"

@@ -1,0 +1,7 @@
+# Read by the interactive recovery shell (ENV). BusyBox's shell prefers its own applets over files in PATH, and its
+# findfs and mke2fs applets are not the full programs (busybox findfs has no PARTLABEL=). These aliases run the real
+# ones from the e2fsprogs / util-linux copies in this initramfs.
+alias findfs=/sbin/findfs
+alias mke2fs=/sbin/mke2fs
+alias blkid=/sbin/blkid
+PS1='recovery # '

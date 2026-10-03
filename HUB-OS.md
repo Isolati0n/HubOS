@@ -424,4 +424,4 @@ HubOS/
 - **2026-10-03:** Phase B images: per-slot kernels (slot choice independent of firmware load options), free-space check, systemd pin and strip step.
 - **2026-10-03:** Reviewed the games and input research; forwarder design left open until December; emulator packaging recorded as open; apt bullet reworded.
 - **2026-10-03:** Phase B images: floor only rises, recovery detected by BootCurrent, one-kernel manifest refused, hang-retry exercised.
-
+- **2026-10-03:** Phase B images: separate recovery kernel, confirm refuses below the floor, rollback command.

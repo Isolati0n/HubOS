@@ -1,15 +1,21 @@
 #!/bin/bash
 # build-kernel.sh: build the machine's kernel (version and fragment come from the machine file).
+# THREE kernels: one per slot and a separate recovery kernel (see below).
 # One kernel PER SLOT: the slot (hubos.slot=a|b and root=PARTLABEL=hubos-root-a|b) is in the built-in command
 # line, so a firmware that drops the boot entry's load options still boots the right slot.
-# Output: $WORK/out/kernel-a.efi and kernel-b.efi (a bzImage with an EFI stub and stage 0 built in),
+# The RECOVERY kernel (kernel-recovery.efi) has a different initramfs (image/stage0/recovery-init and the tools
+# listed by tools/image/recovery-list.py, copied from the base root) and no root= in its command line: it needs
+# neither slot's root.
+# Output: $WORK/out/kernel-a.efi, kernel-b.efi and kernel-recovery.efi (a bzImage with an EFI stub and stage 0 built in),
 #         $WORK/out/kernel.config (slot a's), kernel.version, kernel.seconds
 . "$(dirname "$0")/common.sh"
 load_machine
 V=$KERNEL_VERSION
+# The recovery initramfs is made from the base root, so the base root must exist (build-base.sh is idempotent).
+[ -d "$WORK/base" ] || "$(dirname "$0")/build-base.sh"
 # Skip the build if nothing it depends on has changed (FORCE=1 builds anyway).
-STAMP=$(cat "$REPO/$MACHINE" "$REPO/$KERNEL_FRAGMENT" "$REPO/image/stage0/init" "$REPO/image/stage0/stage0.list.in" | sha256sum | cut -d' ' -f1)
-if [ -z "$FORCE" ] && [ -f "$WORK/out/kernel-a.efi" ] && [ -f "$WORK/out/kernel-b.efi" ] && [ "$(cat "$WORK/out/kernel.stamp" 2>/dev/null)" = "$STAMP" ]; then
+STAMP=$(cat "$REPO/$MACHINE" "$REPO/$KERNEL_FRAGMENT" "$REPO/image/stage0/init" "$REPO/image/stage0/stage0.list.in" "$REPO/image/stage0/recovery-init" "$REPO/image/stage0/recovery.rc" "$REPO/tools/image/recovery-list.py" "$REPO/image/rootfs/usr/sbin/hubos-ctl" "$REPO/image/rootfs/usr/lib/hubos/udhcpc.script" "$WORK/out/base.stamp" | sha256sum | cut -d' ' -f1)
+if [ -z "$FORCE" ] && [ -f "$WORK/out/kernel-a.efi" ] && [ -f "$WORK/out/kernel-b.efi" ] && [ -f "$WORK/out/kernel-recovery.efi" ] && [ "$(cat "$WORK/out/kernel.stamp" 2>/dev/null)" = "$STAMP" ]; then
   say "kernel is up to date ($(cat "$WORK/out/kernel.seconds") s when built)"; exit 0
 fi
 SRC=$WORK/linux-$V; KB=$WORK/kbuild-$V
@@ -41,6 +47,13 @@ sed -i 's/hubos-root-a hubos.slot=a/hubos-root-b hubos.slot=b/' "$KB/.config"
 make -C "$SRC" O="$KB" olddefconfig "${HF[@]}" >/dev/null
 make -C "$SRC" O="$KB" -j"$(nproc)" bzImage "${HF[@]}" >> "$WORK/out/kernel-build.log" 2>&1 || { tail -20 "$WORK/out/kernel-build.log" >&2; exit 1; }
 cp "$KB/arch/x86/boot/bzImage" "$WORK/out/kernel-b.efi"
+# the recovery kernel: another initramfs and a command line without root=/hubos.slot=
+printf 'version=recovery-%s\nflavor=recovery\nkernel-version=%s\n' "${RECOVERY_VERSION:-1}" "$V" > "$WORK/stage0/recovery-release"
+( cd "$REPO" && python3 tools/image/recovery-list.py "$WORK/base" "$T" "$T/usr/bin/busybox" "$WORK/stage0/recovery-release" ) > "$WORK/stage0/recovery.list"
+sed -i "s#^CONFIG_INITRAMFS_SOURCE=.*#CONFIG_INITRAMFS_SOURCE=\"$WORK/stage0/recovery.list\"#; s#^CONFIG_CMDLINE=.*#CONFIG_CMDLINE=\"${RECOVERY_CMDLINE:-console=ttyS0 ro loglevel=4 panic=5}\"#" "$KB/.config"
+make -C "$SRC" O="$KB" olddefconfig "${HF[@]}" >/dev/null
+make -C "$SRC" O="$KB" -j"$(nproc)" bzImage "${HF[@]}" >> "$WORK/out/kernel-build.log" 2>&1 || { tail -20 "$WORK/out/kernel-build.log" >&2; exit 1; }
+cp "$KB/arch/x86/boot/bzImage" "$WORK/out/kernel-recovery.efi"
 echo $(( $(date +%s) - s )) > "$WORK/out/kernel.seconds"
 echo "$V" > "$WORK/out/kernel.version"; echo "$STAMP" > "$WORK/out/kernel.stamp"
-say "kernels built in $(cat "$WORK/out/kernel.seconds") s: $(stat -c %s "$WORK/out/kernel-a.efi") bytes, sha256 a $(sha256sum "$WORK/out/kernel-a.efi" | cut -c1-16) b $(sha256sum "$WORK/out/kernel-b.efi" | cut -c1-16)"
+say "kernels (a, b, recovery) built in $(cat "$WORK/out/kernel.seconds") s: $(stat -c %s "$WORK/out/kernel-a.efi") bytes, sha256 a $(sha256sum "$WORK/out/kernel-a.efi" | cut -c1-16) b $(sha256sum "$WORK/out/kernel-b.efi" | cut -c1-16) recovery $(stat -c %s "$WORK/out/kernel-recovery.efi") bytes $(sha256sum "$WORK/out/kernel-recovery.efi" | cut -c1-16)"
