@@ -77,7 +77,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **A machine refuses to update or restart while a game or long job is running.**
 - **Master copies of the code and every built image live on the NAS.** GitHub is a convenience mirror. Long term, builds happen on a machine inside the cluster, so the cluster can rebuild itself if GitHub disappears.
 - **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used, under any circumstances.
-- systemd programs are never installed or run. Libraries built from the systemd source package (libsystemd0, libudev1) are tolerated for now as plain libraries; revisit before the desktop slice. Headless role images (NAS, backup NAS, VM host, guests) are to drop both libraries later, with libudev-zero and rebuilt packages where needed; the hub's desktop stack stays as it is until the desktop slice. See docs/proposals/systemd-libraries.md.
+- systemd programs are never installed or run. The hub uses eudev's libudev (not the systemd-built one); libsystemd0 is tolerated for now as a plain library because Waybar and dbus-daemon link it. Headless role images may drop it later with rebuilt packages. See docs/proposals/systemd-libraries.md and docs/proposals/phase-b-desktop.md.
 - The image build pins systemd, systemd-sysv, libpam-systemd, dbus-user-session, udev, systemd-timesyncd and systemd-resolved to never install, and a build test fails if any of them, or any systemd unit directory, is in an image.
 - Finished images do not contain apt, PAM modules, procps, login and passwd (dpkg stays for now; it is an Essential package, so only its files could be deleted later). They are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
@@ -85,6 +85,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - A boot-loop breaker counts failed boots in an EFI variable: stage 0 increments it at every boot, the confirm step clears it, and after N failures (default 3, per-machine setting) stage 0 starts the recovery shell instead of booting.
 - The recovery kernel is carried inside every slot's root, listed by hash in the manifest, and installed at the confirm step after a healthy boot, never during the update.
 - The confirm timeout and the watchdog timeout are per-machine settings (real defaults 120 s and 180 s; the test image uses 30 s and 60 s); a check refuses a configuration where the watchdog does not exceed the confirm timeout plus a margin.
+- Update keys: the update tool and the recovery kernel accept any key in a keyring (/etc/hubos/keys/*.pub). A release signed with the old key can carry the next key; the old key is dropped only in a later release.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
 - A D-Bus session bus (dbus-daemon alone, no systemd) may be declared by any machine's configuration; the hub needs one because Waybar will not start without it.
 - Kernels are independent per machine. Each machine's configuration names its own kernel (version, build options, extra modules); nothing is inherited from a role. Roles are text labels only: the inventory gives behaviour to hub, guest and vm-host and to nothing else. One default kernel is set in the build configuration; a machine that overrides it records the reason in its config.
@@ -127,6 +128,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Windows stay on the canvas. driftwm never magnifies: zoom stops at 100%, so 'zoom in' only means back to native size. Larger text comes from the output's scale setting and from window size, and is untested. 'Maximize' means driftwm's fit-to-viewport.
 - Navigation is by mouse.
 - The hub desktop is meant to run as a normal user in the seat group, not as root (untested).
+- Hub desktop: driftwm's session state lives in RAM (windows are never restored after a reboot). Waybar, hubd, driftwm, seatd, udevd and dbus-daemon are s6 services run as the normal user; each waits for driftwm's socket and restarts when it returns. No terminal starts by itself.
 - hubd keeps windows it places clear of the bar, and expects the camera to be offset by half the bar height.
 - hubd controls driftwm through its local socket (list windows, place a window, move the view, focus, resize, fit). The socket is only for the same user. See docs/driftwm-findings.md.
 - driftwm is pinned to one exact commit (352333a8fa1b22171492d4b71a54102045c9a19d, version 0.19.0). It is GPL-3.0-or-later; anything changed in it is published under that licence. It is a single-maintainer, pre-1.0, AI-built project, so expect to carry patches. Game-style windows use the per-window pass_keys = true rule; no patch for the shortcut-inhibit protocol for now.
@@ -329,6 +331,7 @@ HubOS/
 - EFI variable failure counter and NVRAM wear on real firmware
 - Recovery installing a bundle from its own shell
 - libinput's device database without systemd (eudev) and the hub desktop as a normal user
+- eudev's libudev with libinput and driftwm on real hardware (QEMU only)
 - Pinned emulator AppImages run on the image's glibc with extract-and-run (nothing was run)
 - Steam and Proton on the image: 32-bit libraries, user namespaces, no systemd
 
@@ -350,6 +353,7 @@ HubOS/
 - MesenCE's Linux release format (AppImage or other): the owner checks
 - Whether the Battle.net desktop app is needed for the Steam edition of Diablo II: test in December
 - Whether Steam runs without systemd on the image (32-bit libraries, user namespaces): test in December
+- Unattended recovery for machines without a keyboard: after December, when the boards' serial and BMC options are known
 
 ---
 
@@ -397,3 +401,4 @@ HubOS/
 - **2026-10-03:** Phase B images: separate recovery kernel, confirm refuses below the floor, rollback command.
 - **2026-10-03:** Recovery and boot-loop decisions recorded: separate recovery kernel updated at confirm, failure counter in an EFI variable (N=3), per-machine timeouts, normal-user hub desktop.
 - **2026-10-03:** Phase B images: recovery update at confirm, recovery can install, boot-loop breaker, per-machine timeouts.
+- **2026-10-03:** Hub desktop decisions recorded: eudev, services as the normal user, driftwm state in RAM, key keyring.
