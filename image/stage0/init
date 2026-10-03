@@ -81,16 +81,23 @@ if grep -q ' efivarfs ' /proc/mounts; then
     if [ -n "$REC" ]; then
       v=$((0x$REC))
       lo=$(printf %03o $((v & 255))); hi=$(printf %03o $((v >> 8)))
-      printf "\007\000\000\000\\$lo\\$hi" > $BFD/BootNext-8be4df61-93ca-11d2-aa0d-00e098032b8c 2>/dev/null
-      echo "STAGE0: $N failed boots in a row (limit $LIMIT): starting the recovery shell (entry $REC) instead of booting slot $SLOT"
-      sync; sleep 1; reboot -f
+      BN=$BFD/BootNext-8be4df61-93ca-11d2-aa0d-00e098032b8c
+      printf "\007\000\000\000\\$lo\\$hi" > $BN 2>/dev/null
+      if [ -f "$BN" ]; then
+        echo "STAGE0: $N failed boots in a row (limit $LIMIT): starting the recovery shell (entry $REC) instead of booting slot $SLOT"
+        sync; sleep 1; reboot -f
+      fi
+      echo "STAGE0: WARNING $N failed boots but BootNext could not be written; booting normally"
+    else
+      echo "STAGE0: WARNING $N failed boots but no recovery entry was found; booting normally"
     fi
-    echo "STAGE0: WARNING $N failed boots but no recovery entry was found; booting normally"
   fi
-  k=1; while [ -f "$BFD/HubosBootFail$k-$BFG" ]; do k=$((k+1)); done
-  printf '\007\000\000\000%s' 1 > "$BFD/HubosBootFail$k-$BFG" 2>/dev/null
-  if [ ! -f "$BFD/HubosBootFail$k-$BFG" ]; then
-    echo "STAGE0: WARNING cannot write the failure counter; the boot-loop breaker is OFF for this boot; booting normally"
+  if [ "$N" -lt "$LIMIT" ]; then   # (at or over the limit we only get here when recovery could not be started: do not pile up variables)
+    k=1; while [ -f "$BFD/HubosBootFail$k-$BFG" ]; do k=$((k+1)); done
+    printf '\007\000\000\000%s' 1 > "$BFD/HubosBootFail$k-$BFG" 2>/dev/null
+    if [ ! -f "$BFD/HubosBootFail$k-$BFG" ]; then
+      echo "STAGE0: WARNING cannot write the failure counter; the boot-loop breaker is OFF for this boot; booting normally"
+    fi
   fi
 else
   echo "STAGE0: WARNING no EFI variables (efivarfs not mounted); the boot-loop breaker is OFF for this boot; booting normally"
