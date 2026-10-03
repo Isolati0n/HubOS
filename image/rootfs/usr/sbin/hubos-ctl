@@ -16,8 +16,8 @@ ensure_entries() {
   [ -d /sys/firmware/efi/efivars ] || die "no EFI variables (not booted by UEFI?)"
   # The a and b entries carry NO load options: each slot's kernel (kernel-a.efi, kernel-b.efi) has its slot
   # and root built into its own command line, so the slot does not depend on what the firmware keeps.
-  # Only the recovery entry has load options (hubos.recovery=1); a firmware that drops them boots a normal
-  # slot instead of recovery (docs/image.md).
+  # The recovery entry has none either: stage 1 recognises recovery by the LABEL of the entry the firmware
+  # booted (BootCurrent is the entry labelled hubos-recovery), not by the command line (docs/image.md).
   # Creating an entry puts it first in BootOrder, so remember the order and
   # put it back afterwards (new entries go to the end).
   oldorder=$(efibootmgr 2>/dev/null | sed -n 's/^BootOrder: //p')
@@ -27,7 +27,7 @@ ensure_entries() {
     efibootmgr -q -c -d $DISK -p 1 -L hubos-$s -l "\\EFI\\hubos\\kernel-$s.efi" || die "cannot create entry $s"
     created=1
   done
-  [ -n "$(entry_num hubos-recovery)" ] || { efibootmgr -q -c -d $DISK -p 1 -L hubos-recovery -l "\\EFI\\hubos\\kernel-$SLOT.efi" -u "hubos.recovery=1" || die "cannot create recovery entry"; created=1; }
+  [ -n "$(entry_num hubos-recovery)" ] || { efibootmgr -q -c -d $DISK -p 1 -L hubos-recovery -l "\\EFI\\hubos\\kernel-$SLOT.efi" || die "cannot create recovery entry"; created=1; }
   [ -n "$created" ] || return 0
   a=$(entry_num hubos-a); b=$(entry_num hubos-b); r=$(entry_num hubos-recovery)
   if [ -n "$oldorder" ] && echo "$oldorder" | grep -q "$a" && echo "$oldorder" | grep -q "$b"; then
@@ -117,8 +117,12 @@ confirm() {
   if [ "$cur" = "$mine" ] && [ "$first" = "$mine" ]; then echo "confirm: slot $SLOT is already the confirmed slot"; return 0; fi
   [ "$cur" = "$mine" ] || die "confirm: BootCurrent $cur is not slot $SLOT's entry ($mine); not confirming"
   efibootmgr -q -o "$mine,$(entry_num hubos-$OTHER)" || die "cannot set BootOrder"
-  mkdir -p $STATE; echo "$RUNVER" > $STATE/min_version; sync
-  echo "confirm: boot of slot $SLOT (version $RUNVER) confirmed; floor raised to $RUNVER"
+  # The floor only goes up: the larger of the old floor and the running version.
+  old=$(cat $STATE/min_version 2>/dev/null || echo 0)
+  new=$RUNVER; [ "$old" -gt "$new" ] 2>/dev/null && new=$old
+  mkdir -p $STATE; echo "$new" > $STATE/min_version; sync
+  if [ "$new" = "$RUNVER" ]; then echo "confirm: boot of slot $SLOT (version $RUNVER) confirmed; floor is $new"
+  else echo "confirm: boot of slot $SLOT (version $RUNVER) confirmed; floor stays at $new (it only goes up)"; fi
 }
 
 case "$1" in

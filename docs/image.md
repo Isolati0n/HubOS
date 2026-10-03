@@ -59,22 +59,26 @@ One Go test, `TestImage`, with sub-tests in the order below; they share one disk
 
 | # | Proves | How | Result (run A / run B; both fresh, all PASS, 0 hangs) |
 |---|---|---|---|
-| (files) | the built root has **no systemd program, no unit file or unit directory, none of the seven banned packages installed, and the apt pin file** in it | the unpacked squashfs is searched; dpkg's status file is read; the pin file is compared with `image/apt/no-systemd.pref` | PASS 1.1 / 0.9 s. Remaining: the two libraries (below) and `deb-systemd-helper`, `deb-systemd-invoke` (Perl scripts of the Essential package `init-system-helpers`; not systemd programs) |
+| (files) | the built root has **no systemd program, no unit file or unit directory, none of the seven banned packages installed, and the apt pin file** in it | the unpacked squashfs is searched; dpkg's status file is read; the pin file is compared with `image/apt/no-systemd.pref` | PASS 0.9 / 1.0 s. Remaining: the two libraries (section 4) and `deb-systemd-helper`, `deb-systemd-invoke` (Perl scripts of the Essential package `init-system-helpers`; not systemd programs) |
 | (files) | the **stripped** root has no file of `apt`, `libapt-pkg6.0t64`, `procps`, `libproc2-0`, `libpam-runtime`, `libpam-modules`, `libpam-modules-bin`, `login`, `passwd`, and still has the two libraries | dpkg's file lists against the root | PASS (apt and libapt are not installed in this root at all) |
-| (files) | **no unresolved library** (`ldd` inside the root, `/usr`, `/bin`, `/sbin`, `/lib`) and the check **can fail** | `check-libs.sh`; then `libmount.so.1` is deleted from the copy and the check must report it | PASS 11.4 / 11.2 s; 714 ELF files checked |
-| 1 | the root is read-only | `touch /usr/x`, `touch /etc/x`, a write to `/var`, the root mount | PASS (11.7 / 11.9 s including the first boot) |
-| 2 | first boot sets up the boot entries; `hubd` runs from the config partition; PID 1 and the process list have **no systemd** | `hubd check --inventory /config/hubos/inventory.toml`, `hubd list`, `cat /proc/1/comm`, `ps`; then `/proc/*/comm` is counted for names starting with `systemd` | PASS (8.6 / 8.4 s); **0 processes named systemd** |
-| A1 | the **a and b boot entries have no load options**, and slot a boots with its own kernel | `efibootmgr -v` (each line ends at `File(\EFI\hubos\kernel-a.efi)`; the recovery line has the load options as hex after the path), `/proc/cmdline` | PASS: `console=ttyS0 ro rootfstype=squashfs root=PARTLABEL=hubos-root-a hubos.slot=a panic=5 loglevel=4 i6300esb.heartbeat=60` |
+| (files) | **no unresolved library** (`ldd` inside the root, `/usr`, `/bin`, `/sbin`, `/lib`) and the check **can fail** | `check-libs.sh`; then `libmount.so.1` is deleted from the copy and the check must report it | PASS 15.7 / 15.5 s; 714 ELF files checked |
+| 1 | the root is read-only | `touch /usr/x`, `touch /etc/x`, a write to `/var`, the root mount | PASS (15.1 / 14.2 s including the first boot) |
+| 2 | first boot sets up the boot entries; `hubd` runs from the config partition; PID 1 and the process list have **no systemd** | `hubd check`, `hubd list`, `cat /proc/1/comm`, `ps`; then `/proc/*/comm` is counted for names starting with `systemd` | PASS (9.1 / 9.0 s); **0 processes named systemd** |
+| A1 | **none of the a, b and recovery boot entries has load options**, and slot a boots with its own kernel | `efibootmgr -v` (each line ends at `File(\EFI\hubos\kernel-X.efi)`), `/proc/cmdline` | PASS: `console=ttyS0 ro rootfstype=squashfs root=PARTLABEL=hubos-root-a hubos.slot=a panic=5 loglevel=4 i6300esb.heartbeat=60` |
 | 3 | init restarts a killed service | `kill -9` the `hubd` pid, wait, `s6-svstat`, `hubd list` | PASS (2.2 s) |
-| 4 | unsigned, tampered manifest, wrong key, tampered root, not-newer, and a signed bundle with no `kernel-version` line are all refused, with their own messages, exit code 2, and `BootNext` unset | six bundles | PASS (4.5 / 4.6 s) |
-| 5 | a **signed update is accepted**; the config marker survives; the floor is raised; the old bundle is refused; the kernel version in the manifest is shown | update, reboot, `hubos-ctl status`, the v1 bundle again | PASS (24.4 / 28.6 s: update 5.6 / 7.5 s, reboot to handover 12.6 / 15.0 s) |
-| A1 (slot b) | **slot b boots with its own kernel** (installed by the update; no load options) | `/proc/cmdline` in slot b | PASS: `... root=PARTLABEL=hubos-root-b hubos.slot=b ...`, `BootCurrent` is the `hubos-b` entry |
-| 6a to 6d | four bad boots roll back by themselves: no `/sbin/init` (stage 0), a garbage root (stage 0), a boot that never gets healthy (confirm timeout 40 s), an init that hangs (watchdog, 60 s) | each bundle is correctly signed; the runner waits for the failure line, then for the confirmed slot to come back | PASS: rollbacks complete after 26.8 / 28.1, 39.7 / 26.0, 105.1 / 93.7 and 88.2 / 109.5 s |
-| 7 | recovery mode is a boot option | `efibootmgr -n` the recovery entry, reboot | PASS (10.2 / 12.1 s): `RECOVERY MODE` banner, `hubos.recovery=1`, read-only root |
-| A2 | **the recovery entry without load options boots a normal slot** | a copy of the recovery entry is made with no `-u`, `BootNext` points at it, reboot | PASS (18.1 / 22.2 s). It printed: `STAGE0: switching to slot b`, `HUBOS: slot=b release: version=2 ...`, then `hubos-ctl: confirm: BootCurrent 000A is not slot b's entry (0008); not confirming`. No `RECOVERY MODE` banner, `/proc/cmdline` without `hubos.recovery`, services (`confirm console hubd wd`) running. So such a firmware gives a **working normal system that never confirms itself**, and no recovery. |
-| 8 | an update **interrupted at known log lines** never harms the confirmed slot, and an update still works afterwards | see 3.2 | PASS (116.4 / 116.3 s) |
-| B | an update with a **full boot partition** fails cleanly; the old kernel is untouched and still boots | the partition is filled with a file until `df` shows 2 free blocks; `hubos-ctl update` of a newer bundle; hashes of `kernel-b.efi` and of slot b's root before and after; `BootNext` to slot b and reboot | PASS (39.1 / 45.6 s): `FAILED: not enough free space on the boot partition (have 2048 bytes, need 5166080); nothing was written, ...`, exit 2, no `.new` file, no `BootNext`, hashes equal, slot b booted release 2 with `hubos.slot=b`. **Side effect to know about:** that last boot makes slot b the confirmed slot and **lowers the floor to 2** (see section 8). |
-| 9 | reproducible builds: two builds of the root tar give identical hashes (asserted); the squashfs and **both kernels** are reported | `build-base.sh` twice; `build-root-image.sh` twice; the kernels built again from scratch | PASS (216.7 / 219.1 s): tar identical, squashfs identical, kernel a and kernel b identical |
+| 4 | unsigned, tampered manifest, wrong key, tampered root, not-newer, no `kernel-version` line, and **manifests listing only one kernel** are refused with their own messages, exit code 2, **nothing written** | eight bundles; the first 4 MiB of slot b are hashed before and after | PASS (8.3 / 8.5 s) |
+| 5 | a **signed update is accepted**; the config marker survives; the floor is raised; the old bundle is refused; the kernel version in the manifest is shown | update, reboot, `hubos-ctl status`, the v1 bundle again | PASS (48.9 / 87.5 s: update 7.1 / 8.2 s, reboot to handover 34.4 / 72.8 s; the reboot time varies a lot) |
+| A1 (slot b) | **slot b boots with its own kernel** (installed by the update; no load options) | `/proc/cmdline` in slot b | PASS: `... root=PARTLABEL=hubos-root-b hubos.slot=b ...` |
+| R0 | **OVMF drops the recovery entry** at the next boot; the confirm step recreates it for the running slot | the line stage 1 prints before anything can recreate an entry; `efibootmgr -v` afterwards | PASS: entries present at the boot of slot b: `[hubos-a hubos-b]`; afterwards the recovery entry points at `kernel-b.efi` |
+| R1 | **recovery after an update** | `BootNext` to the recovery entry, reboot, commands in the recovery shell | PASS (22.1 / 23.3 s): recovery booted **slot b release 2**, the confirmed slot |
+| 6a to 6d | four bad boots roll back by themselves: no `/sbin/init` (stage 0), a garbage root (stage 0), a boot that never gets healthy (confirm timeout 40 s), an init that hangs (watchdog, 60 s) | each bundle is correctly signed; the runner waits for the failure line, then for the confirmed slot to come back | PASS: rollbacks complete after 31.3 / 38.7, 41.5 / 42.7, 114.7 / 82.6 and 116.3 / 118.9 s. In 6c, **during the unconfirmed trial boot of slot a the recovery entry pointed at `kernel-a.efi`** (the trial slot) |
+| R2 | **recovery after a rollback** boots the confirmed slot | after 6a (slot a holds the bad release 3): recovery entry booted | PASS (43.1 / 31.6 s): recovery booted **slot b release 2**, not the slot holding the rolled-back release |
+| 7 | **recovery mode with an entry that has no load options** | `efibootmgr -v` shows none; `BootNext`; reboot; banner, `/proc/cmdline` without `hubos.recovery`, read-only root, `HUBOS: booted entry 0009 label 'hubos-recovery'` | PASS (11.2 / 15.7 s) |
+| 8 | an update **interrupted at known log lines** never harms the confirmed slot, and an update still works afterwards | see 3.2 | PASS (113.0 / 144.5 s) |
+| A | **the floor only goes up**: the older slot (release 2) booted and confirmed by hand after the rollbacks; the floor stays 7; release 5 is refused (`below the floor 7`) | `cat /config/hubos/state/min_version`, then `hubos-ctl update` of release 5 | PASS (49.2 / 48.5 s, together with B) |
+| B | an update with a **full boot partition** fails cleanly; the old kernel is untouched and still boots | the partition is filled until `df` shows 2 free blocks; `hubos-ctl update` of a newer bundle; hashes of `kernel-b.efi` and of slot b's root before and after; `BootNext` to slot b and reboot | PASS: `FAILED: not enough free space on the boot partition (have 2048 bytes, need 5166080); nothing was written, ...`, exit 2, no `.new` file, no `BootNext`, hashes equal, slot b booted release 2 |
+| 9 | reproducible builds: two builds of the root tar give identical hashes (asserted); the squashfs and **both kernels** are reported | `build-base.sh` twice; `build-root-image.sh` twice; the kernels built again from scratch | PASS (255.5 / 267.0 s): tar, squashfs, kernel a and kernel b identical |
+| hook | the hang-retry code | `HUBOS_TEST_FORCE_HANG=once` and `=twice` (section 3.8) | `once`: 1 hang listed, run passes; `twice`: 2 hangs listed, run fails |
 
 ### 3.1 Kernel pinning
 
@@ -97,7 +101,7 @@ After each kill QEMU is started again on the same disk and variable store. Every
 
 ### 3.3 The unexplained hang
 
-The prototype saw one start in about twelve stop silently after `BdsDxe: starting Boot0001`. The runner waits for a known line (`HUBOS: handing over to s6-svscan`, 150 s) after every start and every reboot. **Rule:** if the line does not come, the hang is recorded (its number, the step it happened in and the saved serial log in `$WORK/hangs/`), QEMU is killed and that step is retried **once**; **a second hang in the same step fails the run**. At the end the runner prints `QEMU hangs seen and retried: N; every hang: ...` with every hang listed. The hang-and-retry code was **not exercised** (no hang happened in any run), so it is untested; the cause of the earlier hang stays UNKNOWN, and not seeing it does not mean it is gone.
+The prototype saw one start in about twelve stop silently after `BdsDxe: starting Boot0001`. The runner waits for a known line (`HUBOS: handing over to s6-svscan`, 150 s) after every start and every reboot. **Rule:** if the line does not come, the hang is recorded (its number, the step it happened in and the saved serial log in `$WORK/hangs/`), QEMU is killed and that step is retried **once**; **a second hang in the same step fails the run**. At the end the runner prints `QEMU hangs seen and retried: N; every hang: ...` with every hang listed. No real hang has happened in any run. The retry code is exercised by a **test hook** (section 3.8). The cause of the earlier hang stays UNKNOWN, and not seeing it does not mean it is gone.
 
 ### 3.4 One kernel per slot (the slot does not depend on the firmware's load options)
 
@@ -105,12 +109,40 @@ Before: each boot entry carried its command line as load options, while the kern
 
 - `build-kernel.sh` builds **two kernels**; each has its own slot and root built in: `kernel-a.efi` (`root=PARTLABEL=hubos-root-a hubos.slot=a`) and `kernel-b.efi` (`...-b ... hubos.slot=b`). Everything else is identical; both files are 4,117,504 bytes and their hashes differ.
 - The bundle carries both; the signed manifest lists both with hash and size. `hubos-ctl update` refuses a manifest that does not list both, but **fetches and installs only the other slot's kernel** (`kernel-$OTHER.efi`).
-- The **a and b boot entries have no load options**. Only the **recovery** entry has load options (`hubos.recovery=1`). **A firmware that drops load options would therefore boot a normal slot instead of recovery**; the recovery boot option would silently stop working while everything else still boots. Test A2 shows exactly what happens (below). Whether a real firmware does this: UNKNOWN (OVMF keeps them).
+- **None of the three boot entries (a, b, recovery) has load options.** Recovery used to depend on `hubos.recovery=1` in the load options, so a firmware that dropped them would have silently turned recovery into a normal boot. Now stage 1 decides by **which entry the firmware booted** (section 3.7).
 - A machine whose entries were made by an earlier image (with load options) keeps those entries; `ensure-entries` only creates missing entries. No such machine exists yet.
 
 ### 3.5 Free space on the boot partition
 
 `hubos-ctl update` now mounts the boot partition and checks its free space **right after the hashes are verified and before anything is written**: it needs the size of the new kernel plus 1 MiB. If there is not enough room it stops with `FAILED: not enough free space on the boot partition (have N bytes, need M); nothing was written, the existing kernel and slot X are untouched` (exit code 2), without touching the other slot's root, the existing kernel or the boot entries. A leftover `*.new` file of an interrupted earlier update (a temporary copy, never the kernel itself) is removed first. The partition is unmounted when the tool exits, on every path. The copy itself still goes to `kernel-X.efi.new` and is moved into place only after a sync; if the copy fails the temporary file is removed.
+
+### 3.6 The update floor only goes up
+
+`hubos-ctl confirm` used to write the running release into `/config/hubos/state/min_version` whatever the old value was, so booting an **older** slot by hand lowered the floor and made a release in between installable again. Now it writes the **larger** of the old floor and the running release and says so (`confirm: boot of slot b (version 2) confirmed; floor stays at 7 (it only goes up)`). Test A: after the rollbacks and the interrupted updates the floor is 7 (release 7 is running in slot a); the older slot b (release 2) is booted by hand and confirms itself; the floor is **still 7**, and an update to release 5 is refused (`REFUSED: version 5 is below the floor 7`). A rollback boot by itself never changed the floor, because it boots a slot that is already confirmed.
+
+### 3.7 The recovery entry
+
+**How recovery is recognised.** Stage 1 (`/sbin/init`) asks the firmware which entry it booted (`efibootmgr`: `BootCurrent`) and enters recovery mode (banner, bare terminal, read-only root, nothing else started) **if that entry is labelled `hubos-recovery`**. It prints `HUBOS: booted entry 0009 label 'hubos-recovery'`. The command line is no longer looked at. Test 7: the recovery entry has no load options (`efibootmgr -v` shows the path and nothing after it), `/proc/cmdline` has no `hubos.recovery`, and the machine still comes up in recovery mode. (A machine whose recovery entry was made by an earlier image with the load options still works: the label is the same.)
+
+**Which slot's kernel the recovery entry boots, and when it is made (TESTED, with OVMF).** The entry points at `kernel-X.efi` of the slot that was **running when the entry was created** (`ensure_entries` in `hubos-ctl`). What the tests showed:
+
+- **OVMF deletes the recovery entry at the next boot.** It is not in `BootOrder` (the a and b entries are). Stage 1 now prints `HUBOS: entries present at boot: ...` before anything can recreate an entry; at the boot of slot b after the update it printed `hubos-a hubos-b`, with no recovery entry (test R0). The **confirm step recreates it on every boot**, and it runs `ensure-entries` *before* it checks health. So the entry always points at the slot that **booted last**.
+- **After an update:** the trial boot of the new slot recreates the entry for the new slot. Test 6c shows that during an **unconfirmed** trial boot (hubd never healthy) the recovery entry points at `kernel-a.efi`, the trial slot. A recovery boot at that moment would run the unconfirmed release. After the update is confirmed it is the confirmed slot (test R1: recovery booted slot b release 2 after the update to b was confirmed).
+- **After a rollback:** the rollback boot is a boot of the confirmed slot, which recreates the entry for itself. Test R2: after the rollback from the bad release 3 in slot a, the recovery entry booted **slot b, release 2** (the confirmed one), not the slot holding the rolled-back release.
+- **Stale or unconfirmed cases that are possible:** (1) recovery during a trial boot (above); (2) a trial boot that fails **before** the confirm step runs (stage 0 refuses the root, init hangs) never recreates the entry, so no recovery entry exists at all for that boot and the next one (OVMF has dropped the old one): the machine returns to the confirmed slot, which recreates it, so this only matters if the confirmed slot cannot boot either; (3) a firmware that **keeps** entries not in `BootOrder` (real firmware may; UNKNOWN) would keep an entry pointing at a failed trial slot after the rollback until the confirmed slot's confirm step recreates it (it only recreates a *missing* entry, so a kept stale entry would stay stale: `ensure_entries` does not check where an existing recovery entry points); (4) if neither slot can reach the confirm step, **there is no recovery entry**, which is exactly when it is needed.
+
+**Proposed fixes (not built; for the owner to choose, see the questions in the reply):** (a) make `ensure_entries` re-point an existing recovery entry whenever it points at a different slot, and create/re-point it **only from a confirmed boot** (in `hubos-ctl confirm`), so it always names the confirmed slot; (b) put the recovery entry **at the end of `BootOrder`** so the firmware keeps it (a machine whose both slots fail would then fall into recovery by itself instead of looping); (c) give recovery its own small kernel **built to run recovery from stage 0** (a recovery shell inside the initramfs that mounts nothing it does not have to), so it depends on neither slot's root.
+
+### 3.8 One-kernel manifests are refused, and the hang hook
+
+**One-kernel manifests (test 4).** Two correctly signed bundles are made from release 2 with one kernel line removed from the manifest: `v2-onekernel-a` (no `kernel-b.efi` line) and `v2-onekernel-b` (no `kernel-a.efi` line). Both are refused with `REFUSED: manifest does not list kernel-b.efi` (resp. `kernel-a.efi`), exit code 2, before any rootfs is fetched. The test also checks that the output has no `writing to slot` or `wrote` line and that the first 4 MiB of the other slot's root have the same hash before and after the eight offered bundles.
+
+**The hang hook (`HUBOS_TEST_FORCE_HANG`).** For proving the retry code without waiting for a real hang. `HUBOS_TEST_FORCE_HANG=once` makes the **first boot** of the run count as a hang (QEMU is really started, then killed, without waiting for the handover line); `=twice` makes the first boot **and its retry** count as hangs. Results (run with the final code, work directory kept):
+
+- `once`: `RESULTS (QEMU hangs seen and retried: 1; every hang: hang 1 in step "first boot [forced by HUBOS_TEST_FORCE_HANG]" (serial log .../hangs/hang-1.log))`; the retry booted, tests 1, 2, A1 and 3 passed (`--- PASS: TestImage`).
+- `twice`: `RESULTS (QEMU hangs seen and retried: 2; every hang: hang 1 in step "first boot [forced ...]" ...; hang 2 in step "first boot (retry) [forced ...]" ...)`, and `the machine hung twice in the same step (first boot); the run fails`; every test that needs the machine is skipped (`run stopped by a repeated hang`) and `--- FAIL: TestImage`.
+
+The hook only covers the boot path of the first boot; the other places that call the same retry code (after a reboot, after an interruption, after a rollback) share it but were not forced separately.
 
 ---
 
@@ -132,6 +164,16 @@ Before: each boot entry carried its command line as load options, while the kern
 
 | Step | Run A | Run B |
 |---|---|---|
+| `fetch-tools.sh` (59 packages, unpacked, not installed) | 35 s | 36 s |
+| `build-kernel.sh` (Linux 6.12, both slots, 4 CPUs) | 219 s (186 s of `make`; the slot b build adds only a few seconds); 4,117,504 bytes each | 208 s |
+| `build-base.sh` (mmdebstrap from the snapshot) | 35 s | 35 s |
+| `build-bundle.sh` (per bundle: root image, strip, `ldd` check) | about 10 s each | about 10 s each |
+| Whole `TestImage` | **1357 s** (22.6 minutes) | **1399 s** (23.3 minutes) |
+| First boot to the handover line (QEMU start included) | 14.7 s | 13.9 s |
+
+QEMU hangs seen in both runs: **0**. Boot and rollback times vary by tens of seconds between runs (software emulation). The runs are slower than the earlier ones (18 minutes) because of the new tests (recovery boots, the full-partition test).
+
+---|---|---|
 | `fetch-tools.sh` (59 packages, unpacked, not installed) | 31 s | 32 s |
 | `build-kernel.sh` (Linux 6.12, both slots, 4 CPUs) | 172 s (148 s of `make`; the slot b build adds only a few seconds); 4,117,504 bytes each | 174 s |
 | `build-base.sh` (mmdebstrap from the snapshot) | 35 s | 27 s |
@@ -155,7 +197,7 @@ QEMU hangs seen in that run: 0.
 
 ## 6. What cannot be tested here
 
-Real firmware (does it keep `BootNext`/`BootOrder`, what does it do after a CMOS reset); real hardware watchdogs; Secure Boot; power loss at every point of a write on a real disk; flash wear; TPM; real network speed; any GPU, audio, input; a tap network; the static network branch of the init script (the test uses DHCP only); the NAS backup job; the "refuse update while busy" hook; role images other than the qemu-test machine; out-of-tree modules (none exist in this slice). Performance and boot time on hardware. Also: whether a **real firmware drops boot-entry load options** (OVMF keeps them; the test makes entries without them and an extra recovery-like entry without them, which is what a dropping firmware would produce, but that is a simulation of the result, not of the firmware); that the **hang-and-retry** code ever runs (no hang happened); that the **apt pin** refuses a package (nothing in this package list triggers it); `sshd` or any login without PAM modules.
+Real firmware (does it keep `BootNext`/`BootOrder`, what does it do after a CMOS reset); real hardware watchdogs; Secure Boot; power loss at every point of a write on a real disk; flash wear; TPM; real network speed; any GPU, audio, input; a tap network; the static network branch of the init script (the test uses DHCP only); the NAS backup job; the "refuse update while busy" hook; role images other than the qemu-test machine; out-of-tree modules (none exist in this slice). Performance and boot time on hardware. Also: whether a **real firmware keeps or drops** boot entries that are not in `BootOrder` (OVMF drops them, section 3.7); whether a real firmware keeps boot-entry load options (nothing depends on them any more); a real hang (the retry code is exercised only through the test hook); that the **apt pin** refuses a package (nothing in this package list triggers it); `sshd` or any login without PAM modules.
 
 ## 7. Changes from the prototype (and why)
 
@@ -165,11 +207,13 @@ Real firmware (does it keep `BootNext`/`BootOrder`, what does it do after a CMOS
 - The runner waits for known log lines instead of fixed seconds, and retries a hung start once.
 - `libbsd0` (needed by `signify`) is unpacked with the tools, not taken from the host.
 - (2026-10-03) One kernel per slot, the manifest lists both and the update installs the other slot's; the a and b entries have no load options; free-space check before anything is written; apt pin, strip step and `ldd` check in the build; build tests for banned packages, unit directories and a `systemd` process; the runner lists every hang and fails the run on a second hang in the same step; the QEMU tests are run by hand before merging a change to `image/` or `tools/image/`.
+- (2026-10-03, second round) The floor only goes up; recovery is recognised by the entry label, not by load options; one-kernel manifests are refused; the hang retry is exercised by `HUBOS_TEST_FORCE_HANG`; the recovery entry's behaviour (dropped by OVMF at reboot, recreated by the confirm step for the running slot) is tested and documented, with fixes proposed but not built.
 
 ---
 
-## 8. Things noticed while building this (not changed, for the owner)
+## 8. Things noticed while building this
 
-- `hubos-ctl confirm` writes the running release into the floor (`min_version`) whatever its value. Booting the **older** slot by hand (as test B does at its end) therefore **lowers** the floor (from 7 to 2 in that test), so a release between the two could be installed again. Whether the floor should only ever go up is a design question.
-- The recovery entry's load options are the only thing that makes recovery recovery. A firmware that drops them gives a normal boot that never confirms (test A2).
+- (Fixed 2026-10-03, section 3.6) `hubos-ctl confirm` used to be able to lower the floor.
+- (Fixed 2026-10-03, section 3.7) recovery used to depend on load options. What remains open is which slot recovery boots and the missing entry when neither slot reaches the confirm step.
 - `mmdebstrap --variant=minbase` gives a root without `apt`; `docs/proposals/phase-b-image.md` and the research document assumed it would be there.
+- Test A boots the older slot by hand with `BootNext`; that makes slot b the first entry in `BootOrder` (it confirms itself). The floor stays, but the **slot order** is now "older release first". A rule that a confirmed boot may not make an older release the preferred slot is not built (UNKNOWN whether it is wanted).
