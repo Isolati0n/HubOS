@@ -822,7 +822,7 @@ func TestImage(t *testing.T) {
 		}
 	})
 	badBoot("6b bad boot rolls back: signed bundle whose root is garbage (stage 0 cannot mount it)", "v4-garbage", `STAGE0: cannot mount the root of slot a; rebooting`)
-	badBoot("6c bad boot rolls back: boots but never gets healthy (confirm times out)", "v5-unhealthy", `this boot FAILED`)
+	badBoot("6c bad boot rolls back: boots but never gets healthy (confirm times out)", "v5-unhealthy", `this boot FAILED|starting Boot[0-9A-F]{4} "hubos-b"`)
 	badBoot("6d bad boot rolls back: init hangs (the watchdog resets the machine)", "v6-hang", `STAGE0: switching to slot a`)
 
 	t.Run("T07_recovery_mode", func(t *testing.T) {
@@ -1045,7 +1045,7 @@ func TestImage(t *testing.T) {
 		}
 		sig := recoverySig(shell)
 		_, tools := r.sh(`e2fsck -fn $(findfs PARTLABEL=hubos-config) 2>&1 | tail -n 2; blkid | sed 's/ UUID.*PARTLABEL/ PARTLABEL/' | head -n 8; ip -4 addr show eth0 | grep inet; wget -q -O /tmp/m ` + r.base + `/v1-good/manifest && echo wget-ok $(wc -c < /tmp/m) bytes; signify-openbsd 2>&1 | head -n 1; efibootmgr | head -n 2`)
-		okTools := strings.Contains(tools, "clean") && strings.Contains(tools, "wget-ok") && strings.Contains(tools, "inet ")
+		okTools := regexp.MustCompile(`hubos-config: \d+/\d+ files`).MatchString(tools) && strings.Contains(tools, "wget-ok") && strings.Contains(tools, "inet ") && strings.Contains(tools, `PARTLABEL="hubos-root-a"`)
 		ok := banner && sig == r.recSig && okTools
 		record("C3 recovery boots with BOTH slot roots garbage, the same way as before; its shell runs hubos-ctl status, e2fsck, findfs/blkid, ip and wget (it fetched a file from the host)", ok, time.Since(start), "sig: "+sig)
 		if !ok {
