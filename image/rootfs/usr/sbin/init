@@ -19,6 +19,9 @@ CUR=$(efibootmgr 2>/dev/null | sed -n 's/^BootCurrent: //p')
 LABEL=
 [ -n "$CUR" ] && LABEL=$(efibootmgr 2>/dev/null | sed -n "s/^Boot$CUR\*\{0,1\}[[:space:]]\([^[:space:]]*\).*/\1/p" | head -n 1)
 echo "HUBOS: booted entry $CUR label '$LABEL'"
+# For the record: which hubos entries the firmware still had when it booted this time. The confirm step recreates a
+# missing recovery entry (docs/image.md, section on the recovery entry).
+echo "HUBOS: entries present at boot: $(efibootmgr 2>/dev/null | sed -n 's/^Boot[0-9A-F]*\*\{0,1\}[[:space:]]\(hubos[^[:space:]]*\).*/\1/p' | tr '\n' ' ')"
 if [ "$LABEL" = hubos-recovery ]; then
   echo "HUBOS: RECOVERY MODE (bare terminal; root is read-only; nothing else started)"
   cat /etc/hubos-release
