@@ -214,3 +214,16 @@ Section 5 said an absolute pointer (`usb-tablet`) "did not work as sent" and tha
 3. Where should driftwm's state folder (`XDG_STATE_HOME`) live on the hub: the data partition, or RAM (session lost at reboot)?
 4. Waybar, hubd, `dbus-daemon` and (for the hub) a first terminal: as s6 services of the user `hub`, or started by a session script? This is the open "hub service design" item.
 5. Do you want a second round on a real-GPU-like setup (several outputs, output hot-plug, VT switch) later, or is this enough until December?
+
+---
+
+## 10. Now in the image (2026-10-03, fifth round)
+
+What the experiment found has moved into the first hub image, `image/machines/hub.build` (`docs/image.md` section 9), with a QEMU test (`TestHubImage`):
+- **eudev 3.2.14** (pinned, hash checked) is built in the image build; its `libudev.so.1` replaces the systemd-built one. `udevd` runs as an s6 service; the hand-written database script does not exist any more.
+- **driftwm** (pinned commit `352333a8...`) is built in the image build. `seatd` and `udevd` run as root; `dbus-daemon`, `driftwm`, `Waybar` and `hubd` run as the normal user `hub` (group `seat`). `XDG_STATE_HOME` is in RAM (`/run/hub/state`): windows are not restored after a reboot.
+- Each of Waybar and hubd waits for driftwm's socket and **restarts when driftwm restarts** (`follow-driftwm`); the confirm step needs hubd, which waits for driftwm, so a release whose desktop cannot start is rolled back. The test kills driftwm and shows the bar come back; `hubd open` places a window at its home; an A/B update to a second release works and a bad one rolls back.
+- **The wofi menu** (question 2 of section 9.9): the cause is a wofi 1.4.1 bug in its `--lines` path on a layer-shell surface (`docs/image.md` section 3.13); `hubd menu` now passes `--height 340` and never `--lines`; the `wofi-fixed` wrapper is gone. The hub image test checks that the list is drawn after a click on the Waybar item.
+- Not in the image test (done only here): a click on a menu row, hot-plug, focus switching, the absolute pointer.
+- Still UNKNOWN: a real GPU, real displays, real input devices, DRM permissions, VT switching.
+

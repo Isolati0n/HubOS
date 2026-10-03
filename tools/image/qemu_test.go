@@ -56,13 +56,20 @@ type rig struct {
 	recSig     string // what the first recovery boot looked like (kernel command line and release), to compare later ones
 	vm         *vm
 	logSeq     int
-	bootPos    int // where the output of the current boot starts in the VM buffer
+	bootPos    int    // where the output of the current boot starts in the VM buffer
+	machine    string // MACHINE for the build scripts (default image/machines/qemu-test.build)
+	gui        bool   // the hub test: a virtio GPU, a USB keyboard and mouse and a monitor socket (r.monPath)
+	monPath    string
+	shots      string // where PNG screenshots go
 }
 
 func (r *rig) script(name string, env []string, args ...string) string {
 	r.t.Helper()
 	cmd := exec.Command(filepath.Join("..", "..", "tools", "image", name), args...)
 	cmd.Env = append(os.Environ(), append([]string{"WORK=" + r.work}, env...)...)
+	if r.machine != "" {
+		cmd.Env = append(cmd.Env, "MACHINE="+r.machine)
+	}
 	var out bytes.Buffer
 	cmd.Stdout, cmd.Stderr = &out, &out
 	start := time.Now()
@@ -100,6 +107,21 @@ func (r *rig) startVM() *vm {
 		"-drive", "file=" + filepath.Join(r.disk, "disk.img") + ",if=none,id=d0,format=raw", "-device", "virtio-blk-pci,drive=d0",
 		"-netdev", "user,id=n0", "-device", "virtio-net-pci,netdev=n0,romfile=",
 		"-device", "i6300esb", "-watchdog-action", "reset", "-serial", "stdio", "-monitor", "none",
+	}
+	if r.gui {
+		os.Remove(r.monPath)
+		args = []string{
+			"-L", T + "/usr/share/qemu", "-L", T + "/usr/share/seabios",
+			"-machine", "q35,smm=off", "-accel", "tcg", "-smp", "2", "-m", "2048", "-display", "none",
+			"-drive", "if=pflash,format=raw,unit=0,readonly=on,file=" + T + "/usr/share/OVMF/OVMF_CODE_4M.fd",
+			"-drive", "if=pflash,format=raw,unit=1,file=" + filepath.Join(r.disk, "vars.fd"),
+			"-drive", "file=" + filepath.Join(r.disk, "disk.img") + ",if=none,id=d0,format=raw", "-device", "virtio-blk-pci,drive=d0",
+			"-netdev", "user,id=n0", "-device", "virtio-net-pci,netdev=n0,romfile=",
+			"-device", "i6300esb", "-watchdog-action", "reset",
+			"-device", "virtio-vga,xres=1024,yres=640",
+			"-device", "qemu-xhci,id=xhci", "-device", "usb-kbd,bus=xhci.0", "-device", "usb-mouse,bus=xhci.0",
+			"-serial", "stdio", "-monitor", "unix:" + r.monPath + ",server,nowait",
+		}
 	}
 	cmd := exec.Command(T+"/usr/bin/qemu-system-x86_64", args...)
 	cmd.Env = append(os.Environ(),
@@ -459,6 +481,14 @@ func (r *rig) waitRecoveryFor(v *vm, from int, d time.Duration) bool {
 	return true
 }
 
+func sha256File(t *testing.T, p string) string {
+	out, err := exec.Command("sha256sum", p).Output()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return strings.Fields(string(out))[0]
+}
+
 func copyFile(t *testing.T, src, dst string) {
 	if out, err := exec.Command("cp", "--sparse=always", src, dst).CombinedOutput(); err != nil {
 		t.Fatalf("cp %s %s: %v %s", src, dst, err, out)
@@ -524,8 +554,24 @@ func TestImage(t *testing.T) {
 	_, sec2 := genKey("other")
 	t.Logf("throwaway signing keys made in %s (deleted with the temporary directory; never committed)", kdir)
 	// The recovery kernel carries the PUBLIC update key (so that `hubos-ctl update` works in the recovery shell).
+	pub2, sec2k := genKey("next") // the NEXT update key (key 2) for the key rotation tests
 	r.script("build-kernel.sh", []string{"UPDATE_PUB=" + r.pub})
 	r.script("build-base.sh", nil)
+	// Three recovery kernels for the key rotation: key 1 only (the one built above, version 1), keys 1 and 2 (version 2),
+	// key 2 only (version 3). Each rebuild only relinks the recovery kernel (the slot kernels are up to date).
+	outDir := filepath.Join(work, "out")
+	recK1 := filepath.Join(outDir, "rec-k1.efi")
+	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK1)
+	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + r.pub + " " + pub2, "RECOVERY_VERSION=2"})
+	recK12 := filepath.Join(outDir, "rec-k12.efi")
+	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK12)
+	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + pub2, "RECOVERY_VERSION=3"})
+	recK2 := filepath.Join(outDir, "rec-k2.efi")
+	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK2)
+	r.script("build-kernel.sh", []string{"UPDATE_PUB=" + r.pub}) // back to key 1 only, version 1: the kernel the disk and the bundles use
+	if sha256File(t, recK1) != sha256File(t, filepath.Join(outDir, "kernel-recovery.efi")) {
+		t.Fatalf("the key-1 recovery kernel was not rebuilt identically")
+	}
 
 	bdir := filepath.Join(work, "bundles")
 	os.RemoveAll(bdir)
@@ -568,6 +614,17 @@ func TestImage(t *testing.T) {
 	bundle("15", "noinit", "v15-noinit")
 	bundle("16", "garbage", "v16-garbage")
 	bundle("17", "unhealthy", "v17-unhealthy")
+	// the key rotation (docs/image.md): a bundle signed with key 2 that carries only key 2; a release signed with key 1 that
+	// carries keys 1 and 2 and a recovery kernel that knows both; a release signed with key 2 that drops key 1 (recovery
+	// kernel with key 2 only); and a bundle signed with key 1 after that
+	bundleSigned := func(ver, name, sec string, env ...string) {
+		r.script("build-bundle.sh", env, ver, "good", filepath.Join(bdir, name), r.pub, sec)
+	}
+	bundleSigned("20", "v20-k2only", sec2k, "KEYRING_PUBS="+pub2)
+	bundleSigned("21", "v21-rotate", r.sec, "KEYRING_PUBS="+r.pub+" "+pub2, "RECOVERY_KERNEL_FILE="+recK12, "RECOVERY_VERSION_OVERRIDE=2")
+	bundleSigned("22", "v22-k2-drops-k1", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=3")
+	bundleSigned("23", "v23-k1-after-drop", r.sec)
+	bundleSigned("24", "v24-k2", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=3")
 	// refused variants: made from v2-good with hard links
 	variant := func(name string, change func(dir string)) {
 		d := filepath.Join(bdir, name)
@@ -654,7 +711,7 @@ func TestImage(t *testing.T) {
 			t.Fatalf("unsquashfs: %v\n%s", err, out)
 		}
 		defer os.RemoveAll(root)
-		ok := checkNoSystemd(t, root)
+		ok := checkNoSystemd(t, root, false)
 		record("root has no systemd program, unit directory or banned package (and the apt pin was in the build)", ok, time.Since(start), "")
 		start = time.Now()
 		ok2 := checkStripped(t, root)
@@ -1263,8 +1320,8 @@ func TestImage(t *testing.T) {
 			t.Logf("recovery shell with both roots garbage:\n%s", shell)
 		}
 		sig := recoverySig(shell)
-		_, tools := r.sh(`e2fsck -fn $(findfs PARTLABEL=hubos-config) 2>&1 | tail -n 2; blkid | sed 's/ UUID.*PARTLABEL/ PARTLABEL/' | head -n 8; ip -4 addr show eth0 | grep inet; wget -q -O /tmp/m ` + r.base + `/v1-good/manifest && echo wget-ok $(wc -c < /tmp/m) bytes; signify-openbsd 2>&1 | head -n 1; efibootmgr | head -n 2; ls -l /etc/hubos/update.pub`)
-		okTools := regexp.MustCompile(`hubos-config: \d+/\d+ files`).MatchString(tools) && strings.Contains(tools, "wget-ok") && strings.Contains(tools, "inet ") && strings.Contains(tools, `PARTLABEL="hubos-root-a"`) && strings.Contains(tools, "update.pub")
+		_, tools := r.sh(`e2fsck -fn $(findfs PARTLABEL=hubos-config) 2>&1 | tail -n 2; blkid | sed 's/ UUID.*PARTLABEL/ PARTLABEL/' | head -n 8; ip -4 addr show eth0 | grep inet; wget -q -O /tmp/m ` + r.base + `/v1-good/manifest && echo wget-ok $(wc -c < /tmp/m) bytes; signify-openbsd 2>&1 | head -n 1; efibootmgr | head -n 2; ls /etc/hubos/keys`)
+		okTools := regexp.MustCompile(`hubos-config: \d+/\d+ files`).MatchString(tools) && strings.Contains(tools, "wget-ok") && strings.Contains(tools, "inet ") && strings.Contains(tools, `PARTLABEL="hubos-root-a"`) && strings.Contains(tools, ".pub")
 		ok := banner && sig == r.recSig && okTools
 		record("C4 recovery boots with BOTH slot roots garbage, the same way as before; its shell runs hubos-ctl status, e2fsck, findfs/blkid, ip and wget, and holds the update public key", ok, time.Since(start), "sig: "+sig)
 		if !ok {
@@ -1280,7 +1337,7 @@ func TestImage(t *testing.T) {
 		_, before := r.sh(rootSum)
 		all := true
 		_, fl := r.sh(`cat /config/hubos/state/min_version`)
-		for _, c := range []struct{ name, want string }{{"v2-unsigned", "no signature"}, {"v2-badmanifest", "bad signature"}, {"v2-good", "below the floor"}} {
+		for _, c := range []struct{ name, want string }{{"v2-unsigned", "no signature"}, {"v2-badmanifest", "bad signature"}, {"v2-good", "below the floor"}, {"v20-k2only", "bad signature"}} {
 			rc, out := r.vm.sh("hubos-ctl update "+r.base+"/"+c.name+" a 2>&1", 120*time.Second)
 			good := rc == 2 && strings.Contains(out, "REFUSED") && strings.Contains(out, c.want) && !strings.Contains(out, "wrote ") && !strings.Contains(out, "kernel installed")
 			t.Logf("recovery update %s: rc=%d\n%s", c.name, rc, out)
@@ -1292,7 +1349,7 @@ func TestImage(t *testing.T) {
 		_, after := r.sh(rootSum)
 		_, st := r.sh("hubos-ctl status")
 		same := before == after && regexp.MustCompile(`[0-9a-f]{64}`).FindString(before) != ""
-		record("R3 recovery refuses an unsigned, a tampered and a below-the-floor bundle (floor "+strings.TrimSpace(regexp.MustCompile(`\d+`).FindString(fl))+"); neither root and no BootNext was touched", all && same && !strings.Contains(st, "BootNext"), time.Since(start2), "3 bundles offered in the recovery shell")
+		record("R3 recovery (whose kernel has key 1 only) refuses an unsigned, a tampered, a below-the-floor and a key-2-signed bundle (floor "+strings.TrimSpace(regexp.MustCompile(`\d+`).FindString(fl))+"); neither root and no BootNext was touched", all && same && !strings.Contains(st, "BootNext"), time.Since(start2), "4 bundles offered in the recovery shell")
 		if !all || !same || strings.Contains(st, "BootNext") {
 			t.Errorf("all=%v same=%v\n%s", all, same, st)
 			t.Fail()
@@ -1413,6 +1470,74 @@ func TestImage(t *testing.T) {
 		}
 	})
 
+	// ---- the update keyring and a key rotation ----
+	t.Run("T16_key_rotation", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		keyInfo := func() (n string, list string) {
+			_, o := r.sh(`ls /etc/hubos/keys | wc -l; ls /etc/hubos/keys | tr '\n' ' '`)
+			f := strings.Fields(o)
+			if len(f) == 0 {
+				return "?", o
+			}
+			return f[0], strings.Join(f[1:], " ")
+		}
+		sigRe := regexp.MustCompile(`signature OK \(key ([0-9a-f]{16}), (\d+) key\(s\) in the keyring\)`)
+		// state: slot a runs release 13 signed with key 1; the keyring has key 1 only
+		n0, l0 := keyInfo()
+		// K0: a bundle signed with key 2 is refused while only key 1 is in the keyring
+		rc0, o0 := r.update("v20-k2only")
+		ok0 := n0 == "1" && rc0 == 2 && strings.Contains(o0, "REFUSED: bad signature") && strings.Contains(o0, "any of the 1 key(s)")
+		// K1: a release signed with key 1 that carries key 2 (and a recovery kernel that knows both) is accepted ...
+		rc1, o1 := r.update("v21-rotate")
+		m1 := sigRe.FindStringSubmatch(o1)
+		slot1, rel1, conf1, _, log1 := r.trialBoot(func() { r.update("v21-rotate") })
+		n1, l1 := keyInfo()
+		ev1, eh1 := r.espRecovery()
+		ok1 := rc1 == 0 && m1 != nil && m1[2] == "1" && slot1 == "b" && rel1 == "21" && conf1 && n1 == "2" && ev1 == "2" && eh1 == sha256File(t, recK12) && strings.Contains(log1, "recovery kernel version 2 installed (was 1)")
+		// K2: ... and after its confirm a bundle signed with key 2 is accepted; that release drops key 1
+		rc2, o2 := r.update("v22-k2-drops-k1")
+		m2 := sigRe.FindStringSubmatch(o2)
+		slot2, rel2, conf2, _, log2 := r.trialBoot(func() { r.update("v22-k2-drops-k1") })
+		n2, l2 := keyInfo()
+		ev2, eh2 := r.espRecovery()
+		ok2 := rc2 == 0 && m2 != nil && m2[2] == "2" && m1 != nil && m2[1] != m1[1] && slot2 == "a" && rel2 == "22" && conf2 && n2 == "1" && ev2 == "3" && eh2 == sha256File(t, recK2) && strings.Contains(log2, "recovery kernel version 3 installed (was 2)")
+		// K3: after a release that drops key 1, a bundle signed with key 1 is refused
+		rc3, o3 := r.update("v23-k1-after-drop")
+		ok3 := rc3 == 2 && strings.Contains(o3, "REFUSED: bad signature") && strings.Contains(o3, "any of the 1 key(s)")
+		record("K1 key rotation: key 1 is accepted; a release signed with key 1 that carries key 2 is accepted and its confirm installs a recovery kernel that knows both; after that a bundle signed with key 2 is accepted (and drops key 1 with a recovery kernel for key 2); then a bundle signed with key 1 is refused", ok0 && ok1 && ok2 && ok3, time.Since(start),
+			fmt.Sprintf("keyring files %s -> %s -> %s; key-2 bundle before the rotation rc=%d; recovery kernel on the boot partition version %s -> %s; key-1 bundle after the drop rc=%d", n0, n1, n2, rc0, ev1, ev2, rc3))
+		if !ok0 || !ok1 || !ok2 || !ok3 {
+			t.Errorf("ok0=%v ok1=%v ok2=%v ok3=%v\n%s\n%s\n%s\n%s\nkeys: %s | %s | %s", ok0, ok1, ok2, ok3, o0, o1, o2, o3, l0, l1, l2)
+			t.Fail()
+		}
+		// K4: the recovery shell now uses the keyring of the NEW recovery kernel (key 2 only): it refuses key 1 and installs a key-2 bundle
+		start4 := time.Now()
+		banner, _ := r.bootRecoveryEntry()
+		var rcA, rcB int
+		var oA, oB string
+		if banner {
+			rcA, oA = r.vm.sh("hubos-ctl update "+r.base+"/v23-k1-after-drop a 2>&1", 200*time.Second)
+			rcB, oB = r.vm.sh("hubos-ctl update "+r.base+"/v24-k2 b 2>&1 | tail -n 6", 400*time.Second)
+			m := r.vm.mark()
+			io.WriteString(r.vm.in, "sync; reboot -f\n")
+			r.afterReset(m)
+			r.hungReboot = false
+			r.waitConfirmed()
+		}
+		slot4, rel4, conf4, _ := r.status()
+		ok4 := banner && rcA == 2 && strings.Contains(oA, "REFUSED: bad signature") && rcB == 0 && strings.Contains(oB, "installed version 24 in slot b") && slot4 == "b" && rel4 == "24" && conf4
+		record("K2 the recovery shell uses the keyring of the recovery kernel on the boot partition (key 2 only after the rotation): it refuses the key-1 bundle and installs a key-2 bundle into slot b, which boots and confirms", ok4, time.Since(start4),
+			fmt.Sprintf("key-1 bundle rc=%d, key-2 bundle rc=%d; afterwards slot %s release %s confirmed %v", rcA, rcB, slot4, rel4, conf4))
+		if !ok4 {
+			t.Errorf("banner=%v rcA=%d rcB=%d slot=%s rel=%s\n%s\n%s", banner, rcA, rcB, slot4, rel4, oA, oB)
+			t.Fail()
+		}
+	})
+
 	// ---- reproducibility (files only) ----
 	t.Run("T09_reproducible_builds", func(t *testing.T) {
 		r.t = t
@@ -1461,7 +1586,7 @@ func TestImage(t *testing.T) {
 
 // checkNoSystemd looks in the unpacked root for systemd programs and unit directories and lists the
 // systemd libraries that remain.
-func checkNoSystemd(t *testing.T, root string) bool {
+func checkNoSystemd(t *testing.T, root string, eudev bool) bool {
 	ok := true
 	var libs, bad, named []string
 	filepath.Walk(root, func(p string, info os.FileInfo, err error) error {
@@ -1473,9 +1598,9 @@ func checkNoSystemd(t *testing.T, root string) bool {
 		switch {
 		case (strings.HasPrefix(n, "libsystemd") || strings.HasPrefix(n, "libudev")) && strings.Contains(n, ".so"):
 			libs = append(libs, rel)
-		case !info.IsDir() && (n == "systemd" || strings.HasPrefix(n, "systemd-") || n == "systemctl" || n == "journalctl" || n == "udevadm" || n == "udevd"):
+		case !info.IsDir() && (n == "systemd" || strings.HasPrefix(n, "systemd-") || n == "systemctl" || n == "journalctl" || (!eudev && (n == "udevadm" || n == "udevd"))):
 			bad = append(bad, "program "+rel)
-		case info.IsDir() && (rel == "/etc/systemd" || rel == "/usr/lib/systemd" || rel == "/lib/systemd" || rel == "/etc/udev" || rel == "/usr/lib/udev" || rel == "/lib/udev"):
+		case info.IsDir() && (rel == "/etc/systemd" || rel == "/usr/lib/systemd" || rel == "/lib/systemd" || (!eudev && (rel == "/etc/udev" || rel == "/usr/lib/udev" || rel == "/lib/udev"))):
 			bad = append(bad, "directory "+rel)
 		case strings.HasSuffix(n, ".service") || strings.HasSuffix(n, ".socket") || strings.HasSuffix(n, ".target") || strings.HasSuffix(n, ".timer"):
 			bad = append(bad, "unit "+rel)

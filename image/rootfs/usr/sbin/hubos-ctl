@@ -5,7 +5,7 @@
 # bundle into the slot the owner names (default a).
 PATH=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 DISK=${HUBOS_DISK:-/dev/vda}
-PUB=/etc/hubos/update.pub
+KEYS=/etc/hubos/keys   # the update keyring: a manifest signed by ANY *.pub in this folder is accepted (docs/image.md, key rotation)
 STATE=/config/hubos/state
 SLOT=$(cat /run/hubos-slot 2>/dev/null)
 OTHER=a; [ "$SLOT" = a ] && OTHER=b
@@ -108,8 +108,15 @@ update() {
   echo "update: fetching manifest from $BASE"
   fetch "$BASE" manifest $W/manifest || die "no manifest at $BASE"
   fetch "$BASE" manifest.sig $W/manifest.sig || die "REFUSED: no signature (unsigned bundle)"
-  signify-openbsd -V -p $PUB -m $W/manifest -x $W/manifest.sig >/dev/null 2>&1 || die "REFUSED: bad signature (manifest not signed by the owner's key, or changed)"
-  echo "update: signature OK"
+  nkeys=0; signed_by=
+  for k in $KEYS/*.pub; do
+    [ -f "$k" ] || continue
+    nkeys=$((nkeys+1))
+    if signify-openbsd -V -p "$k" -m $W/manifest -x $W/manifest.sig >/dev/null 2>&1; then signed_by=$k; break; fi
+  done
+  [ "$nkeys" -gt 0 ] || die "REFUSED: there is no update key in $KEYS (nothing can be verified)"
+  [ -n "$signed_by" ] || die "REFUSED: bad signature (manifest not signed by any of the $nkeys key(s) in $KEYS, or changed)"
+  echo "update: signature OK (key $(basename "$signed_by" .pub), $nkeys key(s) in the keyring)"
   NEWVER=$(sed -n 's/^version //p' $W/manifest)
   [ -n "$NEWVER" ] || die "REFUSED: manifest has no version"
   MIN=$(cat $STATE/min_version 2>/dev/null || echo 0)

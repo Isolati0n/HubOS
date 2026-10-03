@@ -1,0 +1,4 @@
+#!/bin/sh
+# The seat daemon (root: it opens the GPU and input devices for its clients; no logind, no systemd). Clients in the group seat.
+exec 2>&1
+exec seatd -g seat

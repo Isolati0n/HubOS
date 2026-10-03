@@ -397,3 +397,4 @@ HubOS/
 - **2026-10-03:** Phase B images: separate recovery kernel, confirm refuses below the floor, rollback command.
 - **2026-10-03:** Recovery and boot-loop decisions recorded: separate recovery kernel updated at confirm, failure counter in an EFI variable (N=3), per-machine timeouts, normal-user hub desktop.
 - **2026-10-03:** Phase B images: recovery update at confirm, recovery can install, boot-loop breaker, per-machine timeouts.
+- **2026-10-03:** First hub image: keyring, hubd menu fix, hub.build with the desktop services and its QEMU test.

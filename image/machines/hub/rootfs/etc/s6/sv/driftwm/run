@@ -1,0 +1,10 @@
+#!/bin/sh
+# driftwm on the real display path (--backend udev) as the user hub (group seat). It waits for seatd and for udevd's first
+# trigger. s6 restarts it if it dies; Waybar and hubd follow (follow-driftwm).
+exec 2>&1
+. /usr/lib/hubos/hub-env.sh
+i=0; while [ ! -S /run/seatd.sock ] && [ $i -lt 150 ]; do sleep 0.2; i=$((i+1)); done
+i=0; while [ ! -f /run/udev/ready ] && [ $i -lt 300 ]; do sleep 0.2; i=$((i+1)); done
+rm -f /run/dw/wayland-1 /run/dw/wayland-1.lock
+echo "driftwm: starting as user hub $(date -u +%T)"
+exec s6-setuidgid hub env $HUBENV RUST_LOG=${DW_LOG:-info,smithay=info} RUST_BACKTRACE=1 /usr/local/bin/driftwm --backend udev

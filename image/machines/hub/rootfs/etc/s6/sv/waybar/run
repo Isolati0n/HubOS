@@ -1,0 +1,5 @@
+#!/bin/sh
+# Waybar (the bar item that shows hubd's status line), as the user hub. Waits for driftwm and stops when driftwm goes away.
+exec 2>&1
+. /usr/lib/hubos/hub-env.sh
+exec /usr/lib/hubos/follow-driftwm s6-setuidgid hub env $HUBENV waybar -c /etc/hubos/waybar.json -s /etc/hubos/waybar.css -l info
