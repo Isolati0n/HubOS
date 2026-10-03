@@ -10,7 +10,7 @@ Nothing was installed on the machine. Packages were downloaded with `apt-get dow
 
 ## Owner decisions (2026-10-02)
 
-The owner approved my recommendation for all 25 choices of section 12, **except choice 2** (the systemd libraries), and with the additions on choices 19 and 24. The recommendations below are copied from section 12.
+All 25 choices of section 12 are recorded below. The owner approved my recommendation for 24 of them, with additions on choices 19 and 24; choice 2 (the systemd libraries) was decided on 2026-10-03. The recommendations below are copied from section 12 except where a choice says otherwise.
 
 1. **Base builder.** Approved: `mmdebstrap` on Ubuntu 24.04 with a pinned snapshot date (25 s; the desktop software we need later is in the archive).
 2. **The two systemd libraries.** Libraries tolerated for now (see HUB-OS.md); programs never; decided 2026-10-03, to be revisited before the desktop slice.

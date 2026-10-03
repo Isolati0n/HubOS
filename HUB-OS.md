@@ -79,7 +79,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used, under any circumstances.
 - systemd programs are never installed or run. Libraries built from the systemd source package (libsystemd0, libudev1) are tolerated for now as plain libraries; revisit before the desktop slice. Headless role images (NAS, backup NAS, VM host, guests) are to drop both libraries later, with libudev-zero and rebuilt packages where needed; the hub's desktop stack stays as it is until the desktop slice. See docs/proposals/systemd-libraries.md.
 - The image build pins systemd, systemd-sysv, libpam-systemd, dbus-user-session, udev, systemd-timesyncd and systemd-resolved to never install, and a build test fails if any of them, or any systemd unit directory, is in an image.
-- Finished images do not contain apt, dpkg-based tools, PAM modules or procps: they are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
+- Finished images do not contain apt, PAM modules, procps, login and passwd (dpkg stays for now; it is an Essential package, so only its files could be deleted later). They are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
 - A D-Bus session bus (dbus-daemon alone, no systemd) is allowed on the hub, because Waybar will not start without one.
@@ -153,7 +153,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - One keyboard and one mouse plug into the **gaming box**, so the gaming path has nothing in between.
 - **Super + Ctrl + Shift** flips input between the gaming box and the hub.
 - When input is on the hub, the gaming box forwards keystrokes and mouse movement over the network with **our own forwarder**.
-- The forwarder hides the chord from games, and sends a "release all keys" on every flip so no key stays stuck.
+- The forwarder sends a "release all keys" on every flip so no key stays stuck. Whether it also hides the chord from games depends on the forwarder design (always grab and re-inject locally, or grab only while forwarding); that choice is decided after the December measurements; see docs/input-sharing-research.md.
 - The forwarder must pass modifier keys held together with mouse buttons, because driftwm's mouse bindings need Alt or Super.
 - After a restart, input goes to the hub by default.
 - If the gaming box is down, use the spare keyboard and mouse on the hub.
@@ -249,8 +249,10 @@ HubOS/
 │   ├── bar-findings.md
 │   ├── driftwm-findings.md
 │   ├── environment.md
+│   ├── games-research.md             (emulators, Dolphin netplay, Slippi, Ring Out, latency features; sources and labels)
 │   ├── hubd-slice2.md
 │   ├── image.md                      (Phase B image: how to build it, how to run each test, measured times)
+│   ├── input-sharing-research.md     (Lan Mouse, Deskflow clipboard, evdev grabbing, two forwarder designs)
 │   ├── inventory-format.md
 │   ├── proposals/
 │   │   ├── phase-b-image.md          (Phase B first-slice image proposal; owner's answers recorded in it)
@@ -262,6 +264,8 @@ HubOS/
 │   ├── viewers.real.example.toml     (ssh, spice, vnc, moonlight and [default_ports]; all unverified on hardware)
 │   └── wofi.style.css                (menu look: fixed-width font; copy to /etc/hubos/wofi.css)
 ├── image/                            (Phase B: what goes inside the machine images)
+│   ├── apt/
+│   │   └── no-systemd.pref           (apt pin: the systemd packages are never installed)
 │   ├── machines/
 │   │   └── qemu-test.build           (a machine's build configuration: KERNEL_VERSION, KERNEL_FRAGMENT, MODULES, PACKAGES, SERVICES)
 │   ├── kernel/
@@ -304,6 +308,7 @@ HubOS/
 └── tools/
     ├── image/                        (Phase B build scripts and the QEMU test runner, build tag "qemu")
     │   ├── common.sh  fetch-tools.sh  build-kernel.sh  build-base.sh  build-root-image.sh  build-disk.sh  build-bundle.sh
+│   ├── strip-root.sh  check-libs.sh  (delete apt, PAM modules, procps, login, passwd files; ldd check inside the root)
     │   ├── doc.go
     │   └── qemu_test.go
     ├── fakenode/                     (tiny program that pretends to be a machine)
@@ -373,6 +378,9 @@ HubOS/
 - Which command opens a NAS as files (the bespoke file manager is a design discussion)
 - Moonlight pairing is by hand once per node for v1; secrets design later (pairing is scriptable: moonlight pair --pin and Sunshine's PIN API)
 - AI box: NVIDIA with CUDA, or AMD with ROCm (December hardware decision)
+- Forwarder design: always grab and re-inject, or grab only while forwarding (decided after December measurements)
+- NES and N64 emulators: MesenCE tentatively for NES; N64 pending research on Gopher64 and RMG
+- How emulators and Steam get onto the immutable gaming-box image (build from source, AppImage, Flatpak; see docs/games-research.md)
 
 ---
 
@@ -414,4 +422,4 @@ HubOS/
 - **2026-10-02:** Phase B slices S0 to S3 built in the repo: tools/image, image/, a QEMU test runner; see docs/image.md.
 - **2026-10-03:** Owner decisions on the systemd libraries and image rules: programs never, libraries tolerated for now, apt pin and build test, apt/PAM/procps deleted after the build.
 - **2026-10-03:** Phase B images: per-slot kernels (slot choice independent of firmware load options), free-space check, systemd pin and strip step.
-
+- **2026-10-03:** Reviewed the games and input research; forwarder design left open until December; emulator packaging recorded as open; apt bullet reworded.
