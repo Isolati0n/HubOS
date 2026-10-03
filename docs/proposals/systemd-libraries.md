@@ -48,7 +48,7 @@ Labels: **TESTED** (the command and what it printed are in section 8), **SOURCE*
 | `pcmanfm` | hard, through `libfm4t64` → `libdbus-glib` → `libdbus-1-3`; also optional through `Recommends: gvfs-backends` | hard, through GTK 3 → `libcolord2` | `pcmanfm`: neither |
 | `libinput10` | none | **hard, direct** (and through `libwacom9` → `libgudev-1.0-0`) | `libinput.so.10`, `libgudev-1.0.so.0` and the helpers in `libinput-bin` link `libudev.so.1` |
 | `libwayland-server0`, `libwayland-client0`, `libxkbcommon0`, `libdrm2`, `libgbm1`, `libegl1`, `libgles2`, `libgl1-mesa-dri`, `libpixman-1-0`, `libdisplay-info1` (what a Smithay compositor needs besides libinput and libseat) | none | none | not scanned (no chain in the package graph) |
-| `pcre`, `glibc`, `bash`, `coreutils`, `dpkg`, `e2fsprogs`, `mount`, `busybox-static`, `s6`, `execline`, `efibootmgr`, `efivar`, `dosfstools`, `squashfs-tools` | none | none | no chain |
+| `bash`, `coreutils`, `dpkg`, `e2fsprogs`, `mount`, `busybox-static`, `s6`, `execline`, `efibootmgr`, `efivar`, `dosfstools`, `squashfs-tools` | none | none | no chain |
 | `apt` | **hard, direct** | hard, through `libapt-pkg6.0t64` | `libapt-pkg.so.6` links both; `apt/methods/http` links libsystemd |
 | `procps` | **hard, direct** (also `libproc2-0`) | none | `libproc2.so.0` links libsystemd; `w` links it |
 | `util-linux` (Essential) | **hard, direct** | **hard, direct** | `lslogins` → libsystemd; `lsblk`, `findmnt` → libudev |
