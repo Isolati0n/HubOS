@@ -26,7 +26,7 @@ cp -a "$T"/usr/lib/x86_64-linux-gnu/libbsd.so.0* "$S/usr/lib/x86_64-linux-gnu/"
 rm -rf "$S/etc/systemd" "$S/usr/lib/systemd" "$S/var/lib/systemd" "$S/usr/lib/udev" "$S/etc/udev"
 mkdir -p "$S/etc/hubos" "$S/usr/local/bin" "$S/config" "$S/data" "$S/boot/efi" "$S/run" "$S/tmp" "$S/var"
 install -m 0644 "$PUB" "$S/etc/hubos/update.pub"
-for a in ip udhcpc wget cttyhack reboot halt poweroff hostname stat awk head sha256sum getty watchdog; do ln -sf /bin/busybox "$S/usr/local/bin/$a"; done
+for a in ip udhcpc wget cttyhack reboot halt poweroff hostname stat awk head sha256sum getty watchdog ps pidof; do ln -sf /bin/busybox "$S/usr/local/bin/$a"; done
 printf 'version=%s\nflavor=%s\nkernel-version=%s\n' "$V" "$F" "$KERNEL_VERSION" > "$S/etc/hubos-release"
 { echo 'root::0:0:root:/root:/bin/sh'; grep -v '^root:' "$S/etc/passwd"; echo 'hub:x:1000:1000:hub:/run/hubos:/bin/false'; } > "$S/etc/passwd.new"
 mv "$S/etc/passwd.new" "$S/etc/passwd"; echo 'hub:x:1000:' >> "$S/etc/group"
@@ -37,5 +37,9 @@ case $F in
   good) ;;
   *) echo "unknown flavor $F" >&2; exit 2 ;;
 esac
+# A finished image has no package manager, no PAM modules and no procps (busybox supplies ps and pidof above);
+# the build fails if any file left in /usr, /bin, /sbin or /lib has a library that cannot be found.
+"$(dirname "$0")/strip-root.sh" "$S" >&2
+"$(dirname "$0")/check-libs.sh" "$S" >&2
 mksquashfs "$S" "$OUT" -comp zstd -quiet -noappend -all-root >/dev/null
 rm -rf "$S"

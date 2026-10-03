@@ -19,8 +19,8 @@ case " $(cat /proc/cmdline) " in
     cat /etc/hubos-release
     exec setsid cttyhack /bin/sh ;;
 esac
-# The kernel has a built-in command line (for the fallback boot path) and the
-# firmware adds the entry's own; the LAST hubos.slot= is the one that counts.
+# Each slot's kernel has its slot and root built into its own command line, so the slot does not depend on
+# the firmware's load options (the a and b entries have none). If options are added, the LAST hubos.slot= wins.
 SLOT=$(sed -n 's/.*hubos\.slot=\([ab]\).*/\1/p' /proc/cmdline)
 [ -n "$SLOT" ] || SLOT=unknown
 echo "$SLOT" > /run/hubos-slot

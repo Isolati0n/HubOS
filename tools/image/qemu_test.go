@@ -6,6 +6,7 @@ package image
 // They build the kernel, the root and the bundles with the scripts in this directory,
 // then boot a UEFI disk under QEMU in software emulation and drive it over the serial
 // console. Run:  go test -tags qemu -count=1 -timeout 120m -v ./tools/image
+// Run them by hand before merging any change to image/ or tools/image/ (docs/image.md).
 // Environment: HUBOS_IMAGE_WORK = a directory to keep the (long) build between runs.
 // Every key is made at run time in a temporary directory; no key is ever stored.
 
@@ -46,7 +47,7 @@ type rig struct {
 	sec     string
 	pub     string
 	hangs   int
-	retries int
+	hangLog []string // every hang: number, step, saved log
 	hangDir string
 	vm      *vm
 	logSeq  int
@@ -196,20 +197,35 @@ func (v *vm) kill() {
 	v.log.Close()
 }
 
-// bootVM starts QEMU on the disk and waits for the handover line. Unexplained hang: if the line does not
-// come in time, the serial log is saved, QEMU is killed and the start is retried once.
-func (r *rig) bootVM() *vm {
-	for attempt := 1; attempt <= 2; attempt++ {
-		v := r.startVM()
-		if v.wait(handoverRe, 150*time.Second, 0) >= 0 {
-			r.bootPos = 0
-			r.ready(v)
-			return v
-		}
-		r.noteHang(v, "start")
-		v.kill()
+// bootOnce starts QEMU on the disk and waits for the handover line. If the line does not come in time (an
+// unexplained hang), the hang is recorded with its step, the serial log is saved and nil is returned.
+func (r *rig) bootOnce(step string) *vm {
+	v := r.startVM()
+	if v.wait(handoverRe, 150*time.Second, 0) >= 0 {
+		r.bootPos = 0
+		r.ready(v)
+		return v
 	}
-	r.t.Fatal("the machine did not reach the handover line in two tries")
+	r.noteHang(v, step)
+	v.kill()
+	return nil
+}
+
+// bootVM boots the disk. A hang is retried ONCE; a second hang in the same step fails the run.
+func (r *rig) bootVM(step string) *vm {
+	if v := r.bootOnce(step); v != nil {
+		return v
+	}
+	return r.retryBoot(step)
+}
+
+// retryBoot is the one retry after a hang in a step; if it hangs too, the run fails.
+func (r *rig) retryBoot(step string) *vm {
+	if v := r.bootOnce(step + " (retry)"); v != nil {
+		r.vm = v
+		return v
+	}
+	r.t.Fatalf("the machine hung twice in the same step (%s); the run fails (hangs so far: %s)", step, strings.Join(r.hangLog, "; "))
 	return nil
 }
 
@@ -222,7 +238,8 @@ func (r *rig) ready(v *vm) {
 func (r *rig) noteHang(v *vm, what string) {
 	r.hangs++
 	os.MkdirAll(r.hangDir, 0o755)
-	dst := filepath.Join(r.hangDir, fmt.Sprintf("hang-%d-%s.log", r.hangs, what))
+	dst := filepath.Join(r.hangDir, fmt.Sprintf("hang-%d.log", r.hangs))
+	r.hangLog = append(r.hangLog, fmt.Sprintf("hang %d in step %q (serial log %s)", r.hangs, what, dst))
 	os.WriteFile(dst, []byte(v.text(0)), 0o644)
 	r.t.Logf("HANG %d (%s): no known log line in time; serial log saved to %s", r.hangs, what, dst)
 }
@@ -245,7 +262,7 @@ func (r *rig) afterReset(m int) int {
 	}
 	r.noteHang(v, "reboot")
 	v.kill()
-	r.vm = r.bootVM()
+	r.vm = r.retryBoot("reboot")
 	return 0
 }
 
@@ -308,7 +325,11 @@ func TestImage(t *testing.T) {
 		results = append(results, fmt.Sprintf("%-4s %7.1fs  %s  %s", s, d.Seconds(), name, note))
 	}
 	defer func() {
-		t.Logf("\nRESULTS (QEMU hangs seen and retried: %d)\n%s", r.hangs, strings.Join(results, "\n"))
+		hl := "none"
+		if len(r.hangLog) > 0 {
+			hl = "\n  " + strings.Join(r.hangLog, "\n  ")
+		}
+		t.Logf("\nRESULTS (QEMU hangs seen and retried: %d; every hang: %s)\n%s", r.hangs, hl, strings.Join(results, "\n"))
 		if r.vm != nil {
 			r.vm.kill()
 		}
@@ -341,7 +362,7 @@ func TestImage(t *testing.T) {
 	bundle := func(ver, flavor, name string, env ...string) {
 		r.script("build-bundle.sh", env, ver, flavor, filepath.Join(bdir, name), r.pub, r.sec)
 	}
-	for _, b := range []struct{ v, f string }{{"1", "good"}, {"2", "good"}, {"3", "noinit"}, {"4", "garbage"}, {"5", "unhealthy"}, {"6", "hang"}, {"7", "good"}} {
+	for _, b := range []struct{ v, f string }{{"1", "good"}, {"2", "good"}, {"3", "noinit"}, {"4", "garbage"}, {"5", "unhealthy"}, {"6", "hang"}, {"7", "good"}, {"8", "good"}} {
 		bundle(b.v, b.f, "v"+b.v+"-"+b.f)
 	}
 	bundle("2", "good", "v2-nokernelversion", "NO_KERNEL_VERSION=1")
@@ -349,7 +370,7 @@ func TestImage(t *testing.T) {
 	variant := func(name string, change func(dir string)) {
 		d := filepath.Join(bdir, name)
 		os.MkdirAll(d, 0o755)
-		for _, f := range []string{"manifest", "manifest.sig", "kernel.efi", "rootfs.sqsh"} {
+		for _, f := range []string{"manifest", "manifest.sig", "kernel-a.efi", "kernel-b.efi", "rootfs.sqsh"} {
 			if err := os.Link(filepath.Join(bdir, "v2-good", f), filepath.Join(d, f)); err != nil {
 				t.Fatal(err)
 			}
@@ -397,17 +418,26 @@ func TestImage(t *testing.T) {
 		}
 		defer os.RemoveAll(root)
 		ok := checkNoSystemd(t, root)
-		record("root has no systemd program or unit directory", ok, time.Since(start), "")
+		record("root has no systemd program, unit directory or banned package (and the apt pin was in the build)", ok, time.Since(start), "")
+		start = time.Now()
+		ok2 := checkStripped(t, root)
+		record("stripped root: no apt, libapt, procps, libproc2, PAM modules, login, passwd file left; the two systemd libraries kept", ok2, time.Since(start), "")
+		start = time.Now()
+		ok3 := checkLibs(t, root)
+		record("ldd finds no unresolved library in /usr, /bin, /sbin, /lib (and the checker fails when a library is removed)", ok3, time.Since(start), "")
+		if !ok || !ok2 || !ok3 {
+			t.Fail()
+		}
 	})
 
 	// ---- the disk with release 1, and the first boot ----
-	r.script("build-disk.sh", nil, filepath.Join(bdir, "v1-good", "rootfs.sqsh"), filepath.Join(work, "out", "kernel.efi"), r.disk)
+	r.script("build-disk.sh", nil, filepath.Join(bdir, "v1-good", "rootfs.sqsh"), filepath.Join(work, "out", "kernel-a.efi"), r.disk)
 
 	t.Run("T01_read_only_root", func(t *testing.T) {
 		r.t = t
 		start := time.Now()
 		bt := time.Now()
-		r.vm = r.bootVM()
+		r.vm = r.bootVM("first boot")
 		t.Logf("first boot to the handover line (including QEMU start): %.1f s", time.Since(bt).Seconds())
 		_, out := r.sh(`touch /usr/x 2>&1; echo rc=$?; touch /etc/x 2>&1; echo rc=$?; echo ok > /var/y && echo var-writable; mount | grep " on / "`)
 		ok := strings.Contains(out, "Read-only file system") && strings.Contains(out, "var-writable") && strings.Contains(out, "squashfs")
@@ -425,6 +455,13 @@ func TestImage(t *testing.T) {
 		rc1, out := r.sh(`hubos-ctl status | head -3; ls -la /config/hubos; hubd check --inventory /config/hubos/inventory.toml 2>&1 | tail -3`)
 		rc2, list := r.sh(`hubd list --socket /run/hubos/hubd.sock | head -4`)
 		_, pid1 := r.sh(`cat /proc/1/comm; ps | grep -c "[s]ystemd"; echo; ls /run/service`)
+		_, nsd := r.sh(`n=$(cat /proc/[0-9]*/comm | grep -c '^systemd'); echo systemd-processes=$n`)
+		noSd := strings.Contains(nsd, "systemd-processes=0")
+		record("no process named systemd runs in the booted image", noSd, 0, "counted in /proc/*/comm")
+		if !noSd {
+			t.Errorf("a process named systemd runs: %s", nsd)
+			t.Fail()
+		}
 		ok := rc1 == 0 && rc2 == 0 && strings.Contains(list, "Hub") && strings.Contains(out, "node.conf") && strings.HasPrefix(pid1, "s6-svscan")
 		record("2 first boot; hubd runs from the config partition; PID 1 is s6-svscan, no systemd process", ok, time.Since(start), "")
 		if !ok {
@@ -433,6 +470,28 @@ func TestImage(t *testing.T) {
 		_, libs := r.sh(`find / -xdev \( -name 'libsystemd*' -o -name 'libudev*' \) 2>/dev/null | sort`)
 		t.Logf("systemd libraries in the running root (the two that remain, by decision, for now):\n%s", libs)
 		r.sh(`echo survive-me > /config/hubos/marker; sync`)
+	})
+
+	t.Run("T02b_slot_entries_have_no_load_options", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		_, ev := r.sh(`efibootmgr -v | grep hubos`)
+		_, cl := r.sh(`cat /proc/cmdline; echo "slot file: $(cat /run/hubos-slot)"; head -1 /etc/hubos-release`)
+		ok := true
+		for _, sl := range []string{"a", "b"} {
+			re := regexp.MustCompile(`(?m)hubos-` + sl + `\s.*File\(\\EFI\\hubos\\kernel-` + sl + `\.efi\)\s*$`)
+			if !re.MatchString(ev) {
+				t.Errorf("entry hubos-%s is missing or has load options:\n%s", sl, ev)
+				ok = false
+			}
+		}
+		rec := regexp.MustCompile(`(?m)hubos-recovery\s.*File\([^)]*\)[0-9a-fA-F]{8,}`).MatchString(ev) // efibootmgr -v prints the load options as hex after the path
+		t.Logf("the recovery entry carries its load options (hubos.recovery=1): %v", rec)
+		ok = ok && rec && strings.Contains(cl, "hubos.slot=a") && strings.Contains(cl, "root=PARTLABEL=hubos-root-a") && !strings.Contains(cl, "hubos.recovery") && strings.Contains(cl, "slot file: a")
+		record("A1 slot entries a and b are created WITHOUT load options; slot a boots with its own kernel (/proc/cmdline shows hubos.slot=a)", ok, time.Since(start), fmt.Sprintf("recovery entry has load options: %v", rec))
+		if !ok {
+			t.Fail()
+		}
 	})
 
 	t.Run("T03_init_restarts_a_killed_service", func(t *testing.T) {
@@ -495,6 +554,17 @@ func TestImage(t *testing.T) {
 		}
 	})
 
+	t.Run("T05b_slot_b_boots_with_its_own_kernel", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		_, cl := r.sh(`cat /proc/cmdline; echo "slot file: $(cat /run/hubos-slot)"; efibootmgr | grep "^BootCurrent"`)
+		ok := strings.Contains(cl, "hubos.slot=b") && strings.Contains(cl, "root=PARTLABEL=hubos-root-b") && !strings.Contains(cl, "hubos.slot=a") && strings.Contains(cl, "slot file: b")
+		record("A1 slot b boots with its own kernel (kernel-b.efi installed by the update; /proc/cmdline shows hubos.slot=b and its own root)", ok, time.Since(start), "")
+		if !ok {
+			t.Fail()
+		}
+	})
+
 	badBoot := func(name, bundleName, expect string) {
 		t.Run(name, func(t *testing.T) {
 			r.t = t
@@ -510,9 +580,9 @@ func TestImage(t *testing.T) {
 				r.bootPos = h
 				r.ready(r.vm)
 			} else {
-				r.noteHang(r.vm, "rollback")
+				r.noteHang(r.vm, "rollback after "+name)
 				r.vm.kill()
-				r.vm = r.bootVM()
+				r.vm = r.retryBoot("rollback after " + name)
 			}
 			r.waitConfirmed()
 			slot, rel, confirmed, _ := r.status()
@@ -548,6 +618,39 @@ func TestImage(t *testing.T) {
 		r.waitConfirmed()
 	})
 
+	t.Run("T07b_recovery_entry_without_load_options", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		// a copy of the recovery entry made WITHOUT load options (what a firmware that drops them would boot)
+		r.sh(`OLD=$(efibootmgr | sed -n 's/^BootOrder: //p'); efibootmgr -q -c -d /dev/vda -p 1 -L hubos-recovery-nolo -l '\EFI\hubos\kernel-b.efi'; efibootmgr -q -o $OLD; N=$(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery-nolo.*/\1/p' | head -1); efibootmgr -q -n $N; echo "entry $N"; efibootmgr -v | grep "recovery"`)
+		m := r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		h := r.vm.wait(handoverRe, 200*time.Second, m)
+		recov := r.vm.wait(`RECOVERY MODE`, 5*time.Second, m) >= 0
+		if h < 0 {
+			t.Fatalf("the machine did not reach the normal handover line")
+		}
+		r.bootPos = h
+		r.ready(r.vm)
+		r.vm.wait(`confirm: `, 90*time.Second, h)
+		_, out := r.sh(`cat /proc/cmdline; echo "slot file: $(cat /run/hubos-slot)"; ls /run/service | tr '\n' ' '; echo; efibootmgr | grep -E "^Boot(Current|Next|Order)"`)
+		var keep []string
+		for _, l := range strings.Split(r.vm.text(m), "\n") {
+			if strings.Contains(l, "HUBOS: slot=") || strings.Contains(l, "confirm:") || strings.Contains(l, "RECOVERY") || strings.Contains(l, "STAGE0: switching") {
+				keep = append(keep, strings.TrimSpace(l))
+			}
+		}
+		t.Logf("what the machine printed (selected lines):\n%s", strings.Join(keep, "\n"))
+		ok := !recov && !strings.Contains(out, "hubos.recovery") && strings.Contains(out, "hubos.slot=b") && strings.Contains(out, "slot file: b") && strings.Contains(out, "hubd")
+		record("A2 the recovery entry WITHOUT load options boots a normal slot (slot b, services running), not recovery", ok, time.Since(start), "no RECOVERY MODE banner; confirm refuses because BootCurrent is not the slot entry")
+		if !ok {
+			t.Fail()
+		}
+		r.sh(`N=$(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery-nolo.*/\1/p' | head -1); efibootmgr -q -B -b $N; efibootmgr | grep -c nolo`)
+		r.reboot()
+		r.waitConfirmed()
+	})
+
 	// ---- the interrupted update, at known log lines ----
 	t.Run("T08_interrupted_update", func(t *testing.T) {
 		r.t = t
@@ -571,7 +674,7 @@ func TestImage(t *testing.T) {
 			}
 			t.Logf("interrupt %s: killing QEMU at the line %q (%.1f s into the update)", p.name, p.line, time.Since(ptStart).Seconds())
 			r.vm.kill()
-			r.vm = r.bootVM()
+			r.vm = r.bootVM("start after the interruption " + p.name)
 			r.waitConfirmed()
 			slot, rel, confirmed, st := r.status()
 			good := slot == "b" && rel == "2" && confirmed && !strings.Contains(st, "BootNext")
@@ -595,6 +698,39 @@ func TestImage(t *testing.T) {
 		record("8 an update interrupted at 4 known log lines never harms the confirmed slot; a clean update still works", all, time.Since(start), "kill -9 of QEMU at each line")
 		if !all {
 			t.Fail()
+		}
+	})
+
+	// ---- not enough free space on the boot partition ----
+	t.Run("T10_no_free_space_on_the_boot_partition", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		sz := fileSize(t, filepath.Join(bdir, "v2-good", "rootfs.sqsh"))
+		esp := `mount -t vfat $(findfs PARTLABEL=hubos-esp) /boot/efi`
+		rootSum := fmt.Sprintf(`head -c %d $(findfs PARTLABEL=hubos-root-b) | sha256sum`, sz)
+		_, before := r.sh(esp + `; sha256sum /boot/efi/EFI/hubos/kernel-b.efi; ` + rootSum + `; dd if=/dev/zero of=/boot/efi/FILL bs=1M 2>&1 | tail -n 1; sync; df -k /boot/efi | tail -n 1; umount /boot/efi`)
+		rc, out := r.update("v8-good")
+		_, after := r.sh(esp + `; sha256sum /boot/efi/EFI/hubos/kernel-b.efi; ls /boot/efi/EFI/hubos; ` + rootSum + `; rm -f /boot/efi/FILL; sync; umount /boot/efi; hubos-ctl status | grep -c BootNext`)
+		hashes := func(s string) []string { return regexp.MustCompile(`[0-9a-f]{64}`).FindAllString(s, -1) }
+		hb, ha := hashes(before), hashes(after)
+		clean := rc == 2 && strings.Contains(out, "not enough free space") && strings.Contains(out, "nothing was written") && !strings.Contains(out, "wrote ") && !strings.Contains(out, "kernel installed")
+		same := len(hb) == 2 && len(ha) == 2 && hb[0] == ha[0] && hb[1] == ha[1]
+		noTemp := !strings.Contains(after, ".new")
+		noNext := regexp.MustCompile(`(?m)^0\s*$`).MatchString(after) // the last command printed the number of BootNext lines
+		t.Logf("kernel-b.efi and slot b's root unchanged: %v; no .new file: %v; no BootNext: %v", same, noTemp, noNext)
+		// the old kernel still boots: BootNext to slot b (the slot whose kernel the failed update meant to replace)
+		r.sh(`efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-b.*/\1/p' | head -1)`)
+		m := r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		r.afterReset(m)
+		r.waitConfirmed()
+		slot, rel, _, _ := r.status()
+		_, cl := r.sh(`cat /proc/cmdline`)
+		boots := slot == "b" && rel == "2" && strings.Contains(cl, "hubos.slot=b")
+		ok := clean && same && noTemp && noNext && boots
+		record("B update with a full boot partition fails cleanly; kernel-b.efi and slot b's root unchanged; the old kernel still boots", ok, time.Since(start), fmt.Sprintf("rc=%d; old kernel booted slot %s release %s", rc, slot, rel))
+		if !ok {
+			t.Errorf("clean=%v same=%v noTemp=%v noNext=%v boots=%v\nout:\n%s", clean, same, noTemp, noNext, boots, out)
 		}
 	})
 
@@ -624,18 +760,20 @@ func TestImage(t *testing.T) {
 			out, _ := exec.Command("cmp", a, b).CombinedOutput()
 			t.Logf("squashfs differs: %s", strings.TrimSpace(string(out)))
 		}
-		// the kernel: a second full build with the same identity
-		k1 := sum(filepath.Join(work, "out", "kernel.efi"))
-		os.Rename(filepath.Join(work, "out", "kernel.efi"), filepath.Join(work, "out", "kernel-first.efi"))
+		// the kernels (one per slot): a second full build with the same identity
+		ka1, kb1 := sum(filepath.Join(work, "out", "kernel-a.efi")), sum(filepath.Join(work, "out", "kernel-b.efi"))
+		os.Rename(filepath.Join(work, "out", "kernel-a.efi"), filepath.Join(work, "out", "kernel-a-first.efi"))
+		os.Rename(filepath.Join(work, "out", "kernel-b.efi"), filepath.Join(work, "out", "kernel-b-first.efi"))
 		r.script("build-kernel.sh", []string{"FORCE=1"})
-		k2 := sum(filepath.Join(work, "out", "kernel.efi"))
-		t.Logf("kernel: %s / %s -> identical: %v", k1, k2, k1 == k2)
+		ka2, kb2 := sum(filepath.Join(work, "out", "kernel-a.efi")), sum(filepath.Join(work, "out", "kernel-b.efi"))
+		k1, k2 := ka1+kb1, ka2+kb2
+		t.Logf("kernel a: %s / %s -> identical: %v; kernel b: %s / %s -> identical: %v; a differs from b: %v", ka1, ka2, ka1 == ka2, kb1, kb2, kb1 == kb2, ka1 != kb1)
 		if k1 != k2 {
-			out, _ := exec.Command("cmp", filepath.Join(work, "out", "kernel-first.efi"), filepath.Join(work, "out", "kernel.efi")).CombinedOutput()
-			t.Logf("kernel differs: %s", strings.TrimSpace(string(out)))
+			out, _ := exec.Command("cmp", filepath.Join(work, "out", "kernel-a-first.efi"), filepath.Join(work, "out", "kernel-a.efi")).CombinedOutput()
+			t.Logf("kernel a differs: %s", strings.TrimSpace(string(out)))
 		}
-		record("9 two builds of the root give identical hashes (root tar asserted; squashfs and kernel reported)", first == second, time.Since(start),
-			fmt.Sprintf("tar %v, squashfs %v, kernel %v", first == second, sa == sb, k1 == k2))
+		record("9 two builds of the root give identical hashes (root tar asserted; squashfs and both kernels reported)", first == second, time.Since(start),
+			fmt.Sprintf("tar %v, squashfs %v, kernels %v", first == second, sa == sb, k1 == k2))
 	})
 }
 
@@ -664,6 +802,39 @@ func checkNoSystemd(t *testing.T, root string) bool {
 		}
 		return nil
 	})
+	// packages that must never be installed (the apt pin of image/apt/no-systemd.pref) and the pin itself
+	banned := []string{"systemd", "systemd-sysv", "libpam-systemd", "dbus-user-session", "udev", "systemd-timesyncd", "systemd-resolved"}
+	if st, err := os.ReadFile(filepath.Join(root, "var/lib/dpkg/status")); err == nil {
+		for _, stanza := range strings.Split(string(st), "\n\n") {
+			var pkg string
+			installed := false
+			for _, l := range strings.Split(stanza, "\n") {
+				if v, ok := strings.CutPrefix(l, "Package: "); ok {
+					pkg = v
+				}
+				if l == "Status: install ok installed" {
+					installed = true
+				}
+			}
+			for _, b := range banned {
+				if installed && pkg == b {
+					bad = append(bad, "installed package "+pkg)
+				}
+			}
+		}
+	} else {
+		bad = append(bad, "no dpkg status file to check")
+	}
+	pin, err1 := os.ReadFile(filepath.Join("..", "..", "image", "apt", "no-systemd.pref"))
+	inRoot, err2 := os.ReadFile(filepath.Join(root, "etc/apt/preferences.d/hubos-no-systemd"))
+	if err1 != nil || err2 != nil || !bytes.Equal(pin, inRoot) || !strings.Contains(string(pin), "Pin-Priority: -1") {
+		bad = append(bad, "the apt pin file was not in the build (image/apt/no-systemd.pref vs /etc/apt/preferences.d/hubos-no-systemd)")
+	}
+	for _, b := range banned {
+		if !strings.Contains(string(pin), b) {
+			bad = append(bad, "the pin does not list "+b)
+		}
+	}
 	for _, b := range bad {
 		t.Errorf("systemd found in the root: %s", b)
 		ok = false
@@ -671,4 +842,92 @@ func checkNoSystemd(t *testing.T, root string) bool {
 	t.Logf("systemd libraries that remain in the root (%d files): %s", len(libs), strings.Join(libs, " "))
 	t.Logf("other files with systemd in their name (not systemd programs; allowed, listed for the record): %s", strings.Join(named, " "))
 	return ok
+}
+
+func fileSize(t *testing.T, p string) int64 {
+	fi, err := os.Stat(p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return fi.Size()
+}
+
+// removedPackages are deleted from every finished image after the build (tools/image/strip-root.sh).
+var removedPackages = []string{"apt", "libapt-pkg6.0t64", "procps", "libproc2-0", "libpam-runtime", "libpam-modules", "libpam-modules-bin", "login", "passwd"}
+
+// checkStripped checks that no file of the removed packages (from dpkg's own lists) is left, and that the two
+// systemd libraries (kept by the owner's decision) are.
+func checkStripped(t *testing.T, root string) bool {
+	ok := true
+	total := 0
+	for _, pkg := range removedPackages {
+		l, err := os.ReadFile(filepath.Join(root, "var/lib/dpkg/info", pkg+".list"))
+		if err != nil { // multi-arch packages: PACKAGE:amd64.list
+			l, err = os.ReadFile(filepath.Join(root, "var/lib/dpkg/info", pkg+":amd64.list"))
+		}
+		if err != nil {
+			// not installed at all (mmdebstrap's minbase root has no apt): fine, but then it must not be in the status file
+			if st, _ := os.ReadFile(filepath.Join(root, "var/lib/dpkg/status")); strings.Contains(string(st), "\nPackage: "+pkg+"\n") || strings.HasPrefix(string(st), "Package: "+pkg+"\n") {
+				t.Errorf("%s is in the dpkg status but has no file list: %v", pkg, err)
+				ok = false
+			} else {
+				t.Logf("%s is not installed in this root (nothing to remove)", pkg)
+			}
+			continue
+		}
+		for _, f := range strings.Split(strings.TrimSpace(string(l)), "\n") {
+			fi, err := os.Lstat(filepath.Join(root, f))
+			if err != nil {
+				continue
+			}
+			if !fi.IsDir() {
+				t.Errorf("a file of the removed package %s is still in the root: %s", pkg, f)
+				ok = false
+			}
+			total++
+		}
+	}
+	t.Logf("removed packages: %s (their listed files are gone; %d listed directories remain)", strings.Join(removedPackages, ", "), total)
+	for _, lib := range []string{"usr/lib/x86_64-linux-gnu/libsystemd.so.0", "usr/lib/x86_64-linux-gnu/libudev.so.1"} {
+		if _, err := os.Lstat(filepath.Join(root, lib)); err != nil {
+			t.Errorf("the library %s should still be in the root (kept by decision): %v", lib, err)
+			ok = false
+		}
+	}
+	return ok
+}
+
+// checkLibs runs tools/image/check-libs.sh (ldd inside the root) and then shows that it can fail: it removes a
+// library from the unpacked copy and expects the check to report it.
+func checkLibs(t *testing.T, root string) bool {
+	script := filepath.Join("..", "..", "tools", "image", "check-libs.sh")
+	out, err := exec.Command(script, root).CombinedOutput()
+	t.Logf("check-libs.sh on the built root: %s", strings.TrimSpace(string(out)))
+	if err != nil {
+		t.Errorf("unresolved libraries in the built root: %v\n%s", err, out)
+		return false
+	}
+	libs, _ := filepath.Glob(filepath.Join(root, "usr/lib/x86_64-linux-gnu/libmount.so.1*"))
+	if len(libs) == 0 {
+		t.Errorf("the negative check needs libmount, which is not in the root")
+		return false
+	}
+	for _, l := range libs {
+		os.Remove(l)
+	}
+	out, err = exec.Command(script, root).CombinedOutput()
+	t.Logf("check-libs.sh after removing libmount (must fail): rc!=0 is %v; first lines: %s", err != nil, firstLines(string(out), 3))
+	if err == nil || !strings.Contains(string(out), "libmount.so.1 => not found") {
+		t.Errorf("the library check did not notice a removed library")
+		return false
+	}
+	return true
+}
+
+func firstLines(s string, n int) string {
+	l := strings.Split(strings.TrimSpace(s), "\n")
+	if len(l) > n {
+		l = l[:n]
+	}
+	return strings.Join(l, " | ")
 }

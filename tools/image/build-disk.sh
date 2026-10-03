@@ -1,6 +1,7 @@
 #!/bin/bash
 # build-disk.sh ROOT.sqsh KERNEL OUTDIR  ->  OUTDIR/disk.img (GPT: boot, slot A, slot B, config, data) and OUTDIR/vars.fd
-# The disk holds root image ROOT in slot A and KERNEL as the slot A kernel and the fallback loader.
+# The disk holds root image ROOT in slot A and KERNEL (the slot A kernel, kernel-a.efi) as the slot A kernel and
+# the fallback loader. Slot B gets its kernel (kernel-b.efi) from the first update.
 # No loop devices: each partition is its own file, put in place with dd.
 . "$(dirname "$0")/common.sh"
 load_machine
