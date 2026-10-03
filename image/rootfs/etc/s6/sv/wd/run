@@ -1,3 +1,4 @@
 #!/bin/sh
-# steady-state watchdog feeder; started by the confirm step once the boot is healthy
-exec watchdog -F -t 5 -T 60 /dev/watchdog
+# steady-state watchdog feeder; started by the confirm step once the boot is healthy.
+# The timeout is the machine's (stage 0 exports HUBOS_WATCHDOG_TIMEOUT from the node config; default 180 s).
+exec watchdog -F -t 5 -T ${HUBOS_WATCHDOG_TIMEOUT:-180} /dev/watchdog

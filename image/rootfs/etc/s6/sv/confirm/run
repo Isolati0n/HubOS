@@ -1,11 +1,9 @@
 #!/bin/sh
 # Boot succeeded = hubd answers on its socket 5 times in a row, 1 s apart.
-# Gives up after HUBOS_CONFIRM_TIMEOUT seconds (default 60) and reboots, so the
-# firmware falls back to the other slot (BootOrder was not changed).
+# Gives up after the machine's confirm timeout (stage 0 exports HUBOS_CONFIRM_TIMEOUT from the node config;
+# default 120 s) and reboots, so the firmware falls back to the other slot (BootOrder was not changed).
 exec 2>&1
-T=${HUBOS_CONFIRM_TIMEOUT:-60}; ok=0; n=0
-[ -f /config/hubos/node.conf ] && . /config/hubos/node.conf
-T=${CONFIRM_TIMEOUT:-$T}
+T=${HUBOS_CONFIRM_TIMEOUT:-120}; ok=0; n=0
 ensure() { hubos-ctl ensure-entries; }
 ensure
 while [ $n -lt $T ]; do

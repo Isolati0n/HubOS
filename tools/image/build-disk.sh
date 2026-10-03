@@ -10,7 +10,9 @@ R=$1; K=$2; D=$3
 mkdir -p "$D"; rm -f "$D"/disk.img "$D"/*.part
 # the config partition: node.conf from the machine file, inventory and viewers from image/config
 C=$D/cfg.dir; rm -rf "$C"; mkdir -p "$C/hubos"
-{ echo "NAME=hub-qemu"; echo "NET=dhcp"; echo "IFACE=eth0"; echo "SERVICES=\"$SERVICES\""; echo "CONFIRM_TIMEOUT=${CONFIRM_TIMEOUT:-40}"; } > "$C/hubos/node.conf"
+CT=${CONFIRM_TIMEOUT:-120}; WT=${WATCHDOG_TIMEOUT:-180}; BL=${BOOT_FAIL_LIMIT:-3}
+"$REPO/image/rootfs/usr/lib/hubos/check-timers.sh" "$CT" "$WT" >&2 || { echo "build-disk.sh: the node config's timeouts are refused; no disk was made" >&2; exit 1; }
+{ echo "NAME=hub-qemu"; echo "NET=dhcp"; echo "IFACE=eth0"; echo "SERVICES=\"$SERVICES\""; echo "CONFIRM_TIMEOUT=$CT"; echo "WATCHDOG_TIMEOUT=$WT"; echo "BOOT_FAIL_LIMIT=$BL"; } > "$C/hubos/node.conf"
 cp "$REPO"/image/config/qemu-test/inventory.toml "$REPO"/image/config/qemu-test/viewers.toml "$C/hubos/"
 truncate -s 64M "$D/esp.part"; mkfs.vfat -F 32 -n ESP "$D/esp.part" >/dev/null
 export MTOOLS_SKIP_CHECK=1

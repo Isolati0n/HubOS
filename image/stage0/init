@@ -1,29 +1,103 @@
 #!/bin/busybox sh
-# Hub OS stage 0: built into the kernel. Mounts the slot's root, arms the
-# hardware watchdog, hands over to the slot's /sbin/init. If anything is wrong
-# it reboots at once (the firmware then uses the other slot).
+# Hub OS stage 0 of the SLOT kernels (kernel-a.efi, kernel-b.efi): built into the kernel. In order:
+#  1. arms the hardware watchdog;
+#  2. reads the per-machine settings from the config partition (read-only): CONFIRM_TIMEOUT, WATCHDOG_TIMEOUT,
+#     BOOT_FAIL_LIMIT (defaults 120, 180, 3); refuses a pair of timeouts that breaks the rule in check-timers.sh;
+#  3. the boot-loop breaker: counts this boot in an EFI variable, and after BOOT_FAIL_LIMIT failed boots in a row
+#     starts the recovery shell (BootNext = the recovery entry, reboot) instead of booting;
+#  4. mounts the slot's root and hands over to the slot's /sbin/init. If anything is wrong it reboots at once.
+# The failure counter is cleared by `hubos-ctl confirm` after a healthy boot (image/rootfs/usr/sbin/hubos-ctl).
 /bin/busybox --install -s /bin
 export PATH=/bin
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
 mount -t devtmpfs devtmpfs /dev
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null
 echo "STAGE0: start"
-# Arm the watchdog: opening it starts the countdown (heartbeat is set on the
-# kernel command line); with nowayout, closing it does not stop it. The slot's
-# confirm step starts the steady feeder once the boot is healthy.
+# Arm the watchdog: opening it starts the countdown (the first timeout is the kernel command line's heartbeat);
+# with nowayout, closing it does not stop it. The slot's confirm step starts the steady feeder once the boot is healthy.
 if [ -c /dev/watchdog ]; then exec 3>/dev/watchdog; exec 3>&-; echo "STAGE0: watchdog armed"; else echo "STAGE0: no watchdog device"; fi
 SLOT=$(sed -n 's/.*hubos\.slot=\([ab]\).*/\1/p' /proc/cmdline)
 [ -n "$SLOT" ] || SLOT=a
-# Find the slot's partition by its GPT name through sysfs (no udev). The disk
-# may appear a moment after the kernel starts, so retry for up to 20 s.
-DEV=
-i=0
-while [ -z "$DEV" ] && [ $i -lt 40 ]; do
-  for u in /sys/class/block/*/uevent; do
-    if grep -q "^PARTNAME=hubos-root-$SLOT\$" "$u" 2>/dev/null; then DEV=/dev/$(basename $(dirname $u)); break; fi
+
+# Find a partition by its GPT name through sysfs (no udev). The disk may appear a moment after the kernel starts,
+# so retry for up to 20 s.
+findpart() {
+  i=0
+  while [ $i -lt 40 ]; do
+    for u in /sys/class/block/*/uevent; do
+      if grep -q "^PARTNAME=$1\$" "$u" 2>/dev/null; then echo /dev/$(basename $(dirname $u)); return 0; fi
+    done
+    sleep 0.5; i=$((i+1))
   done
-  [ -n "$DEV" ] || { sleep 0.5; i=$((i+1)); }
-done
+  return 1
+}
+
+# ---- per-machine settings ----
+CONFIRM=; WD=; LIMIT=
+CFGDEV=$(findpart hubos-config)
+if [ -n "$CFGDEV" ] && mount -t ext4 -o ro "$CFGDEV" /cfg 2>/dev/null; then
+  rd() { sed -n "s/^$1=//p" /cfg/hubos/node.conf 2>/dev/null | tail -n 1 | tr -d "\"' "; }
+  CONFIRM=$(rd CONFIRM_TIMEOUT); WD=$(rd WATCHDOG_TIMEOUT); LIMIT=$(rd BOOT_FAIL_LIMIT)
+  umount /cfg
+else
+  echo "STAGE0: no readable config partition; default settings"
+fi
+case $CONFIRM in ''|*[!0-9]*) CONFIRM=120;; esac
+case $WD in ''|*[!0-9]*) WD=180;; esac
+case $LIMIT in ''|*[!0-9]*|0) LIMIT=3;; esac
+if ! MSG=$(/usr/lib/hubos/check-timers.sh "$CONFIRM" "$WD"); then
+  echo "STAGE0: $MSG"
+  echo "STAGE0: the configured timeouts (confirm ${CONFIRM}s, watchdog ${WD}s) are refused; using the defaults 120 s and 180 s"
+  CONFIRM=120; WD=180
+fi
+export HUBOS_CONFIRM_TIMEOUT=$CONFIRM HUBOS_WATCHDOG_TIMEOUT=$WD HUBOS_BOOT_FAIL_LIMIT=$LIMIT
+# Re-arm the watchdog with the machine's timeout: set the timeout through the watchdog applet, then kill it
+# without the magic close (nowayout keeps the countdown running with the new timeout).
+if [ -c /dev/watchdog ]; then
+  watchdog -F -T "$WD" -t 1 /dev/watchdog & wdp=$!
+  sleep 1; kill -9 $wdp 2>/dev/null
+  echo "STAGE0: watchdog re-armed with ${WD} s (settings: confirm ${CONFIRM} s, watchdog ${WD} s, failed-boot limit ${LIMIT})"
+fi
+
+# ---- the boot-loop breaker ----
+# The failure count is kept in EFI variables: HubosBootFail1, HubosBootFail2, ... (one variable per counted failed boot,
+# vendor GUID a0b7c0f5-4e7a-4d2b-9c61-5f0a1e3d8b72, made for Hub OS; attributes NV+BS+RT = 7, a 1-byte value).
+# The count is the number of such variables. Why not one variable holding a number: efivarfs files are immutable, so
+# changing an existing variable needs `chattr -i`, which this tiny stage 0 does not have; CREATING a variable needs
+# nothing. Stage 0 only ever creates; `hubos-ctl confirm` (in the root, which has chattr) deletes them all.
+BFD=/sys/firmware/efi/efivars; BFG=a0b7c0f5-4e7a-4d2b-9c61-5f0a1e3d8b72
+if grep -q ' efivarfs ' /proc/mounts; then
+  N=0
+  for f in $BFD/HubosBootFail[0-9]*-$BFG; do [ -f "$f" ] && N=$((N+1)); done
+  echo "STAGE0: failed boots counted so far: $N (limit $LIMIT)"
+  if [ "$N" -ge "$LIMIT" ]; then
+    # Too many failed boots in a row: start the recovery shell (BootNext = the recovery entry), do not boot.
+    REC=
+    for f in $BFD/Boot[0-9A-F][0-9A-F][0-9A-F][0-9A-F]-8be4df61-93ca-11d2-aa0d-00e098032b8c; do
+      [ -f "$f" ] || continue
+      if tr -d '\000' < "$f" | grep -a -q 'hubos-recovery'; then b=${f##*/Boot}; REC=${b%%-*}; break; fi
+    done
+    if [ -n "$REC" ]; then
+      v=$((0x$REC))
+      lo=$(printf %03o $((v & 255))); hi=$(printf %03o $((v >> 8)))
+      printf "\007\000\000\000\\$lo\\$hi" > $BFD/BootNext-8be4df61-93ca-11d2-aa0d-00e098032b8c 2>/dev/null
+      echo "STAGE0: $N failed boots in a row (limit $LIMIT): starting the recovery shell (entry $REC) instead of booting slot $SLOT"
+      sync; sleep 1; reboot -f
+    fi
+    echo "STAGE0: WARNING $N failed boots but no recovery entry was found; booting normally"
+  fi
+  k=1; while [ -f "$BFD/HubosBootFail$k-$BFG" ]; do k=$((k+1)); done
+  printf '\007\000\000\000%s' 1 > "$BFD/HubosBootFail$k-$BFG" 2>/dev/null
+  if [ ! -f "$BFD/HubosBootFail$k-$BFG" ]; then
+    echo "STAGE0: WARNING cannot write the failure counter; the boot-loop breaker is OFF for this boot; booting normally"
+  fi
+else
+  echo "STAGE0: WARNING no EFI variables (efivarfs not mounted); the boot-loop breaker is OFF for this boot; booting normally"
+fi
+
+# ---- the slot's root ----
+DEV=$(findpart "hubos-root-$SLOT")
 if [ -z "$DEV" ] || ! mount -t squashfs -o ro "$DEV" /newroot; then
   echo "STAGE0: cannot mount the root of slot $SLOT; rebooting"; sleep 1; reboot -f
 fi

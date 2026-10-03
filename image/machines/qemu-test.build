@@ -14,8 +14,17 @@ PACKAGES=image/packages/qemu-test.list
 SNAPSHOT=20261001T000000Z
 # Service directories (image/rootfs/etc/s6/sv/NAME) started on this machine.
 SERVICES="hubd console confirm wd"
-# Seconds an unhealthy trial boot waits before it gives up and reboots.
+# Per-machine timeouts and the failed-boot limit. Real machines use the defaults (confirm 120 s, watchdog 180 s,
+# 3 failed boots); the test image uses short ones so that its tests are quick. They are written to the node config
+# (/config/hubos/node.conf) and read by stage 0 at every boot. The build refuses a pair where the watchdog does not
+# exceed the confirm timeout by more than 15 s (image/rootfs/usr/lib/hubos/check-timers.sh).
+# CONFIRM_TIMEOUT: seconds an unhealthy trial boot waits before it gives up and reboots.
 CONFIRM_TIMEOUT=30
+# WATCHDOG_TIMEOUT: seconds before the hardware watchdog resets a machine that stops feeding it (also the kernel's
+# first heartbeat, until stage 0 has read the node config).
+WATCHDOG_TIMEOUT=60
+# BOOT_FAIL_LIMIT: after this many failed boots in a row stage 0 starts the recovery shell instead of booting.
+BOOT_FAIL_LIMIT=3
 # The separate recovery kernel (kernel-recovery.efi): its version (a plain number; the update tool installs a
 # bundle's recovery kernel only when this is newer than the installed one) and its built-in command line.
 RECOVERY_VERSION=1

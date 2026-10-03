@@ -68,4 +68,4 @@ CONFIG_INITRAMFS_SOURCE="@STAGE0_LIST@"
 CONFIG_WATCHDOG_NOWAYOUT=y
 CONFIG_KERNEL_GZIP=y
 CONFIG_CMDLINE_BOOL=y
-CONFIG_CMDLINE="console=ttyS0 ro rootfstype=squashfs root=PARTLABEL=hubos-root-@SLOT@ hubos.slot=@SLOT@ panic=5 loglevel=4 i6300esb.heartbeat=60"
+CONFIG_CMDLINE="console=ttyS0 ro rootfstype=squashfs root=PARTLABEL=hubos-root-@SLOT@ hubos.slot=@SLOT@ panic=5 loglevel=4 i6300esb.heartbeat=@WATCHDOG@"
