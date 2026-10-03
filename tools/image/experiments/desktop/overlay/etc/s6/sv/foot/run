@@ -1,0 +1,8 @@
+#!/bin/sh
+# Experiment: a terminal as the first Wayland client.
+exec 2>&1
+export XDG_RUNTIME_DIR=/run/dw HOME=/root
+i=0; while [ -z "$(ls /run/dw/wayland-* 2>/dev/null | grep -v lock | head -n1)" ] && [ $i -lt 200 ]; do sleep 0.2; i=$((i+1)); done
+sleep 1
+export WAYLAND_DISPLAY=$(basename "$(ls /run/dw/wayland-* | grep -v lock | head -n1)")
+exec foot -F

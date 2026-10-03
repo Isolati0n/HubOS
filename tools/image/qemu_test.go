@@ -677,7 +677,8 @@ func TestImage(t *testing.T) {
 			all = false
 		}
 		_, afterB := r.sh(slotB)
-		if beforeB != afterB {
+		hashOf := func(x string) string { return regexp.MustCompile(`[0-9a-f]{64}`).FindString(x) }
+		if hashOf(beforeB) == "" || hashOf(beforeB) != hashOf(afterB) {
 			t.Errorf("the other slot's root changed while only refused bundles were offered")
 			all = false
 		}
