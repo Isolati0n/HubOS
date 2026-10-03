@@ -305,15 +305,24 @@ func TestHubImage(t *testing.T) {
 		st := state()
 		home := regexp.MustCompile(`#\d+ hubos-ai-1 \[0, -100\] \d+x\d+\s+"AI Box"`).MatchString(st)
 		r.shot("hub-3-hubd-open")
-		// the menu: click the bar item (move far past the top-left corner, then step to the item); the list must show
-		r.monitor("mouse_move -4000 -4000")
-		time.Sleep(500 * time.Millisecond)
-		r.monitor("mouse_move 40 15")
-		time.Sleep(time.Second)
-		t.Logf("monitor mouse_button 1: %q", strings.TrimSpace(r.monitor("mouse_button 1")))
-		time.Sleep(300 * time.Millisecond)
-		t.Logf("monitor mouse_button 0: %q", strings.TrimSpace(r.monitor("mouse_button 0")))
-		time.Sleep(8 * time.Second)
+		// the menu: click the bar item (move far past the top-left corner, then step to the item); the list must show.
+		// A click can be lost while the pointer has only just arrived, so it is tried up to three times (the attempts are logged).
+		attempts := 0
+		for attempts < 3 {
+			attempts++
+			r.monitor("mouse_move -4000 -4000")
+			time.Sleep(500 * time.Millisecond)
+			r.monitor("mouse_move 40 15")
+			time.Sleep(time.Second)
+			r.monitor("mouse_button 1")
+			time.Sleep(time.Second)
+			r.monitor("mouse_button 0")
+			time.Sleep(6 * time.Second)
+			if _, w := r.vm.sh(`ps | grep -c '[w]ofi --dmenu'`, 30*time.Second); strings.TrimSpace(w) != "0" {
+				break
+			}
+			t.Logf("attempt %d: no menu after the click", attempts)
+		}
 		img := loadPNG(t, r.shot("hub-3-menu"))
 		list := countColor(img, 0, 60, 660, 460, menuBg)
 		_, wofi := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
@@ -324,7 +333,7 @@ func TestHubImage(t *testing.T) {
 		_, wofi2 := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
 		ok := rc == 0 && home && list > 40000 && strings.TrimSpace(wofi) != "0"
 		record("H3 hubd open ai-1 (fake viewer: foot with the app-id hubos-ai-1 and the title AI Box) places the window at its home (0,-100); a click on the Waybar item opens hubd's menu with the machine list drawn", ok, time.Since(start),
-			fmt.Sprintf("open rc=%d; list-background pixels %d (an empty list is under 20000); wofi running %s, after Escape %s", rc, list, strings.TrimSpace(wofi), strings.TrimSpace(wofi2)))
+			fmt.Sprintf("open rc=%d; click attempts %d; list-background pixels %d (an empty list is under 20000); wofi running %s, after Escape %s", rc, attempts, list, strings.TrimSpace(wofi), strings.TrimSpace(wofi2)))
 		if !ok {
 			t.Errorf("rc=%d home=%v list=%d\n%s\n%s", rc, home, list, out, st)
 			t.Fail()

@@ -3,13 +3,16 @@
 # Gives up after the machine's confirm timeout (stage 0 exports HUBOS_CONFIRM_TIMEOUT from the node config;
 # default 120 s) and reboots, so the firmware falls back to the other slot (BootOrder was not changed).
 exec 2>&1
-T=${HUBOS_CONFIRM_TIMEOUT:-120}; ok=0; n=0
+T=${HUBOS_CONFIRM_TIMEOUT:-120}; ok=0
 ensure() { hubos-ctl ensure-entries; }
 ensure
-while [ $n -lt $T ]; do
+# The timeout is real seconds (a slow machine, for example the hub's software-drawn desktop in a virtual machine, makes each
+# check slower, and counting checks would stretch it past the watchdog).
+end=$(( $(date +%s) + T ))
+while [ "$(date +%s)" -lt "$end" ]; do
   if /usr/bin/hubd list --socket /run/hubos/hubd.sock >/dev/null 2>&1; then ok=$((ok+1)); else ok=0; fi
   [ $ok -ge 5 ] && break
-  n=$((n+1)); sleep 1
+  sleep 1
 done
 if [ $ok -ge 5 ]; then hubos-ctl confirm; s6-svc -u /run/service/wd; s6-svc -O . ; exit 0; fi
 echo "confirm: hubd did not become healthy in ${T}s; this boot FAILED; rebooting into the other slot"

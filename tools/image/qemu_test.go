@@ -1602,6 +1602,9 @@ func checkNoSystemd(t *testing.T, root string, eudev bool) bool {
 			bad = append(bad, "program "+rel)
 		case info.IsDir() && (rel == "/etc/systemd" || rel == "/usr/lib/systemd" || rel == "/lib/systemd" || (!eudev && (rel == "/etc/udev" || rel == "/usr/lib/udev" || rel == "/lib/udev"))):
 			bad = append(bad, "directory "+rel)
+		case strings.Contains(rel, "/usr/share/dbus-1/") && strings.HasSuffix(n, ".service"):
+			// D-Bus activation files (for example ca.desrt.dconf.service from the dconf package): not systemd units
+			named = append(named, rel)
 		case strings.HasSuffix(n, ".service") || strings.HasSuffix(n, ".socket") || strings.HasSuffix(n, ".target") || strings.HasSuffix(n, ".timer"):
 			bad = append(bad, "unit "+rel)
 		case !info.IsDir() && strings.Contains(n, "systemd") && !strings.Contains(rel, "/usr/share/doc") && !strings.Contains(rel, "/var/lib/dpkg/info"):
