@@ -19,7 +19,9 @@ id      = "nas-1"
 name    = "Storage"
 role    = "nas"
 address = "192.0.2.20"
-open    = ["files", "ssh"]
+# ssh is first because the bespoke file manager does not exist yet; a click
+# opens the ssh terminal. "files" stays in the list for when it does.
+open    = ["ssh", "files"]
 home    = { x = -2000, y = 0 }
 user    = "owner"
 share   = "pool"

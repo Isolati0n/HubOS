@@ -374,6 +374,8 @@ Only what the documents say; no mechanism is proposed here.
 
 ---
 
+> **Superseded on 2026-10-01** by examples/viewers.real.example.toml and the owner's decisions (title matching for Moonlight, session field, [default_ports]); kept for history.
+
 ## PROPOSED, UNVERIFIED on hardware, for the owner to approve
 
 ### Proposal 1 — a `viewers.toml` entry for each real viewer
