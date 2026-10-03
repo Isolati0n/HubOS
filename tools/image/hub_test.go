@@ -165,6 +165,7 @@ func TestHubImage(t *testing.T) {
 	// ---- build ----
 	r.script("fetch-tools.sh", nil)
 	kdir := filepath.Join(work, "keys")
+	os.RemoveAll(kdir)
 	os.MkdirAll(kdir, 0o700)
 	os.Setenv("LD_LIBRARY_PATH", filepath.Join(work, "tools/root/usr/lib/x86_64-linux-gnu")+":"+filepath.Join(work, "tools/root/lib/x86_64-linux-gnu"))
 	r.pub, r.sec = filepath.Join(kdir, "update.pub"), filepath.Join(kdir, "update.sec")
@@ -175,6 +176,7 @@ func TestHubImage(t *testing.T) {
 	r.script("build-base.sh", nil)
 	r.script("build-hub-parts.sh", nil)
 	bdir := filepath.Join(work, "bundles")
+	os.RemoveAll(bdir)
 	os.MkdirAll(bdir, 0o755)
 	for _, b := range []struct{ v, f string }{{"1", "good"}, {"2", "good"}, {"3", "unhealthy"}} {
 		r.script("build-bundle.sh", nil, b.v, b.f, filepath.Join(bdir, "h"+b.v+"-"+b.f), r.pub, r.sec)
@@ -307,6 +309,7 @@ func TestHubImage(t *testing.T) {
 		r.shot("hub-3-hubd-open")
 		// the menu: click the bar item (move far past the top-left corner, then step to the item); the list must show.
 		// A click can be lost while the pointer has only just arrived, so it is tried up to three times (the attempts are logged).
+		r.sh(`(libinput debug-events > /tmp/ev.log 2>&1 &); sleep 2; echo watching`)
 		attempts := 0
 		for attempts < 3 {
 			attempts++
@@ -318,22 +321,32 @@ func TestHubImage(t *testing.T) {
 			time.Sleep(time.Second)
 			r.monitor("mouse_button 0")
 			time.Sleep(6 * time.Second)
-			if _, w := r.vm.sh(`ps | grep -c '[w]ofi --dmenu'`, 30*time.Second); strings.TrimSpace(w) != "0" {
+			_, w := r.vm.sh(`ps | grep -c '[w]ofi --dmenu'`, 30*time.Second)
+			if nums := regexp.MustCompile(`(?m)^\d+\s*$`).FindAllString(w, -1); len(nums) > 0 && strings.TrimSpace(nums[len(nums)-1]) != "0" {
 				break
 			}
 			t.Logf("attempt %d: no menu after the click", attempts)
 		}
+		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev.log | awk '{print $1, $2}' | sort | uniq -c; pkill -x libinput; true`)
+		t.Logf("input events the guest saw during the click:\n%s", evs)
 		img := loadPNG(t, r.shot("hub-3-menu"))
 		list := countColor(img, 0, 60, 660, 460, menuBg)
-		_, wofi := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
-		t.Logf("hubd menu processes: %s", strings.TrimSpace(wofi))
+		count := func() string {
+			_, w := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
+			nums := regexp.MustCompile(`(?m)^\d+\s*$`).FindAllString(w, -1)
+			if len(nums) == 0 {
+				return "?"
+			}
+			return strings.TrimSpace(nums[len(nums)-1])
+		}
+		wofi := count()
 		// close the menu again (Escape), a row click is tested in the experiment (docs/proposals/phase-b-desktop.md)
 		r.monitor("sendkey esc")
 		time.Sleep(3 * time.Second)
-		_, wofi2 := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
-		ok := rc == 0 && home && list > 40000 && strings.TrimSpace(wofi) != "0"
+		wofi2 := count()
+		ok := rc == 0 && home && list > 40000 && wofi != "0" && wofi != "?"
 		record("H3 hubd open ai-1 (fake viewer: foot with the app-id hubos-ai-1 and the title AI Box) places the window at its home (0,-100); a click on the Waybar item opens hubd's menu with the machine list drawn", ok, time.Since(start),
-			fmt.Sprintf("open rc=%d; click attempts %d; list-background pixels %d (an empty list is under 20000); wofi running %s, after Escape %s", rc, attempts, list, strings.TrimSpace(wofi), strings.TrimSpace(wofi2)))
+			fmt.Sprintf("open rc=%d; click attempts %d; list-background pixels %d (an empty list is under 20000); wofi running %s, after Escape %s", rc, attempts, list, wofi, wofi2))
 		if !ok {
 			t.Errorf("rc=%d home=%v list=%d\n%s\n%s", rc, home, list, out, st)
 			t.Fail()
