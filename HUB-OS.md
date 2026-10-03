@@ -80,6 +80,9 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
 - A D-Bus session bus (dbus-daemon alone, no systemd) is allowed on the hub, because Waybar will not start without one.
+- Kernels are independent per machine. Each machine's configuration names its own kernel (version, build options, extra modules); nothing is inherited from a role. Roles are text labels only: the inventory gives behaviour to hub, guest and vm-host and to nothing else. One default kernel is set in the build configuration; a machine that overrides it records the reason in its config.
+- Out-of-tree kernel modules (NVIDIA's driver, OpenZFS) are allowed only when a machine's configuration declares them. They are built together with that machine's kernel from one pinned source version; if the build fails, no image is produced. They are listed in the signed manifest and covered by the boot tests.
+- Kernel and graphics-stack versions are pinned and tested before rollout; nothing tracks 'latest'. Each image boots in a test machine before it is offered. The NAS and the backup NAS are updated a week apart, and the backup NAS only after the main one has run well.
 
 ### Parts we write ourselves
 
@@ -174,7 +177,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 ## NAS and backups
 
 - **Full protection:** redundant disks, detection and repair of silent corruption, snapshots, ECC memory. Engineering effort and budget are not limits.
-- **Filesystem:** ZFS or Btrfs, to be researched.
+- **Filesystem:** OpenZFS on the NAS and the backup NAS (an out-of-tree module declared in their configs, on a kernel version OpenZFS supports). A restore from the backup NAS must be tested before either machine is trusted. Btrfs stays the fallback if OpenZFS cannot be built for a needed kernel.
 - **Workloads that need different tuning** (for example, AI datasets) get separately tuned areas on the same NAS. The AI box keeps its active dataset on its own fast SSD; the NAS holds the master copy.
 - Opens on click in the hub's file manager. Non-Linux devices do not need access.
 - **Backups:** a local backup NAS, plus a copy off-site or in another room. No encryption.
@@ -199,7 +202,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Selkies, Apache Guacamole, NICE/Amazon DCV
 - Any new streaming protocol
 - A web dashboard as the hub's control plane (except the remote-access exception above)
-- A custom kernel
+- A kernel written from scratch (Hub OS uses upstream Linux, built per machine)
 - TrueNAS, Proxmox
 - A multi-scheduler layer (Slurm + Kubernetes + Proxmox)
 - Auto-reopening windows after a hub restart
@@ -246,6 +249,8 @@ HubOS/
 │   ├── hubd-slice2.md
 │   ├── image.md                      (Phase B image: how to build it, how to run each test, measured times)
 │   ├── inventory-format.md
+│   ├── proposals/
+│   │   └── phase-b-image.md          (Phase B first-slice image proposal; owner's answers recorded in it)
 │   └── viewers-research.md           (what was read and tested about each viewer; sources and labels)
 ├── examples/
 │   ├── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
@@ -356,12 +361,13 @@ HubOS/
 - The full hardware list (research before December), including a keyboard and mouse that keep their polling rate through the forwarder
 - Number of machines per role
 - Soul Calibur II emulator; Minecraft Java or Bedrock
-- ZFS or Btrfs
 - A custom exit chord for game-style windows
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
 - Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
 - Which command opens a NAS as files (the bespoke file manager is a design discussion)
 - Moonlight pairing is by hand once per node for v1; secrets design later (pairing is scriptable: moonlight pair --pin and Sunshine's PIN API)
+- AI box: NVIDIA with CUDA, or AMD with ROCm (December hardware decision)
+- Whether libsystemd0 and libudev1 (plain libraries from the systemd source package) may be in the images; see docs/proposals/systemd-libraries.md
 
 ---
 
@@ -399,4 +405,6 @@ HubOS/
 - **2026-10-01 (later):** Unverified list: Moonlight clipboard limit and the remote-viewer error dialog added.
 - **2026-10-01 (later):** default check ports moved to a [default_ports] table; HUB-OS.md contradictions fixed (guest viewer, clipboard line, repo layout).
 - **2026-10-01 (later):** HUB-OS.md cleaned up (duplicate clipboard line, Moonlight unverified items); NAS opens with ssh until the bespoke file manager; pairing by hand for v1.
+- **2026-10-02:** Owner decisions: independent kernels per machine, out-of-tree modules only when a machine declares them, kernel pinning and staged NAS updates, OpenZFS on the NAS and backup NAS; Phase B choices recorded in docs/proposals/phase-b-image.md.
 - **2026-10-02:** Phase B slices S0 to S3 built in the repo: tools/image, image/, a QEMU test runner; see docs/image.md.
+
