@@ -718,7 +718,7 @@ func TestImage(t *testing.T) {
 				if hh := r.vm.wait(handoverRe, 150*time.Second, m); hh >= 0 {
 					r.ready(r.vm)
 					_, e := r.vm.sh(`efibootmgr -v | grep hubos-recovery | sed 's/.*File/File/'`, 30*time.Second)
-					trial = strings.TrimSpace(e)
+					trial = regexp.MustCompile(`File\S+`).FindString(e)
 					t.Logf("during the unconfirmed trial boot of slot a the recovery entry is: %s", trial)
 				}
 			}
