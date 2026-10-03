@@ -1,0 +1,674 @@
+//go:build qemu
+
+package image
+
+// The Phase B first-slice tests (docs/image.md, docs/proposals/phase-b-image.md section 8).
+// They build the kernel, the root and the bundles with the scripts in this directory,
+// then boot a UEFI disk under QEMU in software emulation and drive it over the serial
+// console. Run:  go test -tags qemu -count=1 -timeout 120m -v ./tools/image
+// Environment: HUBOS_IMAGE_WORK = a directory to keep the (long) build between runs.
+// Every key is made at run time in a temporary directory; no key is ever stored.
+
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"net"
+	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
+	"regexp"
+	"strings"
+	"sync"
+	"sync/atomic"
+	"testing"
+	"time"
+)
+
+const handoverRe = `HUBOS: handing over to s6-svscan`
+
+type vm struct {
+	t    *testing.T
+	cmd  *exec.Cmd
+	in   io.WriteCloser
+	mu   sync.Mutex
+	buf  strings.Builder
+	log  *os.File
+	done chan struct{}
+}
+
+type rig struct {
+	t       *testing.T
+	work    string
+	disk    string // directory with disk.img and vars.fd
+	base    string // http://10.0.2.2:PORT
+	sec     string
+	pub     string
+	hangs   int
+	retries int
+	hangDir string
+	vm      *vm
+	logSeq  int
+	bootPos int // where the output of the current boot starts in the VM buffer
+}
+
+func (r *rig) script(name string, env []string, args ...string) string {
+	r.t.Helper()
+	cmd := exec.Command(filepath.Join("..", "..", "tools", "image", name), args...)
+	cmd.Env = append(os.Environ(), append([]string{"WORK=" + r.work}, env...)...)
+	var out bytes.Buffer
+	cmd.Stdout, cmd.Stderr = &out, &out
+	start := time.Now()
+	err := cmd.Run()
+	r.t.Logf("%s %s: %s (%.0f s)", name, strings.Join(args, " "), lastLine(out.String()), time.Since(start).Seconds())
+	if err != nil {
+		r.t.Fatalf("%s failed: %v\n%s", name, err, out.String())
+	}
+	return out.String()
+}
+
+func lastLine(s string) string {
+	s = strings.TrimSpace(s)
+	if i := strings.LastIndex(s, "\n"); i >= 0 {
+		return s[i+1:]
+	}
+	return s
+}
+
+func (r *rig) tool(path string) string { return filepath.Join(r.work, "tools", "root", path) }
+
+func (r *rig) startVM() *vm {
+	r.logSeq++
+	logPath := filepath.Join(r.disk, fmt.Sprintf("serial-%02d.log", r.logSeq))
+	lf, err := os.Create(logPath)
+	if err != nil {
+		r.t.Fatal(err)
+	}
+	T := filepath.Join(r.work, "tools", "root")
+	args := []string{
+		"-L", T + "/usr/share/qemu", "-L", T + "/usr/share/seabios",
+		"-machine", "q35,smm=off", "-accel", "tcg", "-smp", "2", "-m", "1024", "-nographic", "-display", "none",
+		"-drive", "if=pflash,format=raw,unit=0,readonly=on,file=" + T + "/usr/share/OVMF/OVMF_CODE_4M.fd",
+		"-drive", "if=pflash,format=raw,unit=1,file=" + filepath.Join(r.disk, "vars.fd"),
+		"-drive", "file=" + filepath.Join(r.disk, "disk.img") + ",if=none,id=d0,format=raw", "-device", "virtio-blk-pci,drive=d0",
+		"-netdev", "user,id=n0", "-device", "virtio-net-pci,netdev=n0,romfile=",
+		"-device", "i6300esb", "-watchdog-action", "reset", "-serial", "stdio", "-monitor", "none",
+	}
+	cmd := exec.Command(T+"/usr/bin/qemu-system-x86_64", args...)
+	cmd.Env = append(os.Environ(),
+		"LD_LIBRARY_PATH="+T+"/usr/lib/x86_64-linux-gnu:"+T+"/lib/x86_64-linux-gnu:"+T+"/usr/lib",
+		"QEMU_MODULE_DIR="+T+"/usr/lib/x86_64-linux-gnu/qemu")
+	in, _ := cmd.StdinPipe()
+	out, _ := cmd.StdoutPipe()
+	cmd.Stderr = cmd.Stdout
+	v := &vm{t: r.t, cmd: cmd, in: in, log: lf, done: make(chan struct{})}
+	if err := cmd.Start(); err != nil {
+		r.t.Fatal(err)
+	}
+	go func() {
+		b := make([]byte, 4096)
+		for {
+			n, err := out.Read(b)
+			if n > 0 {
+				s := strings.ReplaceAll(string(b[:n]), "\r", "")
+				v.mu.Lock()
+				v.buf.WriteString(s)
+				v.mu.Unlock()
+				lf.WriteString(s)
+			}
+			if err != nil {
+				close(v.done)
+				return
+			}
+		}
+	}()
+	r.vm = v
+	return v
+}
+
+func (v *vm) mark() int { v.mu.Lock(); defer v.mu.Unlock(); return v.buf.Len() }
+
+func (v *vm) text(from int) string {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	s := v.buf.String()
+	if from > len(s) {
+		from = len(s)
+	}
+	return s[from:]
+}
+
+// wait looks for the pattern in the output after position from; it returns the position after
+// the match, or -1 on timeout.
+func (v *vm) wait(pat string, d time.Duration, from int) int {
+	re := regexp.MustCompile(pat)
+	end := time.Now().Add(d)
+	for time.Now().Before(end) {
+		s := v.text(from)
+		if m := re.FindStringIndex(s); m != nil {
+			return from + m[1]
+		}
+		select {
+		case <-v.done:
+			s = v.text(from)
+			if m := re.FindStringIndex(s); m != nil {
+				return from + m[1]
+			}
+			return -1
+		default:
+		}
+		time.Sleep(100 * time.Millisecond)
+	}
+	return -1
+}
+
+var tagSeq atomic.Int64
+
+// sh runs a shell command on the guest console and returns its status and output.
+func (v *vm) sh(cmd string, d time.Duration) (int, string) {
+	tag := fmt.Sprintf("__D%d__", tagSeq.Add(1))
+	m := v.mark()
+	fmt.Fprintf(v.in, "%s\necho %s$?\n", cmd, tag)
+	end := v.wait(regexp.QuoteMeta(tag)+`\d+`, d, m)
+	if end < 0 {
+		return -1, "<timeout> " + v.text(m)
+	}
+	seg := v.text(m)[:end-m]
+	mm := regexp.MustCompile(regexp.QuoteMeta(tag) + `(\d+)`).FindStringSubmatchIndex(seg)
+	var rc int
+	fmt.Sscanf(seg[mm[2]:mm[3]], "%d", &rc)
+	var keep []string
+	for _, l := range strings.Split(seg[:mm[0]], "\n") {
+		if !strings.Contains(l, tag) {
+			keep = append(keep, l)
+		}
+	}
+	return rc, strings.TrimSpace(strings.Join(keep, "\n"))
+}
+
+func (v *vm) kill() {
+	if v == nil {
+		return
+	}
+	v.cmd.Process.Kill()
+	v.cmd.Wait()
+	v.log.Close()
+}
+
+// bootVM starts QEMU on the disk and waits for the handover line. Unexplained hang: if the line does not
+// come in time, the serial log is saved, QEMU is killed and the start is retried once.
+func (r *rig) bootVM() *vm {
+	for attempt := 1; attempt <= 2; attempt++ {
+		v := r.startVM()
+		if v.wait(handoverRe, 150*time.Second, 0) >= 0 {
+			r.bootPos = 0
+			r.ready(v)
+			return v
+		}
+		r.noteHang(v, "start")
+		v.kill()
+	}
+	r.t.Fatal("the machine did not reach the handover line in two tries")
+	return nil
+}
+
+func (r *rig) ready(v *vm) {
+	time.Sleep(2500 * time.Millisecond)
+	io.WriteString(v.in, "stty -echo\n")
+	time.Sleep(500 * time.Millisecond)
+}
+
+func (r *rig) noteHang(v *vm, what string) {
+	r.hangs++
+	os.MkdirAll(r.hangDir, 0o755)
+	dst := filepath.Join(r.hangDir, fmt.Sprintf("hang-%d-%s.log", r.hangs, what))
+	os.WriteFile(dst, []byte(v.text(0)), 0o644)
+	r.t.Logf("HANG %d (%s): no known log line in time; serial log saved to %s", r.hangs, what, dst)
+}
+
+// reboot sends a reboot and waits for the next handover; on a hang it restarts QEMU on the same disk.
+func (r *rig) reboot() int {
+	v := r.vm
+	m := v.mark()
+	io.WriteString(v.in, "sync; reboot -f\n")
+	return r.afterReset(m)
+}
+
+// afterReset waits for the next boot of the running VM; position m is where its output starts.
+func (r *rig) afterReset(m int) int {
+	v := r.vm
+	if e := v.wait(handoverRe, 150*time.Second, m); e >= 0 {
+		r.bootPos = e
+		r.ready(v)
+		return m
+	}
+	r.noteHang(v, "reboot")
+	v.kill()
+	r.vm = r.bootVM()
+	return 0
+}
+
+func (r *rig) sh(cmd string) (int, string) {
+	rc, out := r.vm.sh(cmd, 120*time.Second)
+	r.t.Logf("$ %s\n%s", cmd, out)
+	return rc, out
+}
+
+var (
+	slotRe  = regexp.MustCompile(`slot=([ab]) release=(\d+)`)
+	orderRe = regexp.MustCompile(`BootOrder: ([0-9A-F]{4})`)
+)
+
+// status returns the slot and release the machine runs, and whether that slot is first in BootOrder.
+func (r *rig) status() (slot string, rel string, confirmed bool, text string) {
+	_, out := r.sh("hubos-ctl status")
+	m := slotRe.FindStringSubmatch(out)
+	if m == nil {
+		return "", "", false, out
+	}
+	slot, rel = m[1], m[2]
+	e := regexp.MustCompile(`Boot([0-9A-F]{4})\*? hubos-` + slot).FindStringSubmatch(out)
+	o := orderRe.FindStringSubmatch(out)
+	return slot, rel, e != nil && o != nil && e[1] == o[1], out
+}
+
+// waitConfirmed waits until the running slot has been confirmed (BootOrder first) or the boot failed.
+func (r *rig) waitConfirmed() bool {
+	return r.vm.wait(`confirm: (boot of slot [ab].* confirmed|slot [ab] is already the confirmed slot)`, 90*time.Second, r.bootPos) >= 0
+}
+
+func (r *rig) update(name string) (int, string) {
+	rc, out := r.vm.sh("hubos-ctl update "+r.base+"/"+name+" 2>&1", 300*time.Second)
+	r.t.Logf("$ hubos-ctl update %s\n%s", name, out)
+	return rc, out
+}
+
+// ---------------------------------------------------------------------------
+
+func TestImage(t *testing.T) {
+	work := os.Getenv("HUBOS_IMAGE_WORK")
+	if work == "" {
+		var err error
+		if work, err = os.MkdirTemp("", "hubos-image-"); err != nil {
+			t.Fatal(err)
+		}
+		defer os.RemoveAll(work)
+	}
+	if err := os.MkdirAll(work, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	r := &rig{t: t, work: work, disk: filepath.Join(work, "vm"), hangDir: filepath.Join(work, "hangs")}
+	var results []string
+	record := func(name string, ok bool, d time.Duration, note string) {
+		s := "PASS"
+		if !ok {
+			s = "FAIL"
+		}
+		results = append(results, fmt.Sprintf("%-4s %7.1fs  %s  %s", s, d.Seconds(), name, note))
+	}
+	defer func() {
+		t.Logf("\nRESULTS (QEMU hangs seen and retried: %d)\n%s", r.hangs, strings.Join(results, "\n"))
+		if r.vm != nil {
+			r.vm.kill()
+		}
+	}()
+
+	// ---- build ----
+	r.script("fetch-tools.sh", nil)
+	r.script("build-kernel.sh", nil)
+	r.script("build-base.sh", nil)
+	kdir := filepath.Join(work, "keys")
+	os.RemoveAll(kdir)
+	os.MkdirAll(kdir, 0o700)
+	genKey := func(name string) (pub, sec string) {
+		pub, sec = filepath.Join(kdir, name+".pub"), filepath.Join(kdir, name+".sec")
+		out, err := exec.Command(r.tool("bin/signify-openbsd"), "-G", "-n", "-p", pub, "-s", sec, "-c", "throwaway key "+name).CombinedOutput()
+		if err != nil {
+			t.Fatalf("signify -G: %v\n%s", err, out)
+		}
+		return
+	}
+	// The signify binary needs its libraries from the unpacked tools.
+	os.Setenv("LD_LIBRARY_PATH", filepath.Join(work, "tools/root/usr/lib/x86_64-linux-gnu")+":"+filepath.Join(work, "tools/root/lib/x86_64-linux-gnu"))
+	r.pub, r.sec = genKey("update")
+	_, sec2 := genKey("other")
+	t.Logf("throwaway signing keys made in %s (deleted with the temporary directory; never committed)", kdir)
+
+	bdir := filepath.Join(work, "bundles")
+	os.RemoveAll(bdir)
+	os.MkdirAll(bdir, 0o755)
+	bundle := func(ver, flavor, name string, env ...string) {
+		r.script("build-bundle.sh", env, ver, flavor, filepath.Join(bdir, name), r.pub, r.sec)
+	}
+	for _, b := range []struct{ v, f string }{{"1", "good"}, {"2", "good"}, {"3", "noinit"}, {"4", "garbage"}, {"5", "unhealthy"}, {"6", "hang"}, {"7", "good"}} {
+		bundle(b.v, b.f, "v"+b.v+"-"+b.f)
+	}
+	bundle("2", "good", "v2-nokernelversion", "NO_KERNEL_VERSION=1")
+	// refused variants: made from v2-good with hard links
+	variant := func(name string, change func(dir string)) {
+		d := filepath.Join(bdir, name)
+		os.MkdirAll(d, 0o755)
+		for _, f := range []string{"manifest", "manifest.sig", "kernel.efi", "rootfs.sqsh"} {
+			if err := os.Link(filepath.Join(bdir, "v2-good", f), filepath.Join(d, f)); err != nil {
+				t.Fatal(err)
+			}
+		}
+		change(d)
+	}
+	rewrite := func(d, f string, fn func([]byte) []byte) {
+		p := filepath.Join(d, f)
+		b, _ := os.ReadFile(p)
+		os.Remove(p)
+		os.WriteFile(p, fn(b), 0o644)
+	}
+	variant("v2-unsigned", func(d string) { os.Remove(filepath.Join(d, "manifest.sig")) })
+	variant("v2-badmanifest", func(d string) {
+		rewrite(d, "manifest", func(b []byte) []byte { return bytes.Replace(b, []byte("version 2"), []byte("version 9"), 1) })
+	})
+	variant("v2-wrongkey", func(d string) {
+		os.Remove(filepath.Join(d, "manifest.sig"))
+		out, err := exec.Command(r.tool("bin/signify-openbsd"), "-S", "-s", sec2, "-m", filepath.Join(d, "manifest"), "-x", filepath.Join(d, "manifest.sig")).CombinedOutput()
+		if err != nil {
+			t.Fatalf("%v %s", err, out)
+		}
+	})
+	variant("v2-badroot", func(d string) {
+		rewrite(d, "rootfs.sqsh", func(b []byte) []byte { b[5000000] ^= 0xff; return b })
+	})
+	// the unsigned-by-owner "no kernel version" bundle is a correctly signed one (built above)
+
+	ln, err := net.Listen("tcp", "0.0.0.0:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	go http.Serve(ln, http.FileServer(http.Dir(bdir)))
+	r.base = fmt.Sprintf("http://10.0.2.2:%d", ln.Addr().(*net.TCPAddr).Port)
+	defer ln.Close()
+
+	// ---- the tests that need only files ----
+	t.Run("systemd_programs_absent_from_the_root", func(t *testing.T) {
+		start := time.Now()
+		r.t = t
+		root := filepath.Join(work, "root-extracted")
+		os.RemoveAll(root)
+		if out, err := exec.Command(r.tool("usr/bin/unsquashfs"), "-no-xattrs", "-d", root, filepath.Join(bdir, "v2-good", "rootfs.sqsh")).CombinedOutput(); err != nil {
+			t.Fatalf("unsquashfs: %v\n%s", err, out)
+		}
+		defer os.RemoveAll(root)
+		ok := checkNoSystemd(t, root)
+		record("root has no systemd program or unit directory", ok, time.Since(start), "")
+	})
+
+	// ---- the disk with release 1, and the first boot ----
+	r.script("build-disk.sh", nil, filepath.Join(bdir, "v1-good", "rootfs.sqsh"), filepath.Join(work, "out", "kernel.efi"), r.disk)
+
+	t.Run("T01_read_only_root", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		bt := time.Now()
+		r.vm = r.bootVM()
+		t.Logf("first boot to the handover line (including QEMU start): %.1f s", time.Since(bt).Seconds())
+		_, out := r.sh(`touch /usr/x 2>&1; echo rc=$?; touch /etc/x 2>&1; echo rc=$?; echo ok > /var/y && echo var-writable; mount | grep " on / "`)
+		ok := strings.Contains(out, "Read-only file system") && strings.Contains(out, "var-writable") && strings.Contains(out, "squashfs")
+		record("1 read-only root", ok, time.Since(start), "")
+		if !ok {
+			t.Fail()
+		}
+	})
+
+	t.Run("T02_first_boot_hubd_from_config_partition", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		r.vm.wait(`ensure|confirm:`, 20*time.Second, 0)
+		time.Sleep(time.Second)
+		rc1, out := r.sh(`hubos-ctl status | head -3; ls -la /config/hubos; hubd check --inventory /config/hubos/inventory.toml 2>&1 | tail -3`)
+		rc2, list := r.sh(`hubd list --socket /run/hubos/hubd.sock | head -4`)
+		_, pid1 := r.sh(`cat /proc/1/comm; ps | grep -c "[s]ystemd"; echo; ls /run/service`)
+		ok := rc1 == 0 && rc2 == 0 && strings.Contains(list, "Hub") && strings.Contains(out, "node.conf") && strings.HasPrefix(pid1, "s6-svscan")
+		record("2 first boot; hubd runs from the config partition; PID 1 is s6-svscan, no systemd process", ok, time.Since(start), "")
+		if !ok {
+			t.Fail()
+		}
+		_, libs := r.sh(`find / -xdev \( -name 'libsystemd*' -o -name 'libudev*' \) 2>/dev/null | sort`)
+		t.Logf("systemd libraries in the running root (the two that remain, by decision, for now):\n%s", libs)
+		r.sh(`echo survive-me > /config/hubos/marker; sync`)
+	})
+
+	t.Run("T03_init_restarts_a_killed_service", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		_, out := r.sh(`OLD=$(s6-svstat /run/service/hubd | sed 's/.*pid \([0-9]*\).*/\1/'); echo old=$OLD; kill -9 $OLD; sleep 2; s6-svstat /run/service/hubd; hubd list --socket /run/hubos/hubd.sock >/dev/null && echo hubd-answers-again`)
+		m := regexp.MustCompile(`old=(\d+)`).FindStringSubmatch(out)
+		ok := m != nil && strings.Contains(out, "hubd-answers-again") && !strings.Contains(out, "up (pid "+m[1]+")")
+		record("3 init restarts a killed service", ok, time.Since(start), "")
+		if !ok {
+			t.Fail()
+		}
+	})
+
+	t.Run("T04_bad_bundles_are_refused", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		all := true
+		for _, c := range []struct{ name, want string }{
+			{"v2-unsigned", "no signature"}, {"v2-badmanifest", "bad signature"}, {"v2-wrongkey", "bad signature"},
+			{"v2-badroot", "tampered or damaged"}, {"v1-good", "not newer than"},
+			{"v2-nokernelversion", "no kernel version line"},
+		} {
+			rc, out := r.update(c.name)
+			good := rc == 2 && strings.Contains(out, "REFUSED") && strings.Contains(out, c.want)
+			if !good {
+				t.Errorf("%s: expected REFUSED/%q, got:\n%s", c.name, c.want, out)
+				all = false
+			}
+		}
+		_, st := r.sh("hubos-ctl status")
+		if strings.Contains(st, "BootNext") {
+			t.Error("BootNext was set by a refused bundle")
+			all = false
+		}
+		record("4 unsigned, tampered, wrong-key, replayed/not-newer and no-kernel-version bundles refused", all, time.Since(start), "6 bundles")
+	})
+
+	t.Run("T05_signed_update_accepted", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		ut := time.Now()
+		rc, out := r.update("v2-good")
+		updSec := time.Since(ut).Seconds()
+		pinned := strings.Contains(out, "kernel version 6.12")
+		m := r.vm.mark()
+		bt := time.Now()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		r.afterReset(m)
+		rebootSec := time.Since(bt).Seconds()
+		r.waitConfirmed()
+		slot, rel, confirmed, _ := r.status()
+		_, marker := r.sh(`cat /config/hubos/marker; cat /config/hubos/state/min_version`)
+		_, old := r.update("v1-good")
+		ok := rc == 0 && pinned && slot == "b" && rel == "2" && confirmed && strings.Contains(marker, "survive-me") && strings.Contains(marker, "2") && strings.Contains(old, "REFUSED")
+		record("5 signed update accepted; config survives; floor raised; old bundle refused; kernel version in the manifest shown", ok, time.Since(start),
+			fmt.Sprintf("update %.1f s, reboot to handover %.1f s", updSec, rebootSec))
+		if !ok {
+			t.Fail()
+		}
+	})
+
+	badBoot := func(name, bundleName, expect string) {
+		t.Run(name, func(t *testing.T) {
+			r.t = t
+			start := time.Now()
+			rc, _ := r.update(bundleName)
+			m := r.vm.mark()
+			io.WriteString(r.vm.in, "sync; reboot -f\n")
+			saw := r.vm.wait(expect, 200*time.Second, m)
+			sawAfter := time.Since(start).Seconds()
+			// back in the confirmed slot: a new handover line after the failure
+			h := r.vm.wait(handoverRe, 300*time.Second, max(saw, m))
+			if h >= 0 {
+				r.bootPos = h
+				r.ready(r.vm)
+			} else {
+				r.noteHang(r.vm, "rollback")
+				r.vm.kill()
+				r.vm = r.bootVM()
+			}
+			r.waitConfirmed()
+			slot, rel, confirmed, _ := r.status()
+			ok := rc == 0 && saw >= 0 && slot == "b" && rel == "2" && confirmed
+			record(name, ok, time.Since(start), fmt.Sprintf("failure line seen after %.1f s; rollback complete after %.1f s", sawAfter, time.Since(start).Seconds()))
+			if !ok {
+				t.Fail()
+			}
+		})
+	}
+	badBoot("6a bad boot rolls back: signed bundle with no /sbin/init (stage 0 refuses it)", "v3-noinit", `STAGE0: slot a has no /sbin/init; rebooting`)
+	badBoot("6b bad boot rolls back: signed bundle whose root is garbage (stage 0 cannot mount it)", "v4-garbage", `STAGE0: cannot mount the root of slot a; rebooting`)
+	badBoot("6c bad boot rolls back: boots but never gets healthy (confirm times out)", "v5-unhealthy", `this boot FAILED`)
+	badBoot("6d bad boot rolls back: init hangs (the watchdog resets the machine)", "v6-hang", `STAGE0: switching to slot a`)
+
+	t.Run("T07_recovery_mode", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		r.sh(`efibootmgr -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery.*/\1/p' | head -1) | head -2`)
+		m := r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		e := r.vm.wait(`RECOVERY MODE`, 200*time.Second, m)
+		time.Sleep(2 * time.Second)
+		io.WriteString(r.vm.in, "stty -echo\n")
+		time.Sleep(500 * time.Millisecond)
+		_, out := r.sh(`cat /proc/cmdline; ps | head -6; touch /usr/x 2>&1; ls /run/service 2>&1 | head -2`)
+		ok := e >= 0 && strings.Contains(out, "hubos.recovery=1") && strings.Contains(out, "Read-only")
+		record("7 recovery mode is a boot option (bare terminal, read-only root)", ok, time.Since(start), "")
+		if !ok {
+			t.Fail()
+		}
+		r.reboot()
+		r.waitConfirmed()
+	})
+
+	// ---- the interrupted update, at known log lines ----
+	t.Run("T08_interrupted_update", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		points := []struct{ name, line string }{
+			{"during the download", `update: fetching rootfs.sqsh`},
+			{"during the write to the other slot", `update: wrote 8 of \d+ MiB to slot a`},
+			{"after the write, before the kernel is copied", `update: root written and verified`},
+			{"after the kernel copy, before BootNext", `update: kernel installed`},
+		}
+		all := true
+		for _, p := range points {
+			ptStart := time.Now()
+			m := r.vm.mark()
+			fmt.Fprintf(r.vm.in, "hubos-ctl update %s/v7-good\n", r.base) // no redirect: the lines must appear as they happen
+			e := r.vm.wait(p.line, 200*time.Second, m)
+			if e < 0 {
+				t.Errorf("%s: the line %q never appeared", p.name, p.line)
+				all = false
+				continue
+			}
+			t.Logf("interrupt %s: killing QEMU at the line %q (%.1f s into the update)", p.name, p.line, time.Since(ptStart).Seconds())
+			r.vm.kill()
+			r.vm = r.bootVM()
+			r.waitConfirmed()
+			slot, rel, confirmed, st := r.status()
+			good := slot == "b" && rel == "2" && confirmed && !strings.Contains(st, "BootNext")
+			t.Logf("after the interruption %s: slot=%s release=%s confirmed=%v", p.name, slot, rel, confirmed)
+			if !good {
+				t.Errorf("%s: the confirmed slot did not boot cleanly: %s", p.name, st)
+				all = false
+			}
+		}
+		// the update still works afterwards, and the machine ends up on release 7 in slot a
+		rc, out := r.update("v7-good")
+		m := r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		r.afterReset(m)
+		r.waitConfirmed()
+		slot, rel, confirmed, _ := r.status()
+		if rc != 0 || slot != "a" || rel != "7" || !confirmed {
+			t.Errorf("a clean update after the interruptions failed: rc=%d slot=%s rel=%s confirmed=%v\n%s", rc, slot, rel, confirmed, out)
+			all = false
+		}
+		record("8 an update interrupted at 4 known log lines never harms the confirmed slot; a clean update still works", all, time.Since(start), "kill -9 of QEMU at each line")
+		if !all {
+			t.Fail()
+		}
+	})
+
+	// ---- reproducibility (files only) ----
+	t.Run("T09_reproducible_builds", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		sum := func(p string) string {
+			out, _ := exec.Command("sha256sum", p).Output()
+			return strings.Fields(string(out))[0]
+		}
+		// the root tar: two builds into two files
+		first := sum(filepath.Join(work, "out", "base.tar"))
+		r.script("build-base.sh", nil, filepath.Join(work, "out", "base2.tar"))
+		second := sum(filepath.Join(work, "out", "base2.tar"))
+		t.Logf("root tar: build 1 %s, build 2 %s -> identical: %v", first, second, first == second)
+		if first != second {
+			t.Errorf("the root tar is not reproducible")
+		}
+		// the squashfs: the same inputs twice
+		a, b := filepath.Join(work, "out", "root-a.sqsh"), filepath.Join(work, "out", "root-b.sqsh")
+		r.script("build-root-image.sh", nil, "2", "good", a, r.pub)
+		r.script("build-root-image.sh", nil, "2", "good", b, r.pub)
+		sa, sb := sum(a), sum(b)
+		t.Logf("squashfs root: %s / %s -> identical: %v", sa, sb, sa == sb)
+		if sa != sb {
+			out, _ := exec.Command("cmp", a, b).CombinedOutput()
+			t.Logf("squashfs differs: %s", strings.TrimSpace(string(out)))
+		}
+		// the kernel: a second full build with the same identity
+		k1 := sum(filepath.Join(work, "out", "kernel.efi"))
+		os.Rename(filepath.Join(work, "out", "kernel.efi"), filepath.Join(work, "out", "kernel-first.efi"))
+		r.script("build-kernel.sh", []string{"FORCE=1"})
+		k2 := sum(filepath.Join(work, "out", "kernel.efi"))
+		t.Logf("kernel: %s / %s -> identical: %v", k1, k2, k1 == k2)
+		if k1 != k2 {
+			out, _ := exec.Command("cmp", filepath.Join(work, "out", "kernel-first.efi"), filepath.Join(work, "out", "kernel.efi")).CombinedOutput()
+			t.Logf("kernel differs: %s", strings.TrimSpace(string(out)))
+		}
+		record("9 two builds of the root give identical hashes (root tar asserted; squashfs and kernel reported)", first == second, time.Since(start),
+			fmt.Sprintf("tar %v, squashfs %v, kernel %v", first == second, sa == sb, k1 == k2))
+	})
+}
+
+// checkNoSystemd looks in the unpacked root for systemd programs and unit directories and lists the
+// systemd libraries that remain.
+func checkNoSystemd(t *testing.T, root string) bool {
+	ok := true
+	var libs, bad, named []string
+	filepath.Walk(root, func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil
+		}
+		rel := strings.TrimPrefix(p, root)
+		n := info.Name()
+		switch {
+		case (strings.HasPrefix(n, "libsystemd") || strings.HasPrefix(n, "libudev")) && strings.Contains(n, ".so"):
+			libs = append(libs, rel)
+		case !info.IsDir() && (n == "systemd" || strings.HasPrefix(n, "systemd-") || n == "systemctl" || n == "journalctl" || n == "udevadm" || n == "udevd"):
+			bad = append(bad, "program "+rel)
+		case info.IsDir() && (rel == "/etc/systemd" || rel == "/usr/lib/systemd" || rel == "/lib/systemd" || rel == "/etc/udev" || rel == "/usr/lib/udev" || rel == "/lib/udev"):
+			bad = append(bad, "directory "+rel)
+		case strings.HasSuffix(n, ".service") || strings.HasSuffix(n, ".socket") || strings.HasSuffix(n, ".target") || strings.HasSuffix(n, ".timer"):
+			bad = append(bad, "unit "+rel)
+		case !info.IsDir() && strings.Contains(n, "systemd") && !strings.Contains(rel, "/usr/share/doc") && !strings.Contains(rel, "/var/lib/dpkg/info"):
+			named = append(named, rel)
+		}
+		return nil
+	})
+	for _, b := range bad {
+		t.Errorf("systemd found in the root: %s", b)
+		ok = false
+	}
+	t.Logf("systemd libraries that remain in the root (%d files): %s", len(libs), strings.Join(libs, " "))
+	t.Logf("other files with systemd in their name (not systemd programs; allowed, listed for the record): %s", strings.Join(named, " "))
+	return ok
+}

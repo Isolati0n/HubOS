@@ -1,0 +1,2 @@
+#!/bin/sh
+exec s6-log n5 s200000 /var/log/hubd

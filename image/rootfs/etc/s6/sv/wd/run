@@ -1,0 +1,3 @@
+#!/bin/sh
+# steady-state watchdog feeder; started by the confirm step once the boot is healthy
+exec watchdog -F -t 5 -T 60 /dev/watchdog
