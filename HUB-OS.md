@@ -81,6 +81,10 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - The image build pins systemd, systemd-sysv, libpam-systemd, dbus-user-session, udev, systemd-timesyncd and systemd-resolved to never install, and a build test fails if any of them, or any systemd unit directory, is in an image.
 - Finished images do not contain apt, PAM modules, procps, login and passwd (dpkg stays for now; it is an Essential package, so only its files could be deleted later). They are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
+- Recovery is a separate kernel (kernel-recovery.efi) that needs neither slot's root; its shell can install a signed bundle into a slot the owner names (manually; automatic repair for machines without a keyboard is a proposal only).
+- A boot-loop breaker counts failed boots in an EFI variable: stage 0 increments it at every boot, the confirm step clears it, and after N failures (default 3, per-machine setting) stage 0 starts the recovery shell instead of booting.
+- The recovery kernel is carried inside every slot's root, listed by hash in the manifest, and installed at the confirm step after a healthy boot, never during the update.
+- The confirm timeout and the watchdog timeout are per-machine settings (real defaults 120 s and 180 s; the test image uses 30 s and 60 s); a check refuses a configuration where the watchdog does not exceed the confirm timeout plus a margin.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
 - A D-Bus session bus (dbus-daemon alone, no systemd) may be declared by any machine's configuration; the hub needs one because Waybar will not start without it.
 - Kernels are independent per machine. Each machine's configuration names its own kernel (version, build options, extra modules); nothing is inherited from a role. Roles are text labels only: the inventory gives behaviour to hub, guest and vm-host and to nothing else. One default kernel is set in the build configuration; a machine that overrides it records the reason in its config.
@@ -122,6 +126,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Each machine has a **fixed home position** on the canvas, assigned in the inventory.
 - Windows stay on the canvas. driftwm never magnifies: zoom stops at 100%, so 'zoom in' only means back to native size. Larger text comes from the output's scale setting and from window size, and is untested. 'Maximize' means driftwm's fit-to-viewport.
 - Navigation is by mouse.
+- The hub desktop is meant to run as a normal user in the seat group, not as root (untested).
 - hubd keeps windows it places clear of the bar, and expects the camera to be offset by half the bar height.
 - hubd controls driftwm through its local socket (list windows, place a window, move the view, focus, resize, fit). The socket is only for the same user. See docs/driftwm-findings.md.
 - driftwm is pinned to one exact commit (352333a8fa1b22171492d4b71a54102045c9a19d, version 0.19.0). It is GPL-3.0-or-later; anything changed in it is published under that licence. It is a single-maintainer, pre-1.0, AI-built project, so expect to carry patches. Game-style windows use the per-window pass_keys = true rule; no patch for the shortcut-inhibit protocol for now.
@@ -321,6 +326,9 @@ HubOS/
 - tmux new-session -A -s hubos over ssh (not run against a real server)
 - libudev-zero with libinput, driftwm, OpenZFS and QEMU/libvirt (symbols match; nothing was run with them)
 - Real logins through sshd without PAM modules (only sshd -t was run)
+- EFI variable failure counter and NVRAM wear on real firmware
+- Recovery installing a bundle from its own shell
+- libinput's device database without systemd (eudev) and the hub desktop as a normal user
 - Pinned emulator AppImages run on the image's glibc with extract-and-run (nothing was run)
 - Steam and Proton on the image: 32-bit libraries, user namespaces, no systemd
 
@@ -342,7 +350,6 @@ HubOS/
 - MesenCE's Linux release format (AppImage or other): the owner checks
 - Whether the Battle.net desktop app is needed for the Steam edition of Diablo II: test in December
 - Whether Steam runs without systemd on the image (32-bit libraries, user namespaces): test in December
-- How emulators and Steam get onto the immutable gaming-box image (build from source, AppImage, Flatpak; see docs/games-research.md)
 
 ---
 
@@ -388,3 +395,4 @@ HubOS/
 - **2026-10-03:** Phase B images: floor only rises, recovery detected by BootCurrent, one-kernel manifest refused, hang-retry exercised.
 - **2026-10-03:** Games research reviewed: emulators ship as pinned binaries inside the gaming-box image, user namespaces in the gaming-box kernel, D-Bus session bus declarable per machine, N64 default RMG, layout simplified.
 - **2026-10-03:** Phase B images: separate recovery kernel, confirm refuses below the floor, rollback command.
+- **2026-10-03:** Recovery and boot-loop decisions recorded: separate recovery kernel updated at confirm, failure counter in an EFI variable (N=3), per-machine timeouts, normal-user hub desktop.
