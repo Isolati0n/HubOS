@@ -8,23 +8,26 @@ STATE=/config/hubos/state
 SLOT=$(cat /run/hubos-slot 2>/dev/null)
 OTHER=a; [ "$SLOT" = a ] && OTHER=b
 RUNVER=$(sed -n 's/^version=//p' /etc/hubos-release)
-CMD_COMMON="console=ttyS0 ro rootfstype=squashfs panic=5 loglevel=4"
 die() { echo "hubos-ctl: $*" >&2; exit 2; }
 
 entry_num() { efibootmgr 2>/dev/null | sed -n "s/^Boot\([0-9A-F]\{4\}\)\*\{0,1\}[[:space:]]$1[[:space:]].*/\1/p" | head -1; }
 
 ensure_entries() {
   [ -d /sys/firmware/efi/efivars ] || die "no EFI variables (not booted by UEFI?)"
+  # The a and b entries carry NO load options: each slot's kernel (kernel-a.efi, kernel-b.efi) has its slot
+  # and root built into its own command line, so the slot does not depend on what the firmware keeps.
+  # Only the recovery entry has load options (hubos.recovery=1); a firmware that drops them boots a normal
+  # slot instead of recovery (docs/image.md).
   # Creating an entry puts it first in BootOrder, so remember the order and
   # put it back afterwards (new entries go to the end).
   oldorder=$(efibootmgr 2>/dev/null | sed -n 's/^BootOrder: //p')
   created=
   for s in a b; do
     [ -n "$(entry_num hubos-$s)" ] && continue
-    efibootmgr -q -c -d $DISK -p 1 -L hubos-$s -l "\\EFI\\hubos\\kernel-$s.efi" -u "$CMD_COMMON root=PARTLABEL=hubos-root-$s hubos.slot=$s" || die "cannot create entry $s"
+    efibootmgr -q -c -d $DISK -p 1 -L hubos-$s -l "\\EFI\\hubos\\kernel-$s.efi" || die "cannot create entry $s"
     created=1
   done
-  [ -n "$(entry_num hubos-recovery)" ] || { efibootmgr -q -c -d $DISK -p 1 -L hubos-recovery -l "\\EFI\\hubos\\kernel-$SLOT.efi" -u "$CMD_COMMON root=PARTLABEL=hubos-root-$SLOT hubos.recovery=1 hubos.slot=$SLOT" || die "cannot create recovery entry"; created=1; }
+  [ -n "$(entry_num hubos-recovery)" ] || { efibootmgr -q -c -d $DISK -p 1 -L hubos-recovery -l "\\EFI\\hubos\\kernel-$SLOT.efi" -u "hubos.recovery=1" || die "cannot create recovery entry"; created=1; }
   [ -n "$created" ] || return 0
   a=$(entry_num hubos-a); b=$(entry_num hubos-b); r=$(entry_num hubos-recovery)
   if [ -n "$oldorder" ] && echo "$oldorder" | grep -q "$a" && echo "$oldorder" | grep -q "$b"; then
@@ -64,13 +67,28 @@ update() {
   KV=$(sed -n 's/^kernel-version //p' $W/manifest)
   [ -n "$KV" ] || die "REFUSED: manifest has no kernel version line"
   echo "update: kernel version $KV, modules: $(sed -n 's/^modules *//p' $W/manifest | tr '\n' ' ')"
-  for f in kernel.efi rootfs.sqsh; do
+  # The bundle carries one kernel per slot; the manifest must list both, and only the other slot's is fetched.
+  for f in kernel-a.efi kernel-b.efi; do
+    [ -n "$(sed -n "s/^$f sha256 \([0-9a-f]*\) size .*/\1/p" $W/manifest)" ] || die "REFUSED: manifest does not list $f"
+  done
+  for f in kernel-$OTHER.efi rootfs.sqsh; do
     want=$(sed -n "s/^$f sha256 \([0-9a-f]*\) size .*/\1/p" $W/manifest); [ -n "$want" ] || die "REFUSED: manifest does not list $f"
     echo "update: fetching $f"; fetch "$BASE" $f $W/$f || die "cannot fetch $f"
     got=$(sha256sum $W/$f | cut -d' ' -f1)
     [ "$got" = "$want" ] || die "REFUSED: $f does not match the signed hash (tampered or damaged)"
   done
   echo "update: hashes OK, version $NEWVER, writing to slot $OTHER"
+  # Free space on the boot partition is checked BEFORE anything is written: the other slot's root is not
+  # touched and the existing kernel is not touched if the new kernel would not fit. (A leftover .new file of
+  # an interrupted earlier update is only a temporary copy and is removed first.)
+  mount -t vfat "$(findfs PARTLABEL=hubos-esp)" /boot/efi || die "cannot mount the boot partition"
+  trap 'umount /boot/efi 2>/dev/null' EXIT
+  rm -f /boot/efi/EFI/hubos/kernel-$OTHER.efi.new
+  KSZ=$(stat -c %s $W/kernel-$OTHER.efi)
+  FREE=$(df -B1 --output=avail /boot/efi | tail -n 1 | tr -d ' ')
+  NEED=$((KSZ + 1048576))
+  echo "update: boot partition free space $FREE bytes, new kernel needs $NEED (kernel $KSZ plus 1 MiB)"
+  [ "$FREE" -ge "$NEED" ] 2>/dev/null || die "FAILED: not enough free space on the boot partition (have $FREE bytes, need $NEED); nothing was written, the existing kernel and slot $OTHER are untouched"
   DEV=$(findfs PARTLABEL=hubos-root-$OTHER) || die "no partition hubos-root-$OTHER"
   SZ=$(stat -c %s $W/rootfs.sqsh)
   # The write goes in 4 MiB pieces, with a line after each, so that a test can interrupt it at a known place.
@@ -81,9 +99,11 @@ update() {
   done
   [ "$(head -c $SZ $DEV | sha256sum | cut -d' ' -f1)" = "$(sed -n 's/^rootfs.sqsh sha256 \([0-9a-f]*\) .*/\1/p' $W/manifest)" ] || die "read-back check failed"
   echo "update: root written and verified"
-  mount -t vfat "$(findfs PARTLABEL=hubos-esp)" /boot/efi || die "cannot mount the boot partition"
-  cp $W/kernel.efi /boot/efi/EFI/hubos/kernel-$OTHER.efi.new && sync && mv /boot/efi/EFI/hubos/kernel-$OTHER.efi.new /boot/efi/EFI/hubos/kernel-$OTHER.efi && sync
-  umount /boot/efi
+  if ! cp $W/kernel-$OTHER.efi /boot/efi/EFI/hubos/kernel-$OTHER.efi.new || ! sync; then
+    rm -f /boot/efi/EFI/hubos/kernel-$OTHER.efi.new; die "FAILED: cannot copy the kernel; the existing kernel is untouched"
+  fi
+  mv /boot/efi/EFI/hubos/kernel-$OTHER.efi.new /boot/efi/EFI/hubos/kernel-$OTHER.efi && sync
+  umount /boot/efi; trap - EXIT
   echo "update: kernel installed"
   ensure_entries
   efibootmgr -q -n "$(entry_num hubos-$OTHER)" || die "cannot set BootNext"

@@ -1,0 +1,8 @@
+# Hub OS image build: these packages are never installed (HUB-OS.md, "The Hub OS system").
+# The cause of the trap (docs/proposals/systemd-libraries.md section 1.4): packages such as wireplumber depend on
+# "default-dbus-session-bus | dbus-session-bus", whose first choice, dbus-user-session, pulls in libpam-systemd and
+# systemd. With this pin apt takes dbus-x11 instead (a simulation, TESTED in that document).
+# Copied to /etc/apt/preferences.d/hubos-no-systemd by build-base.sh before the first package is installed.
+Package: systemd systemd-sysv libpam-systemd dbus-user-session udev systemd-timesyncd systemd-resolved
+Pin: release *
+Pin-Priority: -1

@@ -413,3 +413,5 @@ HubOS/
 - **2026-10-02:** Owner decisions: independent kernels per machine, out-of-tree modules only when a machine declares them, kernel pinning and staged NAS updates, OpenZFS on the NAS and backup NAS; Phase B choices recorded in docs/proposals/phase-b-image.md.
 - **2026-10-02:** Phase B slices S0 to S3 built in the repo: tools/image, image/, a QEMU test runner; see docs/image.md.
 - **2026-10-03:** Owner decisions on the systemd libraries and image rules: programs never, libraries tolerated for now, apt pin and build test, apt/PAM/procps deleted after the build.
+- **2026-10-03:** Phase B images: per-slot kernels (slot choice independent of firmware load options), free-space check, systemd pin and strip step.
+

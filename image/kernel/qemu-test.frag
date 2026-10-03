@@ -1,6 +1,7 @@
 # Hub OS qemu-test machine: kernel configuration fragment, appended to `make tinyconfig`.
 # Smallest kernel that boots under QEMU (UEFI, virtio disk + net). No modules.
-# @STAGE0_LIST@ is replaced by tools/image/build-kernel.sh.
+# @STAGE0_LIST@ and @SLOT@ are replaced by tools/image/build-kernel.sh. The kernel is built once PER SLOT: the
+# slot name is part of the built-in command line, so the slot does not depend on the firmware's load options.
 CONFIG_64BIT=y
 CONFIG_SMP=y
 CONFIG_PRINTK=y
@@ -67,4 +68,4 @@ CONFIG_INITRAMFS_SOURCE="@STAGE0_LIST@"
 CONFIG_WATCHDOG_NOWAYOUT=y
 CONFIG_KERNEL_GZIP=y
 CONFIG_CMDLINE_BOOL=y
-CONFIG_CMDLINE="console=ttyS0 ro rootfstype=squashfs root=PARTLABEL=hubos-root-a hubos.slot=a panic=5 loglevel=4 i6300esb.heartbeat=60"
+CONFIG_CMDLINE="console=ttyS0 ro rootfstype=squashfs root=PARTLABEL=hubos-root-@SLOT@ hubos.slot=@SLOT@ panic=5 loglevel=4 i6300esb.heartbeat=60"
