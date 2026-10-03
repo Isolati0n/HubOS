@@ -40,21 +40,23 @@ type vm struct {
 }
 
 type rig struct {
-	t         *testing.T
-	work      string
-	disk      string // directory with disk.img and vars.fd
-	base      string // http://10.0.2.2:PORT
-	sec       string
-	pub       string
-	hangs     int
-	hangLog   []string // every hang: number, step, saved log
-	hangDir   string
-	forceHang int    // test hook: treat the next N boots as hangs (HUBOS_TEST_FORCE_HANG=once|twice)
-	dead      bool   // the run was stopped by a repeated hang; later VM tests skip
-	recSig    string // what the first recovery boot looked like (kernel command line and release), to compare later ones
-	vm        *vm
-	logSeq    int
-	bootPos   int // where the output of the current boot starts in the VM buffer
+	t          *testing.T
+	work       string
+	disk       string // directory with disk.img and vars.fd
+	base       string // http://10.0.2.2:PORT
+	sec        string
+	pub        string
+	hangs      int
+	hangLog    []string // every hang: number, step, saved log
+	hangDir    string
+	forceHang  int    // test hook: treat the next N boots as hangs (HUBOS_TEST_FORCE_HANG=once|twice)
+	dead       bool   // the run was stopped by a repeated hang; later VM tests skip
+	hungReboot bool   // a reboot hung and was retried: BootNext was used up, so the trial slot did NOT boot
+	repeating  bool   // a step is being repeated after such a hang; a second hang now fails the run
+	recSig     string // what the first recovery boot looked like (kernel command line and release), to compare later ones
+	vm         *vm
+	logSeq     int
+	bootPos    int // where the output of the current boot starts in the VM buffer
 }
 
 func (r *rig) script(name string, env []string, args ...string) string {
@@ -254,6 +256,11 @@ func (r *rig) noteHang(v *vm, what string) {
 	r.hangLog = append(r.hangLog, fmt.Sprintf("hang %d in step %q (serial log %s)", r.hangs, what, dst))
 	os.WriteFile(dst, []byte(v.text(0)), 0o644)
 	r.t.Logf("HANG %d (%s): no known log line in time; serial log saved to %s", r.hangs, what, dst)
+	lines := strings.Split(strings.TrimRight(v.text(0), "\n"), "\n")
+	if len(lines) > 14 {
+		lines = lines[len(lines)-14:]
+	}
+	r.t.Logf("last lines of the hung boot:\n%s", strings.Join(lines, "\n"))
 }
 
 // reboot sends a reboot and waits for the next handover; on a hang it restarts QEMU on the same disk.
@@ -274,8 +281,30 @@ func (r *rig) afterReset(m int) int {
 	}
 	r.noteHang(v, "reboot")
 	v.kill()
+	if r.repeating {
+		r.dead = true
+		r.t.Fatalf("the reboot hung again while a step was being repeated after a hang; the run fails")
+	}
 	r.vm = r.retryBoot("reboot")
+	r.hungReboot = true
 	return 0
+}
+
+// repeatIfHung is called after a reboot that was meant to start a trial slot (BootNext). If that reboot hung, the
+// retry booted the confirmed slot instead (BootNext is used up), so the step is repeated once: redo() prepares
+// the trial again (for example the update) and the machine is rebooted again. A second hang fails the run.
+func (r *rig) repeatIfHung(redo func()) {
+	if !r.hungReboot {
+		return
+	}
+	r.hungReboot = false
+	r.t.Logf("the reboot hung and was retried (BootNext was lost); repeating the step once")
+	redo()
+	r.repeating = true
+	m := r.vm.mark()
+	io.WriteString(r.vm.in, "sync; reboot -f\n")
+	r.afterReset(m)
+	r.repeating = false
 }
 
 func (r *rig) sh(cmd string) (int, string) {
@@ -348,11 +377,24 @@ func (r *rig) waitRecovery(v *vm, from int) bool {
 // commands in the bare terminal and returns banner=true and their output. The caller then reboots out of
 // recovery.
 func (r *rig) bootRecoveryEntry() (banner bool, out string) {
-	r.sh(`efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery[[:space:]].*/\1/p' | head -n 1)`)
+	setNext := `efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery[[:space:]].*/\1/p' | head -n 1)`
+	r.sh(setNext)
 	m := r.vm.mark()
 	io.WriteString(r.vm.in, "sync; reboot -f\n")
 	if !r.waitRecovery(r.vm, m) {
-		return false, r.vm.text(m)
+		// a hang: restart once (the normal slot boots, BootNext is used up), set BootNext again and repeat once
+		r.noteHang(r.vm, "recovery boot")
+		r.vm.kill()
+		r.retryBoot("recovery boot")
+		r.waitConfirmed()
+		r.sh(setNext)
+		m = r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		if !r.waitRecovery(r.vm, m) {
+			r.noteHang(r.vm, "recovery boot (repeated)")
+			r.dead = true
+			r.t.Fatalf("the recovery boot hung twice; the run fails")
+		}
 	}
 	printed := r.vm.text(m)
 	_, sh := r.vm.sh(recoveryCmds, 60*time.Second)
@@ -699,6 +741,7 @@ func TestImage(t *testing.T) {
 		bt := time.Now()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
 		r.afterReset(m)
+		r.repeatIfHung(func() { r.update("v2-good") })
 		rebootSec := time.Since(bt).Seconds()
 		r.waitConfirmed()
 		slot, rel, confirmed, _ := r.status()
@@ -887,6 +930,7 @@ func TestImage(t *testing.T) {
 		m := r.vm.mark()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
 		r.afterReset(m)
+		r.repeatIfHung(func() { r.update("v7-good") })
 		r.waitConfirmed()
 		slot, rel, confirmed, _ := r.status()
 		if rc != 0 || slot != "a" || rel != "7" || !confirmed {
@@ -924,6 +968,9 @@ func TestImage(t *testing.T) {
 		m := r.vm.mark()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
 		r.afterReset(m)
+		r.repeatIfHung(func() {
+			r.sh(`efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-b.*/\1/p' | head -1)`)
+		})
 		// the older slot (release 2) is below the floor 7: its own confirm step must REFUSE
 		refusedAuto := r.vm.wait(`confirm: REFUSED`, 90*time.Second, r.bootPos) >= 0
 		slot, rel, confirmed, st := r.status()
@@ -1014,6 +1061,7 @@ func TestImage(t *testing.T) {
 		m := r.vm.mark()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
 		r.afterReset(m)
+		r.repeatIfHung(func() { r.update("v11-recovery2-again") })
 		r.waitConfirmed()
 		slot, rel, confirmed, _ := r.status()
 		banner, out := r.bootRecoveryEntry()
