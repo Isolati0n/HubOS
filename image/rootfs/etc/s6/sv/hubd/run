@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+mkdir -p /run/hubos; chown hub:hub /run/hubos; chmod 700 /run/hubos
+exec s6-setuidgid hub /usr/bin/hubd serve --inventory /config/hubos/inventory.toml --viewers /config/hubos/viewers.toml --socket /run/hubos/hubd.sock

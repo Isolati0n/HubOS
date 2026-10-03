@@ -1,0 +1,107 @@
+#!/bin/sh
+# hubos-ctl: boot entries, update, confirm. Slice 1 proposal (POSIX sh); not a decision.
+# Subcommands:  status | ensure-entries | update BASE | confirm
+PATH=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+DISK=${HUBOS_DISK:-/dev/vda}
+PUB=/etc/hubos/update.pub
+STATE=/config/hubos/state
+SLOT=$(cat /run/hubos-slot 2>/dev/null)
+OTHER=a; [ "$SLOT" = a ] && OTHER=b
+RUNVER=$(sed -n 's/^version=//p' /etc/hubos-release)
+CMD_COMMON="console=ttyS0 ro rootfstype=squashfs panic=5 loglevel=4"
+die() { echo "hubos-ctl: $*" >&2; exit 2; }
+
+entry_num() { efibootmgr 2>/dev/null | sed -n "s/^Boot\([0-9A-F]\{4\}\)\*\{0,1\}[[:space:]]$1[[:space:]].*/\1/p" | head -1; }
+
+ensure_entries() {
+  [ -d /sys/firmware/efi/efivars ] || die "no EFI variables (not booted by UEFI?)"
+  # Creating an entry puts it first in BootOrder, so remember the order and
+  # put it back afterwards (new entries go to the end).
+  oldorder=$(efibootmgr 2>/dev/null | sed -n 's/^BootOrder: //p')
+  created=
+  for s in a b; do
+    [ -n "$(entry_num hubos-$s)" ] && continue
+    efibootmgr -q -c -d $DISK -p 1 -L hubos-$s -l "\\EFI\\hubos\\kernel-$s.efi" -u "$CMD_COMMON root=PARTLABEL=hubos-root-$s hubos.slot=$s" || die "cannot create entry $s"
+    created=1
+  done
+  [ -n "$(entry_num hubos-recovery)" ] || { efibootmgr -q -c -d $DISK -p 1 -L hubos-recovery -l "\\EFI\\hubos\\kernel-$SLOT.efi" -u "$CMD_COMMON root=PARTLABEL=hubos-root-$SLOT hubos.recovery=1 hubos.slot=$SLOT" || die "cannot create recovery entry"; created=1; }
+  [ -n "$created" ] || return 0
+  a=$(entry_num hubos-a); b=$(entry_num hubos-b); r=$(entry_num hubos-recovery)
+  if [ -n "$oldorder" ] && echo "$oldorder" | grep -q "$a" && echo "$oldorder" | grep -q "$b"; then
+    efibootmgr -q -o "$oldorder" || die "cannot restore BootOrder"        # a confirmed order exists: keep it
+  else
+    efibootmgr -q -o "$(entry_num hubos-$SLOT),$(entry_num hubos-$OTHER)"  # first install: the running slot first
+  fi
+}
+
+status() {
+  echo "slot=$SLOT release=$RUNVER"; efibootmgr 2>/dev/null | sed -n '/^Boot\(Current\|Next\|Order\)/p; /^Boot[0-9A-F]*\*\{0,1\}[[:space:]]hubos/s/\t.*//p'
+  echo "min_version=$(cat $STATE/min_version 2>/dev/null || echo none)"
+}
+
+fetch() { # fetch BASE NAME DEST
+  case "$1" in
+    http://*) wget -q -O "$3" "$1/$2" || return 1 ;;
+    *)        cp "$1/$2" "$3" || return 1 ;;
+  esac
+}
+
+update() {
+  BASE=$1; [ -n "$BASE" ] || die "usage: hubos-ctl update BASE"
+  [ -n "$SLOT" ] && [ "$SLOT" != unknown ] || die "running slot unknown"
+  W=/data/update; rm -rf $W; mkdir -p $W
+  echo "update: fetching manifest from $BASE"
+  fetch "$BASE" manifest $W/manifest || die "no manifest at $BASE"
+  fetch "$BASE" manifest.sig $W/manifest.sig || die "REFUSED: no signature (unsigned bundle)"
+  signify-openbsd -V -p $PUB -m $W/manifest -x $W/manifest.sig >/dev/null 2>&1 || die "REFUSED: bad signature (manifest not signed by the owner's key, or changed)"
+  echo "update: signature OK"
+  NEWVER=$(sed -n 's/^version //p' $W/manifest)
+  [ -n "$NEWVER" ] || die "REFUSED: manifest has no version"
+  MIN=$(cat $STATE/min_version 2>/dev/null || echo 0)
+  [ "$NEWVER" -gt "$RUNVER" ] 2>/dev/null || die "REFUSED: version $NEWVER is not newer than the running version $RUNVER"
+  [ "$NEWVER" -ge "$MIN" ] 2>/dev/null || die "REFUSED: version $NEWVER is below the floor $MIN"
+  # Kernel pinning: the signed manifest must name the kernel version (and list its modules).
+  KV=$(sed -n 's/^kernel-version //p' $W/manifest)
+  [ -n "$KV" ] || die "REFUSED: manifest has no kernel version line"
+  echo "update: kernel version $KV, modules: $(sed -n 's/^modules *//p' $W/manifest | tr '\n' ' ')"
+  for f in kernel.efi rootfs.sqsh; do
+    want=$(sed -n "s/^$f sha256 \([0-9a-f]*\) size .*/\1/p" $W/manifest); [ -n "$want" ] || die "REFUSED: manifest does not list $f"
+    echo "update: fetching $f"; fetch "$BASE" $f $W/$f || die "cannot fetch $f"
+    got=$(sha256sum $W/$f | cut -d' ' -f1)
+    [ "$got" = "$want" ] || die "REFUSED: $f does not match the signed hash (tampered or damaged)"
+  done
+  echo "update: hashes OK, version $NEWVER, writing to slot $OTHER"
+  DEV=$(findfs PARTLABEL=hubos-root-$OTHER) || die "no partition hubos-root-$OTHER"
+  SZ=$(stat -c %s $W/rootfs.sqsh)
+  # The write goes in 4 MiB pieces, with a line after each, so that a test can interrupt it at a known place.
+  MB=$(( (SZ + 1048575) / 1048576 )); i=0
+  while [ $i -lt $MB ]; do
+    dd if=$W/rootfs.sqsh of=$DEV bs=1M skip=$i seek=$i count=4 conv=fsync,notrunc 2>/dev/null || die "write failed"
+    i=$((i+4)); n=$i; [ $n -gt $MB ] && n=$MB; echo "update: wrote $n of $MB MiB to slot $OTHER"
+  done
+  [ "$(head -c $SZ $DEV | sha256sum | cut -d' ' -f1)" = "$(sed -n 's/^rootfs.sqsh sha256 \([0-9a-f]*\) .*/\1/p' $W/manifest)" ] || die "read-back check failed"
+  echo "update: root written and verified"
+  mount -t vfat "$(findfs PARTLABEL=hubos-esp)" /boot/efi || die "cannot mount the boot partition"
+  cp $W/kernel.efi /boot/efi/EFI/hubos/kernel-$OTHER.efi.new && sync && mv /boot/efi/EFI/hubos/kernel-$OTHER.efi.new /boot/efi/EFI/hubos/kernel-$OTHER.efi && sync
+  umount /boot/efi
+  echo "update: kernel installed"
+  ensure_entries
+  efibootmgr -q -n "$(entry_num hubos-$OTHER)" || die "cannot set BootNext"
+  rm -rf $W
+  echo "update: installed version $NEWVER in slot $OTHER; BootNext set; reboot to try it"
+}
+
+confirm() {
+  cur=$(efibootmgr | sed -n 's/^BootCurrent: //p'); first=$(efibootmgr | sed -n 's/^BootOrder: \([0-9A-F]*\).*/\1/p')
+  mine=$(entry_num hubos-$SLOT)
+  if [ "$cur" = "$mine" ] && [ "$first" = "$mine" ]; then echo "confirm: slot $SLOT is already the confirmed slot"; return 0; fi
+  [ "$cur" = "$mine" ] || die "confirm: BootCurrent $cur is not slot $SLOT's entry ($mine); not confirming"
+  efibootmgr -q -o "$mine,$(entry_num hubos-$OTHER)" || die "cannot set BootOrder"
+  mkdir -p $STATE; echo "$RUNVER" > $STATE/min_version; sync
+  echo "confirm: boot of slot $SLOT (version $RUNVER) confirmed; floor raised to $RUNVER"
+}
+
+case "$1" in
+  status) status;; ensure-entries) ensure_entries;; update) update "$2";; confirm) confirm;;
+  *) echo "usage: hubos-ctl status|ensure-entries|update BASE|confirm"; exit 1;;
+esac

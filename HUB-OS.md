@@ -247,6 +247,7 @@ HubOS/
 │   ├── driftwm-findings.md
 │   ├── environment.md
 │   ├── hubd-slice2.md
+│   ├── image.md                      (Phase B image: how to build it, how to run each test, measured times)
 │   ├── inventory-format.md
 │   ├── proposals/
 │   │   └── phase-b-image.md          (Phase B first-slice image proposal; owner's answers recorded in it)
@@ -256,6 +257,18 @@ HubOS/
 │   ├── viewers.example.toml          (the fake viewer only; no real viewer command lines; used by tests)
 │   ├── viewers.real.example.toml     (ssh, spice, vnc, moonlight and [default_ports]; all unverified on hardware)
 │   └── wofi.style.css                (menu look: fixed-width font; copy to /etc/hubos/wofi.css)
+├── image/                            (Phase B: what goes inside the machine images)
+│   ├── machines/
+│   │   └── qemu-test.build           (a machine's build configuration: KERNEL_VERSION, KERNEL_FRAGMENT, MODULES, PACKAGES, SERVICES)
+│   ├── kernel/
+│   │   └── qemu-test.frag            (kernel configuration fragment for that machine)
+│   ├── packages/
+│   │   └── qemu-test.list            (the package list of the root)
+│   ├── stage0/                       (stage 0, built into the kernel)
+│   │   ├── init
+│   │   └── stage0.list.in
+│   ├── config/qemu-test/             (the config partition's inventory.toml and viewers.toml)
+│   └── rootfs/                       (files copied into the root: /sbin/init, hubos-ctl, s6 service directories, udhcpc script)
 ├── cmd/
 │   └── hubd/
 │       ├── main.go                   (slice 1: flags, wiring, printing, exit code; routes subcommands)
@@ -285,6 +298,10 @@ HubOS/
 │       ├── ambiguous.toml  chatty.toml  handover.toml  ignores-name.toml  late.toml
 │       └── two-windows.sh
 └── tools/
+    ├── image/                        (Phase B build scripts and the QEMU test runner, build tag "qemu")
+    │   ├── common.sh  fetch-tools.sh  build-kernel.sh  build-base.sh  build-root-image.sh  build-disk.sh  build-bundle.sh
+    │   ├── doc.go
+    │   └── qemu_test.go
     ├── fakenode/                     (tiny program that pretends to be a machine)
     │   ├── main.go
     │   └── main_test.go
@@ -389,3 +406,5 @@ HubOS/
 - **2026-10-01 (later):** default check ports moved to a [default_ports] table; HUB-OS.md contradictions fixed (guest viewer, clipboard line, repo layout).
 - **2026-10-01 (later):** HUB-OS.md cleaned up (duplicate clipboard line, Moonlight unverified items); NAS opens with ssh until the bespoke file manager; pairing by hand for v1.
 - **2026-10-02:** Owner decisions: independent kernels per machine, out-of-tree modules only when a machine declares them, kernel pinning and staged NAS updates, OpenZFS on the NAS and backup NAS; Phase B choices recorded in docs/proposals/phase-b-image.md.
+- **2026-10-02:** Phase B slices S0 to S3 built in the repo: tools/image, image/, a QEMU test runner; see docs/image.md.
+

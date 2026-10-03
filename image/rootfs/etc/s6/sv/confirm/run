@@ -1,0 +1,18 @@
+#!/bin/sh
+# Boot succeeded = hubd answers on its socket 5 times in a row, 1 s apart.
+# Gives up after HUBOS_CONFIRM_TIMEOUT seconds (default 60) and reboots, so the
+# firmware falls back to the other slot (BootOrder was not changed).
+exec 2>&1
+T=${HUBOS_CONFIRM_TIMEOUT:-60}; ok=0; n=0
+[ -f /config/hubos/node.conf ] && . /config/hubos/node.conf
+T=${CONFIRM_TIMEOUT:-$T}
+ensure() { hubos-ctl ensure-entries; }
+ensure
+while [ $n -lt $T ]; do
+  if /usr/bin/hubd list --socket /run/hubos/hubd.sock >/dev/null 2>&1; then ok=$((ok+1)); else ok=0; fi
+  [ $ok -ge 5 ] && break
+  n=$((n+1)); sleep 1
+done
+if [ $ok -ge 5 ]; then hubos-ctl confirm; s6-svc -u /run/service/wd; s6-svc -O . ; exit 0; fi
+echo "confirm: hubd did not become healthy in ${T}s; this boot FAILED; rebooting into the other slot"
+sync; reboot -f

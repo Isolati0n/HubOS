@@ -1,0 +1,18 @@
+# Hub OS machine build configuration: the first machine, a test machine for QEMU.
+# Shell-readable KEY=VALUE (read by tools/image/*.sh with `.`). Nothing about the
+# kernel, its modules or the package list is written anywhere else.
+#
+# A machine names its own kernel; nothing is inherited from a role (HUB-OS.md).
+KERNEL_VERSION=6.12
+KERNEL_FRAGMENT=image/kernel/qemu-test.frag
+# Out-of-tree modules this machine declares (none in slice 1). They would be built
+# with this kernel from one pinned source version and listed in the signed manifest.
+MODULES=
+# One package name per line; the Ubuntu 24.04 root is built from exactly these.
+PACKAGES=image/packages/qemu-test.list
+# Dated snapshot of the Ubuntu archive the packages come from (reproducibility).
+SNAPSHOT=20261001T000000Z
+# Service directories (image/rootfs/etc/s6/sv/NAME) started on this machine.
+SERVICES="hubd console confirm wd"
+# Seconds an unhealthy trial boot waits before it gives up and reboots.
+CONFIRM_TIMEOUT=40

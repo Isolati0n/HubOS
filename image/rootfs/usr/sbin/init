@@ -1,0 +1,53 @@
+#!/bin/sh
+# Hub OS stage 1 (PID 1). Mounts the scratch areas, mounts the config
+# partition, applies the config, then becomes s6-svscan. Slice 1 proposal;
+# not a decision. No systemd.
+PATH=/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev 2>/dev/null
+mount -t tmpfs -o mode=0755 tmpfs /run
+mount -t tmpfs -o mode=1777 tmpfs /tmp
+mount -t tmpfs -o mode=0755 tmpfs /var
+mkdir -p /var/log /var/tmp /run/service /config /data /boot/efi
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null
+echo "HUBOS: stage1 start, cmdline: $(cat /proc/cmdline)"
+case " $(cat /proc/cmdline) " in
+  *" hubos.recovery=1 "*)
+    echo "HUBOS: RECOVERY MODE (bare terminal; root is read-only; nothing else started)"
+    cat /etc/hubos-release
+    exec setsid cttyhack /bin/sh ;;
+esac
+# The kernel has a built-in command line (for the fallback boot path) and the
+# firmware adds the entry's own; the LAST hubos.slot= is the one that counts.
+SLOT=$(sed -n 's/.*hubos\.slot=\([ab]\).*/\1/p' /proc/cmdline)
+[ -n "$SLOT" ] || SLOT=unknown
+echo "$SLOT" > /run/hubos-slot
+CFG=$(findfs PARTLABEL=hubos-config 2>/dev/null)
+DATA=$(findfs PARTLABEL=hubos-data 2>/dev/null)
+ESP=$(findfs PARTLABEL=hubos-esp 2>/dev/null)
+[ -n "$CFG" ]  && mount -o noatime "$CFG" /config  || echo "HUBOS: no config partition"
+[ -n "$DATA" ] && mount -o noatime "$DATA" /data   || echo "HUBOS: no data partition"
+echo "HUBOS: efi: $(efibootmgr 2>/dev/null | grep -E '^Boot(Current|Next|Order)' | tr '\n' ' ')"
+echo "HUBOS: slot=$SLOT release: $(cat /etc/hubos-release | tr '\n' ' ')"
+# --- apply the declarative config (slice 1: a sh-sourceable file) ---
+NAME=hubos-node; NET=dhcp; IFACE=eth0; ADDR=; GW=; SERVICES="hubd console confirm wd"
+[ -f /config/hubos/node.conf ] && . /config/hubos/node.conf
+hostname "$NAME"
+ip link set lo up
+ip link set "$IFACE" up 2>/dev/null
+if [ "$NET" = static ]; then
+  ip addr add "$ADDR" dev "$IFACE"; [ -n "$GW" ] && ip route add default via "$GW"
+else
+  udhcpc -i "$IFACE" -n -q -s /usr/lib/hubos/udhcpc.script >/run/udhcpc.log 2>&1 || echo "HUBOS: dhcp failed"
+fi
+echo "HUBOS: node=$NAME net=$NET $(ip -4 addr show "$IFACE" 2>/dev/null | awk '/inet /{print $2}')"
+# --- services: copy the chosen ones into the supervised directory ---
+for s in $SERVICES; do cp -a /etc/s6/sv/$s /run/service/$s; done
+mkdir -p /run/service/.s6-svscan
+printf '#!/bin/sh\necho "HUBOS: s6-svscan finished; rebooting"\nreboot -f\n' > /run/service/.s6-svscan/finish
+printf '#!/bin/sh\necho "HUBOS: s6-svscan crashed; rebooting"\nreboot -f\n' > /run/service/.s6-svscan/crash
+chmod +x /run/service/.s6-svscan/finish /run/service/.s6-svscan/crash
+echo "HUBOS: handing over to s6-svscan"
+exec s6-svscan /run/service

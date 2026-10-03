@@ -1,0 +1,32 @@
+#!/bin/busybox sh
+# Hub OS stage 0: built into the kernel. Mounts the slot's root, arms the
+# hardware watchdog, hands over to the slot's /sbin/init. If anything is wrong
+# it reboots at once (the firmware then uses the other slot).
+/bin/busybox --install -s /bin
+export PATH=/bin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+echo "STAGE0: start"
+# Arm the watchdog: opening it starts the countdown (heartbeat is set on the
+# kernel command line); with nowayout, closing it does not stop it. The slot's
+# confirm step starts the steady feeder once the boot is healthy.
+if [ -c /dev/watchdog ]; then exec 3>/dev/watchdog; exec 3>&-; echo "STAGE0: watchdog armed"; else echo "STAGE0: no watchdog device"; fi
+SLOT=$(sed -n 's/.*hubos\.slot=\([ab]\).*/\1/p' /proc/cmdline)
+[ -n "$SLOT" ] || SLOT=a
+# Find the slot's partition by its GPT name through sysfs (no udev). The disk
+# may appear a moment after the kernel starts, so retry for up to 20 s.
+DEV=
+i=0
+while [ -z "$DEV" ] && [ $i -lt 40 ]; do
+  for u in /sys/class/block/*/uevent; do
+    if grep -q "^PARTNAME=hubos-root-$SLOT\$" "$u" 2>/dev/null; then DEV=/dev/$(basename $(dirname $u)); break; fi
+  done
+  [ -n "$DEV" ] || { sleep 0.5; i=$((i+1)); }
+done
+if [ -z "$DEV" ] || ! mount -t squashfs -o ro "$DEV" /newroot; then
+  echo "STAGE0: cannot mount the root of slot $SLOT; rebooting"; sleep 1; reboot -f
+fi
+if [ ! -x /newroot/sbin/init ]; then echo "STAGE0: slot $SLOT has no /sbin/init; rebooting"; sleep 1; reboot -f; fi
+echo "STAGE0: switching to slot $SLOT"
+exec switch_root /newroot /sbin/init
