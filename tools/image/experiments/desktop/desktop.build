@@ -1,0 +1,11 @@
+# EXPERIMENT (docs/proposals/phase-b-desktop.md): the machine build file of the desktop experiment. Not used by the
+# default qemu test or the main image build; select it with  MACHINE=tools/image/experiments/desktop/desktop.build
+KERNEL_VERSION=6.12
+KERNEL_FRAGMENT=tools/image/experiments/desktop/desktop.frag
+MODULES=
+PACKAGES=tools/image/experiments/desktop/desktop.list
+SNAPSHOT=20261001T000000Z
+SERVICES="console seatd driftwm foot"
+CONFIRM_TIMEOUT=30
+RECOVERY_VERSION=1
+RECOVERY_CMDLINE="console=ttyS0 ro loglevel=4 panic=5"

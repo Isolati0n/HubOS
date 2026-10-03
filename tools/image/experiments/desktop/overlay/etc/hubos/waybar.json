@@ -1,0 +1,6 @@
+{
+  "layer": "top", "position": "top", "height": 30,
+  "modules-left": ["custom/hub"], "modules-center": [], "modules-right": ["clock"],
+  "custom/hub": { "exec": "/usr/bin/hubd feed", "return-type": "json", "format": "{}" },
+  "clock": { "format": "{:%H:%M:%S}", "interval": 1 }
+}
