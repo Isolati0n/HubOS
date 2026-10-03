@@ -1,0 +1,54 @@
+# Hub OS viewers table — EXAMPLE ONLY: the fake viewer, nothing real.
+# Lives next to the inventory (default /etc/hubos/viewers.toml); never in git
+# with real content, and never any secret. Format: docs/hubd-slice2.md
+#
+# Each command is a LIST of arguments, started directly (no shell). Text from
+# the inventory is put into one argument only. Placeholders:
+#   {id} {name} {address} {port} {user} {share} {session}   from the inventory
+#     ({port} falls back to the [default_ports] table; {session} is the
+#     Sunshine app name)
+#   {app_id}  the window name hubd asks for: hubos-<id>
+#   {title}   the machine's name
+# A placeholder for a value the machine lacks (for example {port} on a
+# machine with no port) stops that machine from opening; hubd never guesses.
+#
+# Safety tip: put "--" before the arguments that come from the inventory
+# ({name}, {address}, {user}, {share}, ...) when the viewer supports it, so a
+# value can never be read as an option. (The inventory already refuses an
+# address, user or share that starts with a dash; "--" is the second lock.)
+# The fake viewer below uses "--" before its own command.
+#
+# Two more optional settings, not used by the fake viewer below (see
+# examples/viewers.real.example.toml for them in use):
+#   [default_ports]                   a table before the first [[viewer]]: for
+#   ssh = 22                          each program (moonlight, spice, vnc, ssh,
+#                                     files) the port used for {port} and for
+#                                     the up/down check when a machine has no
+#                                     port of its own (whole numbers 1-65535)
+#   title_match  = "{id} - Moonlight" per viewer, with sets_name = false: the
+#                                     window is the one whose title is exactly
+#                                     this text (never with sets_name = true)
+#
+# There are NO real Moonlight, virt-viewer or Remmina command lines here:
+# their command lines and window names are still unknown (HUB-OS.md,
+# "Unverified"). The fake viewer is a terminal window that just sits there.
+
+format = 1
+
+[[viewer]]
+id        = "fake"
+programs  = ["moonlight", "spice", "vnc", "ssh", "files"]
+command   = ["foot", "--app-id={app_id}", "--title={title}", "--", "sleep", "infinity"]
+sets_name = true
+# Optional: how long hubd waits for this viewer's window before it starts the
+# "late window" grace period (a positive duration like "10s" or "1m30s").
+# Without it the hub default applies (10 s, hubd serve --window-wait). A slow
+# viewer (a big remote desktop) can need more. While the grace period runs
+# (60 s, hubd serve --late-grace) hubd starts no second viewer for the machine
+# and adopts the window when it comes.
+window_wait = "10s"
+# Optional: how long hubd keeps waiting for the window after the window wait
+# ran out (a positive duration). Without it the hub default applies (60 s,
+# hubd serve --late-grace). A viewer process that exits cleanly (status 0) is
+# waited for too: it may have handed over to a copy that is already running.
+late_grace = "60s"
