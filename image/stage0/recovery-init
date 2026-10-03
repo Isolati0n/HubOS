@@ -1,0 +1,29 @@
+#!/bin/busybox sh
+# Hub OS recovery (stage 0 of the SEPARATE recovery kernel, kernel-recovery.efi). It needs neither slot's root:
+# everything it uses is in this kernel's own initramfs. It does not arm the watchdog and it does not reboot by
+# itself: it brings up the network if it can and leaves a bare terminal on the console.
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null
+mount -t tmpfs tmpfs /run; mount -t tmpfs tmpfs /tmp
+echo "STAGE0-RECOVERY: start"
+hostname hubos-recovery
+# The config partition (read-only), found by its GPT name through sysfs like stage 0 does, for `hubos-ctl status`.
+i=0; DEV=
+while [ -z "$DEV" ] && [ $i -lt 20 ]; do
+  for u in /sys/class/block/*/uevent; do
+    if grep -q '^PARTNAME=hubos-config$' "$u" 2>/dev/null; then DEV=/dev/$(basename $(dirname $u)); break; fi
+  done
+  [ -n "$DEV" ] || { sleep 0.5; i=$((i+1)); }
+done
+if [ -n "$DEV" ] && mount -o ro "$DEV" /config 2>/dev/null; then echo "STAGE0-RECOVERY: config partition mounted read-only at /config"; else echo "STAGE0-RECOVERY: no config partition"; fi
+ip link set lo up
+ip link set eth0 up 2>/dev/null
+if udhcpc -i eth0 -n -q -t 3 -T 1 -s /usr/lib/hubos/udhcpc.script >/run/udhcpc.log 2>&1; then echo "STAGE0-RECOVERY: network $(ip -4 addr show eth0 | awk '/inet /{print $2}')"; else echo "STAGE0-RECOVERY: no network (dhcp failed)"; fi
+echo "HUBOS: RECOVERY MODE (separate recovery kernel; neither slot's root is used; bare terminal)"
+cat /etc/hubos-release
+echo "Tools: hubos-ctl status, efibootmgr, signify-openbsd, wget, e2fsck, mke2fs, findfs, blkid, ip. Reboot: reboot -f"
+export ENV=/etc/recovery.rc
+exec setsid cttyhack /bin/sh

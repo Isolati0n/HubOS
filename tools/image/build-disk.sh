@@ -17,6 +17,9 @@ export MTOOLS_SKIP_CHECK=1
 mmd -i "$D/esp.part" ::/EFI ::/EFI/BOOT ::/EFI/hubos
 mcopy -i "$D/esp.part" "$K" ::/EFI/BOOT/BOOTX64.EFI
 mcopy -i "$D/esp.part" "$K" ::/EFI/hubos/kernel-a.efi
+# the separate recovery kernel and its version are installed with the first image
+mcopy -i "$D/esp.part" "$(dirname "$K")/kernel-recovery.efi" ::/EFI/hubos/kernel-recovery.efi
+echo "${RECOVERY_VERSION:-1}" > "$D/recovery.version"; mcopy -i "$D/esp.part" "$D/recovery.version" ::/EFI/hubos/recovery.version
 truncate -s 16M "$D/cfg.part"; mkfs.ext4 -q -L hubos-config -d "$C" "$D/cfg.part"
 truncate -s 160M "$D/data.part"; mkfs.ext4 -q -L hubos-data "$D/data.part"
 truncate -s 420M "$D/disk.img"

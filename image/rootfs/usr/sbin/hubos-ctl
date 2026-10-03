@@ -12,14 +12,27 @@ die() { echo "hubos-ctl: $*" >&2; exit 2; }
 
 entry_num() { efibootmgr 2>/dev/null | sed -n "s/^Boot\([0-9A-F]\{4\}\)\*\{0,1\}[[:space:]]$1[[:space:]].*/\1/p" | head -1; }
 
+# BootOrder with the recovery entry directly after the two slot entries (firmware entries keep their place after it).
+order_with_rec() {
+  rn=$(entry_num hubos-recovery); a=$(entry_num hubos-a); b=$(entry_num hubos-b)
+  out=; rest=
+  for e in $(efibootmgr 2>/dev/null | sed -n 's/^BootOrder: //p' | tr ',' ' '); do
+    case $e in
+      "$rn") ;;
+      "$a"|"$b") out="$out,$e" ;;
+      *) rest="$rest,$e" ;;
+    esac
+  done
+  echo "${out#,},$rn$rest"
+}
+
 ensure_entries() {
   [ -d /sys/firmware/efi/efivars ] || die "no EFI variables (not booted by UEFI?)"
-  # The a and b entries carry NO load options: each slot's kernel (kernel-a.efi, kernel-b.efi) has its slot
-  # and root built into its own command line, so the slot does not depend on what the firmware keeps.
-  # The recovery entry has none either: stage 1 recognises recovery by the LABEL of the entry the firmware
-  # booted (BootCurrent is the entry labelled hubos-recovery), not by the command line (docs/image.md).
-  # Creating an entry puts it first in BootOrder, so remember the order and
-  # put it back afterwards (new entries go to the end).
+  # None of the three entries carries load options. The a and b entries boot kernel-a.efi and kernel-b.efi, which
+  # have their slot and root built into their own command lines. The recovery entry ALWAYS boots the separate
+  # recovery kernel (kernel-recovery.efi), which needs neither slot's root. The recovery entry sits in BootOrder
+  # directly after the two slot entries, so the firmware keeps it (docs/image.md).
+  # Creating an entry puts it first in BootOrder, so remember the order and put it back afterwards.
   oldorder=$(efibootmgr 2>/dev/null | sed -n 's/^BootOrder: //p')
   created=
   for s in a b; do
@@ -27,13 +40,19 @@ ensure_entries() {
     efibootmgr -q -c -d $DISK -p 1 -L hubos-$s -l "\\EFI\\hubos\\kernel-$s.efi" || die "cannot create entry $s"
     created=1
   done
-  [ -n "$(entry_num hubos-recovery)" ] || { efibootmgr -q -c -d $DISK -p 1 -L hubos-recovery -l "\\EFI\\hubos\\kernel-$SLOT.efi" || die "cannot create recovery entry"; created=1; }
-  [ -n "$created" ] || return 0
-  a=$(entry_num hubos-a); b=$(entry_num hubos-b); r=$(entry_num hubos-recovery)
+  rn=$(entry_num hubos-recovery)
+  if [ -n "$rn" ] && ! efibootmgr -v 2>/dev/null | grep "^Boot$rn" | grep -q 'kernel-recovery\.efi'; then
+    efibootmgr -q -B -b "$rn" || die "cannot delete the old recovery entry"; rn=; created=1   # made by an earlier image: re-point it
+  fi
+  [ -n "$rn" ] || { efibootmgr -q -c -d $DISK -p 1 -L hubos-recovery -l "\\EFI\\hubos\\kernel-recovery.efi" || die "cannot create recovery entry"; created=1; }
+  rn=$(entry_num hubos-recovery)
+  if [ -z "$created" ] && echo "$oldorder" | grep -q "$rn"; then return 0; fi
+  a=$(entry_num hubos-a); b=$(entry_num hubos-b)
   if [ -n "$oldorder" ] && echo "$oldorder" | grep -q "$a" && echo "$oldorder" | grep -q "$b"; then
-    efibootmgr -q -o "$oldorder" || die "cannot restore BootOrder"        # a confirmed order exists: keep it
+    efibootmgr -q -o "$(echo "$oldorder" | sed "s/$rn,\{0,1\}//; s/,$//")" || die "cannot restore BootOrder"   # a confirmed order exists: keep it
+    efibootmgr -q -o "$(order_with_rec)" || die "cannot put the recovery entry into BootOrder"
   else
-    efibootmgr -q -o "$(entry_num hubos-$SLOT),$(entry_num hubos-$OTHER)"  # first install: the running slot first
+    efibootmgr -q -o "$(entry_num hubos-$SLOT),$(entry_num hubos-$OTHER),$rn"  # first install: the running slot first, recovery last
   fi
 }
 
@@ -71,25 +90,38 @@ update() {
   for f in kernel-a.efi kernel-b.efi; do
     [ -n "$(sed -n "s/^$f sha256 \([0-9a-f]*\) size .*/\1/p" $W/manifest)" ] || die "REFUSED: manifest does not list $f"
   done
-  for f in kernel-$OTHER.efi rootfs.sqsh; do
+  # The boot partition is mounted before anything is fetched or written.
+  mount -t vfat "$(/sbin/findfs PARTLABEL=hubos-esp)" /boot/efi || die "cannot mount the boot partition"
+  trap 'umount /boot/efi 2>/dev/null' EXIT
+  rm -f /boot/efi/EFI/hubos/kernel-$OTHER.efi.new /boot/efi/EFI/hubos/kernel-recovery.efi.new
+  # The separate recovery kernel is optional in the manifest and is installed only when its version is newer.
+  RV=$(sed -n 's/^recovery-version //p' $W/manifest)
+  RWANT=$(sed -n "s/^kernel-recovery.efi sha256 \([0-9a-f]*\) size .*/\1/p" $W/manifest)
+  NEEDREC=
+  if [ -n "$RV" ] || [ -n "$RWANT" ]; then
+    { [ -n "$RV" ] && [ -n "$RWANT" ]; } || die "REFUSED: the manifest lists the recovery kernel only in part (it needs both recovery-version and kernel-recovery.efi)"
+    case $RV in *[!0-9]*) die "REFUSED: recovery-version $RV is not a number";; esac
+    INST=$(cat /boot/efi/EFI/hubos/recovery.version 2>/dev/null || echo 0)
+    if [ "$RV" -gt "$INST" ]; then NEEDREC=1; echo "update: recovery kernel version $RV is newer than the installed $INST; it will be installed"
+    else echo "update: recovery kernel version $RV is not newer than the installed $INST; left alone"; fi
+  else
+    echo "update: the manifest has no recovery kernel; recovery left alone"
+  fi
+  for f in kernel-$OTHER.efi rootfs.sqsh ${NEEDREC:+kernel-recovery.efi}; do
     want=$(sed -n "s/^$f sha256 \([0-9a-f]*\) size .*/\1/p" $W/manifest); [ -n "$want" ] || die "REFUSED: manifest does not list $f"
     echo "update: fetching $f"; fetch "$BASE" $f $W/$f || die "cannot fetch $f"
     got=$(sha256sum $W/$f | cut -d' ' -f1)
     [ "$got" = "$want" ] || die "REFUSED: $f does not match the signed hash (tampered or damaged)"
   done
   echo "update: hashes OK, version $NEWVER, writing to slot $OTHER"
-  # Free space on the boot partition is checked BEFORE anything is written: the other slot's root is not
-  # touched and the existing kernel is not touched if the new kernel would not fit. (A leftover .new file of
-  # an interrupted earlier update is only a temporary copy and is removed first.)
-  mount -t vfat "$(findfs PARTLABEL=hubos-esp)" /boot/efi || die "cannot mount the boot partition"
-  trap 'umount /boot/efi 2>/dev/null' EXIT
-  rm -f /boot/efi/EFI/hubos/kernel-$OTHER.efi.new
-  KSZ=$(stat -c %s $W/kernel-$OTHER.efi)
+  # Free space on the boot partition is checked BEFORE anything is written: no root, kernel or entry is
+  # touched if the new kernel(s) would not fit.
+  KSZ=$(stat -c %s $W/kernel-$OTHER.efi); RSZ=0; [ -n "$NEEDREC" ] && RSZ=$(stat -c %s $W/kernel-recovery.efi)
   FREE=$(df -B1 --output=avail /boot/efi | tail -n 1 | tr -d ' ')
-  NEED=$((KSZ + 1048576))
-  echo "update: boot partition free space $FREE bytes, new kernel needs $NEED (kernel $KSZ plus 1 MiB)"
+  NEED=$((KSZ + RSZ + 1048576))
+  echo "update: boot partition free space $FREE bytes, the new kernel(s) need $NEED (slot kernel $KSZ, recovery kernel $RSZ, plus 1 MiB)"
   [ "$FREE" -ge "$NEED" ] 2>/dev/null || die "FAILED: not enough free space on the boot partition (have $FREE bytes, need $NEED); nothing was written, the existing kernel and slot $OTHER are untouched"
-  DEV=$(findfs PARTLABEL=hubos-root-$OTHER) || die "no partition hubos-root-$OTHER"
+  DEV=$(/sbin/findfs PARTLABEL=hubos-root-$OTHER) || die "no partition hubos-root-$OTHER"
   SZ=$(stat -c %s $W/rootfs.sqsh)
   # The write goes in 4 MiB pieces, with a line after each, so that a test can interrupt it at a known place.
   MB=$(( (SZ + 1048575) / 1048576 )); i=0
@@ -103,8 +135,15 @@ update() {
     rm -f /boot/efi/EFI/hubos/kernel-$OTHER.efi.new; die "FAILED: cannot copy the kernel; the existing kernel is untouched"
   fi
   mv /boot/efi/EFI/hubos/kernel-$OTHER.efi.new /boot/efi/EFI/hubos/kernel-$OTHER.efi && sync
-  umount /boot/efi; trap - EXIT
   echo "update: kernel installed"
+  if [ -n "$NEEDREC" ]; then
+    if ! cp $W/kernel-recovery.efi /boot/efi/EFI/hubos/kernel-recovery.efi.new || ! sync; then
+      rm -f /boot/efi/EFI/hubos/kernel-recovery.efi.new; die "FAILED: cannot copy the recovery kernel; the existing one is untouched"
+    fi
+    mv /boot/efi/EFI/hubos/kernel-recovery.efi.new /boot/efi/EFI/hubos/kernel-recovery.efi && echo "$RV" > /boot/efi/EFI/hubos/recovery.version && sync
+    echo "update: recovery kernel version $RV installed"
+  fi
+  umount /boot/efi; trap - EXIT
   ensure_entries
   efibootmgr -q -n "$(entry_num hubos-$OTHER)" || die "cannot set BootNext"
   rm -rf $W
@@ -114,18 +153,38 @@ update() {
 confirm() {
   cur=$(efibootmgr | sed -n 's/^BootCurrent: //p'); first=$(efibootmgr | sed -n 's/^BootOrder: \([0-9A-F]*\).*/\1/p')
   mine=$(entry_num hubos-$SLOT)
+  # A slot whose release is below the floor is never confirmed (the floor only goes down by "hubos-ctl rollback").
+  old=$(cat $STATE/min_version 2>/dev/null || echo 0)
+  if [ "$RUNVER" -lt "$old" ] 2>/dev/null; then
+    die "confirm: REFUSED: release $RUNVER of slot $SLOT is below the floor $old; BootOrder and the floor are unchanged (to go back on purpose: hubos-ctl rollback REASON)"
+  fi
   if [ "$cur" = "$mine" ] && [ "$first" = "$mine" ]; then echo "confirm: slot $SLOT is already the confirmed slot"; return 0; fi
   [ "$cur" = "$mine" ] || die "confirm: BootCurrent $cur is not slot $SLOT's entry ($mine); not confirming"
-  efibootmgr -q -o "$mine,$(entry_num hubos-$OTHER)" || die "cannot set BootOrder"
+  efibootmgr -q -o "$mine,$(entry_num hubos-$OTHER),$(entry_num hubos-recovery)" || die "cannot set BootOrder"
   # The floor only goes up: the larger of the old floor and the running version.
-  old=$(cat $STATE/min_version 2>/dev/null || echo 0)
   new=$RUNVER; [ "$old" -gt "$new" ] 2>/dev/null && new=$old
   mkdir -p $STATE; echo "$new" > $STATE/min_version; sync
   if [ "$new" = "$RUNVER" ]; then echo "confirm: boot of slot $SLOT (version $RUNVER) confirmed; floor is $new"
   else echo "confirm: boot of slot $SLOT (version $RUNVER) confirmed; floor stays at $new (it only goes up)"; fi
 }
 
+# The owner runs this on purpose to go back to an older release: it lowers the floor to the running release and
+# makes the running slot first in BootOrder. It logs the old and new floor and the reason.
+rollback() {
+  [ -n "$*" ] || die "usage: hubos-ctl rollback REASON   (the reason is written to $STATE/rollback.log)"
+  reason="$*"
+  [ -n "$SLOT" ] && [ "$SLOT" != unknown ] || die "running slot unknown"
+  cur=$(efibootmgr | sed -n 's/^BootCurrent: //p'); mine=$(entry_num hubos-$SLOT)
+  [ "$cur" = "$mine" ] || die "rollback: BootCurrent $cur is not slot $SLOT's entry ($mine); boot the slot you want to keep through its own entry first"
+  old=$(cat $STATE/min_version 2>/dev/null || echo 0)
+  efibootmgr -q -o "$mine,$(entry_num hubos-$OTHER),$(entry_num hubos-recovery)" || die "cannot set BootOrder"
+  mkdir -p $STATE; echo "$RUNVER" > $STATE/min_version
+  echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) rollback: slot $SLOT release $RUNVER, floor $old -> $RUNVER, BootOrder first: $mine, reason: $reason" >> $STATE/rollback.log; sync
+  echo "rollback: floor $old -> $RUNVER; slot $SLOT is now first in BootOrder; reason logged: $reason"
+}
+
 case "$1" in
   status) status;; ensure-entries) ensure_entries;; update) update "$2";; confirm) confirm;;
-  *) echo "usage: hubos-ctl status|ensure-entries|update BASE|confirm"; exit 1;;
+  rollback) shift; rollback "$@";;
+  *) echo "usage: hubos-ctl status|ensure-entries|update BASE|confirm|rollback REASON"; exit 1;;
 esac
