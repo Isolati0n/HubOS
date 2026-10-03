@@ -12,7 +12,7 @@ if [ ! -d "$BR/usr" ]; then
   say "build root (dev packages)"
   rm -rf "$BR"; mkdir -p "$BR"
   mmdebstrap --mode=root --variant=minbase --components=main,universe \
-    --include=build-essential,pkg-config,git,ca-certificates,clang,libclang-dev,cmake,libwayland-dev,libxkbcommon-dev,libinput-dev,libudev-dev,libseat-dev,libgbm-dev,libegl-dev,libgles-dev,libdrm-dev,libdisplay-info-dev,libpixman-1-dev,libfontconfig-dev,libfreetype-dev \
+    --include=build-essential,pkg-config,git,ca-certificates,clang,libclang-dev,cmake,libwayland-dev,libxkbcommon-dev,libinput-dev,libudev-dev,libseat-dev,libgbm-dev,libegl-dev,libgles-dev,libdrm-dev,libdisplay-info-dev,libpixman-1-dev,libfontconfig-dev,libfreetype-dev,gperf \
     noble "$WORK/out/buildroot.tar" "http://snapshot.ubuntu.com/ubuntu/$SNAPSHOT" >/dev/null
   tar -C "$BR" --numeric-owner -xpf "$WORK/out/buildroot.tar"
 fi

@@ -34,3 +34,5 @@ waybar
 dbus-daemon
 jq
 fonts-font-awesome
+libinput-tools
+wofi

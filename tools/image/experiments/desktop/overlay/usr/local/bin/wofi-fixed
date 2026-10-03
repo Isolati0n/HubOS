@@ -1,0 +1,11 @@
+#!/bin/sh
+# EXPERIMENT workaround: wofi 1.4.1 on driftwm's real-display backend shows only the search box when it is given
+# "--lines N" (Gtk-CRITICAL: gtk_widget_set_size_request: assertion 'height >= -1' failed). This wrapper drops "--lines N"
+# and gives the list a fixed height. hubd menu --wofi /usr/local/bin/wofi-fixed uses it.
+n=$#; i=0
+while [ $i -lt $n ]; do
+  a=$1; shift
+  if [ "$a" = --lines ]; then shift; i=$((i+1)); else set -- "$@" "$a"; fi
+  i=$((i+1))
+done
+exec wofi --height 480 "$@"

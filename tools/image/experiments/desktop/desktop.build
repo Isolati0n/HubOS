@@ -5,7 +5,10 @@ KERNEL_FRAGMENT=tools/image/experiments/desktop/desktop.frag
 MODULES=
 PACKAGES=tools/image/experiments/desktop/desktop.list
 SNAPSHOT=20261001T000000Z
-SERVICES="console seatd driftwm foot"
+SERVICES="console udevd seatd driftwm foot"
 CONFIRM_TIMEOUT=30
+WATCHDOG_TIMEOUT=60
+# the experiment has no confirm service, so the failed-boot counter is never cleared: no limit
+BOOT_FAIL_LIMIT=1000
 RECOVERY_VERSION=1
 RECOVERY_CMDLINE="console=ttyS0 ro loglevel=4 panic=5"

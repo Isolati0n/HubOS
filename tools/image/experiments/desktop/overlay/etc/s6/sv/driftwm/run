@@ -1,15 +1,14 @@
 #!/bin/sh
-# Experiment: driftwm on the real display path (--backend udev), software rendering.
+# Experiment: driftwm on the real display path (--backend udev), software rendering, as the NORMAL user "hub"
+# (group seat), not as root.
 exec 2>&1
 i=0; while [ ! -S /run/seatd.sock ] && [ $i -lt 100 ]; do sleep 0.2; i=$((i+1)); done
-mkdir -p /run/dw /dev/pts /dev/shm
-chmod 700 /run/dw
+# udevd (eudev) has to have finished its first trigger: libinput reads the device database it writes
+i=0; while [ ! -f /run/udev/ready ] && [ $i -lt 300 ]; do sleep 0.2; i=$((i+1)); done
+mkdir -p /run/dw /run/hub/state /dev/pts /dev/shm
+chown hub:hub /run/dw /run/hub /run/hub/state; chmod 700 /run/dw
 mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts
 mountpoint -q /dev/shm || mount -t tmpfs tmpfs /dev/shm
-# WORKAROUND (step 4): there is no udevd on this image, so libinput finds no ID_INPUT in the udev database.
-if [ -f /config/hubos/no-mkudevdb ]; then echo "mkudevdb: skipped (flag file on the config partition)"; elif [ -x /usr/local/bin/mkudevdb ]; then /usr/local/bin/mkudevdb; fi
-export XDG_RUNTIME_DIR=/run/dw XDG_SEAT=seat0 LIBSEAT_BACKEND=seatd HOME=/root
-export LIBGL_ALWAYS_SOFTWARE=1 RUST_LOG=${DW_LOG:-info,smithay=info} RUST_BACKTRACE=1
-[ -f /etc/driftwm.env ] && . /etc/driftwm.env
-echo "driftwm: starting $(date -u +%T)"
-exec /usr/local/bin/driftwm --backend udev
+echo "driftwm: starting as user hub $(date -u +%T)"
+exec s6-setuidgid hub /usr/bin/env XDG_RUNTIME_DIR=/run/dw XDG_STATE_HOME=/run/hub/state XDG_SEAT=seat0 LIBSEAT_BACKEND=seatd HOME=/run/hub \
+  LIBGL_ALWAYS_SOFTWARE=1 RUST_LOG=${DW_LOG:-info,smithay=info} RUST_BACKTRACE=1 /usr/local/bin/driftwm --backend udev

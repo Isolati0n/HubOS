@@ -1,5 +1,5 @@
 #!/bin/sh
-# Experiment: the seat daemon (no logind, no systemd).
+# Experiment: the seat daemon (no logind, no systemd). Clients in the group "seat" may connect.
 exec 2>&1
 mkdir -p /run
-exec seatd -g root -l debug
+exec seatd -g seat -l debug
