@@ -77,6 +77,9 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **A machine refuses to update or restart while a game or long job is running.**
 - **Master copies of the code and every built image live on the NAS.** GitHub is a convenience mirror. Long term, builds happen on a machine inside the cluster, so the cluster can rebuild itself if GitHub disappears.
 - **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used, under any circumstances.
+- systemd programs are never installed or run. Libraries built from the systemd source package (libsystemd0, libudev1) are tolerated for now as plain libraries; revisit before the desktop slice. Headless role images (NAS, backup NAS, VM host, guests) are to drop both libraries later, with libudev-zero and rebuilt packages where needed; the hub's desktop stack stays as it is until the desktop slice. See docs/proposals/systemd-libraries.md.
+- The image build pins systemd, systemd-sysv, libpam-systemd, dbus-user-session, udev, systemd-timesyncd and systemd-resolved to never install, and a build test fails if any of them, or any systemd unit directory, is in an image.
+- Finished images do not contain apt, dpkg-based tools, PAM modules or procps: they are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
 - A D-Bus session bus (dbus-daemon alone, no systemd) is allowed on the hub, because Waybar will not start without one.
@@ -250,7 +253,8 @@ HubOS/
 │   ├── image.md                      (Phase B image: how to build it, how to run each test, measured times)
 │   ├── inventory-format.md
 │   ├── proposals/
-│   │   └── phase-b-image.md          (Phase B first-slice image proposal; owner's answers recorded in it)
+│   │   ├── phase-b-image.md          (Phase B first-slice image proposal; owner's answers recorded in it)
+│   │   └── systemd-libraries.md      (research on libsystemd0 and libudev1: who needs them, replacements, options)
 │   └── viewers-research.md           (what was read and tested about each viewer; sources and labels)
 ├── examples/
 │   ├── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
@@ -354,6 +358,8 @@ HubOS/
 - remote-viewer shows a small error dialog that carries the chosen app-id when the connection fails; hubd cannot tell it from the viewer window
 - Moonlight window title '<id> - Moonlight' with Sunshine's name set to the machine id (read from source; Moonlight was never run)
 - tmux new-session -A -s hubos over ssh (not run against a real server)
+- libudev-zero with libinput, driftwm, OpenZFS and QEMU/libvirt (symbols match; nothing was run with them)
+- Real logins through sshd without PAM modules (only sshd -t was run)
 
 ## Open questions for the owner
 
@@ -367,7 +373,6 @@ HubOS/
 - Which command opens a NAS as files (the bespoke file manager is a design discussion)
 - Moonlight pairing is by hand once per node for v1; secrets design later (pairing is scriptable: moonlight pair --pin and Sunshine's PIN API)
 - AI box: NVIDIA with CUDA, or AMD with ROCm (December hardware decision)
-- Whether libsystemd0 and libudev1 (plain libraries from the systemd source package) may be in the images; see docs/proposals/systemd-libraries.md
 
 ---
 
@@ -407,4 +412,6 @@ HubOS/
 - **2026-10-01 (later):** HUB-OS.md cleaned up (duplicate clipboard line, Moonlight unverified items); NAS opens with ssh until the bespoke file manager; pairing by hand for v1.
 - **2026-10-02:** Owner decisions: independent kernels per machine, out-of-tree modules only when a machine declares them, kernel pinning and staged NAS updates, OpenZFS on the NAS and backup NAS; Phase B choices recorded in docs/proposals/phase-b-image.md.
 - **2026-10-02:** Phase B slices S0 to S3 built in the repo: tools/image, image/, a QEMU test runner; see docs/image.md.
+- **2026-10-03:** Owner decisions on the systemd libraries and image rules: programs never, libraries tolerated for now, apt pin and build test, apt/PAM/procps deleted after the build.
 - **2026-10-03:** Phase B images: per-slot kernels (slot choice independent of firmware load options), free-space check, systemd pin and strip step.
+
