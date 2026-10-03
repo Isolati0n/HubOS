@@ -13,7 +13,7 @@ Nothing was installed on the machine. Packages were downloaded with `apt-get dow
 The owner approved my recommendation for all 25 choices of section 12, **except choice 2** (the systemd libraries), and with the additions on choices 19 and 24. The recommendations below are copied from section 12.
 
 1. **Base builder.** Approved: `mmdebstrap` on Ubuntu 24.04 with a pinned snapshot date (25 s; the desktop software we need later is in the archive).
-2. **The two systemd libraries.** **Temporary: keep `libsystemd0` and `libudev1` in the prototype image, undecided; the owner decides after `docs/proposals/systemd-libraries.md`.**
+2. **The two systemd libraries.** Libraries tolerated for now (see HUB-OS.md); programs never; decided 2026-10-03, to be revisited before the desktop slice.
 3. **Ubuntu or Debian.** Approved: Ubuntu 24.04 (already used for the other documents).
 4. **Init.** Approved: s6 with plain `run` scripts now, s6-rc built from source later.
 5. **Where PID 1 comes from.** Approved: a small `/sbin/init` shell script that ends in `exec s6-svscan` (as tested).
