@@ -82,7 +82,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Finished images do not contain apt, PAM modules, procps, login and passwd (dpkg stays for now; it is an Essential package, so only its files could be deleted later). They are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - **Sound:** all audio plays through the hub (carried by the viewers). Likely PipeWire.
-- A D-Bus session bus (dbus-daemon alone, no systemd) is allowed on the hub, because Waybar will not start without one.
+- A D-Bus session bus (dbus-daemon alone, no systemd) may be declared by any machine's configuration; the hub needs one because Waybar will not start without it.
 - Kernels are independent per machine. Each machine's configuration names its own kernel (version, build options, extra modules); nothing is inherited from a role. Roles are text labels only: the inventory gives behaviour to hub, guest and vm-host and to nothing else. One default kernel is set in the build configuration; a machine that overrides it records the reason in its config.
 - Out-of-tree kernel modules (NVIDIA's driver, OpenZFS) are allowed only when a machine's configuration declares them. They are built together with that machine's kernel from one pinned source version; if the build fails, no image is produced. They are listed in the signed manifest and covered by the boot tests.
 - Kernel and graphics-stack versions are pinned and tested before rollout; nothing tracks 'latest'. Each image boots in a test machine before it is offered. The NAS and the backup NAS are updated a week apart, and the backup NAS only after the main one has run well.
@@ -172,6 +172,9 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Game tuner:** an advanced built-in tuner that measures and suggests settings. It writes the same profile files the owner can edit by hand. When delay and smoothness conflict, the default is the **steadiest picture**, overridable per game. The profile file format comes first; the tuner comes after the first working version.
 - The tuner can measure what the box can see (frame-time consistency, scheduling delay). True click-to-screen delay needs external measuring hardware.
 - **Game files live on the box's own SSD.** Saves are copied to the NAS automatically.
+- Emulators ship inside the gaming box's sealed image as pinned upstream binaries (AppImage or standalone), listed with their SHA-256 in the machine's build config and run with extract-and-run (no FUSE). They are built from source only where no suitable binary exists or a patch is needed. No Flatpak. Steam, game files and Proton prefixes live on the box's own SSD data area.
+- N64: RMG by default (Gopher64 is the second candidate to test in December). NES: MesenCE (its Linux release format is still to be checked).
+- The gaming-box kernel configuration enables user namespaces (Steam's container runtime needs them).
 - **Competitive play** happens on the gaming monitors, with zero streaming delay.
 - **Casual play** can happen in a Moonlight window on the hub, showing the same picker.
 
@@ -239,84 +242,37 @@ Ready means the machine's session server is accepting connections:
 
 ## Repo layout
 
+Directory level only. Run `git ls-files` for the full list.
+
 ```
 HubOS/
-├── CLAUDE.md
-├── HUB-OS.md
-├── go.mod                            (one module for the whole repo)
-├── go.sum
-├── docs/
-│   ├── bar-findings.md
-│   ├── driftwm-findings.md
-│   ├── environment.md
-│   ├── games-research.md             (emulators, Dolphin netplay, Slippi, Ring Out, latency features; sources and labels)
-│   ├── hubd-slice2.md
-│   ├── image.md                      (Phase B image: how to build it, how to run each test, measured times)
-│   ├── input-sharing-research.md     (Lan Mouse, Deskflow clipboard, evdev grabbing, two forwarder designs)
-│   ├── inventory-format.md
-│   ├── proposals/
-│   │   ├── phase-b-image.md          (Phase B first-slice image proposal; owner's answers recorded in it)
-│   │   └── systemd-libraries.md      (research on libsystemd0 and libudev1: who needs them, replacements, options)
-│   └── viewers-research.md           (what was read and tested about each viewer; sources and labels)
-├── examples/
-│   ├── inventory.example.toml        (192.0.2.x addresses, a range reserved for documentation)
-│   ├── viewers.example.toml          (the fake viewer only; no real viewer command lines; used by tests)
-│   ├── viewers.real.example.toml     (ssh, spice, vnc, moonlight and [default_ports]; all unverified on hardware)
-│   └── wofi.style.css                (menu look: fixed-width font; copy to /etc/hubos/wofi.css)
-├── image/                            (Phase B: what goes inside the machine images)
-│   ├── apt/
-│   │   └── no-systemd.pref           (apt pin: the systemd packages are never installed)
-│   ├── machines/
-│   │   └── qemu-test.build           (a machine's build configuration: KERNEL_VERSION, KERNEL_FRAGMENT, MODULES, PACKAGES, SERVICES)
-│   ├── kernel/
-│   │   └── qemu-test.frag            (kernel configuration fragment for that machine)
-│   ├── packages/
-│   │   └── qemu-test.list            (the package list of the root)
-│   ├── stage0/                       (stage 0, built into the kernel)
-│   │   ├── init
-│   │   └── stage0.list.in
-│   ├── config/qemu-test/             (the config partition's inventory.toml and viewers.toml)
-│   └── rootfs/                       (files copied into the root: /sbin/init, hubos-ctl, s6 service directories, udhcpc script)
-├── cmd/
-│   └── hubd/
-│       ├── main.go                   (slice 1: flags, wiring, printing, exit code; routes subcommands)
-│       ├── main_test.go
-│       ├── menu_test.go
-│       └── slice2.go                 (slice 2: serve, feed, list, menu, pick, open, end, forget)
+├── CLAUDE.md, HUB-OS.md              (rules for every session; this brief)
+├── go.mod, go.sum                    (one Go module for the whole repo)
+├── docs/                             (design notes and research; each file names its sources and labels)
+│   └── proposals/                    (proposals, not decisions: the Phase B image, the systemd libraries)
+├── examples/                         (example inventory, viewers.toml files and the menu style; documentation addresses only)
+├── cmd/hubd/                         (the hubd program: flags, wiring, slice 1 and slice 2 commands)
 ├── internal/
 │   ├── driftwm/                      (driftwm socket client)
-│   │   ├── driftwm.go
-│   │   └── driftwm_test.go
 │   ├── hub/                          (state, checks, menu list, open/end, record, socket)
-│   │   ├── hub.go  ipc.go  open.go  probes.go  record.go  view.go  viewerlog.go  watch.go
-│   │   └── hub_test.go  ipc_test.go  late_test.go  title_test.go  view_test.go  viewerlog_test.go
-│   ├── inventory/                    (read + validate; no network)
-│   │   ├── inventory.go  validate.go
-│   │   └── inventory_test.go
+│   ├── inventory/                    (read and validate the inventory; no network)
 │   ├── probe/                        (up/down checks; no inventory knowledge)
-│   │   ├── probe.go
-│   │   └── probe_test.go
 │   └── viewers/                      (viewers.toml reader)
-│       ├── viewers.go
-│       └── real_test.go  viewers_test.go
 ├── testdata/
-│   ├── inventory.fake.toml           (valid; points at 127.0.0.x fake nodes)
-│   ├── broken/                       (one deliberately broken file per rule: 01 to 31, and a README.md)
+│   ├── broken/                       (one deliberately broken inventory per rule, and a README.md)
 │   └── viewers/                      (test viewer tables and a fake two-window viewer)
-│       ├── ambiguous.toml  chatty.toml  handover.toml  ignores-name.toml  late.toml
-│       └── two-windows.sh
-└── tools/
-    ├── image/                        (Phase B build scripts and the QEMU test runner, build tag "qemu")
-    │   ├── common.sh  fetch-tools.sh  build-kernel.sh  build-base.sh  build-root-image.sh  build-disk.sh  build-bundle.sh
-│   ├── strip-root.sh  check-libs.sh  (delete apt, PAM modules, procps, login, passwd files; ldd check inside the root)
-    │   ├── doc.go
-    │   └── qemu_test.go
-    ├── fakenode/                     (tiny program that pretends to be a machine)
-    │   ├── main.go
-    │   └── main_test.go
-    └── geninv/                       (writes big fake inventories at run time for scale tests)
-        ├── main.go
-        └── main_test.go
+├── tools/
+│   ├── fakenode/                     (tiny program that pretends to be a machine)
+│   ├── geninv/                       (writes big fake inventories at run time for scale tests)
+│   └── image/                        (Phase B build scripts and the QEMU test runner, build tag "qemu")
+└── image/                            (what goes inside the machine images)
+    ├── apt/                          (apt pin: the systemd packages are never installed)
+    ├── config/                       (a machine's config partition files)
+    ├── kernel/                       (kernel configuration fragments)
+    ├── machines/                     (machine build configurations)
+    ├── packages/                     (package lists)
+    ├── rootfs/                       (files copied into the root: /sbin/init, hubos-ctl, s6 service directories)
+    └── stage0/                       (stage 0, built into the kernel)
 ```
 
 ---
@@ -365,13 +321,16 @@ HubOS/
 - tmux new-session -A -s hubos over ssh (not run against a real server)
 - libudev-zero with libinput, driftwm, OpenZFS and QEMU/libvirt (symbols match; nothing was run with them)
 - Real logins through sshd without PAM modules (only sshd -t was run)
+- Pinned emulator AppImages run on the image's glibc with extract-and-run (nothing was run)
+- Steam and Proton on the image: 32-bit libraries, user namespaces, no systemd
 
 ## Open questions for the owner
 
 - GPU brands for each machine
 - The full hardware list (research before December), including a keyboard and mouse that keep their polling rate through the forwarder
 - Number of machines per role
-- Soul Calibur II emulator; Minecraft Java or Bedrock
+- Minecraft Java or Bedrock
+- Soul Calibur II netplay: Dolphin (GameCube, delay-based) or Ring Out (a recompiled port, delay-based, five weeks old); decide in December
 - A custom exit chord for game-style windows
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
 - Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
@@ -379,7 +338,10 @@ HubOS/
 - Moonlight pairing is by hand once per node for v1; secrets design later (pairing is scriptable: moonlight pair --pin and Sunshine's PIN API)
 - AI box: NVIDIA with CUDA, or AMD with ROCm (December hardware decision)
 - Forwarder design: always grab and re-inject, or grab only while forwarding (decided after December measurements)
-- NES and N64 emulators: MesenCE tentatively for NES; N64 pending research on Gopher64 and RMG
+- N64: confirm RMG against Gopher64 in a December test
+- MesenCE's Linux release format (AppImage or other): the owner checks
+- Whether the Battle.net desktop app is needed for the Steam edition of Diablo II: test in December
+- Whether Steam runs without systemd on the image (32-bit libraries, user namespaces): test in December
 - How emulators and Steam get onto the immutable gaming-box image (build from source, AppImage, Flatpak; see docs/games-research.md)
 
 ---
@@ -424,4 +386,4 @@ HubOS/
 - **2026-10-03:** Phase B images: per-slot kernels (slot choice independent of firmware load options), free-space check, systemd pin and strip step.
 - **2026-10-03:** Reviewed the games and input research; forwarder design left open until December; emulator packaging recorded as open; apt bullet reworded.
 - **2026-10-03:** Phase B images: floor only rises, recovery detected by BootCurrent, one-kernel manifest refused, hang-retry exercised.
-
+- **2026-10-03:** Games research reviewed: emulators ship as pinned binaries inside the gaming-box image, user namespaces in the gaming-box kernel, D-Bus session bus declarable per machine, N64 default RMG, layout simplified.
