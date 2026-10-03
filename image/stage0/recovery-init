@@ -19,11 +19,15 @@ while [ -z "$DEV" ] && [ $i -lt 20 ]; do
   [ -n "$DEV" ] || { sleep 0.5; i=$((i+1)); }
 done
 if [ -n "$DEV" ] && mount -o ro "$DEV" /config 2>/dev/null; then echo "STAGE0-RECOVERY: config partition mounted read-only at /config"; else echo "STAGE0-RECOVERY: no config partition"; fi
+# The data partition (read-write) gives `hubos-ctl update` room for a bundle; without it the bundle goes to RAM (/run).
+DATADEV=$(for u in /sys/class/block/*/uevent; do if grep -q '^PARTNAME=hubos-data$' "$u" 2>/dev/null; then echo /dev/$(basename $(dirname $u)); break; fi; done)
+if [ -n "$DATADEV" ] && mount -o noatime "$DATADEV" /data 2>/dev/null; then echo "STAGE0-RECOVERY: data partition mounted at /data (room for a bundle)"; else echo "STAGE0-RECOVERY: no data partition; a bundle would go to RAM"; fi
 ip link set lo up
 ip link set eth0 up 2>/dev/null
 if udhcpc -i eth0 -n -q -t 3 -T 1 -s /usr/lib/hubos/udhcpc.script >/run/udhcpc.log 2>&1; then echo "STAGE0-RECOVERY: network $(ip -4 addr show eth0 | awk '/inet /{print $2}')"; else echo "STAGE0-RECOVERY: no network (dhcp failed)"; fi
 echo "HUBOS: RECOVERY MODE (separate recovery kernel; neither slot's root is used; bare terminal)"
 cat /etc/hubos-release
-echo "Tools: hubos-ctl status, efibootmgr, signify-openbsd, wget, e2fsck, mke2fs, findfs, blkid, ip. Reboot: reboot -f"
+if [ -f /etc/hubos/update.pub ]; then echo "Install a signed bundle:  hubos-ctl update http://HOST:PORT/BUNDLE [a|b]   (default slot a; sets BootNext to it; then: reboot -f)"; else echo "WARNING: this recovery kernel has no update public key; hubos-ctl update will not work"; fi
+echo "Tools: hubos-ctl status, hubos-ctl update, hubos-ctl clear-failures, efibootmgr, signify-openbsd, wget, e2fsck, mke2fs, findfs, blkid, ip. Reboot: reboot -f"
 export ENV=/etc/recovery.rc
 exec setsid cttyhack /bin/sh

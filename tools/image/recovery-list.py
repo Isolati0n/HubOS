@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""recovery-list.py BASE TOOLS BUSYBOX RELEASE_FILE > recovery.list
+"""recovery-list.py BASE TOOLS BUSYBOX RELEASE_FILE [UPDATE_PUB] > recovery.list
 
 Writes the initramfs list (gen_init_cpio format) of the SEPARATE recovery kernel: static busybox (all applets as
 links), the recovery init, hubos-ctl, efibootmgr, signify, e2fsprogs, findfs/blkid, the udhcpc script and every
@@ -8,6 +8,7 @@ is used at run time; this is a copy taken at build time. Run from the repository
 import os, subprocess, sys
 
 base, tools, busybox, release = sys.argv[1:5]
+update_pub = sys.argv[5] if len(sys.argv) > 5 else ""
 REPO = os.getcwd()
 LIBDIRS = [tools + p for p in ("/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu")] + \
           [base + p for p in ("/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu")]
@@ -64,7 +65,7 @@ f("/lib64/ld-linux-x86-64.so.2", ld)
 f("/bin/busybox", busybox)
 real = {"findfs": base + "/usr/sbin/findfs", "blkid": base + "/usr/sbin/blkid", "e2fsck": base + "/usr/sbin/e2fsck",
         "mke2fs": base + "/usr/sbin/mke2fs", "tune2fs": base + "/usr/sbin/tune2fs", "resize2fs": base + "/usr/sbin/resize2fs",
-        "dumpe2fs": base + "/usr/sbin/dumpe2fs", "debugfs": base + "/usr/sbin/debugfs"}
+        "dumpe2fs": base + "/usr/sbin/dumpe2fs", "debugfs": base + "/usr/sbin/debugfs", "chattr": base + "/usr/bin/chattr"}
 for n, src in real.items(): add_binary("/sbin/" + n, src)
 add_binary("/usr/sbin/efibootmgr", tools + "/bin/efibootmgr")
 add_binary("/usr/bin/signify-openbsd", tools + "/bin/signify-openbsd")
@@ -76,8 +77,9 @@ f("/init", os.path.join(REPO, "image/stage0/recovery-init"))
 f("/usr/sbin/hubos-ctl", os.path.join(REPO, "image/rootfs/usr/sbin/hubos-ctl"))
 f("/usr/lib/hubos/udhcpc.script", os.path.join(REPO, "image/rootfs/usr/lib/hubos/udhcpc.script"))
 f("/etc/hubos-release", release, "644")
+if update_pub: f("/etc/hubos/update.pub", update_pub, "644")
 f("/etc/recovery.rc", os.path.join(REPO, "image/stage0/recovery.rc"), "644")
-for dd in ("/dev", "/proc", "/sys", "/run", "/tmp", "/config", "/boot/efi", "/etc/hubos"): d(dd)
+for dd in ("/dev", "/proc", "/sys", "/run", "/tmp", "/config", "/data", "/boot/efi", "/etc/hubos"): d(dd)
 out.append("nod /dev/console 600 0 0 c 5 1")
 out.append("nod /dev/null 666 0 0 c 1 3")
 print("\n".join(out))

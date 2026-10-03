@@ -396,3 +396,4 @@ HubOS/
 - **2026-10-03:** Games research reviewed: emulators ship as pinned binaries inside the gaming-box image, user namespaces in the gaming-box kernel, D-Bus session bus declarable per machine, N64 default RMG, layout simplified.
 - **2026-10-03:** Phase B images: separate recovery kernel, confirm refuses below the floor, rollback command.
 - **2026-10-03:** Recovery and boot-loop decisions recorded: separate recovery kernel updated at confirm, failure counter in an EFI variable (N=3), per-machine timeouts, normal-user hub desktop.
+- **2026-10-03:** Phase B images: recovery update at confirm, recovery can install, boot-loop breaker, per-machine timeouts.

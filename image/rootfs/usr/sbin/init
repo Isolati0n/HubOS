@@ -32,6 +32,7 @@ ESP=$(findfs PARTLABEL=hubos-esp 2>/dev/null)
 [ -n "$CFG" ]  && mount -o noatime "$CFG" /config  || echo "HUBOS: no config partition"
 [ -n "$DATA" ] && mount -o noatime "$DATA" /data   || echo "HUBOS: no data partition"
 echo "HUBOS: efi: $(efibootmgr 2>/dev/null | grep -E '^Boot(Current|Next|Order)' | tr '\n' ' ')"
+echo "HUBOS: settings from stage 0: confirm timeout ${HUBOS_CONFIRM_TIMEOUT:-unset (default 120)} s, watchdog timeout ${HUBOS_WATCHDOG_TIMEOUT:-unset (default 180)} s, failed-boot limit ${HUBOS_BOOT_FAIL_LIMIT:-unset (default 3)}"
 echo "HUBOS: slot=$SLOT release: $(cat /etc/hubos-release | tr '\n' ' ')"
 # --- apply the declarative config (slice 1: a sh-sourceable file) ---
 NAME=hubos-node; NET=dhcp; IFACE=eth0; ADDR=; GW=; SERVICES="hubd console confirm wd"
