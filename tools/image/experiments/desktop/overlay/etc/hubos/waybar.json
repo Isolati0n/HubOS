@@ -1,6 +1,6 @@
 {
   "layer": "top", "position": "top", "height": 30,
   "modules-left": ["custom/hub"], "modules-center": [], "modules-right": ["clock"],
-  "custom/hub": { "exec": "/usr/bin/hubd feed", "return-type": "json", "format": "{}" },
+  "custom/hub": { "exec": "/usr/bin/hubd feed", "return-type": "json", "format": "{}", "on-click": "/usr/bin/hubd menu --wofi /usr/local/bin/wofi-fixed" },
   "clock": { "format": "{:%H:%M:%S}", "interval": 1 }
 }

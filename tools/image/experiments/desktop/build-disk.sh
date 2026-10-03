@@ -8,8 +8,7 @@ R=$1; K=$2; D=$3
 [ -f "$R" ] && [ -f "$K" ] && [ -n "$D" ] || { echo "usage: build-disk.sh ROOT.sqsh KERNEL OUTDIR" >&2; exit 2; }
 mkdir -p "$D"; rm -f "$D"/disk.img "$D"/*.part
 C=$D/cfg.dir; rm -rf "$C"; mkdir -p "$C/hubos"
-{ echo "NAME=hub-desktop"; echo "NET=dhcp"; echo "IFACE=eth0"; echo "SERVICES=\"$SERVICES\""; } > "$C/hubos/node.conf"
-[ -n "$NO_MKUDEVDB" ] && touch "$C/hubos/no-mkudevdb"
+{ echo "NAME=hub-desktop"; echo "NET=dhcp"; echo "IFACE=eth0"; echo "SERVICES=\"$SERVICES\""; echo "BOOT_FAIL_LIMIT=${BOOT_FAIL_LIMIT:-3}"; } > "$C/hubos/node.conf"
 cp "$REPO"/image/config/qemu-test/inventory.toml "$REPO"/image/config/qemu-test/viewers.toml "$C/hubos/"
 truncate -s 64M "$D/esp.part"; mkfs.vfat -F 32 -n ESP "$D/esp.part" >/dev/null
 export MTOOLS_SKIP_CHECK=1

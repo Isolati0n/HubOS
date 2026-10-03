@@ -91,13 +91,26 @@ class Session:
             ppm = f"{self.out}/{name}.ppm"; self.monitor(f"screendump {ppm}"); ppm_to_png(ppm, path); os.remove(ppm)
         return path
 
+    def abs_move(self, x, y):
+        """Absolute pointer position 0..32767 through QMP input-send-event (no device given). Needs the QEMU option
+        -qmp unix:OUTDIR/qmp.sock,server,nowait (steps.py adds it for the tablet run). HMP mouse_move cannot do this: it
+        sends relative events to the PS/2 mouse unless that is switched off, and then the tablet still gets nothing."""
+        import json
+        if getattr(self, "q", None) is None:
+            self.q = socket.socket(socket.AF_UNIX); self.q.settimeout(10); self.q.connect(f"{self.out}/qmp.sock")
+            self.q.recv(4096); self.q.sendall(b'{"execute":"qmp_capabilities"}\n'); self.q.recv(4096)
+        ev = [{"type": "abs", "data": {"axis": "x", "value": x}}, {"type": "abs", "data": {"axis": "y", "value": y}}]
+        self.q.sendall(json.dumps({"execute": "input-send-event", "arguments": {"events": ev}}).encode() + b"\n"); return self.q.recv(4096)
     def key(self, k): self.monitor(f"sendkey {k}")
     def move(self, x, y): self.monitor(f"mouse_move {x} {y}")      # absolute 0..32767 with usb-tablet
     def button(self, mask): self.monitor(f"mouse_button {mask}")   # 1 = left, 0 = release
     def type_text(self, s):
-        names = {" ": "spc", "\n": "ret", ".": "dot", "-": "minus", "/": "slash", "=": "equal", ":": "shift-semicolon"}
+        """Types through the monitor's sendkey: a 20 ms hold and 0.5 s between keys (the defaults repeated and dropped keys)."""
+        names = {" ": "spc", "\n": "ret", ".": "dot", "-": "minus", "/": "slash", "=": "equal", ":": "shift-semicolon", "_": "shift-minus", "$": "shift-4"}
         for ch in s:
-            self.key(names.get(ch, ch))
+            k = names.get(ch, ch)
+            if ch.isupper(): k = "shift-" + ch.lower()
+            self.monitor(f"sendkey {k} 20"); time.sleep(0.5)
 
     def close(self):
         try: self.monitor("quit")
@@ -120,6 +133,37 @@ def png_stats(path):
         for x in range(0, len(row) - bpp, bpp * 8):
             tot += 1; nz += any(row[x:x+3])
     return w, h, len(d), (nz / tot if tot else 0)
+
+def png_rows(path):
+    """(width, height, bytes per pixel, rows) of a PNG written by QEMU (8-bit RGB/RGBA, all filter types)."""
+    d = open(path, "rb").read(); w, h = struct.unpack(">II", d[16:24]); ct = d[25]; bpp = {2: 3, 6: 4}[ct]
+    idat = b""; i = 8
+    while i < len(d):
+        n = struct.unpack(">I", d[i:i+4])[0]
+        if d[i+4:i+8] == b"IDAT": idat += d[i+8:i+8+n]
+        i += 12 + n
+    raw = zlib.decompress(idat); st = 1 + w * bpp; prev = bytearray(w * bpp); rows = []
+    for y in range(h):
+        f = raw[y*st]; r = bytearray(raw[y*st+1:(y+1)*st])
+        for x in range(len(r)):
+            a = r[x-bpp] if x >= bpp else 0; b = prev[x]; c = prev[x-bpp] if x >= bpp else 0
+            if f == 1: r[x] = (r[x] + a) & 255
+            elif f == 2: r[x] = (r[x] + b) & 255
+            elif f == 3: r[x] = (r[x] + ((a + b) >> 1)) & 255
+            elif f == 4:
+                p_ = a + b - c; pa, pb, pc = abs(p_-a), abs(p_-b), abs(p_-c)
+                r[x] = (r[x] + (a if pa <= pb and pa <= pc else b if pb <= pc else c)) & 255
+        rows.append(r); prev = r
+    return w, h, bpp, rows
+
+def diff_bbox(a, b, y0=0):
+    """Bounding box (x0, y0, x1, y1) of the pixels that differ between two screenshots (rows from y0 down), or None."""
+    w, h, bpp, ra = png_rows(a); _, _, _, rb = png_rows(b); xs = []; ys = []
+    for y in range(y0, h):
+        if ra[y] != rb[y]:
+            for x in range(w):
+                if ra[y][x*bpp:x*bpp+3] != rb[y][x*bpp:x*bpp+3]: xs.append(x); ys.append(y)
+    return (min(xs), min(ys), max(xs), max(ys)) if xs else None
 
 def ppm_to_png(ppm, png):
     d = open(ppm, "rb").read(); parts = d.split(b"\n", 3); w, h = map(int, parts[1].split()); px = parts[3]

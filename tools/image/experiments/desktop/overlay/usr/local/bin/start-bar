@@ -1,10 +1,12 @@
 #!/bin/sh
-# EXPERIMENT (step 5): the session bus, hubd and Waybar, started by hand from the serial shell (not an s6 service).
-export XDG_RUNTIME_DIR=/run/dw WAYLAND_DISPLAY=wayland-1 LC_ALL=C.UTF-8 HOME=/root
-export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dw/bus
-mkdir -p /run/hubos /var/lib/dbus
-dbus-daemon --session --address="$DBUS_SESSION_BUS_ADDRESS" --fork --print-pid
-hubd serve --inventory /etc/hubos/inventory.toml --viewers /etc/hubos/viewers.toml --bar-height 30 > /run/hubos/hubd.log 2>&1 &
+# EXPERIMENT (step 5): a fake machine, the session bus, hubd and Waybar, started by hand from the serial shell (root),
+# all four as the normal user "hub". Not an s6 service.
+mkdir -p /run/hub /run/hub/hubos; chown -R hub:hub /run/hub
+E="XDG_RUNTIME_DIR=/run/dw WAYLAND_DISPLAY=wayland-1 LC_ALL=C.UTF-8 HOME=/run/hub DBUS_SESSION_BUS_ADDRESS=unix:path=/run/dw/bus"
+s6-setuidgid hub env $E dbus-daemon --session --address=unix:path=/run/dw/bus --fork --print-pid
+s6-setuidgid hub env $E fakenode 127.0.0.12:21002 > /run/hub/fakenode.log 2>&1 &
+sleep 1
+s6-setuidgid hub env $E hubd serve --inventory /etc/hubos/inventory.toml --viewers /etc/hubos/viewers.toml --bar-height 30 > /run/hub/hubd.log 2>&1 &
 sleep 2
-waybar -c /etc/hubos/waybar.json -s /etc/hubos/waybar.css -l info > /run/hubos/waybar.log 2>&1 &
+s6-setuidgid hub env $E waybar -c /etc/hubos/waybar.json -s /etc/hubos/waybar.css -l info > /run/hub/waybar.log 2>&1 &
 echo started
