@@ -109,9 +109,9 @@ update() {
   fetch "$BASE" manifest $W/manifest || die "no manifest at $BASE"
   fetch "$BASE" manifest.sig $W/manifest.sig || die "REFUSED: no signature (unsigned bundle)"
   nkeys=0; signed_by=
+  for k in $KEYS/*.pub; do [ -f "$k" ] && nkeys=$((nkeys+1)); done
   for k in $KEYS/*.pub; do
     [ -f "$k" ] || continue
-    nkeys=$((nkeys+1))
     if signify-openbsd -V -p "$k" -m $W/manifest -x $W/manifest.sig >/dev/null 2>&1; then signed_by=$k; break; fi
   done
   [ "$nkeys" -gt 0 ] || die "REFUSED: there is no update key in $KEYS (nothing can be verified)"
