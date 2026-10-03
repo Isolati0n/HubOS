@@ -13,20 +13,14 @@ mount -t tmpfs -o mode=0755 tmpfs /var
 mkdir -p /var/log /var/tmp /run/service /config /data /boot/efi
 mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null
 echo "HUBOS: stage1 start, cmdline: $(cat /proc/cmdline)"
-# Recovery is recognised by the entry the firmware booted, not by the command line: BootCurrent must be
-# the entry labelled hubos-recovery (so it works whether or not the firmware keeps load options).
+# (Recovery is not handled here: the recovery boot entry starts a separate recovery kernel that never reaches
+# this script; see image/stage0/recovery-init.)
 CUR=$(efibootmgr 2>/dev/null | sed -n 's/^BootCurrent: //p')
 LABEL=
 [ -n "$CUR" ] && LABEL=$(efibootmgr 2>/dev/null | sed -n "s/^Boot$CUR\*\{0,1\}[[:space:]]\([^[:space:]]*\).*/\1/p" | head -n 1)
 echo "HUBOS: booted entry $CUR label '$LABEL'"
-# For the record: which hubos entries the firmware still had when it booted this time. The confirm step recreates a
-# missing recovery entry (docs/image.md, section on the recovery entry).
+# For the record: which hubos entries the firmware still had when it booted this time (docs/image.md).
 echo "HUBOS: entries present at boot: $(efibootmgr 2>/dev/null | sed -n 's/^Boot[0-9A-F]*\*\{0,1\}[[:space:]]\(hubos[^[:space:]]*\).*/\1/p' | tr '\n' ' ')"
-if [ "$LABEL" = hubos-recovery ]; then
-  echo "HUBOS: RECOVERY MODE (bare terminal; root is read-only; nothing else started)"
-  cat /etc/hubos-release
-  exec setsid cttyhack /bin/sh
-fi
 # Each slot's kernel has its slot and root built into its own command line, so the slot does not depend on
 # the firmware's load options (the a and b entries have none). If options are added, the LAST hubos.slot= wins.
 SLOT=$(sed -n 's/.*hubos\.slot=\([ab]\).*/\1/p' /proc/cmdline)

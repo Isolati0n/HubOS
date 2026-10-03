@@ -1,8 +1,11 @@
 #!/bin/bash
 # build-bundle.sh VERSION FLAVOR OUTDIR PUBKEY SECKEY
-#   OUTDIR gets manifest, manifest.sig, kernel-a.efi, kernel-b.efi (one kernel per slot), rootfs.sqsh. The
-#   manifest names the kernel version, the module list and the hash of both kernels, and is signed with SECKEY (the runner's throwaway key). NO_KERNEL_VERSION=1 leaves the
-#   kernel-version line out (a bundle the update tool must refuse).
+#   OUTDIR gets manifest, manifest.sig, kernel-a.efi, kernel-b.efi (one kernel per slot), kernel-recovery.efi (the
+#   separate recovery kernel), rootfs.sqsh. The manifest names the kernel version, the module list, the recovery
+#   version and the hash of every kernel, and is signed with SECKEY (the runner's throwaway key).
+#   NO_KERNEL_VERSION=1 leaves the kernel-version line out (a bundle the update tool must refuse).
+#   NO_RECOVERY=1 leaves the recovery kernel (the file and the recovery-version line) out.
+#   RECOVERY_VERSION_OVERRIDE=N writes another recovery-version.
 . "$(dirname "$0")/common.sh"
 load_machine
 V=$1; F=$2; D=$3; PUB=$4; SEC=$5
@@ -10,10 +13,12 @@ V=$1; F=$2; D=$3; PUB=$4; SEC=$5
 mkdir -p "$D"
 "$(dirname "$0")/build-root-image.sh" "$V" "$F" "$D/rootfs.sqsh" "$PUB"
 cp "$WORK/out/kernel-a.efi" "$D/kernel-a.efi"; cp "$WORK/out/kernel-b.efi" "$D/kernel-b.efi"
+[ -n "$NO_RECOVERY" ] || cp "$WORK/out/kernel-recovery.efi" "$D/kernel-recovery.efi"
 {
   echo "hubos-bundle 1"; echo "version $V"; echo "flavor $F"; echo "arch x86_64"
   [ -n "$NO_KERNEL_VERSION" ] || echo "kernel-version $KERNEL_VERSION"
   echo "modules $(echo "$MODULES" | tr ' ' ',')"
-  for f in kernel-a.efi kernel-b.efi rootfs.sqsh; do echo "$f sha256 $(sha256sum "$D/$f" | cut -d' ' -f1) size $(stat -c %s "$D/$f")"; done
+  [ -n "$NO_RECOVERY" ] || echo "recovery-version ${RECOVERY_VERSION_OVERRIDE:-${RECOVERY_VERSION:-1}}"
+  for f in kernel-a.efi kernel-b.efi $([ -n "$NO_RECOVERY" ] || echo kernel-recovery.efi) rootfs.sqsh; do echo "$f sha256 $(sha256sum "$D/$f" | cut -d' ' -f1) size $(stat -c %s "$D/$f")"; done
 } > "$D/manifest"
 signify-openbsd -S -s "$SEC" -m "$D/manifest" -x "$D/manifest.sig"

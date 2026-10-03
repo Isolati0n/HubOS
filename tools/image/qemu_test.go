@@ -40,20 +40,23 @@ type vm struct {
 }
 
 type rig struct {
-	t         *testing.T
-	work      string
-	disk      string // directory with disk.img and vars.fd
-	base      string // http://10.0.2.2:PORT
-	sec       string
-	pub       string
-	hangs     int
-	hangLog   []string // every hang: number, step, saved log
-	hangDir   string
-	forceHang int  // test hook: treat the next N boots as hangs (HUBOS_TEST_FORCE_HANG=once|twice)
-	dead      bool // the run was stopped by a repeated hang; later VM tests skip
-	vm        *vm
-	logSeq    int
-	bootPos   int // where the output of the current boot starts in the VM buffer
+	t          *testing.T
+	work       string
+	disk       string // directory with disk.img and vars.fd
+	base       string // http://10.0.2.2:PORT
+	sec        string
+	pub        string
+	hangs      int
+	hangLog    []string // every hang: number, step, saved log
+	hangDir    string
+	forceHang  int    // test hook: treat the next N boots as hangs (HUBOS_TEST_FORCE_HANG=once|twice)
+	dead       bool   // the run was stopped by a repeated hang; later VM tests skip
+	hungReboot bool   // a reboot hung and was retried: BootNext was used up, so the trial slot did NOT boot
+	repeating  bool   // a step is being repeated after such a hang; a second hang now fails the run
+	recSig     string // what the first recovery boot looked like (kernel command line and release), to compare later ones
+	vm         *vm
+	logSeq     int
+	bootPos    int // where the output of the current boot starts in the VM buffer
 }
 
 func (r *rig) script(name string, env []string, args ...string) string {
@@ -253,6 +256,11 @@ func (r *rig) noteHang(v *vm, what string) {
 	r.hangLog = append(r.hangLog, fmt.Sprintf("hang %d in step %q (serial log %s)", r.hangs, what, dst))
 	os.WriteFile(dst, []byte(v.text(0)), 0o644)
 	r.t.Logf("HANG %d (%s): no known log line in time; serial log saved to %s", r.hangs, what, dst)
+	lines := strings.Split(strings.TrimRight(v.text(0), "\n"), "\n")
+	if len(lines) > 14 {
+		lines = lines[len(lines)-14:]
+	}
+	r.t.Logf("last lines of the hung boot:\n%s", strings.Join(lines, "\n"))
 }
 
 // reboot sends a reboot and waits for the next handover; on a hang it restarts QEMU on the same disk.
@@ -273,8 +281,30 @@ func (r *rig) afterReset(m int) int {
 	}
 	r.noteHang(v, "reboot")
 	v.kill()
+	if r.repeating {
+		r.dead = true
+		r.t.Fatalf("the reboot hung again while a step was being repeated after a hang; the run fails")
+	}
 	r.vm = r.retryBoot("reboot")
+	r.hungReboot = true
 	return 0
+}
+
+// repeatIfHung is called after a reboot that was meant to start a trial slot (BootNext). If that reboot hung, the
+// retry booted the confirmed slot instead (BootNext is used up), so the step is repeated once: redo() prepares
+// the trial again (for example the update) and the machine is rebooted again. A second hang fails the run.
+func (r *rig) repeatIfHung(redo func()) {
+	if !r.hungReboot {
+		return
+	}
+	r.hungReboot = false
+	r.t.Logf("the reboot hung and was retried (BootNext was lost); repeating the step once")
+	redo()
+	r.repeating = true
+	m := r.vm.mark()
+	io.WriteString(r.vm.in, "sync; reboot -f\n")
+	r.afterReset(m)
+	r.repeating = false
 }
 
 func (r *rig) sh(cmd string) (int, string) {
@@ -322,38 +352,70 @@ func (r *rig) bootEntries() string {
 	return strings.TrimSpace(ms[len(ms)-1][1])
 }
 
+// recoveryCmds are run in the recovery shell. The output is also the "signature" of a recovery boot.
+const recoveryCmds = `cat /proc/cmdline; tr '\n' ' ' < /etc/hubos-release; echo; hubos-ctl status; efibootmgr -v | grep hubos-recovery; ps | head -n 4`
+
+// recoverySig reduces the recovery shell output to the command line and the release line.
+func recoverySig(out string) string {
+	cl := regexp.MustCompile(`(?m)^console=.*$`).FindString(out)
+	rel := regexp.MustCompile(`(?m)^version=\S+ .*$`).FindString(out)
+	return strings.TrimSpace(cl) + " | " + strings.TrimSpace(rel)
+}
+
+// waitRecovery waits for the separate recovery kernel's banner on the running VM, then makes the shell usable.
+func (r *rig) waitRecovery(v *vm, from int) bool {
+	if v.wait(`HUBOS: RECOVERY MODE`, 200*time.Second, from) < 0 {
+		return false
+	}
+	time.Sleep(2500 * time.Millisecond)
+	io.WriteString(v.in, "stty -echo\n")
+	time.Sleep(500 * time.Millisecond)
+	return true
+}
+
 // bootRecoveryEntry points BootNext at the recovery entry and reboots. If recovery mode comes up it runs a few
-// commands in the bare terminal and returns banner=true and their output; otherwise it waits for the machine to
-// come back by itself (stage 0 refused the root, or the watchdog reset it) and returns banner=false and the
-// lines printed. The caller then reboots out of recovery.
+// commands in the bare terminal and returns banner=true and their output. The caller then reboots out of
+// recovery.
 func (r *rig) bootRecoveryEntry() (banner bool, out string) {
-	r.sh(`efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery[[:space:]].*/\1/p' | head -n 1)`)
+	setNext := `efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery[[:space:]].*/\1/p' | head -n 1)`
+	r.sh(setNext)
 	m := r.vm.mark()
 	io.WriteString(r.vm.in, "sync; reboot -f\n")
-	e := r.vm.wait(`RECOVERY MODE|STAGE0: [^\n]*rebooting`, 200*time.Second, m)
-	if e < 0 {
-		r.t.Fatalf("neither recovery mode nor a stage 0 refusal after the reboot")
+	if !r.waitRecovery(r.vm, m) {
+		// a hang: restart once (the normal slot boots, BootNext is used up), set BootNext again and repeat once
+		r.noteHang(r.vm, "recovery boot")
+		r.vm.kill()
+		r.retryBoot("recovery boot")
+		r.waitConfirmed()
+		r.sh(setNext)
+		m = r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		if !r.waitRecovery(r.vm, m) {
+			r.noteHang(r.vm, "recovery boot (repeated)")
+			r.dead = true
+			r.t.Fatalf("the recovery boot hung twice; the run fails")
+		}
 	}
 	printed := r.vm.text(m)
-	if strings.Contains(printed, "RECOVERY MODE") {
-		time.Sleep(2 * time.Second)
-		io.WriteString(r.vm.in, "stty -echo\n")
-		time.Sleep(500 * time.Millisecond)
-		_, sh := r.vm.sh(`cat /proc/cmdline; cat /etc/hubos-release | tr '\n' ' '; echo; efibootmgr -v | grep hubos-recovery; touch /usr/x 2>&1; ps | head -n 4`, 60*time.Second)
-		r.t.Logf("recovery shell:\n%s", sh)
-		return true, printed + "\n" + sh
+	_, sh := r.vm.sh(recoveryCmds, 60*time.Second)
+	r.t.Logf("recovery shell:\n%s", sh)
+	return true, printed + "\n" + sh
+}
+
+// startRecovery starts QEMU on the disk and waits for the recovery shell (the disk has BootNext set to recovery).
+func (r *rig) startRecovery() *vm {
+	v := r.startVM()
+	if !r.waitRecovery(v, 0) {
+		r.t.Fatalf("the recovery shell did not come up")
 	}
-	// stage 0 refused: the firmware then boots the next entry; wait for that normal boot
-	if h := r.vm.wait(handoverRe, 300*time.Second, e); h >= 0 {
-		r.bootPos = h
-		r.ready(r.vm)
-	} else {
-		r.noteHang(r.vm, "after the recovery attempt")
-		r.vm.kill()
-		r.retryBoot("after the recovery attempt")
+	r.vm = v
+	return v
+}
+
+func copyFile(t *testing.T, src, dst string) {
+	if out, err := exec.Command("cp", "--sparse=always", src, dst).CombinedOutput(); err != nil {
+		t.Fatalf("cp %s %s: %v %s", src, dst, err, out)
 	}
-	r.t.Logf("stage 0 refused the recovery boot; the machine came back by itself:\n%s", r.vm.text(m)[:min(len(r.vm.text(m)), 600)])
-	return false, printed
 }
 
 // ---------------------------------------------------------------------------
@@ -427,11 +489,15 @@ func TestImage(t *testing.T) {
 		bundle(b.v, b.f, "v"+b.v+"-"+b.f)
 	}
 	bundle("2", "good", "v2-nokernelversion", "NO_KERNEL_VERSION=1")
+	// bundles for the recovery-kernel update rules: none in the manifest, a newer one (changed file), the same version again
+	bundle("9", "good", "v9-norecovery", "NO_RECOVERY=1")
+	bundle("10", "good", "v10-recovery2", "RECOVERY_VERSION_OVERRIDE=2")
+	bundle("11", "good", "v11-recovery2-again", "RECOVERY_VERSION_OVERRIDE=2")
 	// refused variants: made from v2-good with hard links
 	variant := func(name string, change func(dir string)) {
 		d := filepath.Join(bdir, name)
 		os.MkdirAll(d, 0o755)
-		for _, f := range []string{"manifest", "manifest.sig", "kernel-a.efi", "kernel-b.efi", "rootfs.sqsh"} {
+		for _, f := range []string{"manifest", "manifest.sig", "kernel-a.efi", "kernel-b.efi", "kernel-recovery.efi", "rootfs.sqsh"} {
 			if err := os.Link(filepath.Join(bdir, "v2-good", f), filepath.Join(d, f)); err != nil {
 				t.Fatal(err)
 			}
@@ -471,6 +537,25 @@ func TestImage(t *testing.T) {
 			}
 			return []byte(strings.Join(keep, "\n"))
 		}
+	}
+	recKernel10 := ""
+	{
+		d := filepath.Join(bdir, "v10-recovery2")
+		kp := filepath.Join(d, "kernel-recovery.efi")
+		b, err := os.ReadFile(kp)
+		if err != nil {
+			t.Fatal(err)
+		}
+		b = append(b, []byte("hubos-test-marker")...)
+		os.Remove(kp)
+		os.WriteFile(kp, b, 0o644)
+		sumOut, _ := exec.Command("sha256sum", kp).Output()
+		recKernel10 = strings.Fields(string(sumOut))[0]
+		rewrite(d, "manifest", func(m []byte) []byte {
+			re := regexp.MustCompile(`(?m)^kernel-recovery\.efi sha256 [0-9a-f]+ size \d+$`)
+			return re.ReplaceAll(m, []byte(fmt.Sprintf("kernel-recovery.efi sha256 %s size %d", recKernel10, len(b))))
+		})
+		resign(d)
 	}
 	// correctly signed manifests that list only ONE kernel
 	variant("v2-onekernel-a", func(d string) { rewrite(d, "manifest", dropLine("kernel-b.efi ")); resign(d) })
@@ -562,19 +647,31 @@ func TestImage(t *testing.T) {
 			t.Skip("run stopped by a repeated hang")
 		}
 		start := time.Now()
-		_, ev := r.sh(`efibootmgr -v | grep hubos`)
+		_, ev := r.sh(`efibootmgr -v | grep -E "hubos|BootOrder"`)
+		_, ord := r.sh(`efibootmgr | grep -E "^BootOrder|^Boot[0-9A-F]{4}\*? hubos" | sed 's/\t.*//'`)
 		_, cl := r.sh(`cat /proc/cmdline; echo "slot file: $(cat /run/hubos-slot)"; head -1 /etc/hubos-release`)
 		ok := true
-		for _, sl := range []string{"hubos-a\\s.*kernel-a", "hubos-b\\s.*kernel-b", "hubos-recovery\\s.*kernel-a"} {
+		for _, sl := range []string{"hubos-a\\s.*kernel-a", "hubos-b\\s.*kernel-b", "hubos-recovery\\s.*kernel-recovery"} {
 			re := regexp.MustCompile(`(?m)` + sl + `\.efi\)\s*$`)
 			if !re.MatchString(ev) {
-				t.Errorf("entry %q is missing or has load options:\n%s", sl, ev)
+				t.Errorf("entry %q is missing, points elsewhere or has load options:\n%s", sl, ev)
 				ok = false
 			}
 		}
-		ok = ok && strings.Contains(cl, "hubos.slot=a") && strings.Contains(cl, "root=PARTLABEL=hubos-root-a") && !strings.Contains(cl, "hubos.recovery") && strings.Contains(cl, "slot file: a")
-		record("A1 the a, b and recovery boot entries are all created WITHOUT load options; slot a boots with its own kernel (/proc/cmdline shows hubos.slot=a)", ok, time.Since(start), "")
+		// BootOrder: slot a, slot b, then the recovery entry
+		num := func(label string) string {
+			m := regexp.MustCompile(`(?m)^Boot([0-9A-F]{4})\*? ` + label + `\s*$`).FindStringSubmatch(ord)
+			if m == nil {
+				return "?"
+			}
+			return m[1]
+		}
+		wantOrder := num("hubos-a") + "," + num("hubos-b") + "," + num("hubos-recovery")
+		inOrder := strings.Contains(ord, "BootOrder: "+wantOrder)
+		ok = ok && inOrder && strings.Contains(cl, "hubos.slot=a") && strings.Contains(cl, "root=PARTLABEL=hubos-root-a") && !strings.Contains(cl, "hubos.recovery") && strings.Contains(cl, "slot file: a")
+		record("A1 the a, b and recovery boot entries are all created WITHOUT load options; the recovery entry points at kernel-recovery.efi and is in BootOrder after the two slots; slot a boots with its own kernel", ok, time.Since(start), "BootOrder "+wantOrder)
 		if !ok {
+			t.Errorf("inOrder=%v want %s\n%s", inOrder, wantOrder, ord)
 			t.Fail()
 		}
 	})
@@ -622,7 +719,8 @@ func TestImage(t *testing.T) {
 			all = false
 		}
 		_, afterB := r.sh(slotB)
-		if beforeB != afterB {
+		hashOf := func(x string) string { return regexp.MustCompile(`[0-9a-f]{64}`).FindString(x) }
+		if hashOf(beforeB) == "" || hashOf(beforeB) != hashOf(afterB) {
 			t.Errorf("the other slot's root changed while only refused bundles were offered")
 			all = false
 		}
@@ -643,6 +741,7 @@ func TestImage(t *testing.T) {
 		bt := time.Now()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
 		r.afterReset(m)
+		r.repeatIfHung(func() { r.update("v2-good") })
 		rebootSec := time.Since(bt).Seconds()
 		r.waitConfirmed()
 		slot, rel, confirmed, _ := r.status()
@@ -678,24 +777,20 @@ func TestImage(t *testing.T) {
 		start := time.Now()
 		atBoot := r.bootEntries()
 		_, ev := r.sh(`efibootmgr -v | grep -E "hubos-(a|b|recovery)"`)
-		recreated := strings.Contains(ev, "hubos-recovery") && regexp.MustCompile(`(?m)hubos-recovery\s.*kernel-b\.efi`).MatchString(ev)
-		dropped := !strings.Contains(atBoot, "hubos-recovery")
-		record("R0 the recovery entry is gone when the firmware (OVMF) boots the next time and the confirm step recreates it for the running slot", dropped && recreated, 0,
-			fmt.Sprintf("entries present at the boot of slot b: [%s]; after the confirm step the recovery entry points at kernel-b.efi: %v", atBoot, recreated))
-		if !dropped || !recreated {
-			t.Errorf("atBoot=%q recreated=%v\n%s", atBoot, recreated, ev)
+		kept := strings.Contains(atBoot, "hubos-recovery") && regexp.MustCompile(`(?m)hubos-recovery\s.*kernel-recovery\.efi\)\s*$`).MatchString(ev)
+		record("R0 the recovery entry is in BootOrder, so it is still there when the firmware (OVMF) starts the next boot; nothing has to recreate it", kept, 0,
+			fmt.Sprintf("entries present at the boot of slot b: [%s]; it points at kernel-recovery.efi", atBoot))
+		if !kept {
+			t.Errorf("atBoot=%q\n%s", atBoot, ev)
 			t.Fail()
 		}
 		banner, out := r.bootRecoveryEntry()
-		slot := regexp.MustCompile(`hubos\.slot=([ab])`).FindStringSubmatch(out)
-		rel := regexp.MustCompile(`version=(\d+)`).FindStringSubmatch(out)
-		got := "none"
-		if slot != nil && rel != nil {
-			got = fmt.Sprintf("slot %s release %s", slot[1], rel[1])
-		}
-		t.Logf("after the update to slot b (release 2 confirmed), recovery booted: %s", got)
-		record("R1 recovery after an update: which slot and release the recovery entry boots", banner && got == "slot b release 2", time.Since(start), "recovery booted "+got+"; confirmed slot is b release 2")
-		if !banner || got != "slot b release 2" {
+		sig := recoverySig(out)
+		r.recSig = sig
+		okSig := banner && strings.Contains(sig, "version=recovery-1") && !strings.Contains(sig, "hubos.slot") && !strings.Contains(sig, "root=") && strings.Contains(out, "min_version=")
+		t.Logf("recovery after the update to slot b: %s", sig)
+		record("R1 recovery after an update: boots the separate recovery kernel (no slot, no root in its command line) and `hubos-ctl status` runs in its shell", okSig, time.Since(start), sig)
+		if !okSig {
 			t.Fail()
 		}
 		r.reboot()
@@ -756,21 +851,22 @@ func TestImage(t *testing.T) {
 		start := time.Now()
 		// slot a now holds the bad release 3 (no /sbin/init) that was just rolled back from
 		banner, out := r.bootRecoveryEntry()
+		sig := recoverySig(out)
 		if banner {
 			r.reboot() // leave the recovery shell; the firmware then boots the confirmed slot
 			r.waitConfirmed()
 		}
 		slot, rel, confirmed, _ := r.status()
-		refused := strings.Contains(out, "has no /sbin/init")
-		bootedB := strings.Contains(out, "hubos.slot=b") && strings.Contains(out, "version=2")
-		record("R2 recovery after a rollback boots the CONFIRMED slot (b, release 2), not the slot that holds the rolled-back release 3", banner && bootedB && slot == "b" && rel == "2" && confirmed, time.Since(start),
-			fmt.Sprintf("recovery banner: %v; recovery booted slot b release 2: %v; stage 0 refused a bad root: %v; afterwards slot %s release %s confirmed", banner, bootedB, refused, slot, rel))
-		if !banner || !bootedB || slot != "b" || rel != "2" || !confirmed {
+		same := sig == r.recSig
+		record("R2 recovery after a rollback boots the SAME recovery kernel as after the update, whatever slot a holds", banner && same && slot == "b" && rel == "2" && confirmed, time.Since(start),
+			fmt.Sprintf("same as after the update: %v; afterwards slot %s release %s confirmed", same, slot, rel))
+		if !banner || !same || slot != "b" || rel != "2" || !confirmed {
+			t.Errorf("banner=%v sig=%q want %q", banner, sig, r.recSig)
 			t.Fail()
 		}
 	})
 	badBoot("6b bad boot rolls back: signed bundle whose root is garbage (stage 0 cannot mount it)", "v4-garbage", `STAGE0: cannot mount the root of slot a; rebooting`)
-	badBoot("6c bad boot rolls back: boots but never gets healthy (confirm times out)", "v5-unhealthy", `this boot FAILED`)
+	badBoot("6c bad boot rolls back: boots but never gets healthy (confirm times out)", "v5-unhealthy", `this boot FAILED|starting Boot[0-9A-F]{4} "hubos-b"`)
 	badBoot("6d bad boot rolls back: init hangs (the watchdog resets the machine)", "v6-hang", `STAGE0: switching to slot a`)
 
 	t.Run("T07_recovery_mode", func(t *testing.T) {
@@ -780,10 +876,11 @@ func TestImage(t *testing.T) {
 		}
 		start := time.Now()
 		_, ev := r.sh(`efibootmgr -v | grep hubos-recovery`)
-		noOpts := regexp.MustCompile(`(?m)File\(\\EFI\\hubos\\kernel-[ab]\.efi\)\s*$`).MatchString(ev)
+		noOpts := regexp.MustCompile(`(?m)File\(\\EFI\\hubos\\kernel-recovery\.efi\)\s*$`).MatchString(ev)
 		banner, shell := r.bootRecoveryEntry()
-		ok := banner && noOpts && !strings.Contains(shell, "hubos.recovery") && strings.Contains(shell, "Read-only") && strings.Contains(shell, "label 'hubos-recovery'")
-		record("7 recovery mode: the recovery entry has NO load options and still boots recovery (banner, bare terminal, read-only root)", ok, time.Since(start), "recognised by the entry label (BootCurrent), not by the command line")
+		sig := recoverySig(shell)
+		ok := banner && noOpts && sig == r.recSig && strings.Contains(shell, "RECOVERY MODE") && strings.Contains(shell, "min_version=") && strings.Contains(shell, "PID")
+		record("7 recovery mode: the recovery entry has NO load options and boots the separate recovery kernel (banner, bare terminal, hubos-ctl status)", ok, time.Since(start), "after rollbacks and failed trials: still the same recovery boot")
 		if !ok {
 			t.Errorf("noOpts=%v banner=%v\n%s\n%s", noOpts, banner, ev, shell)
 			t.Fail()
@@ -833,6 +930,7 @@ func TestImage(t *testing.T) {
 		m := r.vm.mark()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
 		r.afterReset(m)
+		r.repeatIfHung(func() { r.update("v7-good") })
 		r.waitConfirmed()
 		slot, rel, confirmed, _ := r.status()
 		if rc != 0 || slot != "a" || rel != "7" || !confirmed {
@@ -870,16 +968,25 @@ func TestImage(t *testing.T) {
 		m := r.vm.mark()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
 		r.afterReset(m)
-		r.waitConfirmed()
-		slot, rel, _, _ := r.status()
+		r.repeatIfHung(func() {
+			r.sh(`efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-b.*/\1/p' | head -1)`)
+		})
+		// the older slot (release 2) is below the floor 7: its own confirm step must REFUSE
+		refusedAuto := r.vm.wait(`confirm: REFUSED`, 90*time.Second, r.bootPos) >= 0
+		slot, rel, confirmed, st := r.status()
 		_, cl := r.sh(`cat /proc/cmdline`)
 		boots := slot == "b" && rel == "2" && strings.Contains(cl, "hubos.slot=b")
-		// the older slot (release 2) was just confirmed by hand: the floor must NOT go down from 7
+		rcC, outC := r.sh(`hubos-ctl confirm`)
+		refuses := refusedAuto && rcC == 2 && strings.Contains(outC, "below the floor 7") && !confirmed && !strings.Contains(outC, "confirmed;")
+		record("B1 confirm refuses a slot whose release (2) is below the floor (7): message, exit 2, BootOrder and floor unchanged", refuses && boots, time.Since(start), fmt.Sprintf("automatic confirm step refused: %v; manual confirm rc=%d; slot b first in BootOrder: %v", refusedAuto, rcC, confirmed))
+		if !refuses {
+			t.Errorf("refusedAuto=%v rc=%d confirmed=%v\n%s\n%s", refusedAuto, rcC, confirmed, outC, st)
+		}
 		_, fl := r.sh(`cat /config/hubos/state/min_version`)
 		floorKept := regexp.MustCompile(`(?m)^7\s*$`).MatchString(fl)
 		rc5, out5 := r.update("v5-unhealthy")
 		belowFloor := rc5 == 2 && strings.Contains(out5, "below the floor 7")
-		record("A the floor only goes up: the older slot (release 2) booted and confirmed by hand after the rollbacks; the floor stays 7 and release 5 is refused", floorKept && belowFloor && boots, time.Since(start), "floor "+regexp.MustCompile(`\d+`).FindString(fl))
+		record("A the floor only goes up: the older slot (release 2) booted by hand after the rollbacks; the floor stays 7 and release 5 is refused", floorKept && belowFloor && boots, time.Since(start), "floor "+regexp.MustCompile(`\d+`).FindString(fl))
 		if !floorKept || !belowFloor {
 			t.Errorf("floor=%q belowFloor=%v\n%s", fl, belowFloor, out5)
 		}
@@ -887,6 +994,177 @@ func TestImage(t *testing.T) {
 		record("B update with a full boot partition fails cleanly; kernel-b.efi and slot b's root unchanged; the old kernel still boots", ok, time.Since(start), fmt.Sprintf("rc=%d; old kernel booted slot %s release %s", rc, slot, rel))
 		if !ok {
 			t.Errorf("clean=%v same=%v noTemp=%v noNext=%v boots=%v\nout:\n%s", clean, same, noTemp, noNext, boots, out)
+		}
+	})
+
+	t.Run("T11_rollback_command", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// state: slot b (release 2) runs, below the floor 7, slot a is first in BootOrder
+		rc0, out0 := r.sh(`hubos-ctl rollback`)
+		usage := rc0 == 2 && strings.Contains(out0, "usage")
+		rc, out := r.sh(`hubos-ctl rollback "test: go back to release 2 on purpose"`)
+		slot, rel, confirmed, st := r.status()
+		_, lg := r.sh(`cat /config/hubos/state/rollback.log`)
+		floor2 := regexp.MustCompile(`(?m)^min_version=2$`).MatchString(st)
+		logged := strings.Contains(lg, "floor 7 -> 2") && strings.Contains(lg, "test: go back to release 2 on purpose") && strings.Contains(lg, "slot b release 2")
+		ok := usage && rc == 0 && strings.Contains(out, "floor 7 -> 2") && confirmed && slot == "b" && rel == "2" && floor2 && logged
+		record("B2 hubos-ctl rollback REASON: refuses without a reason; logs old and new floor and the reason; floor 7 -> 2; the running slot is first in BootOrder", ok, time.Since(start), fmt.Sprintf("rc=%d; log: %s", rc, regexp.MustCompile(`(?m)^.*rollback: slot.*$`).FindString(lg)))
+		if !ok {
+			t.Errorf("usage=%v rc=%d confirmed=%v floor2=%v logged=%v\n%s\n%s\n%s", usage, rc, confirmed, floor2, logged, out, st, lg)
+			t.Fail()
+		}
+	})
+
+	t.Run("T12_recovery_kernel_updates", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		espInfo := `mount -t vfat $(findfs PARTLABEL=hubos-esp) /boot/efi; echo ver=$(cat /boot/efi/EFI/hubos/recovery.version); sha256sum /boot/efi/EFI/hubos/kernel-recovery.efi; umount /boot/efi`
+		parse := func(o string) (string, string) {
+			v := regexp.MustCompile(`ver=(\d+)`).FindStringSubmatch(o)
+			h := regexp.MustCompile(`[0-9a-f]{64}`).FindString(o)
+			if v == nil {
+				return "?", h
+			}
+			return v[1], h
+		}
+		_, o0 := r.sh(espInfo)
+		v0, h0 := parse(o0)
+		// 1. a manifest without a recovery kernel: the update works and recovery is left alone
+		rc1, u1 := r.update("v9-norecovery")
+		_, o1 := r.sh(espInfo)
+		v1, h1 := parse(o1)
+		ok1 := rc1 == 0 && strings.Contains(u1, "the manifest has no recovery kernel") && v1 == v0 && h1 == h0
+		// 2. a newer recovery version: installed
+		rc2, u2 := r.update("v10-recovery2")
+		_, o2 := r.sh(espInfo)
+		v2, h2 := parse(o2)
+		ok2 := rc2 == 0 && strings.Contains(u2, "recovery kernel version 2 is newer than the installed 1") && strings.Contains(u2, "recovery kernel version 2 installed") && v2 == "2" && h2 == recKernel10 && h2 != h0
+		// 3. the same recovery version again: left alone
+		rc3, u3 := r.update("v11-recovery2-again")
+		_, o3 := r.sh(espInfo)
+		v3, h3 := parse(o3)
+		ok3 := rc3 == 0 && strings.Contains(u3, "not newer than the installed 2; left alone") && v3 == "2" && h3 == h2
+		t.Logf("recovery version/hash: start %s %s; after no-recovery bundle %s %s; after version 2 %s %s; after version 2 again %s %s", v0, h0[:12], v1, h1[:12], v2, h2[:12], v3, h3[:12])
+		record("C1 recovery kernel updates: a manifest without one works and leaves recovery alone; a newer recovery-version installs the new file; the same version is left alone", ok1 && ok2 && ok3, time.Since(start), fmt.Sprintf("installed version %s -> %s -> %s -> %s", v0, v1, v2, v3))
+		if !ok1 || !ok2 || !ok3 {
+			t.Errorf("ok1=%v ok2=%v ok3=%v\n%s\n%s\n%s", ok1, ok2, ok3, u1, u2, u3)
+			t.Fail()
+		}
+		// boot the last update (release 11 in slot a), then recovery with the NEW recovery kernel
+		m := r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		r.afterReset(m)
+		r.repeatIfHung(func() { r.update("v11-recovery2-again") })
+		r.waitConfirmed()
+		slot, rel, confirmed, _ := r.status()
+		banner, out := r.bootRecoveryEntry()
+		same := recoverySig(out) == r.recSig
+		record("C2 after the recovery kernel update the machine boots release 11 in slot a, and recovery (the new file) boots the same way", slot == "a" && rel == "11" && confirmed && banner && same, time.Since(start), fmt.Sprintf("slot %s release %s; recovery banner %v; same as before %v", slot, rel, banner, same))
+		if slot != "a" || rel != "11" || !confirmed || !banner || !same {
+			t.Fail()
+		}
+		r.reboot()
+		r.waitConfirmed()
+	})
+
+	t.Run("T13_recovery_with_both_roots_garbage", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// destroy both slot roots (the first 4 MiB of each) and reboot into recovery without touching the disk again:
+		// the reboot is a sysrq reboot, which needs no file from the (now broken) root.
+		r.sh(`efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery[[:space:]].*/\1/p' | head -n 1)`)
+		r.sh(`dd if=/dev/zero of=$(findfs PARTLABEL=hubos-root-a) bs=1M count=4 conv=fsync 2>&1 | tail -n 1; dd if=/dev/zero of=$(findfs PARTLABEL=hubos-root-b) bs=1M count=4 conv=fsync 2>&1 | tail -n 1; sync`)
+		m := r.vm.mark()
+		io.WriteString(r.vm.in, "echo b > /proc/sysrq-trigger\n")
+		banner := r.waitRecovery(r.vm, m)
+		var shell string
+		if banner {
+			_, shell = r.vm.sh(recoveryCmds, 60*time.Second)
+			t.Logf("recovery shell with both roots garbage:\n%s", shell)
+		}
+		sig := recoverySig(shell)
+		_, tools := r.sh(`e2fsck -fn $(findfs PARTLABEL=hubos-config) 2>&1 | tail -n 2; blkid | sed 's/ UUID.*PARTLABEL/ PARTLABEL/' | head -n 8; ip -4 addr show eth0 | grep inet; wget -q -O /tmp/m ` + r.base + `/v1-good/manifest && echo wget-ok $(wc -c < /tmp/m) bytes; signify-openbsd 2>&1 | head -n 1; efibootmgr | head -n 2`)
+		okTools := regexp.MustCompile(`hubos-config: \d+/\d+ files`).MatchString(tools) && strings.Contains(tools, "wget-ok") && strings.Contains(tools, "inet ") && strings.Contains(tools, `PARTLABEL="hubos-root-a"`)
+		ok := banner && sig == r.recSig && okTools
+		record("C3 recovery boots with BOTH slot roots garbage, the same way as before; its shell runs hubos-ctl status, e2fsck, findfs/blkid, ip and wget (it fetched a file from the host)", ok, time.Since(start), "sig: "+sig)
+		if !ok {
+			t.Errorf("banner=%v sig=%q want %q\n%s", banner, sig, r.recSig, tools)
+			t.Fail()
+		}
+	})
+
+	t.Run("T14_firmware_fallthrough_experiment", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// We are in the recovery shell; both roots are garbage. Experiment: the first BootOrder entry is a kernel
+		// that loads and then reboots at once (stage 0 cannot mount its root). Does the firmware ever reach the
+		// second or third entry? Then: the first entry's FILE is missing (the loader cannot load it).
+		starts := func(txt string) map[string]int {
+			c := map[string]int{}
+			for _, m := range regexp.MustCompile(`BdsDxe: starting Boot[0-9A-F]{4} "([^"]+)"`).FindAllStringSubmatch(txt, -1) {
+				c[m[1]]++
+			}
+			return c
+		}
+		fails := func(txt string) map[string]int {
+			c := map[string]int{}
+			for _, m := range regexp.MustCompile(`BdsDxe: failed to load Boot[0-9A-F]{4} "([^"]+)"`).FindAllStringSubmatch(txt, -1) {
+				c[m[1]]++
+			}
+			return c
+		}
+		setNext := `efibootmgr -q -n $(efibootmgr | sed -n 's/^Boot\([0-9A-F]*\)\*\{0,1\}[[:space:]]hubos-recovery[[:space:]].*/\1/p' | head -n 1)`
+		r.sh(setNext + `; sync`)
+		// snapshot of the disk and the variable store, with BootNext = recovery, to come back to a shell later
+		r.vm.kill()
+		snapD, snapV := filepath.Join(r.disk, "disk.snap"), filepath.Join(r.disk, "vars.snap")
+		copyFile(t, filepath.Join(r.disk, "disk.img"), snapD)
+		copyFile(t, filepath.Join(r.disk, "vars.fd"), snapV)
+		observe := func(v *vm, d time.Duration) string {
+			m := v.mark()
+			io.WriteString(v.in, "sync; reboot -f\n")
+			time.Sleep(d)
+			return v.text(m)
+		}
+		// experiment 1: all files present, boot order a, b, recovery; a loads and fails
+		v := r.startRecovery()
+		txt1 := observe(v, 100*time.Second)
+		st1, fl1 := starts(txt1), fails(txt1)
+		v.kill()
+		t.Logf("experiment 1 (first entry loads, then reboots at once): starts %v, load failures %v", st1, fl1)
+		// experiment 2: restore, remove the first entry's FILE, same order
+		copyFile(t, snapD, filepath.Join(r.disk, "disk.img"))
+		copyFile(t, snapV, filepath.Join(r.disk, "vars.fd"))
+		v = r.startRecovery()
+		v.sh(`mount -t vfat $(findfs PARTLABEL=hubos-esp) /boot/efi; rm /boot/efi/EFI/hubos/kernel-a.efi; umount /boot/efi; `+setNext+`; sync`, 30*time.Second)
+		m := v.mark()
+		io.WriteString(v.in, "reboot -f\n")
+		if !r.waitRecovery(v, m) { // BootNext boot (consumed here)
+			t.Fatalf("no recovery shell after BootNext")
+		}
+		txt2 := observe(v, 100*time.Second)
+		st2, fl2 := starts(txt2), fails(txt2)
+		t.Logf("experiment 2 (first entry's file missing): starts %v, load failures %v", st2, fl2)
+		t1 := st1["hubos-a"] >= 2 && st1["hubos-b"] == 0 && st1["hubos-recovery"] == 0
+		t2 := fl2["hubos-a"] >= 1 && st2["hubos-b"] >= 1 && st2["hubos-recovery"] == 0
+		record("C4 OVMF: a first entry that LOADS and then reboots at once is retried forever; the second and third entries are never reached", t1, time.Since(start), fmt.Sprintf("in 100 s: starts %v, load failures %v", st1, fl1))
+		record("C5 OVMF: a first entry whose FILE is missing falls through to the second; after the second loads and fails, the third (recovery) is still never reached", t2, time.Since(start), fmt.Sprintf("in 100 s: starts %v, load failures %v", st2, fl2))
+		if !t1 || !t2 {
+			t.Errorf("t1=%v t2=%v\n%s\n---\n%s", t1, t2, firstLines(txt1, 6), firstLines(txt2, 6))
+			t.Fail()
 		}
 	})
 

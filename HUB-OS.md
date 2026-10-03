@@ -387,3 +387,4 @@ HubOS/
 - **2026-10-03:** Reviewed the games and input research; forwarder design left open until December; emulator packaging recorded as open; apt bullet reworded.
 - **2026-10-03:** Phase B images: floor only rises, recovery detected by BootCurrent, one-kernel manifest refused, hang-retry exercised.
 - **2026-10-03:** Games research reviewed: emulators ship as pinned binaries inside the gaming-box image, user namespaces in the gaming-box kernel, D-Bus session bus declarable per machine, N64 default RMG, layout simplified.
+- **2026-10-03:** Phase B images: separate recovery kernel, confirm refuses below the floor, rollback command.
