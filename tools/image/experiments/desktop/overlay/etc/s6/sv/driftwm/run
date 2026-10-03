@@ -1,0 +1,15 @@
+#!/bin/sh
+# Experiment: driftwm on the real display path (--backend udev), software rendering.
+exec 2>&1
+i=0; while [ ! -S /run/seatd.sock ] && [ $i -lt 100 ]; do sleep 0.2; i=$((i+1)); done
+mkdir -p /run/dw /dev/pts /dev/shm
+chmod 700 /run/dw
+mountpoint -q /dev/pts || mount -t devpts devpts /dev/pts
+mountpoint -q /dev/shm || mount -t tmpfs tmpfs /dev/shm
+# WORKAROUND (step 4): there is no udevd on this image, so libinput finds no ID_INPUT in the udev database.
+if [ -f /config/hubos/no-mkudevdb ]; then echo "mkudevdb: skipped (flag file on the config partition)"; elif [ -x /usr/local/bin/mkudevdb ]; then /usr/local/bin/mkudevdb; fi
+export XDG_RUNTIME_DIR=/run/dw XDG_SEAT=seat0 LIBSEAT_BACKEND=seatd HOME=/root
+export LIBGL_ALWAYS_SOFTWARE=1 RUST_LOG=${DW_LOG:-info,smithay=info} RUST_BACKTRACE=1
+[ -f /etc/driftwm.env ] && . /etc/driftwm.env
+echo "driftwm: starting $(date -u +%T)"
+exec /usr/local/bin/driftwm --backend udev
