@@ -557,15 +557,15 @@ func TestImage(t *testing.T) {
 	pub2, sec2k := genKey("next") // the NEXT update key (key 2) for the key rotation tests
 	r.script("build-kernel.sh", []string{"UPDATE_PUB=" + r.pub})
 	r.script("build-base.sh", nil)
-	// Three recovery kernels for the key rotation: key 1 only (the one built above, version 1), keys 1 and 2 (version 2),
-	// key 2 only (version 3). Each rebuild only relinks the recovery kernel (the slot kernels are up to date).
+	// Three recovery kernels for the key rotation: key 1 only (the one built above, version 1), keys 1 and 2 (version 4),
+	// key 2 only (version 5). (Versions 2 and 3 are used by the recovery-at-confirm tests before the rotation.) Each rebuild only relinks the recovery kernel (the slot kernels are up to date).
 	outDir := filepath.Join(work, "out")
 	recK1 := filepath.Join(outDir, "rec-k1.efi")
 	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK1)
-	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + r.pub + " " + pub2, "RECOVERY_VERSION=2"})
+	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + r.pub + " " + pub2, "RECOVERY_VERSION=4"})
 	recK12 := filepath.Join(outDir, "rec-k12.efi")
 	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK12)
-	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + pub2, "RECOVERY_VERSION=3"})
+	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + pub2, "RECOVERY_VERSION=5"})
 	recK2 := filepath.Join(outDir, "rec-k2.efi")
 	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK2)
 	r.script("build-kernel.sh", []string{"UPDATE_PUB=" + r.pub}) // back to key 1 only, version 1: the kernel the disk and the bundles use
@@ -621,10 +621,10 @@ func TestImage(t *testing.T) {
 		r.script("build-bundle.sh", env, ver, "good", filepath.Join(bdir, name), r.pub, sec)
 	}
 	bundleSigned("20", "v20-k2only", sec2k, "KEYRING_PUBS="+pub2)
-	bundleSigned("21", "v21-rotate", r.sec, "KEYRING_PUBS="+r.pub+" "+pub2, "RECOVERY_KERNEL_FILE="+recK12, "RECOVERY_VERSION_OVERRIDE=2")
-	bundleSigned("22", "v22-k2-drops-k1", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=3")
+	bundleSigned("21", "v21-rotate", r.sec, "KEYRING_PUBS="+r.pub+" "+pub2, "RECOVERY_KERNEL_FILE="+recK12, "RECOVERY_VERSION_OVERRIDE=4")
+	bundleSigned("22", "v22-k2-drops-k1", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=5")
 	bundleSigned("23", "v23-k1-after-drop", r.sec)
-	bundleSigned("24", "v24-k2", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=3")
+	bundleSigned("24", "v24-k2", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=5")
 	// refused variants: made from v2-good with hard links
 	variant := func(name string, change func(dir string)) {
 		d := filepath.Join(bdir, name)
@@ -1497,21 +1497,21 @@ func TestImage(t *testing.T) {
 		slot1, rel1, conf1, _, log1 := r.trialBoot(func() { r.update("v21-rotate") })
 		n1, l1 := keyInfo()
 		ev1, eh1 := r.espRecovery()
-		ok1 := rc1 == 0 && m1 != nil && m1[2] == "1" && slot1 == "b" && rel1 == "21" && conf1 && n1 == "2" && ev1 == "2" && eh1 == sha256File(t, recK12) && strings.Contains(log1, "recovery kernel version 2 installed (was 1)")
+		ok1 := rc1 == 0 && m1 != nil && m1[2] == "1" && slot1 == "b" && rel1 == "21" && conf1 && n1 == "2" && ev1 == "4" && eh1 == sha256File(t, recK12) && strings.Contains(log1, "recovery kernel version 4 installed (was 2)")
 		// K2: ... and after its confirm a bundle signed with key 2 is accepted; that release drops key 1
 		rc2, o2 := r.update("v22-k2-drops-k1")
 		m2 := sigRe.FindStringSubmatch(o2)
 		slot2, rel2, conf2, _, log2 := r.trialBoot(func() { r.update("v22-k2-drops-k1") })
 		n2, l2 := keyInfo()
 		ev2, eh2 := r.espRecovery()
-		ok2 := rc2 == 0 && m2 != nil && m2[2] == "2" && m1 != nil && m2[1] != m1[1] && slot2 == "a" && rel2 == "22" && conf2 && n2 == "1" && ev2 == "3" && eh2 == sha256File(t, recK2) && strings.Contains(log2, "recovery kernel version 3 installed (was 2)")
+		ok2 := rc2 == 0 && m2 != nil && m2[2] == "2" && m1 != nil && m2[1] != m1[1] && slot2 == "a" && rel2 == "22" && conf2 && n2 == "1" && ev2 == "5" && eh2 == sha256File(t, recK2) && strings.Contains(log2, "recovery kernel version 5 installed (was 4)")
 		// K3: after a release that drops key 1, a bundle signed with key 1 is refused
 		rc3, o3 := r.update("v23-k1-after-drop")
 		ok3 := rc3 == 2 && strings.Contains(o3, "REFUSED: bad signature") && strings.Contains(o3, "any of the 1 key(s)")
 		record("K1 key rotation: key 1 is accepted; a release signed with key 1 that carries key 2 is accepted and its confirm installs a recovery kernel that knows both; after that a bundle signed with key 2 is accepted (and drops key 1 with a recovery kernel for key 2); then a bundle signed with key 1 is refused", ok0 && ok1 && ok2 && ok3, time.Since(start),
 			fmt.Sprintf("keyring files %s -> %s -> %s; key-2 bundle before the rotation rc=%d; recovery kernel on the boot partition version %s -> %s; key-1 bundle after the drop rc=%d", n0, n1, n2, rc0, ev1, ev2, rc3))
 		if !ok0 || !ok1 || !ok2 || !ok3 {
-			t.Errorf("ok0=%v ok1=%v ok2=%v ok3=%v\n%s\n%s\n%s\n%s\nkeys: %s | %s | %s", ok0, ok1, ok2, ok3, o0, o1, o2, o3, l0, l1, l2)
+			t.Errorf("ok0=%v ok1=%v ok2=%v ok3=%v\n%s\n%s\n%s\n%s\nkeys: %s | %s | %s\nlog1=%q log2=%q ev1=%s ev2=%s", ok0, ok1, ok2, ok3, o0, o1, o2, o3, l0, l1, l2, log1, log2, ev1, ev2)
 			t.Fail()
 		}
 		// K4: the recovery shell now uses the keyring of the NEW recovery kernel (key 2 only): it refuses key 1 and installs a key-2 bundle
