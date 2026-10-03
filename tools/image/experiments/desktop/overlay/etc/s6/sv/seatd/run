@@ -1,5 +1,0 @@
-#!/bin/sh
-# Experiment: the seat daemon (no logind, no systemd).
-exec 2>&1
-mkdir -p /run
-exec seatd -g root -l debug
