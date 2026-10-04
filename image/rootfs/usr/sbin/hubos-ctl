@@ -202,8 +202,8 @@ update() {
 }
 
 # The recovery kernel travels inside the root of every release (/usr/lib/hubos/recovery/kernel-recovery.efi and
-# recovery.version). After a HEALTHY boot the confirm step installs it on the boot partition if its version is
-# newer than the installed one: free-space check first, copy to a temporary name, sync, compare, atomic rename.
+# recovery.version). After a HEALTHY boot the confirm step installs it on the boot partition if its file differs from
+# the installed one and its version is not lower than the installed one: free-space check first, copy to a temporary name, sync, compare, atomic rename.
 # Nothing here is fatal: the boot is already confirmed.
 install_recovery() {
   [ -f $RECDIR/kernel-recovery.efi ] && [ -f $RECDIR/recovery.version ] || { echo "confirm: this release carries no recovery kernel; recovery left alone"; return 0; }
@@ -211,8 +211,20 @@ install_recovery() {
   case $rv in ''|*[!0-9]*) echo "confirm: recovery kernel NOT installed: bad recovery.version '$rv'"; return 0;; esac
   mount -t vfat "$(/sbin/findfs PARTLABEL=hubos-esp)" /boot/efi 2>/dev/null || { echo "confirm: recovery kernel NOT installed: cannot mount the boot partition"; return 0; }
   inst=$(cat /boot/efi/EFI/hubos/recovery.version 2>/dev/null || echo 0)
-  if ! [ "$rv" -gt "$inst" ] 2>/dev/null; then
-    echo "confirm: recovery kernel version $rv is not newer than the installed $inst; left alone"; umount /boot/efi; return 0
+  case $inst in ''|*[!0-9]*) inst=0;; esac
+  # Rule: install when the file differs from the installed one AND the version is not lower (never a downgrade).
+  # The same version with a different file DOES install (a key-rotation release that forgot to bump the version).
+  if [ "$rv" -lt "$inst" ]; then
+    echo "confirm: recovery kernel version $rv is lower than the installed $inst; never a downgrade, left alone"; umount /boot/efi; return 0
+  fi
+  # (a different size already means a different file; the two hashes are only needed when the sizes are equal)
+  same=
+  if [ "$(stat -c %s /boot/efi/EFI/hubos/kernel-recovery.efi 2>/dev/null)" = "$(stat -c %s $RECDIR/kernel-recovery.efi)" ]; then
+    have=$(sha256sum /boot/efi/EFI/hubos/kernel-recovery.efi 2>/dev/null | cut -d' ' -f1)
+    [ "$have" = "$(sha256sum $RECDIR/kernel-recovery.efi | cut -d' ' -f1)" ] && same=1
+  fi
+  if [ -n "$same" ]; then
+    echo "confirm: recovery kernel version $rv is the same file as the installed one; left alone"; umount /boot/efi; return 0
   fi
   sz=$(stat -c %s $RECDIR/kernel-recovery.efi); need=$((sz + 1048576)); free=$(esp_free)
   if [ "$free" -lt "$need" ]; then

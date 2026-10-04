@@ -9,6 +9,8 @@ SNAPSHOT=20261001T000000Z
 # seatd and udevd run as root (they open devices and netlink); driftwm, waybar, hubd and dbus run as the user hub.
 SERVICES="console udevd seatd dbus driftwm waybar hubd confirm wd"
 # The hub's desktop needs longer than the tiny test image before hubd answers (driftwm has to be up first).
+# NOTE: 90 s and 120 s are TEST values (chosen for the slow software-drawn desktop in a virtual machine). Real hubs use the
+# defaults (confirm 120 s, watchdog 180 s) until the real times are measured; set these only in the test configuration.
 CONFIRM_TIMEOUT=90
 WATCHDOG_TIMEOUT=120
 BOOT_FAIL_LIMIT=3

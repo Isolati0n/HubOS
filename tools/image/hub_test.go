@@ -15,6 +15,7 @@ import (
 	"image/color"
 	"image/png"
 	"io"
+	"math"
 	"net"
 	"net/http"
 	"os"
@@ -116,6 +117,23 @@ func countColor(img image.Image, x0, y0, x1, y1 int, want color.RGBA) int {
 	return n
 }
 
+// findCursor finds the tip of the mouse arrow (white, with a vertical left edge at least 13 px tall) in the part of the screen
+// to the right of the menu and below the bar, where the dot grid's 2-pixel dots cannot be mistaken for it.
+func findCursor(img image.Image) (x, y int, found bool) {
+	white := func(x, y int) bool {
+		r, g, b, _ := img.At(x, y).RGBA()
+		return r>>8 > 245 && g>>8 > 245 && b>>8 > 245
+	}
+	for yy := 31; yy < 600; yy++ {
+		for xx := 669; xx < 1020; xx++ {
+			if white(xx, yy) && white(xx, yy+5) && white(xx, yy+9) && white(xx, yy+13) {
+				return xx, yy, true
+			}
+		}
+	}
+	return 0, 0, false
+}
+
 var (
 	barAlert = color.RGBA{0x8a, 0x1c, 0x1c, 255} // the red box of hubd's alert (overlay waybar.css)
 	barBg    = color.RGBA{0x1d, 0x22, 0x30, 255} // the bar's background
@@ -156,7 +174,7 @@ func TestHubImage(t *testing.T) {
 		if len(r.hangLog) > 0 {
 			hl = "\n  " + strings.Join(r.hangLog, "\n  ")
 		}
-		t.Logf("\nRESULTS OF THE HUB IMAGE (QEMU hangs seen and retried: %d; every hang: %s)\n%s", r.hangs, hl, strings.Join(results, "\n"))
+		t.Logf("\nRESULTS OF THE HUB IMAGE (QEMU hangs seen and retried: %d; every hang: %s; QEMU crashes (died from a signal) seen and retried: %d; every crash: %s)\n%s", r.hangs, hl, r.crashes, crashList(r), strings.Join(results, "\n"))
 		if r.vm != nil {
 			r.vm.kill()
 		}
@@ -327,7 +345,7 @@ func TestHubImage(t *testing.T) {
 			}
 			t.Logf("attempt %d: no menu after the click", attempts)
 		}
-		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev.log | awk '{print $1, $2}' | sort | uniq -c; pkill -x libinput; true`)
+		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev.log | awk '{print $1, $2}' | sort | uniq -c; kill $(pidof libinput) 2>/dev/null; true`)
 		t.Logf("input events the guest saw during the click:\n%s", evs)
 		img := loadPNG(t, r.shot("hub-3-menu"))
 		list := countColor(img, 0, 60, 660, 460, menuBg)
@@ -349,6 +367,92 @@ func TestHubImage(t *testing.T) {
 			fmt.Sprintf("open rc=%d; click attempts %d; list-background pixels %d (an empty list is under 20000); wofi running %s, after Escape %s", rc, attempts, list, wofi, wofi2))
 		if !ok {
 			t.Errorf("rc=%d home=%v list=%d\n%s\n%s", rc, home, list, out, st)
+			t.Fail()
+		}
+	})
+
+	t.Run("H3b_menu_row_click", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// close the AI Box window first, so the click has to open it again (not just go to a window that exists)
+		rcEnd, outEnd := r.sh(asHub("hubd end " + hubSock + " ai-1 2>&1"))
+		time.Sleep(3 * time.Second)
+		stEnd := state()
+		closed := rcEnd == 0 && !strings.Contains(stEnd, "hubos-ai-1")
+		wofiCount := func() string {
+			_, w := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
+			nums := regexp.MustCompile(`(?m)^\d+\s*$`).FindAllString(w, -1)
+			if len(nums) == 0 {
+				return "?"
+			}
+			return strings.TrimSpace(nums[len(nums)-1])
+		}
+		homeRe := regexp.MustCompile(`#\d+ hubos-ai-1 \[0, -100\] \d+x\d+\s+"AI Box"`)
+		// up to three tries: open the menu with the bar click, move the pointer onto the "ai-1  AI Box" row (the rows are
+		// 23 px apart; ai-1 is the 7th line) and click it
+		// calibration: clamp the pointer to the bottom right corner, move it by (-150,-150) and find the arrow in a screenshot
+		r.monitor("mouse_move 4000 4000")
+		time.Sleep(500 * time.Millisecond)
+		r.monitor("mouse_move -150 -150")
+		time.Sleep(time.Second)
+		kx, ky := 1.0, 1.0
+		if tx, ty, found := findCursor(loadPNG(t, r.shot("hub-3-pointer-calibration"))); found {
+			kx, ky = float64(1023-tx)/150, float64(639-ty)/150
+		}
+		t.Logf("pointer scale (screen pixels per monitor unit): x %.2f, y %.2f", kx, ky)
+		r.sh(`(libinput debug-events > /tmp/ev2.log 2>&1 &); sleep 2; echo watching`)
+		attempts, opened, home := 0, false, false
+		var st string
+		for attempts < 3 && !home {
+			attempts++
+			if wofiCount() == "0" {
+				r.monitor("mouse_move -4000 -4000")
+				time.Sleep(500 * time.Millisecond)
+				r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(40/kx)), int(math.Round(15/ky))))
+				time.Sleep(time.Second)
+				r.monitor("mouse_button 1")
+				time.Sleep(time.Second)
+				r.monitor("mouse_button 0")
+				time.Sleep(6 * time.Second)
+			}
+			if wofiCount() == "0" {
+				t.Logf("attempt %d: the menu did not open", attempts)
+				continue
+			}
+			opened = true
+			// Same way as in the desktop experiment: the pointer is sent to the top-left corner and then moved to the row (100,213)
+			// in one move, divided by the measured scale (kx, ky) of the pointer.
+			r.monitor("mouse_move -4000 -4000")
+			time.Sleep(time.Second)
+			r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(100/kx)), int(math.Round(213/ky))))
+			time.Sleep(time.Second)
+			// Two clicks. TESTED here: a single click on a row left the menu open (the row is only selected); the second click
+			// opened the machine. (Whether that is wofi's normal behaviour is UNKNOWN; a person would click twice or press Enter.)
+			for i := 0; i < 2; i++ {
+				r.monitor("mouse_button 1")
+				time.Sleep(100 * time.Millisecond)
+				r.monitor("mouse_button 0")
+				time.Sleep(300 * time.Millisecond)
+			}
+			time.Sleep(8 * time.Second)
+			st = state()
+			home = homeRe.MatchString(st)
+			if !home {
+				t.Logf("attempt %d: no AI Box window at its home after the click", attempts)
+			}
+		}
+		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev2.log | awk '{print $1, $2}' | sort | uniq -c; tail -n 6 /tmp/ev2.log | cut -c1-120; kill $(pidof libinput) 2>/dev/null; true`)
+		t.Logf("input events the guest saw during the row click:\n%s", evs)
+		r.shot("hub-3-row-click-opened")
+		after := wofiCount()
+		ok := closed && opened && home
+		record("H3b two clicks on a row of the wofi menu (relative QEMU mouse) make hubd open that machine: the closed AI Box window comes back at its home (0,-100)", ok, time.Since(start),
+			fmt.Sprintf("window closed before: %v (end rc=%d); menu opened: %v; click attempts %d; window at home after the click: %v; wofi running after: %s", closed, rcEnd, opened, attempts, home, after))
+		if !ok {
+			t.Errorf("closed=%v opened=%v home=%v\n%s\n%s\n%s", closed, opened, home, outEnd, stEnd, st)
 			t.Fail()
 		}
 	})
