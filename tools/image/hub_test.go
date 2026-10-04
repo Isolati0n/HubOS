@@ -403,6 +403,7 @@ func TestHubImage(t *testing.T) {
 			kx, ky = float64(1023-tx)/150, float64(639-ty)/150
 		}
 		t.Logf("pointer scale (screen pixels per monitor unit): x %.2f, y %.2f", kx, ky)
+		r.sh(`(libinput debug-events > /tmp/ev2.log 2>&1 &); sleep 2; echo watching`)
 		attempts, opened, home := 0, false, false
 		var st string
 		for attempts < 3 && !home {
@@ -428,9 +429,27 @@ func TestHubImage(t *testing.T) {
 			time.Sleep(time.Second)
 			r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(100/kx)), int(math.Round(213/ky))))
 			time.Sleep(time.Second)
-			r.monitor("mouse_button 1")
-			time.Sleep(time.Second)
-			r.monitor("mouse_button 0")
+			switch attempts {
+			case 1: // a plain click
+				r.monitor("mouse_button 1")
+				time.Sleep(time.Second)
+				r.monitor("mouse_button 0")
+			case 2: // a double click
+				for i := 0; i < 2; i++ {
+					r.monitor("mouse_button 1")
+					time.Sleep(100 * time.Millisecond)
+					r.monitor("mouse_button 0")
+					time.Sleep(150 * time.Millisecond)
+				}
+			default: // a small move on the row first, then a click
+				r.monitor("mouse_move 1 0")
+				time.Sleep(500 * time.Millisecond)
+				r.monitor("mouse_move -1 0")
+				time.Sleep(500 * time.Millisecond)
+				r.monitor("mouse_button 1")
+				time.Sleep(300 * time.Millisecond)
+				r.monitor("mouse_button 0")
+			}
 			time.Sleep(8 * time.Second)
 			st = state()
 			home = homeRe.MatchString(st)
@@ -438,6 +457,8 @@ func TestHubImage(t *testing.T) {
 				t.Logf("attempt %d: no AI Box window at its home after the click", attempts)
 			}
 		}
+		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev2.log | awk '{print $1, $2}' | sort | uniq -c; tail -n 6 /tmp/ev2.log | cut -c1-120; pkill -x libinput; true`)
+		t.Logf("input events the guest saw during the row click:\n%s", evs)
 		r.shot("hub-3-row-click-opened")
 		after := wofiCount()
 		ok := closed && opened && home
