@@ -472,7 +472,7 @@ A "fixed home position per machine" (`HUB-OS.md`) maps onto `position` in a wind
 | musl; other architectures | A different toolchain. |
 | Multi-monitor, touch and tablet | Hardware. |
 | Config hot-reload; session save/restore; `suspend-window` | Run with a `.desktop` entry present and edit the config while it runs. |
-| The `xwayland-satellite` helper | Install it (not packaged for Debian/Ubuntu per the README, `README.md:440`; `cargo install --locked xwayland-satellite`). |
+| The `xwayland-satellite` helper | Not packaged for Debian/Ubuntu per the README (`README.md:440`). **Correction (2026-10-04):** `cargo install --locked xwayland-satellite` does **not** work: crates.io answers 404 ("crate `xwayland-satellite` does not exist", checked 2026-10-04), and it is not in Ubuntu 24.04's package index either (`apt-cache policy xwayland-satellite` prints nothing). A helper agent (round 2 of `docs/proposals/remote-display.md`) built it from its git repository (commit `b5690b56`, 1 min 27 s); that build was not repeated by the lead. |
 | How much driftwm will change | Follow its releases; pin a commit. |
 
 ## 13. Questions to settle with the owner

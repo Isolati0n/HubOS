@@ -86,6 +86,9 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - A boot-loop breaker counts failed boots in an EFI variable: stage 0 increments it at every boot, the confirm step clears it, and after N failures (default 3, per-machine setting) stage 0 starts the recovery shell instead of booting.
 - The recovery kernel arms the hardware watchdog and the network recovery agent feeds it.
 - The network recovery agent gets its address from a DHCP reservation per machine; its API is signed requests with one-time nonces, one API with the node helper (a state field says recovery or running). Reinstall is a button only, never automatic; the default release is the last one that machine confirmed, into the slot that failed.
+- wayvnc and neatvnc are built from source at pinned tags (wayvnc v0.10.2 with neatvnc v1.0.3 or newer; Ubuntu 24.04's 0.7.2 garbles non-ASCII clipboard text); every node's wayvnc is started with --name <machine id>; sessions are non-shared; the screen size is fixed per node in v1.
+- Display credentials are per node (the secrets design decides how they are made and stored); the management key's private half lives on the hub's config partition, readable only by root and hubd, never on a node; nodes hold only public keys.
+- The recovery agent is supervised by a plain shell restart loop in the recovery kernel. The boot partition of real machines is 512 MiB.
 - The recovery kernel is carried inside every slot's root, listed by hash in the manifest, and installed at the confirm step after a healthy boot, never during the update.
 - The confirm timeout and the watchdog timeout are per-machine settings (real defaults 120 s and 180 s; the test image uses 30 s and 60 s); a check refuses a configuration where the watchdog does not exceed the confirm timeout plus a margin.
 - Update keys: the update tool and the recovery kernel accept any key in a keyring (/etc/hubos/keys/*.pub). A release signed with the old key can carry the next key; the old key is dropped only in a later release.
@@ -118,7 +121,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - **Closing a window leaves the machine's session alive.** Clicking again returns to it.
 - Clicking a machine that is already open **goes to its existing window**. Never open duplicates.
 - **Every machine stays logged in**, so clicking lands straight on its desktop.
-- Copy-paste across windows is a goal. v1 limit: Moonlight windows only type the hub's text onto the machine; a clipboard bridge comes later.
+- Clipboard: text only, both directions wanted. Node to hub works through the display protocol; hub to node goes through a clipboard bridge via the node helper's API (design discussion first). The hub does not run an X11 compatibility stack for a viewer.
 - **No auto-reopen of windows after a hub restart.** The panel returns; windows do not.
 - Moonlight windows are matched by their title '<machine id> - Moonlight'; every node sets Sunshine's name to its machine id. The inventory's optional session names the Sunshine app to stream.
 - Windows can stay open 24/7. The hub is designed for up to 20 always-open windows (the real-world reference); the owner can open and close them at will.
@@ -338,6 +341,9 @@ HubOS/
 - eudev's libudev with libinput and driftwm on real hardware (QEMU only)
 - Pinned emulator AppImages run on the image's glibc with extract-and-run (nothing was run)
 - Steam and Proton on the image: 32-bit libraries, user namespaces, no systemd
+- Hub-to-node clipboard: remote-viewer never sends clipboard text; the TigerVNC viewer does only while its window has focus and needs Xwayland (not planned)
+- wayvnc 0.10 or newer with neatvnc 0.9 or newer needs a source build on Ubuntu 24.04
+- The recovery agent inside the real recovery kernel, supervised, on real hardware
 - Per-node audio control: matching a PipeWire stream to a node (by process id or by stream name)
 - How many simultaneous hardware decodes the hub's GPU sustains with 20 open windows
 - The load of continuous remote-display encoding on each node
@@ -359,7 +365,8 @@ HubOS/
 - Where the mixer settings live: the hub's config partition, included in the NAS backup
 - Which additional nodes to build, and when (suggested, not decided: a hardware test bench of two or three cheap boards, a build and test node with KVM, a release and netboot node, a spare hub)
 - Whether the no-systemd rule covers appliances that are not Hub OS machines (for example a PiKVM, which runs its own Linux); a December decision
-- Where the per-node mute and volume controls live (a small mixer panel), how hubd matches an audio stream to a node, and where the saved volume and mute state is kept and backed up
+- Where each key and credential lives and how it rotates (see docs/proposals/secrets.md)
+- The clipboard bridge and the node helper API (see docs/proposals/node-helper-api.md)
 - The network recovery agent in the recovery kernel: protocol, authentication, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
 - Moonlight pairing is by hand once per node for v1; secrets design later (pairing is scriptable: moonlight pair --pin and Sunshine's PIN API)
@@ -423,3 +430,4 @@ HubOS/
 - **2026-10-04:** AMD CPUs only, no proprietary BMC firmware (recovery built into Hub OS; out-of-band hardware decided in December), no terminals (every node has its own bespoke GUI), always-open windows on the hub, all nodes' sound at once with per-node mute and volume, hub services corrected (seatd and udevd run as root).
 - **2026-10-04:** Phase B images: recovery kernel arms the watchdog; recovery agent tested inside a test recovery kernel.
 - **2026-10-04:** Scale reference 20 machines; hub stays a thin client; extra nodes suggested; recovery and display protocol decisions recorded; CLAUDE.md rules for packages and helper agents.
+- **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials, management key on the hub, recovery agent supervision, Go stays (Erlang parked).
