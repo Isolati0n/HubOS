@@ -394,9 +394,22 @@ func TestHubImage(t *testing.T) {
 				continue
 			}
 			opened = true
-			r.monitor("mouse_move 60 198") // from (40,15) to (100,213): the ai-1 row
-			time.Sleep(time.Second)
-			r.shot("hub-3-menu-row-hover")
+			// The relative mouse is accelerated for big steps (one jump of 60,198 landed at about 125,405), so the pointer is
+			// walked down in small steps from (40,15) towards the ai-1 row (about y 213) and stopped as soon as wofi
+			// highlights that row (the same blue as the first row, which is selected from the start).
+			sel := color.RGBA{}
+			if r0, g0, b0, _ := loadPNG(t, r.shot("hub-3-menu-row-start")).At(300, 75).RGBA(); r0 != 0 || g0 != 0 || b0 != 0 {
+				sel = color.RGBA{uint8(r0 >> 8), uint8(g0 >> 8), uint8(b0 >> 8), 255}
+			}
+			onRow := false
+			for step := 0; step < 24 && !onRow; step++ {
+				r.monitor("mouse_move 3 9")
+				time.Sleep(150 * time.Millisecond)
+				if step%3 == 2 {
+					onRow = sel.A != 0 && countColor(loadPNG(t, r.shot("hub-3-menu-row-hover")), 200, 205, 400, 222, sel) > 1500
+				}
+			}
+			t.Logf("attempt %d: the ai-1 row is highlighted under the pointer: %v", attempts, onRow)
 			r.monitor("mouse_button 1")
 			time.Sleep(time.Second)
 			r.monitor("mouse_button 0")
