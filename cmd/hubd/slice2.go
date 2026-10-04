@@ -293,6 +293,7 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	launcher := fs.String("wofi", "wofi", "the list launcher program")
 	style := fs.String("style", defaultWofiStyle, "wofi style file (CSS); used only if the file exists")
 	width := fs.Int("width", 720, "menu width in pixels")
+	height := fs.Int("height", defaultMenuHeight, "menu height in pixels (the search box and about 12 rows)")
 	_ = fs.Bool("single-click", true, "pick with a single mouse click (this is the default)")
 	noSingle := fs.Bool("no-single-click", false, "pick with a double click, like wofi's own default")
 	sock := socketFlags(fs)
@@ -317,7 +318,11 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	if syscall.Flock(int(lock.Fd()), syscall.LOCK_EX|syscall.LOCK_NB) != nil {
 		return exitOK
 	}
-	opts := launcherOpts{program: *launcher, width: *width, singleClick: !*noSingle}
+	if *height < 100 || *height > 4000 {
+		fmt.Fprintf(stderr, "hubd: --height must be between 100 and 4000 pixels (got %d)\n", *height)
+		return exitFailure
+	}
+	opts := launcherOpts{program: *launcher, width: *width, height: *height, singleClick: !*noSingle}
 	if _, err := os.Stat(*style); err == nil {
 		opts.style = *style
 	}
@@ -359,10 +364,22 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 // defaultWofiStyle is where the menu look is read from if the file exists.
 const defaultWofiStyle = "/etc/hubos/wofi.css"
 
+// defaultMenuHeight is the menu's height in pixels: the search box and about 12 rows of the example style.
+//
+// hubd gives wofi a fixed --height and NEVER --lines. On a Wayland layer-shell compositor (driftwm's real display backend,
+// wofi 1.4.1) wofi's --lines path sizes the window in steps: it starts at 1 px, computes 5 px (max_height is still 0 before
+// the first row exists), then asks GTK for a list height of 5 - entry height (a negative number: "Gtk-CRITICAL ...
+// gtk_widget_set_size_request: assertion 'height >= -1' failed", src/wofi.c update_surface_size) and later asks the
+// compositor for 281 px, which driftwm grants (configure 720x281); but the list is never drawn: only the search box shows.
+// With a fixed --height the surface is sized once and the list is drawn (docs/image.md, "The wofi menu"). The first
+// investigation ran wofi as an X11 client (nested driftwm), where this code path does not exist, so it never saw it.
+const defaultMenuHeight = 340
+
 type launcherOpts struct {
 	program     string
 	style       string
 	width       int
+	height      int
 	singleClick bool
 }
 
@@ -370,7 +387,7 @@ type launcherOpts struct {
 // when nothing matched). Empty means Escape.
 func runLauncher(o launcherOpts, lines []string, stderr io.Writer) string {
 	args := []string{"--dmenu", "--cache-file", "/dev/null", "--insensitive",
-		"--lines", "12", "--width", strconv.Itoa(o.width), "--location", "top_left", "--yoffset", "0", "--prompt", "hub"}
+		"--height", strconv.Itoa(o.height), "--width", strconv.Itoa(o.width), "--location", "top_left", "--yoffset", "0", "--prompt", "hub"}
 	if o.style != "" {
 		args = append(args, "--style", o.style)
 	}

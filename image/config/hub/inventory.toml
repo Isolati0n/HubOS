@@ -1,0 +1,31 @@
+# The hub image's inventory for the QEMU test: fake machines on the guest's own loopback addresses (127.0.0.x). Nothing real.
+# ai-1 is "up" while `fakenode 127.0.0.12:21002` runs; nas-1 is down (nothing listens on its port).
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "127.0.0.10"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "ai-1"
+name    = "AI Box"
+role    = "ai"
+address = "127.0.0.12"
+open    = ["ssh"]
+home    = { x = 0, y = -100 }
+port    = 21002
+user    = "owner"
+
+[[machine]]
+id      = "nas-1"
+name    = "Storage"
+role    = "nas"
+address = "127.0.0.14"
+open    = ["ssh"]
+home    = { x = -2000, y = 0 }
+port    = 21004
+user    = "owner"

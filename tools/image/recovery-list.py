@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""recovery-list.py BASE TOOLS BUSYBOX RELEASE_FILE [UPDATE_PUB] > recovery.list
+"""recovery-list.py BASE TOOLS BUSYBOX RELEASE_FILE [PUBKEY ...] > recovery.list
 
 Writes the initramfs list (gen_init_cpio format) of the SEPARATE recovery kernel: static busybox (all applets as
 links), the recovery init, hubos-ctl, efibootmgr, signify, e2fsprogs, findfs/blkid, the udhcpc script and every
@@ -8,7 +8,7 @@ is used at run time; this is a copy taken at build time. Run from the repository
 import os, subprocess, sys
 
 base, tools, busybox, release = sys.argv[1:5]
-update_pub = sys.argv[5] if len(sys.argv) > 5 else ""
+update_pubs = sys.argv[5:]   # the keyring: any number of public key files
 REPO = os.getcwd()
 LIBDIRS = [tools + p for p in ("/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu")] + \
           [base + p for p in ("/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu")]
@@ -77,7 +77,9 @@ f("/init", os.path.join(REPO, "image/stage0/recovery-init"))
 f("/usr/sbin/hubos-ctl", os.path.join(REPO, "image/rootfs/usr/sbin/hubos-ctl"))
 f("/usr/lib/hubos/udhcpc.script", os.path.join(REPO, "image/rootfs/usr/lib/hubos/udhcpc.script"))
 f("/etc/hubos-release", release, "644")
-if update_pub: f("/etc/hubos/update.pub", update_pub, "644")
+import hashlib
+for k in update_pubs:
+    f("/etc/hubos/keys/" + hashlib.sha256(open(k, "rb").read()).hexdigest()[:16] + ".pub", k, "644")
 f("/etc/recovery.rc", os.path.join(REPO, "image/stage0/recovery.rc"), "644")
 for dd in ("/dev", "/proc", "/sys", "/run", "/tmp", "/config", "/data", "/boot/efi", "/etc/hubos"): d(dd)
 out.append("nod /dev/console 600 0 0 c 5 1")

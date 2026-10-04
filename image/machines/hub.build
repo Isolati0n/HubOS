@@ -1,0 +1,27 @@
+# Hub OS machine build configuration: the HUB (the desk machine): driftwm, Waybar, hubd as the normal user.
+# Shell-readable KEY=VALUE (read by tools/image/*.sh with `.`). The qemu-test machine (qemu-test.build) is unchanged.
+KERNEL_VERSION=6.12
+KERNEL_FRAGMENT=image/kernel/hub.frag
+MODULES=
+PACKAGES=image/packages/hub.list
+SNAPSHOT=20261001T000000Z
+# s6 services (image/rootfs/etc/s6/sv/NAME, then the machine's own image/machines/hub/rootfs/etc/s6/sv/NAME over it).
+# seatd and udevd run as root (they open devices and netlink); driftwm, waybar, hubd and dbus run as the user hub.
+SERVICES="console udevd seatd dbus driftwm waybar hubd confirm wd"
+# The hub's desktop needs longer than the tiny test image before hubd answers (driftwm has to be up first).
+CONFIRM_TIMEOUT=90
+WATCHDOG_TIMEOUT=120
+BOOT_FAIL_LIMIT=3
+RECOVERY_VERSION=1
+RECOVERY_CMDLINE="console=ttyS0 ro loglevel=4 panic=5"
+# Files copied over the root after image/rootfs; the config partition's inventory.toml and viewers.toml.
+ROOTFS_OVERLAY=image/machines/hub/rootfs
+CONFIG_DIR=image/config/hub
+# driftwm and eudev are built from source (tools/image/build-hub-parts.sh) and put into the root.
+EXTRA_PARTS=hub
+# Partition sizes in MiB: the hub root is about 160 MB; the data partition holds a downloaded bundle while it is written.
+SLOT_MIB=320
+DATA_MIB=512
+# Environment for the desktop services, written to /config/hubos/desktop.env (outside the image). In a virtual machine there is no
+# GPU driver for Mesa, so it draws in software; a real hub removes this line.
+DESKTOP_ENV="LIBGL_ALWAYS_SOFTWARE=1"

@@ -1,0 +1,27 @@
+#!/bin/sh
+# follow-driftwm COMMAND [ARGS...]: for the hub's Wayland clients (waybar, hubd). Waits until driftwm is up (its Wayland
+# socket exists and its process runs), runs COMMAND as a child, and EXITS when driftwm goes away or is replaced by a new
+# process, taking the child with it. The s6 service then starts this script again, which waits for driftwm's return.
+SOCK=/run/dw/wayland-1
+pid=
+while :; do
+  pid=$(pidof driftwm | cut -d' ' -f1)
+  [ -n "$pid" ] && [ -S "$SOCK" ] && break
+  sleep 0.5
+done
+sleep 1
+"$@" &
+child=$!
+trap 'kill $child 2>/dev/null; wait $child 2>/dev/null; exit 0' TERM INT
+while kill -0 $child 2>/dev/null; do
+  now=$(pidof driftwm | cut -d' ' -f1)
+  if [ "$now" != "$pid" ] || [ ! -S "$SOCK" ]; then
+    echo "follow-driftwm: driftwm went away or was replaced; stopping $1"
+    kill $child 2>/dev/null; wait $child 2>/dev/null
+    exit 0
+  fi
+  sleep 1
+done
+wait $child
+echo "follow-driftwm: $1 ended"
+exit 0

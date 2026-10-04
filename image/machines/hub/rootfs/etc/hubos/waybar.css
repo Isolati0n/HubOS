@@ -1,0 +1,4 @@
+* { font-family: "DejaVu Sans"; font-size: 14px; }
+window#waybar { background: #1d2230; color: #e6e6e6; }
+#custom-hub, #clock { padding: 0 10px; }
+#custom-hub.alert { background: #8a1c1c; }

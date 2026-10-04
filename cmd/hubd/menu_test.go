@@ -86,10 +86,14 @@ func TestMenuLoopSearchAskAndLauncherOptions(t *testing.T) {
 		t.Fatalf("launcher started %d times: %q", len(lines), a)
 	}
 	for _, l := range lines {
-		for _, want := range []string{"--dmenu", "--cache-file /dev/null", "--width 640", "--style " + style, "-D single_click=true"} {
+		for _, want := range []string{"--dmenu", "--cache-file /dev/null", "--width 640", "--height 340", "--style " + style, "-D single_click=true"} {
 			if !strings.Contains(l, want) {
 				t.Errorf("launcher args %q lack %q", l, want)
 			}
+		}
+		// wofi 1.4.1 draws no list on a layer-shell compositor with --lines (see defaultMenuHeight): hubd must never pass it
+		if strings.Contains(l, "--lines") || strings.Contains(l, "dynamic_lines") {
+			t.Errorf("launcher args %q contain --lines or dynamic_lines, which leave the list empty under driftwm", l)
 		}
 	}
 	// Without the style file: no --style. Single click is on by default.
@@ -100,6 +104,18 @@ func TestMenuLoopSearchAskAndLauncherOptions(t *testing.T) {
 	b, _ := os.ReadFile(argsLog)
 	if strings.Contains(string(b), "--style") || !strings.Contains(string(b), "-D single_click=true") || !strings.Contains(string(b), "--width 720") {
 		t.Errorf("defaults: %q", b)
+	}
+	// --height sets the menu height; a silly value is refused before anything starts
+	os.WriteFile(script, []byte("   x  X  UP\n"), 0o600)
+	os.WriteFile(argsLog, nil, 0o600)
+	dispatch([]string{"menu", "--socket", sock, "--wofi", fake, "--height", "420"}, &out, &errb)
+	b, _ = os.ReadFile(argsLog)
+	if !strings.Contains(string(b), "--height 420") {
+		t.Errorf("--height 420: %q", b)
+	}
+	errb.Reset()
+	if code := dispatch([]string{"menu", "--socket", sock, "--wofi", fake, "--height", "20"}, &out, &errb); code == 0 || !strings.Contains(errb.String(), "--height must be between") {
+		t.Errorf("--height 20: code %d, %q", code, errb.String())
 	}
 	// --no-single-click goes back to wofi's double click.
 	os.WriteFile(script, []byte("   x  X  UP\n"), 0o600)

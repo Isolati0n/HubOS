@@ -1,0 +1,14 @@
+#!/bin/sh
+# eudev's udevd (root: it needs netlink and device nodes). It writes the udev database (/run/udev/data) that libinput and
+# driftwm read and sends the events for hot-plugged devices. /run/udev/ready marks "devices triggered".
+exec 2>&1
+mkdir -p /run/udev; rm -f /run/udev/ready
+udevd &
+UPID=$!
+i=0; while [ ! -S /run/udev/control ] && [ $i -lt 100 ]; do sleep 0.1; i=$((i+1)); done
+udevadm trigger --type=subsystems --action=add
+udevadm trigger --type=devices --action=add
+udevadm settle --timeout=30
+touch /run/udev/ready
+echo "udevd: devices triggered, database in /run/udev/data ($(ls /run/udev/data 2>/dev/null | wc -l) entries)"
+wait $UPID

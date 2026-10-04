@@ -1,12 +1,12 @@
 #!/bin/bash
 # build-root.sh OUT.sqsh: the desktop experiment root = the desktop base (packages of desktop.list) + image/rootfs +
 # the experiment overlay + driftwm + hubd + efibootmgr. No PAM/apt strip (the experiment is about graphics).
-# Needs $WORK/base (build-base.sh with MACHINE=desktop.build) and $WORK/out/driftwm (build-driftwm.sh). EXPERIMENT.
+# Needs $WORK/base (build-base.sh with MACHINE=desktop.build) and $WORK/out/driftwm (tools/image/build-hub-parts.sh). EXPERIMENT.
 . "$(dirname "$0")/../../common.sh"
 load_machine
 OUT=${1:?usage: build-root.sh OUT.sqsh}
 HERE=$(cd "$(dirname "$0")" && pwd)
-[ -d "$WORK/base" ] && [ -x "$WORK/out/driftwm" ] || { echo "run build-base.sh and build-driftwm.sh first" >&2; exit 2; }
+[ -d "$WORK/base" ] && [ -x "$WORK/out/driftwm" ] || { echo "run build-base.sh and tools/image/build-hub-parts.sh first" >&2; exit 2; }
 [ -x "$WORK/out/hubd" ] || ( cd "$REPO" && CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -buildid=" -o "$WORK/out/hubd" ./cmd/hubd )
 S=$WORK/stage-desktop
 rm -rf "$S"; cp -a "$WORK/base" "$S"
@@ -20,7 +20,7 @@ install -m 0755 "$T/bin/efibootmgr" "$S/usr/sbin/efibootmgr"
 cp -a "$T"/usr/lib/x86_64-linux-gnu/libefivar.so.1* "$T"/usr/lib/x86_64-linux-gnu/libefiboot.so.1* "$S/usr/lib/x86_64-linux-gnu/"
 for a in ip udhcpc wget cttyhack reboot halt poweroff hostname stat awk head sha256sum getty ps pidof; do ln -sf /bin/busybox "$S/usr/local/bin/$a"; done
 rm -rf "$S/etc/systemd" "$S/usr/lib/systemd" "$S/var/lib/systemd" "$S/usr/lib/udev" "$S/etc/udev"
-# eudev (built by build-eudev.sh) replaces the udev database workaround: udevd, udevadm, the rules and eudev's own
+# eudev (built by tools/image/build-hub-parts.sh) replaces the udev database workaround: udevd, udevadm, the rules and eudev's own
 # libudev.so.1 (put where the dynamic loader finds it first, over the Ubuntu package's libudev from the systemd sources).
 if [ -d "$WORK/out/eudev-root/usr" ]; then
   cp -a "$WORK/out/eudev-root/." "$S/"

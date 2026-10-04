@@ -1,0 +1,7 @@
+/* Hub OS menu look — example for wofi's --style. Copy to /etc/hubos/wofi.css
+   (hubd menu uses that file if it exists, or the one given with --style).
+   A fixed-width font so the columns of the machine list line up. */
+window * {
+  font-family: "DejaVu Sans Mono", monospace;
+  font-size: 14px;
+}

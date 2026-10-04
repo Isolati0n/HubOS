@@ -1,0 +1,5 @@
+#!/bin/sh
+# The session bus (dbus-daemon alone, no systemd), as the user hub. Waybar will not start without one.
+exec 2>&1
+. /usr/lib/hubos/hub-env.sh
+exec s6-setuidgid hub env $HUBENV dbus-daemon --session --address=unix:path=/run/dw/bus --nofork --nopidfile

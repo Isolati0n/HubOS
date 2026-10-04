@@ -16,6 +16,7 @@ fi
 S=$WORK/stage-$V-$F
 rm -rf "$S"; cp -a "$WORK/base" "$S"
 cp -a "$REPO/image/rootfs/." "$S/"
+[ -n "$ROOTFS_OVERLAY" ] && cp -a "$REPO/$ROOTFS_OVERLAY/." "$S/"
 install -m 0755 "$WORK/out/hubd" "$S/usr/bin/hubd"
 install -m 0755 "$T/bin/efibootmgr" "$S/usr/sbin/efibootmgr"
 cp -a "$T"/usr/lib/x86_64-linux-gnu/libefivar.so.1* "$T"/usr/lib/x86_64-linux-gnu/libefiboot.so.1* "$S/usr/lib/x86_64-linux-gnu/"
@@ -24,8 +25,25 @@ cp -a "$T"/usr/lib/x86_64-linux-gnu/libbsd.so.0* "$S/usr/lib/x86_64-linux-gnu/"
 # Unit files and rules that packages ship for systemd and udev (e2fsprogs, util-linux, dpkg): inert
 # without systemd, and an s6 image has no use for them. The two libraries stay (docs/image.md).
 rm -rf "$S/etc/systemd" "$S/usr/lib/systemd" "$S/var/lib/systemd" "$S/usr/lib/udev" "$S/etc/udev"
+if [ "$EXTRA_PARTS" = hub ]; then
+  # The hub: driftwm and eudev, built from source at pinned versions (build-hub-parts.sh). eudev's libudev.so.1 replaces
+  # the one from the systemd sources (the package's files are overwritten); udevd, udevadm and the rules come with it.
+  "$(dirname "$0")/build-hub-parts.sh" >&2
+  install -m 0755 -D "$WORK/out/driftwm" "$S/usr/local/bin/driftwm"; strip -s "$S/usr/local/bin/driftwm"
+  cp -a "$WORK/out/eudev-root/." "$S/"
+  rm -f "$S"/usr/lib/x86_64-linux-gnu/libudev.so.1*
+  cp -a "$S/usr/lib/libudev.so.1.6.3" "$S/usr/lib/x86_64-linux-gnu/libudev.so.1.6.3"
+  ln -sf libudev.so.1.6.3 "$S/usr/lib/x86_64-linux-gnu/libudev.so.1"
+  rm -f "$S"/usr/lib/libudev.so* "$S"/usr/lib/libudev.la; rm -rf "$S/usr/include/libudev.h" "$S/usr/lib/pkgconfig"
+  echo 'seat:x:1001:hub' >> "$S/etc/group"
+  for g in input video render; do grep -q "^$g:" "$S/etc/group" || echo "$g:x:$((1100 + $(echo $g | cksum | cut -c1-2))):" >> "$S/etc/group"; done
+fi
 mkdir -p "$S/etc/hubos" "$S/usr/local/bin" "$S/config" "$S/data" "$S/boot/efi" "$S/run" "$S/tmp" "$S/var"
-install -m 0644 "$PUB" "$S/etc/hubos/update.pub"
+# The update keyring: every *.pub in /etc/hubos/keys is accepted by the update tool and by the recovery kernel (a release
+# signed with the old key can carry the next key; the old key is dropped in a later release, docs/image.md).
+# KEYRING_PUBS (space-separated public key files) overrides the default, the single PUBKEY argument.
+mkdir -p "$S/etc/hubos/keys"
+for k in ${KEYRING_PUBS:-$PUB}; do install -m 0644 "$k" "$S/etc/hubos/keys/$(sha256sum "$k" | cut -c1-16).pub"; done
 # The recovery kernel travels inside the root (the confirm step installs it after a healthy boot; the manifest lists
 # its hash). RECOVERY_KERNEL_FILE and RECOVERY_VERSION_OVERRIDE let a test build a root with another recovery kernel;
 # NO_RECOVERY=1 builds a root without one.

@@ -5,7 +5,7 @@
 # line, so a firmware that drops the boot entry's load options still boots the right slot.
 # The RECOVERY kernel (kernel-recovery.efi) has a different initramfs (image/stage0/recovery-init and the tools
 # listed by tools/image/recovery-list.py, copied from the base root) and no root= in its command line: it needs
-# neither slot's root. It also carries the owner's PUBLIC update key ($UPDATE_PUB, a signify public key file), so
+# neither slot's root. It also carries the owner's PUBLIC update key ($UPDATE_KEYS (or $UPDATE_PUB), signify public key files), so
 # that `hubos-ctl update` works in the recovery shell. The key is not in the repo: the caller passes it.
 # Output: $WORK/out/kernel-a.efi, kernel-b.efi and kernel-recovery.efi (a bzImage with an EFI stub and stage 0 built in),
 #         $WORK/out/kernel.config (slot a's), kernel.version, kernel.seconds
@@ -17,11 +17,12 @@ CT=${CONFIRM_TIMEOUT:-120}; WT=${WATCHDOG_TIMEOUT:-180}
 "$REPO/image/rootfs/usr/lib/hubos/check-timers.sh" "$CT" "$WT" >&2 || { echo "build-kernel.sh: the machine's timeouts are refused" >&2; exit 1; }
 # The recovery initramfs is made from the base root, so the base root must exist (build-base.sh is idempotent).
 [ -d "$WORK/base" ] || "$(dirname "$0")/build-base.sh"
-[ -n "$UPDATE_PUB" ] && [ -f "$UPDATE_PUB" ] || say "WARNING: UPDATE_PUB is not set: the recovery kernel is built WITHOUT an update key (hubos-ctl update will not work in recovery)"
+KEYS=${UPDATE_KEYS:-$UPDATE_PUB}
+[ -n "$KEYS" ] && [ -f "${KEYS%% *}" ] || say "WARNING: UPDATE_PUB is not set: the recovery kernel is built WITHOUT an update key (hubos-ctl update will not work in recovery)"
 # Two stamps. The slot kernels depend on the machine, the fragment and stage 0; the recovery kernel on its own files,
 # the base root and the update key. Skip what has not changed (FORCE=1 builds everything).
 SSTAMP=$(cat "$REPO/$MACHINE" "$REPO/$KERNEL_FRAGMENT" "$REPO/image/stage0/init" "$REPO/image/stage0/stage0.list.in" "$REPO/image/rootfs/usr/lib/hubos/check-timers.sh" | sha256sum | cut -d' ' -f1)
-RSTAMP=$(cat "$REPO/image/stage0/recovery-init" "$REPO/image/stage0/recovery.rc" "$REPO/tools/image/recovery-list.py" "$REPO/image/rootfs/usr/sbin/hubos-ctl" "$REPO/image/rootfs/usr/lib/hubos/udhcpc.script" "$WORK/out/base.stamp" ${UPDATE_PUB:+"$UPDATE_PUB"} | sha256sum | cut -d' ' -f1)
+RSTAMP=$(cat "$REPO/image/stage0/recovery-init" "$REPO/image/stage0/recovery.rc" "$REPO/tools/image/recovery-list.py" "$REPO/image/rootfs/usr/sbin/hubos-ctl" "$REPO/image/rootfs/usr/lib/hubos/udhcpc.script" "$WORK/out/base.stamp" $KEYS | sha256sum | cut -d' ' -f1)
 RSTAMP=$(echo "$SSTAMP $RSTAMP ${RECOVERY_VERSION:-1} ${RECOVERY_CMDLINE:-}" | sha256sum | cut -d' ' -f1)
 SRC=$WORK/linux-$V; KB=$WORK/kbuild-$V
 SLOTS_OK=; REC_OK=
@@ -64,7 +65,7 @@ fi
 # the recovery kernel: another initramfs and a command line without root=/hubos.slot=
 mkdir -p "$WORK/stage0"
 printf 'version=recovery-%s\nflavor=recovery\nkernel-version=%s\n' "${RECOVERY_VERSION:-1}" "$V" > "$WORK/stage0/recovery-release"
-( cd "$REPO" && python3 tools/image/recovery-list.py "$WORK/base" "$T" "$T/usr/bin/busybox" "$WORK/stage0/recovery-release" ${UPDATE_PUB:+"$UPDATE_PUB"} ) > "$WORK/stage0/recovery.list"
+( cd "$REPO" && python3 tools/image/recovery-list.py "$WORK/base" "$T" "$T/usr/bin/busybox" "$WORK/stage0/recovery-release" $KEYS ) > "$WORK/stage0/recovery.list"
 sed -i "s#^CONFIG_INITRAMFS_SOURCE=.*#CONFIG_INITRAMFS_SOURCE=\"$WORK/stage0/recovery.list\"#; s#^CONFIG_CMDLINE=.*#CONFIG_CMDLINE=\"${RECOVERY_CMDLINE:-console=ttyS0 ro loglevel=4 panic=5}\"#" "$KB/.config"
 make -C "$SRC" O="$KB" olddefconfig "${HF[@]}" >/dev/null
 make -C "$SRC" O="$KB" -j"$(nproc)" bzImage "${HF[@]}" >> "$WORK/out/kernel-build.log" 2>&1 || { tail -20 "$WORK/out/kernel-build.log" >&2; exit 1; }

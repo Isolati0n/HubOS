@@ -1,6 +1,6 @@
 {
   "layer": "top", "position": "top", "height": 30,
   "modules-left": ["custom/hub"], "modules-center": [], "modules-right": ["clock"],
-  "custom/hub": { "exec": "/usr/bin/hubd feed", "return-type": "json", "format": "{}", "on-click": "/usr/bin/hubd menu" },
+  "custom/hub": { "exec": "/usr/bin/hubd feed --socket /run/hubos/hubd.sock", "return-type": "json", "format": "{}", "on-click": "/usr/bin/hubd menu --socket /run/hubos/hubd.sock" },
   "clock": { "format": "{:%H:%M:%S}", "interval": 1 }
 }
