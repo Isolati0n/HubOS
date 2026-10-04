@@ -345,7 +345,7 @@ func TestHubImage(t *testing.T) {
 			}
 			t.Logf("attempt %d: no menu after the click", attempts)
 		}
-		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev.log | awk '{print $1, $2}' | sort | uniq -c; pkill -x libinput; true`)
+		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev.log | awk '{print $1, $2}' | sort | uniq -c; kill $(pidof libinput) 2>/dev/null; true`)
 		t.Logf("input events the guest saw during the click:\n%s", evs)
 		img := loadPNG(t, r.shot("hub-3-menu"))
 		list := countColor(img, 0, 60, 660, 460, menuBg)
@@ -429,26 +429,13 @@ func TestHubImage(t *testing.T) {
 			time.Sleep(time.Second)
 			r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(100/kx)), int(math.Round(213/ky))))
 			time.Sleep(time.Second)
-			switch attempts {
-			case 1: // a plain click
+			// Two clicks. TESTED here: a single click on a row left the menu open (the row is only selected); the second click
+			// opened the machine. (Whether that is wofi's normal behaviour is UNKNOWN; a person would click twice or press Enter.)
+			for i := 0; i < 2; i++ {
 				r.monitor("mouse_button 1")
-				time.Sleep(time.Second)
+				time.Sleep(100 * time.Millisecond)
 				r.monitor("mouse_button 0")
-			case 2: // a double click
-				for i := 0; i < 2; i++ {
-					r.monitor("mouse_button 1")
-					time.Sleep(100 * time.Millisecond)
-					r.monitor("mouse_button 0")
-					time.Sleep(150 * time.Millisecond)
-				}
-			default: // a small move on the row first, then a click
-				r.monitor("mouse_move 1 0")
-				time.Sleep(500 * time.Millisecond)
-				r.monitor("mouse_move -1 0")
-				time.Sleep(500 * time.Millisecond)
-				r.monitor("mouse_button 1")
 				time.Sleep(300 * time.Millisecond)
-				r.monitor("mouse_button 0")
 			}
 			time.Sleep(8 * time.Second)
 			st = state()
@@ -457,12 +444,12 @@ func TestHubImage(t *testing.T) {
 				t.Logf("attempt %d: no AI Box window at its home after the click", attempts)
 			}
 		}
-		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev2.log | awk '{print $1, $2}' | sort | uniq -c; tail -n 6 /tmp/ev2.log | cut -c1-120; pkill -x libinput; true`)
+		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev2.log | awk '{print $1, $2}' | sort | uniq -c; tail -n 6 /tmp/ev2.log | cut -c1-120; kill $(pidof libinput) 2>/dev/null; true`)
 		t.Logf("input events the guest saw during the row click:\n%s", evs)
 		r.shot("hub-3-row-click-opened")
 		after := wofiCount()
 		ok := closed && opened && home
-		record("H3b a click on a row of the wofi menu (relative QEMU mouse) makes hubd open that machine: the closed AI Box window comes back at its home (0,-100)", ok, time.Since(start),
+		record("H3b two clicks on a row of the wofi menu (relative QEMU mouse) make hubd open that machine: the closed AI Box window comes back at its home (0,-100)", ok, time.Since(start),
 			fmt.Sprintf("window closed before: %v (end rc=%d); menu opened: %v; click attempts %d; window at home after the click: %v; wofi running after: %s", closed, rcEnd, opened, attempts, home, after))
 		if !ok {
 			t.Errorf("closed=%v opened=%v home=%v\n%s\n%s\n%s", closed, opened, home, outEnd, stEnd, st)
