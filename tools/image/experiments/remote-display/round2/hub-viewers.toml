@@ -1,0 +1,15 @@
+format = 1
+
+[[viewer]]
+id        = "vnc"
+programs  = ["vnc"]
+command   = ["remote-viewer", "--name={app_id}", "--title={title}", "--", "vnc://{address}:{port}"]
+sets_name = true
+
+# test slot: TigerVNC (X11 program, shown through xwayland-satellite)
+[[viewer]]
+id          = "tigervnc"
+programs    = ["spice"]
+command     = ["xtigervncviewer", "{address}::{port}"]
+sets_name   = false
+title_match = "{id} - TigerVNC"

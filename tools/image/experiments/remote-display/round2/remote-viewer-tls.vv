@@ -1,0 +1,8 @@
+[virt-viewer]
+# remote-viewer connection file (mode 0600). Test password only.
+type=vnc
+host=127.0.0.1
+port=5933
+username=hubos
+password=test-pw-NOT-A-SECRET
+title=Test Node

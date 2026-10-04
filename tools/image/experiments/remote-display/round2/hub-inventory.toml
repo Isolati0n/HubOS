@@ -1,0 +1,27 @@
+format = 1
+
+[[machine]]
+id      = "hub"
+name    = "Desk Hub"
+role    = "hub"
+address = "127.0.0.1"
+open    = ["none"]
+home    = { x = 0, y = 0 }
+
+[[machine]]
+id      = "gui-a"
+name    = "Node A"
+role    = "desktop"
+address = "127.0.0.1"
+port    = 5901
+open    = ["vnc"]
+home    = { x = -1500, y = 0 }
+
+[[machine]]
+id      = "gui-b"
+name    = "Node B"
+role    = "desktop"
+address = "127.0.0.1"
+port    = 5901
+open    = ["spice"]
+home    = { x = 1500, y = 0 }
