@@ -413,7 +413,14 @@ func (r *rig) status() (slot string, rel string, confirmed bool, text string) {
 
 // waitConfirmed waits until the running slot has been confirmed (BootOrder first) or the boot failed.
 func (r *rig) waitConfirmed() bool {
-	return r.vm.wait(`confirm: (boot of slot [ab].* confirmed|slot [ab] is already the confirmed slot)`, 90*time.Second, r.bootPos) >= 0
+	end := r.vm.wait(`confirm: (boot of slot [ab].* confirmed|slot [ab] is already the confirmed slot)`, 90*time.Second, r.bootPos)
+	if end < 0 {
+		return false
+	}
+	// The confirm step then looks at the recovery kernel (it keeps the boot partition mounted while it does): wait for its last line, so
+	// that a test that mounts the boot partition next does not meet the mount of the confirm step.
+	r.vm.wait(`confirm: (recovery kernel|this release carries no recovery kernel)`, 60*time.Second, end)
+	return true
 }
 
 func (r *rig) update(name string) (int, string) {

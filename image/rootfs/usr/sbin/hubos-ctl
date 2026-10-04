@@ -217,8 +217,13 @@ install_recovery() {
   if [ "$rv" -lt "$inst" ]; then
     echo "confirm: recovery kernel version $rv is lower than the installed $inst; never a downgrade, left alone"; umount /boot/efi; return 0
   fi
-  have=$(sha256sum /boot/efi/EFI/hubos/kernel-recovery.efi 2>/dev/null | cut -d' ' -f1)
-  if [ "$have" = "$(sha256sum $RECDIR/kernel-recovery.efi | cut -d' ' -f1)" ]; then
+  # (a different size already means a different file; the two hashes are only needed when the sizes are equal)
+  same=
+  if [ "$(stat -c %s /boot/efi/EFI/hubos/kernel-recovery.efi 2>/dev/null)" = "$(stat -c %s $RECDIR/kernel-recovery.efi)" ]; then
+    have=$(sha256sum /boot/efi/EFI/hubos/kernel-recovery.efi 2>/dev/null | cut -d' ' -f1)
+    [ "$have" = "$(sha256sum $RECDIR/kernel-recovery.efi | cut -d' ' -f1)" ] && same=1
+  fi
+  if [ -n "$same" ]; then
     echo "confirm: recovery kernel version $rv is the same file as the installed one; left alone"; umount /boot/efi; return 0
   fi
   sz=$(stat -c %s $RECDIR/kernel-recovery.efi); need=$((sz + 1048576)); free=$(esp_free)
