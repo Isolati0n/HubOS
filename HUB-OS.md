@@ -421,4 +421,5 @@ HubOS/
 - **2026-10-03:** Hub desktop decisions recorded: eudev, services as the normal user, driftwm state in RAM, key keyring.
 - **2026-10-04:** Phase B images: recovery installs on a changed hash, menu row click tested, QEMU crash retry.
 - **2026-10-04:** AMD CPUs only, no proprietary BMC firmware (recovery built into Hub OS; out-of-band hardware decided in December), no terminals (every node has its own bespoke GUI), always-open windows on the hub, all nodes' sound at once with per-node mute and volume, hub services corrected (seatd and udevd run as root).
+- **2026-10-04:** Phase B images: recovery kernel arms the watchdog; recovery agent tested inside a test recovery kernel.
 - **2026-10-04:** Scale reference 20 machines; hub stays a thin client; extra nodes suggested; recovery and display protocol decisions recorded; CLAUDE.md rules for packages and helper agents.

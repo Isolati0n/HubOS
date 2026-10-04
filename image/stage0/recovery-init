@@ -1,7 +1,9 @@
 #!/bin/busybox sh
 # Hub OS recovery (stage 0 of the SEPARATE recovery kernel, kernel-recovery.efi). It needs neither slot's root:
-# everything it uses is in this kernel's own initramfs. It does not arm the watchdog and it does not reboot by
-# itself: it brings up the network if it can and leaves a bare terminal on the console.
+# everything it uses is in this kernel's own initramfs. It arms the hardware watchdog (the machine's WATCHDOG_TIMEOUT from
+# the config partition, as stage 0 of the slots does; default 180 s) and keeps it fed from a small background feeder
+# (busybox `watchdog`) for as long as it runs, so a recovery that hangs is reset and goes back through stage 0. It does
+# not reboot by itself otherwise: it brings up the network if it can and leaves a bare terminal on the console.
 export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 mount -t proc proc /proc
 mount -t sysfs sysfs /sys
@@ -9,6 +11,8 @@ mount -t devtmpfs devtmpfs /dev
 mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null
 mount -t tmpfs tmpfs /run; mount -t tmpfs tmpfs /tmp
 echo "STAGE0-RECOVERY: start"
+# Arm the watchdog at once (opening it starts the countdown; the driver's own timeout runs until the machine's is set below).
+if [ -c /dev/watchdog ]; then exec 3>/dev/watchdog; exec 3>&-; echo "STAGE0-RECOVERY: watchdog armed"; else echo "STAGE0-RECOVERY: no watchdog device"; fi
 hostname hubos-recovery
 # The config partition (read-only), found by its GPT name through sysfs like stage 0 does, for `hubos-ctl status`.
 i=0; DEV=
@@ -19,12 +23,24 @@ while [ -z "$DEV" ] && [ $i -lt 20 ]; do
   [ -n "$DEV" ] || { sleep 0.5; i=$((i+1)); }
 done
 if [ -n "$DEV" ] && mount -o ro "$DEV" /config 2>/dev/null; then echo "STAGE0-RECOVERY: config partition mounted read-only at /config"; else echo "STAGE0-RECOVERY: no config partition"; fi
+# The machine's timeouts, read like stage 0 reads them (same defaults 120 s and 180 s, same rule); the feeder runs for as long as recovery runs.
+CONFIRM=; WD=
+rd() { sed -n "s/^$1=//p" /config/hubos/node.conf 2>/dev/null | tail -n 1 | tr -d "\"' "; }
+if [ -n "$DEV" ]; then CONFIRM=$(rd CONFIRM_TIMEOUT); WD=$(rd WATCHDOG_TIMEOUT); fi
+case $CONFIRM in ''|*[!0-9]*) CONFIRM=120;; esac
+case $WD in ''|*[!0-9]*) WD=180;; esac
+if ! MSG=$(/usr/lib/hubos/check-timers.sh "$CONFIRM" "$WD"); then echo "STAGE0-RECOVERY: $MSG; using the defaults 120 s and 180 s"; CONFIRM=120; WD=180; fi
+if [ -c /dev/watchdog ]; then
+  setsid watchdog -F -T "$WD" -t 5 /dev/watchdog >/dev/null 2>&1 &
+  echo "STAGE0-RECOVERY: watchdog feeder started (timeout ${WD} s, fed every 5 s); if it stops, the machine resets and goes back through stage 0"
+fi
 # The data partition (read-write) gives `hubos-ctl update` room for a bundle; without it the bundle goes to RAM (/run).
 DATADEV=$(for u in /sys/class/block/*/uevent; do if grep -q '^PARTNAME=hubos-data$' "$u" 2>/dev/null; then echo /dev/$(basename $(dirname $u)); break; fi; done)
 if [ -n "$DATADEV" ] && mount -o noatime "$DATADEV" /data 2>/dev/null; then echo "STAGE0-RECOVERY: data partition mounted at /data (room for a bundle)"; else echo "STAGE0-RECOVERY: no data partition; a bundle would go to RAM"; fi
 ip link set lo up
 ip link set eth0 up 2>/dev/null
 if udhcpc -i eth0 -n -q -t 3 -T 1 -s /usr/lib/hubos/udhcpc.script >/run/udhcpc.log 2>&1; then echo "STAGE0-RECOVERY: network $(ip -4 addr show eth0 | awk '/inet /{print $2}')"; else echo "STAGE0-RECOVERY: no network (dhcp failed)"; fi
+[ -x /usr/lib/hubos/recovery-extra.sh ] && /usr/lib/hubos/recovery-extra.sh   # only the TEST recovery kernel with the agent has this file
 echo "HUBOS: RECOVERY MODE (separate recovery kernel; neither slot's root is used; bare terminal)"
 cat /etc/hubos-release
 if ls /etc/hubos/keys/*.pub >/dev/null 2>&1; then echo "Install a signed bundle:  hubos-ctl update http://HOST:PORT/BUNDLE [a|b]   (default slot a; sets BootNext to it; then: reboot -f)"; else echo "WARNING: this recovery kernel has no update key (keyring /etc/hubos/keys is empty); hubos-ctl update will not work"; fi

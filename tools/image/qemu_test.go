@@ -12,6 +12,7 @@ package image
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net"
@@ -58,6 +59,7 @@ type rig struct {
 	forceHang  int      // test hook: treat the next N boots as hangs (HUBOS_TEST_FORCE_HANG=once|twice)
 	crashes    int      // times QEMU died from a signal (a crash, not a hang)
 	crashLog   []string // every crash: number, signal, step, saved log
+	fwd        int      // host port forwarded to port 8480 of the guest (the recovery agent test); 0 = none
 	forceCrash int      // test hook: kill the next N boots with SIGSEGV (HUBOS_TEST_FORCE_CRASH=once|twice)
 	dead       bool     // the run was stopped by a repeated hang; later VM tests skip
 	hungReboot bool     // a reboot hung and was retried: BootNext was used up, so the trial slot did NOT boot
@@ -100,6 +102,13 @@ func lastLine(s string) string {
 
 func (r *rig) tool(path string) string { return filepath.Join(r.work, "tools", "root", path) }
 
+func (r *rig) fwdArg() string {
+	if r.fwd == 0 {
+		return ""
+	}
+	return fmt.Sprintf(",hostfwd=tcp:127.0.0.1:%d-:8480", r.fwd)
+}
+
 func (r *rig) startVM() *vm {
 	r.logSeq++
 	logPath := filepath.Join(r.disk, fmt.Sprintf("serial-%02d.log", r.logSeq))
@@ -114,7 +123,7 @@ func (r *rig) startVM() *vm {
 		"-drive", "if=pflash,format=raw,unit=0,readonly=on,file=" + T + "/usr/share/OVMF/OVMF_CODE_4M.fd",
 		"-drive", "if=pflash,format=raw,unit=1,file=" + filepath.Join(r.disk, "vars.fd"),
 		"-drive", "file=" + filepath.Join(r.disk, "disk.img") + ",if=none,id=d0,format=raw", "-device", "virtio-blk-pci,drive=d0",
-		"-netdev", "user,id=n0", "-device", "virtio-net-pci,netdev=n0,romfile=",
+		"-netdev", "user,id=n0" + r.fwdArg(), "-device", "virtio-net-pci,netdev=n0,romfile=",
 		"-device", "i6300esb", "-watchdog-action", "reset", "-serial", "stdio", "-monitor", "none",
 	}
 	if r.gui {
@@ -536,6 +545,62 @@ func (r *rig) trialBoot(redo func()) (slot, rel string, confirmed bool, st, recL
 }
 
 // waitRecoveryFor is waitRecovery with its own time limit (a run of failed boots takes a while).
+// waitRecoveryRetryCrash waits for the recovery banner on the running VM after position from. If QEMU died from a signal
+// meanwhile, the crash is recorded and the step is retried once: QEMU is started again on the same disk (both slot roots are
+// garbage when this is used, so the boot-loop breaker brings up the recovery shell) and the banner is waited for again.
+func (r *rig) waitRecoveryRetryCrash(from int, step string) bool {
+	if r.waitRecoveryFor(r.vm, from, 900*time.Second) {
+		return true
+	}
+	if sig := r.vm.crashSignal(); sig != "" {
+		r.noteCrash(r.vm, sig, step)
+		return r.restartIntoRecovery(step + " (retry)")
+	}
+	return false
+}
+
+// restartIntoRecovery starts QEMU again on the same disk and waits for the recovery shell (both roots garbage: three failed boots).
+func (r *rig) restartIntoRecovery(step string) bool {
+	r.vm.kill()
+	v := r.startVM()
+	if r.waitRecoveryFor(v, 0, 900*time.Second) {
+		return true
+	}
+	if sig := v.crashSignal(); sig != "" {
+		r.noteCrash(v, sig, step)
+	}
+	r.dead = true
+	return false
+}
+
+// settleOnConfirmedSlot starts QEMU again on the same disk (after a crash) and waits until the machine runs the confirmed slot b:
+// if the firmware starts an unconfirmed trial slot first, the trial fails and rolls back, and this waits for that.
+func (r *rig) settleOnConfirmedSlot() {
+	r.vm.kill()
+	v := r.startVM()
+	r.vm = v
+	pos := 0
+	for i := 0; i < 3; i++ {
+		e := v.wait(handoverRe, 300*time.Second, pos)
+		if e < 0 {
+			if sig := v.crashSignal(); sig != "" {
+				r.noteCrash(v, sig, "restart after a crash")
+			}
+			r.dead = true
+			r.t.Fatalf("the machine did not come back after the QEMU crash; the run fails")
+		}
+		r.bootPos = e
+		r.ready(v)
+		if slot, _, _, _ := r.status(); slot == "b" {
+			r.waitConfirmed()
+			return
+		}
+		pos = max(e, v.wait(`this boot FAILED`, 200*time.Second, e))
+	}
+	r.dead = true
+	r.t.Fatalf("the machine did not settle on the confirmed slot after the QEMU crash")
+}
+
 func (r *rig) waitRecoveryFor(v *vm, from int, d time.Duration) bool {
 	if v.wait(`HUBOS: RECOVERY MODE`, d, from) < 0 {
 		return false
@@ -582,6 +647,10 @@ func TestImage(t *testing.T) {
 		t.Fatal(err)
 	}
 	r := &rig{t: t, work: work, disk: filepath.Join(work, "vm"), hangDir: filepath.Join(work, "hangs")}
+	if ln, err := net.Listen("tcp", "127.0.0.1:0"); err == nil { // a free host port, forwarded to port 8480 of the guest (the recovery agent test)
+		r.fwd = ln.Addr().(*net.TCPAddr).Port
+		ln.Close()
+	}
 	switch os.Getenv("HUBOS_TEST_FORCE_HANG") {
 	case "once":
 		r.forceHang = 1 // the first boot is treated as a hang; the retry must succeed and the run continues
@@ -646,6 +715,20 @@ func TestImage(t *testing.T) {
 	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + pub2, "RECOVERY_VERSION=5"})
 	recK2 := filepath.Join(outDir, "rec-k2.efi")
 	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK2)
+	// The TEST recovery kernel with the recovery agent (T18): key 2 only (the machine runs key-2 releases by then), version 5, the
+	// agent built static, and a management key the test signs its requests with. kernel-recovery.efi is not touched by this build.
+	mgmtPub, mgmtSec := genKey("mgmt")
+	_, otherMgmtSec := genKey("othermgmt")
+	agentBin := filepath.Join(outDir, "recovery-agent")
+	{
+		cmd := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", agentBin, "./experiments/recoveryagent")
+		cmd.Env = append(os.Environ(), "CGO_ENABLED=0")
+		if out, err := cmd.CombinedOutput(); err != nil {
+			t.Fatalf("go build recovery-agent: %v\n%s", err, out)
+		}
+	}
+	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + pub2, "RECOVERY_VERSION=5", "RECOVERY_AGENT_BIN=" + agentBin, "RECOVERY_AGENT_KEYS=" + mgmtPub})
+	recAgent := filepath.Join(outDir, "kernel-recovery-agent.efi")
 	r.script("build-kernel.sh", []string{"UPDATE_PUB=" + r.pub}) // back to key 1 only, version 1: the kernel the disk and the bundles use
 	if sha256File(t, recK1) != sha256File(t, filepath.Join(outDir, "kernel-recovery.efi")) {
 		t.Fatalf("the key-1 recovery kernel was not rebuilt identically")
@@ -703,6 +786,9 @@ func TestImage(t *testing.T) {
 	bundleSigned("22", "v22-k2-drops-k1", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=5")
 	bundleSigned("23", "v23-k1-after-drop", r.sec)
 	bundleSigned("24", "v24-k2", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=5")
+	bundleSigned("28", "v28-agent", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=5")
+	os.MkdirAll(filepath.Join(bdir, "agent-kernel"), 0o755)
+	copyFile(t, recAgent, filepath.Join(bdir, "agent-kernel", "kernel-recovery.efi"))
 	// the recovery install rule (T17): a changed file at the SAME version (a rotation release that forgot to bump it) installs; a
 	// lower version never installs; the same file leaves things alone
 	recK2m := filepath.Join(outDir, "rec-k2-marked.efi") // the key-2 recovery kernel with a marker appended: another file, still boots
@@ -1022,21 +1108,37 @@ func TestImage(t *testing.T) {
 				t.Skip("run stopped by a repeated hang")
 			}
 			start := time.Now()
-			rc, _ := r.update(bundleName)
-			m := r.vm.mark()
-			io.WriteString(r.vm.in, "sync; reboot -f\n")
+			var rc, saw int
+			var m int
 			trial := ""
-			if strings.HasPrefix(name, "6c") {
-				// the unconfirmed trial boot of slot a is up (hubd never becomes healthy): where does recovery point now?
-				if hh := r.vm.wait(handoverRe, 150*time.Second, m); hh >= 0 {
-					r.ready(r.vm)
-					_, e := r.vm.sh(`efibootmgr -v | grep hubos-recovery | sed 's/.*File/File/'`, 30*time.Second)
-					trial = regexp.MustCompile(`File\S+`).FindString(e)
-					t.Logf("during the unconfirmed trial boot of slot a the recovery entry is: %s", trial)
+			var sawAfter float64
+			for attempt := 1; attempt <= 2; attempt++ {
+				rc, _ = r.update(bundleName)
+				m = r.vm.mark()
+				io.WriteString(r.vm.in, "sync; reboot -f\n")
+				trial = ""
+				if strings.HasPrefix(name, "6c") {
+					// the unconfirmed trial boot of slot a is up (hubd never becomes healthy): where does recovery point now?
+					if hh := r.vm.wait(handoverRe, 150*time.Second, m); hh >= 0 {
+						r.ready(r.vm)
+						_, e := r.vm.sh(`efibootmgr -v | grep hubos-recovery | sed 's/.*File/File/'`, 30*time.Second)
+						trial = regexp.MustCompile(`File\S+`).FindString(e)
+						t.Logf("during the unconfirmed trial boot of slot a the recovery entry is: %s", trial)
+					}
 				}
+				saw = r.vm.wait(expect, 200*time.Second, m)
+				sawAfter = time.Since(start).Seconds()
+				if saw < 0 && attempt == 1 {
+					if sig := r.vm.crashSignal(); sig != "" {
+						// QEMU died from a signal during the trial boot: record it, start QEMU again, wait until the machine is back on the
+						// confirmed slot, and do the whole step once more (a second crash here fails the step)
+						r.noteCrash(r.vm, sig, "the trial boot of "+name)
+						r.settleOnConfirmedSlot()
+						continue
+					}
+				}
+				break
 			}
-			saw := r.vm.wait(expect, 200*time.Second, m)
-			sawAfter := time.Since(start).Seconds()
 			// back in the confirmed slot: a new handover line after the failure
 			h := r.vm.wait(handoverRe, 300*time.Second, max(saw, m))
 			if h >= 0 {
@@ -1380,7 +1482,7 @@ func TestImage(t *testing.T) {
 			strings.Contains(t1, "confirm timeout 120 s, watchdog timeout 180 s") && strings.Contains(wd1, "-T 180")
 		setConf("20", "50")
 		t2, wd2 := bootWith()
-		used := strings.Contains(t2, "confirm 20 s, watchdog 50 s") && strings.Contains(t2, "confirm timeout 20 s, watchdog timeout 50 s") && strings.Contains(wd2, "-T 50") && !strings.Contains(t2, "REFUSED")
+		used := strings.Contains(t2, "re-armed with 50 s") && strings.Contains(t2, "confirm timeout 20 s, watchdog timeout 50 s") && strings.Contains(wd2, "-T 50") && !strings.Contains(t2, "REFUSED")
 		setConf("30", "60")
 		r.sh(`sync`)
 		record("D2 boot time: a pair in the node config with watchdog <= confirm + 15 s is refused with a message and the defaults (120 s, 180 s) are used; a good pair (20/50) is used by stage 0, the confirm step and the watchdog feeder", refused && used, time.Since(start2), fmt.Sprintf("refused pair 30/40 -> watchdog feeder '%s'; good pair 20/50 -> '%s'", strings.TrimSpace(wd1), strings.TrimSpace(wd2)))
@@ -1437,6 +1539,51 @@ func TestImage(t *testing.T) {
 		}
 		if !banner {
 			return
+		}
+		// the watchdog in recovery: armed with the machine's timeout (60 s here, set by test 15) and fed by a small feeder; a normal
+		// recovery stays up for longer than the timeout; with the feeder killed the machine resets and goes back through stage 0
+		startW := time.Now()
+		_, w1 := r.sh(`for p in $(pidof watchdog); do tr '\000' ' ' < /proc/$p/cmdline; echo; done; cut -d. -f1 /proc/uptime`)
+		feederOK := strings.Contains(w1, "watchdog -F -T 60 -t 5 /dev/watchdog")
+		_, w2 := r.vm.sh(`sleep 80; cut -d. -f1 /proc/uptime`, 150*time.Second)
+		upNums := regexp.MustCompile(`(?m)^\d+\s*$`).FindAllString(w2, -1)
+		uptime := 0
+		if len(upNums) > 0 {
+			fmt.Sscanf(strings.TrimSpace(upNums[len(upNums)-1]), "%d", &uptime)
+		}
+		stayedUp := uptime > 80 && !strings.Contains(w2, "<timeout>")
+		// kill the feeder; at most twice (a QEMU crash in the middle is retried once, see waitRecoveryRetryCrash)
+		var resetPos int
+		var resetAfter time.Duration
+		var backInRecovery bool
+		for attempt := 1; attempt <= 2; attempt++ {
+			mW := r.vm.mark()
+			r.vm.sh(`kill -9 $(pidof watchdog); echo killed`, 30*time.Second)
+			killedAt := time.Now()
+			resetPos = r.vm.wait(`STAGE0: start`, 240*time.Second, mW)
+			resetAfter = time.Since(killedAt)
+			if resetPos >= 0 {
+				backInRecovery = r.waitRecoveryRetryCrash(resetPos, "recovery after the watchdog reset")
+				break
+			}
+			if sig := r.vm.crashSignal(); sig != "" && attempt == 1 {
+				r.noteCrash(r.vm, sig, "the watchdog reset of the recovery shell")
+				if !r.restartIntoRecovery("the watchdog reset of the recovery shell (retry)") {
+					break
+				}
+				continue
+			}
+			break
+		}
+		okW := feederOK && stayedUp && resetPos >= 0 && backInRecovery
+		record("W1 recovery arms the hardware watchdog with the machine's timeout and feeds it: the feeder runs with -T 60, a normal recovery stays up longer than the timeout (uptime "+fmt.Sprint(uptime)+" s), and with the feeder killed the machine resets and goes through stage 0 and back to recovery", okW, time.Since(startW),
+			fmt.Sprintf("feeder command line ok: %v; reset %.0f s after the kill; back in the recovery shell: %v", feederOK, resetAfter.Seconds(), backInRecovery))
+		if !okW {
+			t.Errorf("feederOK=%v stayedUp=%v resetPos=%d back=%v\n%s\n%s", feederOK, stayedUp, resetPos, backInRecovery, w1, w2)
+			t.Fail()
+			if !backInRecovery {
+				return
+			}
 		}
 		// refusals in the recovery shell: unsigned, tampered, below the floor; nothing written
 		start2 := time.Now()
@@ -1678,6 +1825,69 @@ func TestImage(t *testing.T) {
 			fmt.Sprintf("boot partition: version %s file %s -> %s %s (same version, new file) -> %s %s (lower version 4: unchanged) -> %s %s (same file: unchanged)", v0, h0[:12], v1, h1[:12], v2, h2[:12], v3, h3[:12]))
 		if !ok {
 			t.Errorf("ok0=%v ok1=%v ok2=%v ok3=%v\nlog1=%q\nlog2=%q\nlog3=%q", ok0, ok1, ok2, ok3, log1, log2, log3)
+			t.Fail()
+		}
+	})
+
+	// ---- the recovery agent inside a TEST recovery kernel ----
+	t.Run("T18_recovery_agent_in_a_test_recovery_kernel", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// put the TEST recovery kernel (the key-2 recovery kernel plus the agent) on the boot partition, then boot recovery
+		normalSize := fileSize(t, recK2)
+		agentSize := fileSize(t, recAgent)
+		_, put := r.sh(`mount -t vfat $(findfs PARTLABEL=hubos-esp) /boot/efi && wget -q -O /boot/efi/EFI/hubos/kernel-recovery.efi.new ` + r.base + `/agent-kernel/kernel-recovery.efi && mv /boot/efi/EFI/hubos/kernel-recovery.efi.new /boot/efi/EFI/hubos/kernel-recovery.efi && sync; umount /boot/efi; echo put-done`)
+		banner, shellOut := r.bootRecoveryEntry()
+		ac := newAgentClient(t, r)
+		// 1. GET /v1/status from the host answers "recovery"
+		var code int
+		var body string
+		for i := 0; i < 20; i++ { // the agent starts after DHCP; the forward needs a moment
+			if code, body = ac.do("GET", "/v1/status", "", nil); code == 200 {
+				break
+			}
+			time.Sleep(2 * time.Second)
+		}
+		var st struct {
+			State        string
+			Release      string `json:"recovery_release"`
+			Machine      string
+			BootFailures int `json:"boot_failures"`
+			FailureLimit int `json:"failure_limit"`
+		}
+		json.Unmarshal([]byte(body), &st)
+		okStatus := banner && strings.Contains(put, "put-done") && code == 200 && st.State == "recovery" && st.Release == "recovery-1" && st.FailureLimit == 3
+		// 2. refused requests: unsigned, a signature of another key, a body changed after signing, a replayed request
+		reqBody := []byte(`{"Slot":"b","BaseURL":"` + r.base + `/v28-agent"}`)
+		c1, b1 := ac.do("POST", "/v1/install", "", reqBody)
+		c2, b2 := ac.signed(otherMgmtSec, "POST", "/v1/install", reqBody)
+		n3 := ac.nonce()
+		auth3 := ac.sign(mgmtSec, "POST", "/v1/install", n3, []byte(`{"Slot":"a","BaseURL":"`+r.base+`/v28-agent"}`))
+		c3, b3 := ac.do("POST", "/v1/install", auth3, reqBody) // signed for slot a, sent for slot b
+		n4 := ac.nonce()
+		auth4 := ac.sign(mgmtSec, "POST", "/v1/clear-failures", n4, nil)
+		c4, b4 := ac.do("POST", "/v1/clear-failures", auth4, nil) // a good signed request: accepted ...
+		c5, b5 := ac.do("POST", "/v1/clear-failures", auth4, nil) // ... and the same bytes again: replayed
+		okRefused := c1 == 401 && c2 == 401 && c3 == 401 && c4 == 200 && c5 == 401 && strings.Contains(b5, "used or expired nonce") && strings.Contains(b2, "signature not accepted")
+		// 3. a signed install request: installs a signed bundle into slot b; the machine then boots it
+		ic, ib := ac.signed(mgmtSec, "POST", "/v1/install", reqBody)
+		okInstall := ic == 200 && strings.Contains(ib, "installed version 28 in slot b")
+		m := r.vm.mark()
+		io.WriteString(r.vm.in, "sync; reboot -f\n")
+		r.afterReset(m)
+		r.hungReboot = false
+		confirmed := r.waitConfirmed()
+		slot, rel, conf, _ := r.status()
+		ev, eh := r.espRecovery()
+		okBoot := confirmed && slot == "b" && rel == "28" && conf && ev == "5" && eh == sha256File(t, recK2) // the confirm step put the normal recovery kernel back (same version, other file)
+		ok := okStatus && okRefused && okInstall && okBoot
+		record("T18 the recovery agent inside a TEST recovery kernel: GET /v1/status from the host answers recovery; unsigned, wrong-key, tampered and replayed requests are refused; a signed install request installs a signed bundle into slot b and the machine boots and confirms it", ok, time.Since(start),
+			fmt.Sprintf("status %d %s; refused: unsigned %d, other key %d, changed body %d, replay %d (good clear-failures %d); install %d; booted slot %s release %s confirmed %v; recovery kernel with the agent %d bytes, without %d bytes (+%d); normal recovery kernel back on the boot partition: %v", code, strings.TrimSpace(body), c1, c2, c3, c5, c4, ic, slot, rel, conf, agentSize, normalSize, agentSize-normalSize, eh == sha256File(t, recK2)))
+		if !ok {
+			t.Errorf("okStatus=%v okRefused=%v okInstall=%v okBoot=%v\nput=%q\n%s\n%d %s | %d %s | %d %s | %d %s | %d %s\ninstall %d %s", okStatus, okRefused, okInstall, okBoot, put, shellOut, c1, b1, c2, b2, c3, b3, c4, b4, c5, b5, ic, ib)
 			t.Fail()
 		}
 	})

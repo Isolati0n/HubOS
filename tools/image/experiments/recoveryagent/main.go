@@ -24,6 +24,7 @@ func (f *fake) Logs() string { return "FAKE log line 1\nFAKE log line 2\n" }
 func main() {
 	listen := flag.String("listen", "127.0.0.1:8480", "address to listen on")
 	keydir := flag.String("keys", "", "directory with management public keys (*.pub, signify format)")
+	backend := flag.String("backend", "fake", "fake (changes nothing) or hubos (calls hubos-ctl; for the TEST recovery kernel)")
 	flag.Parse()
 	files, _ := filepath.Glob(filepath.Join(*keydir, "*.pub"))
 	var keys []PublicKey
@@ -38,6 +39,10 @@ func main() {
 		}
 		keys = append(keys, k)
 	}
-	log.Printf("recoveryagent (FAKE backend): %d management key(s), listening on %s", len(keys), *listen)
-	log.Fatal(http.ListenAndServe(*listen, NewAgent(keys, &fake{failures: 3})))
+	var b Backend = &fake{failures: 3}
+	if *backend == "hubos" {
+		b = NewHubosBackend()
+	}
+	log.Printf("recoveryagent (%s backend): %d management key(s), listening on %s", *backend, len(keys), *listen)
+	log.Fatal(http.ListenAndServe(*listen, NewAgent(keys, b)))
 }
