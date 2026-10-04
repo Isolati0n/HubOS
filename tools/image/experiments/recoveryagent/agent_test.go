@@ -255,3 +255,32 @@ func TestParseRejectsGarbage(t *testing.T) {
 		t.Error("accepted a short signature")
 	}
 }
+
+// The real backend, with a fake hubos-ctl script standing in for the program of the recovery kernel.
+func TestHubosBackend(t *testing.T) {
+	dir := t.TempDir()
+	ctl := filepath.Join(dir, "hubos-ctl")
+	script := "#!/bin/sh\ncase $1 in\n status) echo 'slot=none'; echo 'boot-failures=2 limit=3';;\n clear-failures) echo cleared;;\n update) echo \"update: $2 into $3\"; [ \"$3\" = b ] || exit 2;;\nesac\n"
+	if err := os.WriteFile(ctl, []byte(script), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	rel := filepath.Join(dir, "release")
+	os.WriteFile(rel, []byte("version=recovery-7\nflavor=recovery\n"), 0o644)
+	b := &HubosBackend{Ctl: ctl, Release: rel, LogFile: filepath.Join(dir, "log")}
+	if st := b.Status(); st.Release != "recovery-7" || st.BootFailures != 2 || st.FailureLimit != 3 || st.State != "recovery" {
+		t.Fatalf("status %+v", st)
+	}
+	if err := b.ClearFailures(); err != nil {
+		t.Fatal(err)
+	}
+	out, err := b.Install("b", "http://x/y")
+	if err != nil || !strings.Contains(out, "update: http://x/y into b") {
+		t.Fatalf("install: %v %q", err, out)
+	}
+	if _, err := b.Install("a", "http://x/y"); err == nil {
+		t.Fatal("a failing hubos-ctl must be an error")
+	}
+	if !strings.HasPrefix(b.Logs(), "no log") {
+		t.Fatalf("logs %q", b.Logs())
+	}
+}

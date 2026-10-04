@@ -3,6 +3,7 @@
 # THREE kernels: one per slot and a separate recovery kernel (see below).
 # One kernel PER SLOT: the slot (hubos.slot=a|b and root=PARTLABEL=hubos-root-a|b) is in the built-in command
 # line, so a firmware that drops the boot entry's load options still boots the right slot.
+# (A TEST variant of the recovery kernel with the recovery agent is built with RECOVERY_AGENT_BIN, see below; it is a second file.)
 # The RECOVERY kernel (kernel-recovery.efi) has a different initramfs (image/stage0/recovery-init and the tools
 # listed by tools/image/recovery-list.py, copied from the base root) and no root= in its command line: it needs
 # neither slot's root. It also carries the owner's PUBLIC update key ($UPDATE_KEYS (or $UPDATE_PUB), signify public key files), so
@@ -22,12 +23,19 @@ KEYS=${UPDATE_KEYS:-$UPDATE_PUB}
 # Two stamps. The slot kernels depend on the machine, the fragment and stage 0; the recovery kernel on its own files,
 # the base root and the update key. Skip what has not changed (FORCE=1 builds everything).
 SSTAMP=$(cat "$REPO/$MACHINE" "$REPO/$KERNEL_FRAGMENT" "$REPO/image/stage0/init" "$REPO/image/stage0/stage0.list.in" "$REPO/image/rootfs/usr/lib/hubos/check-timers.sh" | sha256sum | cut -d' ' -f1)
-RSTAMP=$(cat "$REPO/image/stage0/recovery-init" "$REPO/image/stage0/recovery.rc" "$REPO/tools/image/recovery-list.py" "$REPO/image/rootfs/usr/sbin/hubos-ctl" "$REPO/image/rootfs/usr/lib/hubos/udhcpc.script" "$WORK/out/base.stamp" $KEYS | sha256sum | cut -d' ' -f1)
+RSTAMP=$(cat "$REPO/image/stage0/recovery-init" "$REPO/image/stage0/recovery.rc" "$REPO/tools/image/recovery-list.py" "$REPO/image/rootfs/usr/sbin/hubos-ctl" "$REPO/image/rootfs/usr/lib/hubos/udhcpc.script" "$REPO/image/rootfs/usr/lib/hubos/check-timers.sh" "$WORK/out/base.stamp" $KEYS | sha256sum | cut -d' ' -f1)
+# TEST variant: RECOVERY_AGENT_BIN=path of the static recovery-agent program (RECOVERY_AGENT_KEYS = management public keys) builds a
+# SECOND recovery kernel, kernel-recovery-agent.efi, that carries the agent. The normal kernel-recovery.efi is not touched.
+RECOUT=kernel-recovery.efi; RSTAMPFILE=kernel.rstamp
+if [ -n "$RECOVERY_AGENT_BIN" ]; then
+  RECOUT=kernel-recovery-agent.efi; RSTAMPFILE=kernel.rstamp-agent
+  RSTAMP=$(cat "$REPO/image/stage0/recovery-agent-start.sh" "$RECOVERY_AGENT_BIN" $RECOVERY_AGENT_KEYS | sha256sum | cut -d' ' -f1)$RSTAMP
+fi
 RSTAMP=$(echo "$SSTAMP $RSTAMP ${RECOVERY_VERSION:-1} ${RECOVERY_CMDLINE:-}" | sha256sum | cut -d' ' -f1)
 SRC=$WORK/linux-$V; KB=$WORK/kbuild-$V
 SLOTS_OK=; REC_OK=
 [ -z "$FORCE" ] && [ -f "$WORK/out/kernel-a.efi" ] && [ -f "$WORK/out/kernel-b.efi" ] && [ -f "$KB/.config" ] && [ "$(cat "$WORK/out/kernel.sstamp" 2>/dev/null)" = "$SSTAMP" ] && SLOTS_OK=1
-[ -n "$SLOTS_OK" ] && [ -f "$WORK/out/kernel-recovery.efi" ] && [ "$(cat "$WORK/out/kernel.rstamp" 2>/dev/null)" = "$RSTAMP" ] && REC_OK=1
+[ -n "$SLOTS_OK" ] && [ -f "$WORK/out/$RECOUT" ] && [ "$(cat "$WORK/out/$RSTAMPFILE" 2>/dev/null)" = "$RSTAMP" ] && REC_OK=1
 if [ -n "$SLOTS_OK" ] && [ -n "$REC_OK" ]; then
   say "kernels are up to date ($(cat "$WORK/out/kernel.seconds") s when built)"; exit 0
 fi
@@ -69,7 +77,7 @@ printf 'version=recovery-%s\nflavor=recovery\nkernel-version=%s\n' "${RECOVERY_V
 sed -i "s#^CONFIG_INITRAMFS_SOURCE=.*#CONFIG_INITRAMFS_SOURCE=\"$WORK/stage0/recovery.list\"#; s#^CONFIG_CMDLINE=.*#CONFIG_CMDLINE=\"${RECOVERY_CMDLINE:-console=ttyS0 ro loglevel=4 panic=5}\"#" "$KB/.config"
 make -C "$SRC" O="$KB" olddefconfig "${HF[@]}" >/dev/null
 make -C "$SRC" O="$KB" -j"$(nproc)" bzImage "${HF[@]}" >> "$WORK/out/kernel-build.log" 2>&1 || { tail -20 "$WORK/out/kernel-build.log" >&2; exit 1; }
-cp "$KB/arch/x86/boot/bzImage" "$WORK/out/kernel-recovery.efi"
+cp "$KB/arch/x86/boot/bzImage" "$WORK/out/$RECOUT"
 echo $(( $(date +%s) - s )) > "$WORK/out/kernel.seconds"
-echo "$V" > "$WORK/out/kernel.version"; echo "$RSTAMP" > "$WORK/out/kernel.rstamp"
-say "kernels (a, b, recovery) built in $(cat "$WORK/out/kernel.seconds") s ($([ -n "$SLOTS_OK" ] && echo 'recovery only' || echo 'all three')): $(stat -c %s "$WORK/out/kernel-a.efi") bytes, sha256 a $(sha256sum "$WORK/out/kernel-a.efi" | cut -c1-16) b $(sha256sum "$WORK/out/kernel-b.efi" | cut -c1-16) recovery $(stat -c %s "$WORK/out/kernel-recovery.efi") bytes $(sha256sum "$WORK/out/kernel-recovery.efi" | cut -c1-16)"
+echo "$V" > "$WORK/out/kernel.version"; echo "$RSTAMP" > "$WORK/out/$RSTAMPFILE"
+say "kernels (a, b, recovery) built in $(cat "$WORK/out/kernel.seconds") s ($([ -n "$SLOTS_OK" ] && echo 'recovery only' || echo 'all three')): $(stat -c %s "$WORK/out/kernel-a.efi") bytes, sha256 a $(sha256sum "$WORK/out/kernel-a.efi" | cut -c1-16) b $(sha256sum "$WORK/out/kernel-b.efi" | cut -c1-16) recovery $(stat -c %s "$WORK/out/$RECOUT") bytes $(sha256sum "$WORK/out/$RECOUT" | cut -c1-16)${RECOVERY_AGENT_BIN:+ (TEST variant $RECOUT with the recovery agent)}"
