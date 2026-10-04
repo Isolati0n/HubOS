@@ -15,6 +15,7 @@ import (
 	"image/color"
 	"image/png"
 	"io"
+	"math"
 	"net"
 	"net/http"
 	"os"
@@ -114,6 +115,23 @@ func countColor(img image.Image, x0, y0, x1, y1 int, want color.RGBA) int {
 		}
 	}
 	return n
+}
+
+// findCursor finds the tip of the mouse arrow (white, with a vertical left edge at least 13 px tall) in the part of the screen
+// to the right of the menu and below the bar, where the dot grid's 2-pixel dots cannot be mistaken for it.
+func findCursor(img image.Image) (x, y int, found bool) {
+	white := func(x, y int) bool {
+		r, g, b, _ := img.At(x, y).RGBA()
+		return r>>8 > 245 && g>>8 > 245 && b>>8 > 245
+	}
+	for yy := 31; yy < 600; yy++ {
+		for xx := 669; xx < 1020; xx++ {
+			if white(xx, yy) && white(xx, yy+5) && white(xx, yy+9) && white(xx, yy+13) {
+				return xx, yy, true
+			}
+		}
+	}
+	return 0, 0, false
 }
 
 var (
@@ -375,6 +393,16 @@ func TestHubImage(t *testing.T) {
 		homeRe := regexp.MustCompile(`#\d+ hubos-ai-1 \[0, -100\] \d+x\d+\s+"AI Box"`)
 		// up to three tries: open the menu with the bar click, move the pointer onto the "ai-1  AI Box" row (the rows are
 		// 23 px apart; ai-1 is the 7th line) and click it
+		// calibration: clamp the pointer to the bottom right corner, move it by (-150,-150) and find the arrow in a screenshot
+		r.monitor("mouse_move 4000 4000")
+		time.Sleep(500 * time.Millisecond)
+		r.monitor("mouse_move -150 -150")
+		time.Sleep(time.Second)
+		kx, ky := 1.0, 1.0
+		if tx, ty, found := findCursor(loadPNG(t, r.shot("hub-3-pointer-calibration"))); found {
+			kx, ky = float64(1023-tx)/150, float64(639-ty)/150
+		}
+		t.Logf("pointer scale (screen pixels per monitor unit): x %.2f, y %.2f", kx, ky)
 		attempts, opened, home := 0, false, false
 		var st string
 		for attempts < 3 && !home {
@@ -382,7 +410,7 @@ func TestHubImage(t *testing.T) {
 			if wofiCount() == "0" {
 				r.monitor("mouse_move -4000 -4000")
 				time.Sleep(500 * time.Millisecond)
-				r.monitor("mouse_move 40 15")
+				r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(40/kx)), int(math.Round(15/ky))))
 				time.Sleep(time.Second)
 				r.monitor("mouse_button 1")
 				time.Sleep(time.Second)
@@ -394,22 +422,13 @@ func TestHubImage(t *testing.T) {
 				continue
 			}
 			opened = true
-			// The relative mouse is accelerated for big steps (one jump of 60,198 landed at about 125,405), so the pointer is
-			// walked down in small steps from (40,15) towards the ai-1 row (about y 213) and stopped as soon as wofi
-			// highlights that row (the same blue as the first row, which is selected from the start).
-			sel := color.RGBA{}
-			if r0, g0, b0, _ := loadPNG(t, r.shot("hub-3-menu-row-start")).At(300, 75).RGBA(); r0 != 0 || g0 != 0 || b0 != 0 {
-				sel = color.RGBA{uint8(r0 >> 8), uint8(g0 >> 8), uint8(b0 >> 8), 255}
+			// The pointer moves by a different amount than the monitor command says (both the USB and the PS/2 mouse of the
+			// virtual machine get every move; one jump of 60,198 landed at about 125,405), so the real scale was measured
+			// above (kx, ky) and the move is divided by it, in small steps.
+			for step := 0; step < 12; step++ {
+				r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(5/kx)), int(math.Round(16.5/ky))))
+				time.Sleep(120 * time.Millisecond)
 			}
-			onRow := false
-			for step := 0; step < 24 && !onRow; step++ {
-				r.monitor("mouse_move 3 9")
-				time.Sleep(150 * time.Millisecond)
-				if step%3 == 2 {
-					onRow = sel.A != 0 && countColor(loadPNG(t, r.shot("hub-3-menu-row-hover")), 200, 205, 400, 222, sel) > 1500
-				}
-			}
-			t.Logf("attempt %d: the ai-1 row is highlighted under the pointer: %v", attempts, onRow)
 			r.monitor("mouse_button 1")
 			time.Sleep(time.Second)
 			r.monitor("mouse_button 0")
