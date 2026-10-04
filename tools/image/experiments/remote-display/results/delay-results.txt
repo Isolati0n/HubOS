@@ -1,0 +1,23 @@
+start attempt 1: links missing, restarting
+== media/latency: audio 20
+n=8  delay ms: min 17  median 17  max 38   all: 17 17 17 17 17 19 19 38
+start attempt 1: links missing, restarting
+start attempt 2: links missing, restarting
+start attempt 3: links missing, restarting
+start attempt 4: links missing, restarting
+== media/latency: audio 5
+run 0: burst not seen (tap1 True, tap2 False)
+run 1: burst not seen (tap1 True, tap2 False)
+run 2: burst not seen (tap1 True, tap2 False)
+run 3: burst not seen (tap1 True, tap2 False)
+run 4: burst not seen (tap1 True, tap2 False)
+run 5: burst not seen (tap1 True, tap2 False)
+run 6: burst not seen (tap1 True, tap2 False)
+run 7: burst not seen (tap1 True, tap2 False)
+start attempt 1: links missing, restarting
+start attempt 2: links missing, restarting
+== media/latency: opus 20
+n=8  delay ms: min -33  median -20  max -15   all: -33 -33 -28 -23 -20 -20 -17 -15
+start attempt 1: links missing, restarting
+== media/latency: opus 100
+n=8  delay ms: min -31  median -21  max -16   all: -31 -29 -26 -26 -21 -21 -20 -16

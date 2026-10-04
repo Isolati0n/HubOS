@@ -1,0 +1,3 @@
+idle (no window changes): server->client 0 bytes in 20s = 0 kbit/s; client->server 0 bytes
+scrolling text (foot printing the uptime line as fast as it can, so every frame differs; load): server->client 51095098 bytes in 20s = 20438 kbit/s; client->server 0 bytes
+video (mpv, moving test pattern 640x480, 30 fps, load): server->client 31231289 bytes in 20s = 12492 kbit/s; client->server 0 bytes

@@ -1,0 +1,7 @@
+== media/latency: audio 20
+after player start (ms): tap1 median 35, tap2 median 66
+n=6  delay ms: min 25  median 33  max 33   all: 25 28 30 33 33 33
+start attempt 2: links missing, restarting
+== media/latency: opus 20
+after player start (ms): tap1 median 32, tap2 median 7
+n=6  delay ms: min -42  median -21  max -21   all: -42 -23 -23 -21 -21 -21
