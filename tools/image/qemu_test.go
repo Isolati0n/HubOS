@@ -573,6 +573,34 @@ func (r *rig) restartIntoRecovery(step string) bool {
 	return false
 }
 
+// settleOnConfirmedSlot starts QEMU again on the same disk (after a crash) and waits until the machine runs the confirmed slot b:
+// if the firmware starts an unconfirmed trial slot first, the trial fails and rolls back, and this waits for that.
+func (r *rig) settleOnConfirmedSlot() {
+	r.vm.kill()
+	v := r.startVM()
+	r.vm = v
+	pos := 0
+	for i := 0; i < 3; i++ {
+		e := v.wait(handoverRe, 300*time.Second, pos)
+		if e < 0 {
+			if sig := v.crashSignal(); sig != "" {
+				r.noteCrash(v, sig, "restart after a crash")
+			}
+			r.dead = true
+			r.t.Fatalf("the machine did not come back after the QEMU crash; the run fails")
+		}
+		r.bootPos = e
+		r.ready(v)
+		if slot, _, _, _ := r.status(); slot == "b" {
+			r.waitConfirmed()
+			return
+		}
+		pos = max(e, v.wait(`this boot FAILED`, 200*time.Second, e))
+	}
+	r.dead = true
+	r.t.Fatalf("the machine did not settle on the confirmed slot after the QEMU crash")
+}
+
 func (r *rig) waitRecoveryFor(v *vm, from int, d time.Duration) bool {
 	if v.wait(`HUBOS: RECOVERY MODE`, d, from) < 0 {
 		return false
@@ -1080,21 +1108,37 @@ func TestImage(t *testing.T) {
 				t.Skip("run stopped by a repeated hang")
 			}
 			start := time.Now()
-			rc, _ := r.update(bundleName)
-			m := r.vm.mark()
-			io.WriteString(r.vm.in, "sync; reboot -f\n")
+			var rc, saw int
+			var m int
 			trial := ""
-			if strings.HasPrefix(name, "6c") {
-				// the unconfirmed trial boot of slot a is up (hubd never becomes healthy): where does recovery point now?
-				if hh := r.vm.wait(handoverRe, 150*time.Second, m); hh >= 0 {
-					r.ready(r.vm)
-					_, e := r.vm.sh(`efibootmgr -v | grep hubos-recovery | sed 's/.*File/File/'`, 30*time.Second)
-					trial = regexp.MustCompile(`File\S+`).FindString(e)
-					t.Logf("during the unconfirmed trial boot of slot a the recovery entry is: %s", trial)
+			var sawAfter float64
+			for attempt := 1; attempt <= 2; attempt++ {
+				rc, _ = r.update(bundleName)
+				m = r.vm.mark()
+				io.WriteString(r.vm.in, "sync; reboot -f\n")
+				trial = ""
+				if strings.HasPrefix(name, "6c") {
+					// the unconfirmed trial boot of slot a is up (hubd never becomes healthy): where does recovery point now?
+					if hh := r.vm.wait(handoverRe, 150*time.Second, m); hh >= 0 {
+						r.ready(r.vm)
+						_, e := r.vm.sh(`efibootmgr -v | grep hubos-recovery | sed 's/.*File/File/'`, 30*time.Second)
+						trial = regexp.MustCompile(`File\S+`).FindString(e)
+						t.Logf("during the unconfirmed trial boot of slot a the recovery entry is: %s", trial)
+					}
 				}
+				saw = r.vm.wait(expect, 200*time.Second, m)
+				sawAfter = time.Since(start).Seconds()
+				if saw < 0 && attempt == 1 {
+					if sig := r.vm.crashSignal(); sig != "" {
+						// QEMU died from a signal during the trial boot: record it, start QEMU again, wait until the machine is back on the
+						// confirmed slot, and do the whole step once more (a second crash here fails the step)
+						r.noteCrash(r.vm, sig, "the trial boot of "+name)
+						r.settleOnConfirmedSlot()
+						continue
+					}
+				}
+				break
 			}
-			saw := r.vm.wait(expect, 200*time.Second, m)
-			sawAfter := time.Since(start).Seconds()
 			// back in the confirmed slot: a new handover line after the failure
 			h := r.vm.wait(handoverRe, 300*time.Second, max(saw, m))
 			if h >= 0 {
