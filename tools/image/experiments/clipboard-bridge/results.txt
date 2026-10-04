@@ -1,0 +1,194 @@
+
+=== A. push, pull, and the plain cases
+$ /tmp/nh-root/cb hub-push -hub-env /tmp/nh-hub
+200 {"bytes":30,"result":"set","sha256":"dd19a95b38b9a1e2ef4bc6081d2596e5c1ee511f318f97da015b8b51d3367716"}
+[exit 0]
+node sees: from the hub: café ✓ 日本
+
+=== A2. same text pushed again: the node does nothing
+$ /tmp/nh-root/cb hub-push -hub-env /tmp/nh-hub
+200 {"bytes":30,"result":"unchanged","sha256":"dd19a95b38b9a1e2ef4bc6081d2596e5c1ee511f318f97da015b8b51d3367716"}
+[exit 0]
+
+=== A3. node text pulled to the hub
+$ /tmp/nh-root/cb hub-pull -hub-env /tmp/nh-hub
+[exit 0]
+hub sees: from the node, line1
+line2
+
+=== A4. empty and cleared hub clipboard
+$ /tmp/nh-root/cb hub-push -hub-env /tmp/nh-hub
+422 {"code":"bad_text","error":"empty text"}
+[exit 0]
+$ /tmp/nh-root/cb hub-push -hub-env /tmp/nh-hub
+2026/10/04 19:39:08 hub clipboard: nothing is copied
+[exit 1]
+
+=== A5. API direct: bad JSON, empty, invalid UTF-8, NUL, unknown field, wrong method
+not json -> {"code":"bad_request","error":"need JSON {\"text\":\"...\"}"}
+ [HTTP 400]
+{"text":""} -> {"code":"bad_text","error":"empty text"}
+ [HTTP 422]
+{"text":"a\u0000b"} -> {"code":"bad_text","error":"not valid UTF-8 text"}
+ [HTTP 422]
+{"text":"ok-with-extra","future":1} -> {"bytes":13,"result":"set","sha256":"d639acdb01d6b9a199e923d04c6a24697576f85c4941632e573fe4da93479e86"}
+ [HTTP 200]
+invalid UTF-8 byte -> {"code":"bad_text","error":"not valid UTF-8 text"}
+ [HTTP 422]
+DELETE -> {"code":"method_not_allowed","error":"GET or PUT"}
+ [HTTP 405]
+GET other path -> {"code":"not_found","error":"no such endpoint"}
+ [HTTP 404]
+
+=== A6. rate limit (20 sets per 10 s in this program)
+200 200 200 200 200 200 200 200 200 200 200 200 429 429 429 429 429 429 429 429 429 429 429 429 429 
+
+=== B. size limits (limit 1048576 bytes of text)
+1048576 bytes through the API -> [HTTP 200] 0.026716s
+1048577 bytes through the API -> [HTTP 413] 0.012492s
+node wl-paste of the 1 MiB text: 1048576
+GET with a node clipboard over the limit (2 MiB): {"code":"too_large","error":"clipboard text is over the limit"}
+ [HTTP 413]
+worst-case JSON escaping: 174762 control characters written as \u0001 (a body six times the text): [HTTP 200] body 1048583 bytes
+
+=== B2. the compositor and wl-copy alone, no bridge: how big and how long
+1 MiB: wl-copy then wl-paste returned 1048576 bytes in 0.02 s
+16 MiB: wl-copy then wl-paste returned 16777216 bytes in 0.04 s
+100 MiB: wl-copy then wl-paste returned 104857600 bytes in 0.85 s
+
+=== B3. hub-watch with a hub text over the limit
+event 1: EMPTY (not sent)
+event 2: BIG (not sent)
+event 3: 1000 bytes changed (not pushed, manual mode)
+
+=== C. regular selection versus primary selection
+event 1: EMPTY (not sent)
+event 2: 12 bytes changed (not pushed, manual mode)
+regular: only regular
+primary: only primary
+
+=== C2. what wl-paste --watch --primary sees (a separate watch)
+PRIMARY-EVENT only primary
+PRIMARY-EVENT sel1
+PRIMARY-EVENT sel2
+
+=== D. echo loops: hub -> node (push) -> node clipboard -> relay (stands in for wayvnc + viewer) -> hub
+
+=== D. rules: none   (hub-watch -auto -no-guard, node-api -always-set)
+hub-watch events in 3 s: 22   relay copies: 20   pushes answered 429: 1
+event 1: EMPTY (not sent)
+event 2: 4 bytes pushed -> 200 {"bytes":4,"result":"set","sha256":"758d61f26a44448384e5c4468a0dcb7a2abe456067b0f7b505bc28b9411fe931"}
+event 3: 4 bytes pushed -> 200 {"bytes":4,"result":"set","sha256":"758d61f26a44448384e5c4468a0dcb7a2abe456067b0f7b505bc28b9411fe931"}
+event 4: 4 bytes pushed -> 200 {"bytes":4,"result":"set","sha256":"758d61f26a44448384e5c4468a0dcb7a2abe456067b0f7b505bc28b9411fe931"}
+
+=== D. rules: hash-rule-on-hub   (hub-watch -auto , node-api -always-set)
+hub-watch events in 3 s: 3   relay copies: 1   pushes answered 429: 0
+event 1: EMPTY (not sent)
+event 2: 4 bytes pushed -> 200 {"bytes":4,"result":"set","sha256":"758d61f26a44448384e5c4468a0dcb7a2abe456067b0f7b505bc28b9411fe931"}
+event 3: 4 bytes ignored: same as last sent or received
+
+=== D. rules: unchanged-rule-on-node   (hub-watch -auto -no-guard, node-api )
+hub-watch events in 3 s: 3   relay copies: 1   pushes answered 429: 0
+event 1: EMPTY (not sent)
+event 2: 4 bytes pushed -> 200 {"bytes":4,"result":"set","sha256":"758d61f26a44448384e5c4468a0dcb7a2abe456067b0f7b505bc28b9411fe931"}
+event 3: 4 bytes pushed -> 200 {"bytes":4,"result":"unchanged","sha256":"758d61f26a44448384e5c4468a0dcb7a2abe456067b0f7b505bc28b9411fe931"}
+
+=== D. rules: both-rules   (hub-watch -auto , node-api )
+hub-watch events in 3 s: 3   relay copies: 1   pushes answered 429: 0
+event 1: EMPTY (not sent)
+event 2: 4 bytes pushed -> 200 {"bytes":4,"result":"set","sha256":"758d61f26a44448384e5c4468a0dcb7a2abe456067b0f7b505bc28b9411fe931"}
+event 3: 4 bytes ignored: same as last sent or received
+
+=== D5. the viewer changes line endings (LF to CRLF) on the way; hub rule only
+hub-watch events in 3 s: 3   relay copies: 1
+event 1: EMPTY (not sent)
+event 2: 9 bytes pushed -> 200 {"bytes":9,"result":"set","sha256":"edc8c1284585d703bec48f34f842bd911200142ddd602264c77df65168abae1d"}
+event 3: 10 bytes ignored: same as last sent or received
+hub clipboard now has a CR: 1
+
+=== F. what the display-protocol side would see: types offered by wl-copy
+$ node wl-paste --list-types
+text/plain;charset=utf-8
+text/plain
+TEXT
+STRING
+UTF8_STRING
+[exit 0]
+without --type, html-looking text offers:
+text/html
+text/plain
+$ node wl-copy --help
+Usage:
+	wl-copy [options] text to copy
+	wl-copy [options] < file-to-copy
+
+Copy content to the Wayland clipboard.
+
+Options:
+	-o, --paste-once	Only serve one paste request and then exit.
+	-f, --foreground	Stay in the foreground instead of forking.
+	-c, --clear		Instead of copying, clear the clipboard.
+	-p, --primary		Use the "primary" clipboard.
+	-n, --trim-newline	Do not copy the trailing newline character.
+	-t, --type mime/type	Override the inferred MIME type for the content.
+	-s, --seat seat-name	Pick the seat to work with.
+	-v, --version		Display version info.
+	-h, --help		Display this message.
+Mandatory arguments to long options are mandatory for short options too.
+
+See wl-clipboard(1) for more details.
+[exit 0]
+
+=== G. how wl-paste --watch behaves (hub side), and empty versus cleared
+(1) started on a cleared clipboard; now 'one', 'one' again, 'two', empty text, --clear:
+EVENT state=nil bytes=0
+EVENT state=data bytes=3
+EVENT state=data bytes=3
+EVENT state=data bytes=3
+EVENT state=data bytes=0
+EVENT state=nil bytes=0
+(2) after an empty-text copy, wl-paste says:
+[exit 0]
+    after --clear, wl-paste says:
+Nothing is copied
+[exit 1]
+(3) an image copied; wl-paste --type text:
+Clipboard content is not available as requested type "text"
+Use "wl-paste --list-types" to view available types.
+[exit 1]
+    watch with --type text (image copy gives no event, text does):
+TEXT-WATCH bytes=11
+(4) which types does wl-copy offer, with and without xdg-mime and file on PATH, forced type or not:
+    no tools, no --type:      text/plain text/plain;charset=utf-8 TEXT STRING UTF8_STRING 
+    no tools, forced type:    text/plain;charset=utf-8 text/plain TEXT STRING UTF8_STRING 
+    html-looking, no --type:  text/html text/plain text/plain;charset=utf-8 TEXT STRING UTF8_STRING 
+    script-looking, no --type: application/x-shellscript text/plain text/plain;charset=utf-8 TEXT STRING UTF8_STRING 
+    html-looking, forced type: text/plain;charset=utf-8 text/plain TEXT STRING UTF8_STRING 
+
+=== E. what wl-copy leaves running, and a helper restart
+before: wl-copy holders 0, zombies 2
+100 sets done. wl-copy holders alive: 1, zombies: 55
+ 7386     1 SN   wl-copy --type text/plain;charset=utf-8
+
+=== E2. kill -9 the helper (node-api): does the node still paste?
+node paste after helper was killed: t100
+ 7386     1 SN   wl-copy --type text/plain;charset=utf-8
+
+=== E3. new helper starts; sends the same text, then another
+{"bytes":4,"result":"unchanged","sha256":"7551dbef435dac8c7d553f7b483281b8ddef052446505d6f608e610acfe02826"}
+
+{"bytes":13,"result":"set","sha256":"6553973e37fc72f7109412a6c4ac821c73383cc1c22030259713731474419a92"}
+
+node paste: after-restart
+wl-copy processes now: 1
+
+=== E4. paste-once (-o): the holder exits after the first paste
+alive before paste: 1
+once
+alive after first paste: 0
+second paste: Nothing is copied
+[exit 1]
+
+=== E5. node compositor restarts: the selection goes with it
+wl_display_dispatch: Broken pipe
+wl-copy processes alive: 0
