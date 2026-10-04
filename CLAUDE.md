@@ -28,3 +28,5 @@ If it is missing, stop and tell the owner. Do not guess its contents.
 - If something is unsolved or unverified, say so plainly. Do not invent architecture or protocols.
 - Speak plainly. The owner is not a cluster operator.
 - You cannot reach the owner's real machines. Use fake nodes and virtual machines only.
+- Never install packages on the machine; unpack them with dpkg -x into a temporary directory. If you must install something, ask the owner first.
+- Helper agents may help with research; whatever they report is unverified until you have read the source yourself, and the pull request must say which parts came from helpers.

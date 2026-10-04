@@ -34,7 +34,7 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 - **glibc everywhere** (required by Steam/Proton and likely by GPU drivers).
 - **Say when something is unverified.** Never present a guess as fact. Never invent a protocol.
 - No systemd, ever.
-- **Scale:** the panel and hubd are designed for 100 machines. 5000 is a stretch target: it must not break, and the measured numbers are recorded before anything is claimed.
+- **Scale:** real-world reference is at most 20 machines; hardware, cabling and the hub's open windows are sized for 20. The panel and hubd keep headroom for 100 machines; 5000 is a stretch target: it must not break, and the measured numbers are recorded before anything is claimed.
 
 ---
 
@@ -46,11 +46,11 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 - **Input:** one keyboard and one mouse, plugged into the gaming box (see Input sharing). A spare keyboard and mouse in a drawer can be plugged into the hub in an emergency.
 - **Network:** a fast wired network (10GbE-class) between machines. Every machine may reach the internet.
 - **Power:** treated as unlimited, free, and never failing. No battery backup (UPS). Electricity cost is not a design factor.
-- **Machines:** every machine uses an AMD CPU; GPUs are chosen per machine. No proprietary BMC firmware is used anywhere: boards are not required to have a BMC and their BMCs are not used. Recovery is built into Hub OS (hardware watchdog, boot-loop breaker, A/B rollback, and a recovery kernel with a network recovery agent that hubd talks to). Out-of-band control (power cycle, screen, BIOS) for a machine whose firmware or kernel is dead needs hardware wired to that machine; whether to have it, and which open device (a PiKVM-class device, a relay or a switched power strip), is decided in December. Any such device sits on its own isolated management network.
+- **Machines:** every machine uses an AMD CPU; GPUs are chosen per machine. No proprietary BMC firmware is used anywhere: boards are not required to have a BMC and their BMCs are not used. Recovery is built into Hub OS (hardware watchdog, boot-loop breaker, A/B rollback, and a recovery kernel with a network recovery agent that hubd talks to). Out-of-band control (power cycle, screen, BIOS) for a machine whose firmware or kernel is dead needs hardware wired to that machine; whether to have it, and which open device (a PiKVM-class device, a relay or a switched power strip), is decided in December. Any such device sits on its own isolated management network. Out-of-band devices, if any, sit on an isolated management network; the recovery agent lives on the normal network.
 
 ---
 
-## Machine roles (current list; more may be added later; counts TBD)
+## Machine roles (current list; more may be added later; counts TBD) (real-world reference: at most 20 machines)
 
 | Role | Purpose | How the hub shows it |
 |---|---|---|
@@ -62,7 +62,7 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 | Backup NAS | Local backup copy of the NAS | Listed; opened like the NAS |
 | VM host | Operating system development and experiments | Its own bespoke GUI in a window; its guests open with remote-viewer (virt-viewer) |
 
-Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
+Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub stays a thin client: the browser and everyday apps run on the general desktop node (owner decision, 2026-10-04).
 
 ---
 
@@ -84,6 +84,8 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - Recovery is a separate kernel (kernel-recovery.efi) that needs neither slot's root; its shell can install a signed bundle into a slot the owner names (manually; automatic repair for machines without a keyboard is a proposal only).
 - A boot-loop breaker counts failed boots in an EFI variable: stage 0 increments it at every boot, the confirm step clears it, and after N failures (default 3, per-machine setting) stage 0 starts the recovery shell instead of booting.
+- The recovery kernel arms the hardware watchdog and the network recovery agent feeds it.
+- The network recovery agent gets its address from a DHCP reservation per machine; its API is signed requests with one-time nonces, one API with the node helper (a state field says recovery or running). Reinstall is a button only, never automatic; the default release is the last one that machine confirmed, into the slot that failed.
 - The recovery kernel is carried inside every slot's root, listed by hash in the manifest, and installed at the confirm step after a healthy boot, never during the update.
 - The confirm timeout and the watchdog timeout are per-machine settings (real defaults 120 s and 180 s; the test image uses 30 s and 60 s); a check refuses a configuration where the watchdog does not exceed the confirm timeout plus a margin.
 - Update keys: the update tool and the recovery kernel accept any key in a keyring (/etc/hubos/keys/*.pub). A release signed with the old key can carry the next key; the old key is dropped only in a later release.
@@ -119,7 +121,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - Copy-paste across windows is a goal. v1 limit: Moonlight windows only type the hub's text onto the machine; a clipboard bridge comes later.
 - **No auto-reopen of windows after a hub restart.** The panel returns; windows do not.
 - Moonlight windows are matched by their title '<machine id> - Moonlight'; every node sets Sunshine's name to its machine id. The inventory's optional session names the Sunshine app to stream.
-- Windows can stay open 24/7. The hub is designed for about a dozen always-open windows, more as the cluster grows; the owner can open and close them at will.
+- Windows can stay open 24/7. The hub is designed for up to 20 always-open windows (the real-world reference); the owner can open and close them at will.
 - VM guests are opened with remote-viewer (virt-viewer), not Remmina.
 
 ### Canvas
@@ -143,6 +145,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used.
 - If a machine drops while its window is open, leave the window alone. Only the alert changes.
 - The bar shows which machine currently owns the keyboard and mouse (hub or gaming box).
 - No alerts are sent to the owner's phone.
+- Panel states: up, down (that machine does not answer), in recovery, unreachable (the hub suspects its own network, for example many machines failing at once).
 - A master volume button on the bar opens a mixer that lists every node's sound with its own volume slider and mute button, plus a master volume and a mute-all control. Each node's volume and mute are remembered and restored when its window opens; a node with no saved state starts unmuted at the default volume (owner to confirm).
 
 ### Leaving a window
@@ -336,7 +339,7 @@ HubOS/
 - Pinned emulator AppImages run on the image's glibc with extract-and-run (nothing was run)
 - Steam and Proton on the image: 32-bit libraries, user namespaces, no systemd
 - Per-node audio control: matching a PipeWire stream to a node (by process id or by stream name)
-- How many simultaneous hardware decodes the hub's GPU sustains with about a dozen open windows
+- How many simultaneous hardware decodes the hub's GPU sustains with 20 open windows
 - The load of continuous remote-display encoding on each node
 - The hub's confirm and watchdog timeouts (90 s and 120 s) are test values; real hubs use the defaults until measured
 - A PiKVM-class device on the chosen boards: BIOS visibility, keyboard in the BIOS, front-panel wiring
@@ -351,7 +354,11 @@ HubOS/
 - A custom exit chord for game-style windows
 - Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
 - Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
-- Which display protocol non-gaming nodes use (see docs/proposals/remote-display.md)
+- Display protocol for non-gaming nodes: the plan is VNC with wayvnc on the nodes, PipeWire RTP for sound (raw), and one signed control API; the AI box uses VNC until the December measurements, with Sunshine as its fallback; RDP is out of scope for now (docs/proposals/remote-display.md)
+- Clipboard: text only, both directions wanted; node to hub works in tests, hub to node is unresolved
+- Where the mixer settings live: the hub's config partition, included in the NAS backup
+- Which additional nodes to build, and when (suggested, not decided: a hardware test bench of two or three cheap boards, a build and test node with KVM, a release and netboot node, a spare hub)
+- Whether the no-systemd rule covers appliances that are not Hub OS machines (for example a PiKVM, which runs its own Linux); a December decision
 - Where the per-node mute and volume controls live (a small mixer panel), how hubd matches an audio stream to a node, and where the saved volume and mute state is kept and backed up
 - The network recovery agent in the recovery kernel: protocol, authentication, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
@@ -415,3 +422,4 @@ HubOS/
 - **2026-10-04:** Phase B images: recovery installs on a changed hash, menu row click tested, QEMU crash retry.
 - **2026-10-04:** AMD CPUs only, no proprietary BMC firmware (recovery built into Hub OS; out-of-band hardware decided in December), no terminals (every node has its own bespoke GUI), always-open windows on the hub, all nodes' sound at once with per-node mute and volume, hub services corrected (seatd and udevd run as root).
 - **2026-10-04:** Phase B images: recovery kernel arms the watchdog; recovery agent tested inside a test recovery kernel.
+- **2026-10-04:** Scale reference 20 machines; hub stays a thin client; extra nodes suggested; recovery and display protocol decisions recorded; CLAUDE.md rules for packages and helper agents.
