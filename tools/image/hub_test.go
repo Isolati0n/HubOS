@@ -422,13 +422,12 @@ func TestHubImage(t *testing.T) {
 				continue
 			}
 			opened = true
-			// The pointer moves by a different amount than the monitor command says (both the USB and the PS/2 mouse of the
-			// virtual machine get every move; one jump of 60,198 landed at about 125,405), so the real scale was measured
-			// above (kx, ky) and the move is divided by it, in small steps.
-			for step := 0; step < 12; step++ {
-				r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(5/kx)), int(math.Round(16.5/ky))))
-				time.Sleep(120 * time.Millisecond)
-			}
+			// Same way as in the desktop experiment: the pointer is sent to the top-left corner and then moved to the row (100,213)
+			// in one move, divided by the measured scale (kx, ky) of the pointer.
+			r.monitor("mouse_move -4000 -4000")
+			time.Sleep(time.Second)
+			r.monitor(fmt.Sprintf("mouse_move %d %d", int(math.Round(100/kx)), int(math.Round(213/ky))))
+			time.Sleep(time.Second)
 			r.monitor("mouse_button 1")
 			time.Sleep(time.Second)
 			r.monitor("mouse_button 0")
