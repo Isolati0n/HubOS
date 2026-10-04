@@ -405,3 +405,216 @@ Today `examples/viewers.real.example.toml` has viewers `ssh`, `spice`, `vnc`, `m
 - Reached: RFC 6143; MS-RDPBCGR page; PipeWire module docs (rtp-sink, rtp-source, rtp-session, rtp-sap); the Red Hat bug 1946939 and RHEL 9 virtualization considerations page; the RHEL 10 removed-features page; QEMU download, invocation and VNC security pages; xrdp, pulseaudio-module-xrdp, KRdp, TigerVNC, Sunshine, Moonlight, wayvnc READMEs; GitHub release feeds (`releases.atom`) for wayvnc, FreeRDP, Sunshine, Moonlight, TigerVNC, xrdp, Waybar; the virt-viewer tags feed; wayland.freedesktop.org releases; Weston kiosk-shell page; Waybar's wireplumber man page; the GNOME Remote Desktop NEWS.
 - **Not reachable:** the GitHub REST API (HTTP 403 from the fetch tool; the GitHub tool of this session may only read the HubOS repository); the freedesktop GitLab (spice, spice-gtk tag feeds: "Access Denied" anti-bot page); `https://www.spice-space.org/news.html` (404); `docs.pipewire.org/page_module_sap.html` (404; the right name is `page_module_rtp_sap.html`, which worked); the Weston `running-weston` page had no RDP detail; the PipeWire AES67 man page (404). Anything those pages would have said is **UNKNOWN** above.
 - Summaries by the fetch tool: see the note under "Labels". Re-read before relying on a number.
+
+---
+
+# Round 2 (written 2026-10-04 by a helper agent; unverified until the owner's lead has read the sources)
+
+**What this round was.** Four follow-up jobs: (1) why clipboard text from the hub did not reach the node, (2) the TigerVNC viewer as a replacement for `remote-viewer`, (3) the smallest wayvnc login and encryption set-up that needs no certificate authority, (4) a test under the real hub compositor, driftwm, with hubd's window matching. Same four labels as above: **TESTED**, **SOURCE** (link and date read), **BELIEVED**, **UNKNOWN**. Every SOURCE below was read by the helper itself on 2026-10-04 from the primary file (raw source file, git history, Launchpad's JSON API); the few pages that went through the summarising fetch tool or a search engine are marked "(summarised)". Round 1's text above is left as it was; section R2.7 lists what it changes.
+
+**What was and was not the set-up.** Cloud container, no GPU, no real network, loopback only, software rendering. Nothing was installed: every program was downloaded as a `.deb` from the Ubuntu 24.04 archive (or built from source) and unpacked under `/tmp/r3-*`, then deleted (commands and helper scripts: `tools/image/experiments/remote-display/round2/`). Versions: sway 1.9 (wlroots 0.17), wayvnc 0.7.2 with neatvnc 0.7.1 (Ubuntu 24.04), **and** wayvnc v0.10.2 with neatvnc v1.0.3 built from the release tags, `remote-viewer` 11.0 with gtk-vnc 1.3.1 (Ubuntu 24.04), TigerVNC viewer 1.13.1 (Ubuntu 24.04), driftwm at the pinned commit `352333a8` built as in `docs/driftwm-findings.md` section 0 (nested, `winit` backend inside Xvfb), xwayland-satellite built from git commit `b5690b56` (2026-09-30), Xwayland 23.2.6. **The "node" was a headless sway; the "hub" was either sway on the wlroots X11 backend (it has a real keyboard, which round 1's headless hub did not) or driftwm. Nothing was run on a real screen, real GPU or real network.**
+
+---
+
+## R2.1 Clipboard from the hub to a node
+
+### Short answer
+
+**Why it failed in round 1: `remote-viewer` (virt-viewer 11.0 with gtk-vnc 1.3.1) never sends the hub's clipboard to the server at all. The server and the node compositor were fine.** The TigerVNC viewer does send it, in both directions, **but only while its window has keyboard focus**, and in the set-up that driftwm needs (an X11 program through xwayland-satellite) a copy made while the window was not focused did not arrive later. Non-ASCII text is garbled with wayvnc 0.7.2; it works with wayvnc 0.10.2.
+
+### What was checked, in order
+
+| # | Question | Result | Label |
+|---|---|---|---|
+| 1 | Does the node compositor offer the data-control protocol that wayvnc needs? | sway 1.9: `zwlr_data_control_manager_v1` version 2, and no `ext_data_control`: `wayland-info` on the node. driftwm (hub side): both `zwlr_data_control_manager_v1` v2 and `ext_data_control_manager_v1` v1. | TESTED (`wayland-info \| grep data_control`) |
+| 2 | Does wayvnc use it? | wayvnc 0.7.2 contains `zwlr_data_control_manager_v1`, `set_selection`, `set_primary_selection` (`strings`). Source: wayvnc master (`src/main.c` lines 719-721) handles a `wlr_manager` **or** an `ext_manager` per client. The git history says ext-data-control support came in with commit `ec86b48` (2026-02-19), first tagged **v0.10.0** (2026-04-27); the first clipboard code is `3ee9aac` (2020-09-16). | TESTED (strings); SOURCE: [wayvnc main.c](https://raw.githubusercontent.com/any1/wayvnc/master/src/main.c) and `git log` of a clone of [any1/wayvnc](https://github.com/any1/wayvnc), read 2026-10-04 |
+| 3 | Does the server send the node's text to a client? | Yes. A tiny RFB client (`round2/rfb-listen.py`) received `ServerCutText b'listen-test-1'` after `wl-copy` on the node. (It arrived twice; why twice: UNKNOWN.) | TESTED |
+| 4 | Does the server take text from a client? | Yes (round 1, `rfb-cut-text.py`), and again with TigerVNC: `ClientCutText b'hub-X-2'` in the spy log, then `wl-paste` on the node printed `hub-X-2`. | TESTED |
+| 5 | Does `remote-viewer` ever send a `ClientCutText`? | **No.** A relay (`round2/rfb-spy.py`) logged the viewer's whole conversation: `SetPixelFormat`, `SetEncodings` (19 encodings, **no** extended-clipboard pseudo-encoding), pointer and key messages, and **no clipboard message, in any of several tries**, with the hub window focused, with a real keyboard, after typing a key, with `wl-copy` and `wl-copy --primary`. The program does not even import the function: `nm -D /usr/bin/remote-viewer \| grep vnc_display` lists 21 `vnc_display_*` functions and **not** `vnc_display_client_cut_text`. | TESTED |
+| 6 | Is that a bug or a missing feature? | A missing feature. virt-viewer 11.0 only listens for the server's text: `src/virt-viewer-session-vnc.c` has `virt_viewer_session_vnc_cut_text` (server to hub) and no call that sends text. Same in virt-viewer's master today. gtk-vnc 1.3.1 and **1.5.0 (2025-02-07, the newest release)** have no code that sends the local clipboard by itself; gtk-vnc **master** has it since **2025-10-12** (commits `e334dd43` extended clipboard, `348452c1` client-to-server notification, `6c8d8691` flush on focus-in) and it uses the **PRIMARY** selection (the selected text), not the normal clipboard (`send_primary_selection`, `src/vncdisplay.c`). So even a future gtk-vnc would need the text to be *selected*, and virt-viewer would need a release built on it. Ubuntu's newest series that I could see ships gtk-vnc 1.5.0 and virt-viewer 11.0-4 (see R2.2), so none of them has it. | SOURCE: [virt-viewer-session-vnc.c v11.0](https://gitlab.com/virt-viewer/virt-viewer/-/raw/v11.0/src/virt-viewer-session-vnc.c) and [master](https://gitlab.com/virt-viewer/virt-viewer/-/raw/master/src/virt-viewer-session-vnc.c); [gtk-vnc vncdisplay.c v1.3.1](https://gitlab.gnome.org/GNOME/gtk-vnc/-/raw/v1.3.1/src/vncdisplay.c), [v1.5.0](https://gitlab.gnome.org/GNOME/gtk-vnc/-/raw/v1.5.0/src/vncdisplay.c), [master](https://gitlab.gnome.org/GNOME/gtk-vnc/-/raw/master/src/vncdisplay.c); GNOME GitLab commit API for `src/vncdisplay.c`; tags API; all read 2026-10-04 |
+| 7 | And node to hub with `remote-viewer`? | Works: `rv-node-text-A` on the node, `wl-paste` on the hub printed `rv-node-text-A` (hub = sway, and again under driftwm). In round 1 one run seemed to fail; in this round the same direction failed once after I had just copied hub text, and worked in every other run; the cause of that one miss: UNKNOWN. | TESTED |
+| 8 | TigerVNC viewer 1.13.1 | It asks the server for the extended-clipboard encoding (`SetEncodings` shows `ExtendedClipboard`; wayvnc 0.7.2 / neatvnc 0.7.1 does not offer it, so plain cut text is used). Hub to node: the spy log shows `ClientCutText b'hub-X-2'`. Node to hub: `xclip -o` on the hub's X display printed the node's text. Both directions also work through Xwayland under sway, and through xwayland-satellite under **driftwm** (`wl-paste` on the hub printed `dw-node-1`; the node printed `dw-hub-1`). | TESTED |
+| 9 | Focus | **The TigerVNC viewer only exchanges clipboard while its window is focused.** The viewer's own debug log says `Got notification of new clipboard on server whilst not focused, will request data later` and, when focus returns, `Focus regained after remote clipboard change, requesting data`. The source says the same: `Viewport::handleClipboardAnnounce` stores a pending flag when `!hasFocus()`, `flushPendingClipboard()` runs on `FL_FOCUS`. In the first tests the text never moved because the window had no focus. | TESTED; SOURCE: [Viewport.cxx v1.13.1](https://raw.githubusercontent.com/TigerVNC/tigervnc/v1.13.1/vncviewer/Viewport.cxx), read 2026-10-04 |
+| 10 | Hub to node when the window was **not** focused at the moment of copying (driftwm, xwayland-satellite, 2 runs) | **Did not arrive**, not even after the window was focused again. After the second run the X side of the bridge showed the new text (`xclip -o` printed `hubside-5`) but the viewer had not been told, and it sent the previous text instead. Node to hub with the window unfocused did arrive when focus came back. The cause (the viewer, xwayland-satellite, or Xwayland) is **UNKNOWN**. Under plain X11 (Xvfb, no bridge) I did not test the unfocused copy. | TESTED (2 runs); cause UNKNOWN |
+| 11 | Non-ASCII text, wayvnc 0.7.2 + neatvnc 0.7.1 | Garbled both ways, even "é". Node to hub: `café ✓ 日本` arrived as `cafÃ©...` (the server sends UTF-8 bytes as if they were Latin-1). Hub to node: `naïve ✓ 日` arrived as `na\357ve ??` (invalid UTF-8 and question marks). Cause: plain cut text in RFB is Latin-1 only (round 1, RFC 6143). `remote-viewer` is the same on the receiving side: virt-viewer converts the received text from `iso8859-1` to UTF-8 (`virt-viewer-app.c` line 1658, v11.0) and, with wayvnc 0.10.2 + neatvnc 1.0.3, `café ✓` still arrived as `cafÃ© â`. | TESTED; SOURCE: [virt-viewer-app.c v11.0](https://gitlab.com/virt-viewer/virt-viewer/-/raw/v11.0/src/virt-viewer-app.c) |
+| 12 | Non-ASCII text, wayvnc **v0.10.2** + neatvnc **v1.0.3** (built from the tags) + TigerVNC 1.13.1 | **Works both ways:** `café ✓ 日本` and `naïve ✓ 日` arrived unchanged. neatvnc added the extended clipboard (UTF-8) in commit `e27d1a6` (2024-08-22), first tagged v0.9.0. A later commit `67c722d` (2026-06-29, "Convert clipboard text to and from UTF-8" for plain clients) is on neatvnc's master and in **no** tag yet. | TESTED; SOURCE: `git log`/`git tag --contains` in a clone of [any1/neatvnc](https://github.com/any1/neatvnc), 2026-10-04 |
+
+### Exact settings that worked (hub to node and node to hub)
+
+- Node: wayvnc (any version tested) on a wlroots compositor with data-control; **no clipboard option is needed**. wayvnc has none: its man page and `--help` list none. (The only related rule in its source: `--disable-input` also turns clipboard off, commit `5ed57b9`, 2022-02-09.)
+- Hub: **TigerVNC viewer** (`xtigervncviewer` in Ubuntu), default settings. Its clipboard parameters are all on by default: `SendClipboard=1`, `AcceptClipboard=1`, `SendPrimary=1`, `SetPrimary=1` (`xtigervncviewer -h`). The window **must have keyboard focus**.
+- With wayvnc 0.7.2: only plain ASCII text. For other letters use **wayvnc v0.10.x** (neatvnc 0.9 or newer).
+- Not available for any version: hub to node with `remote-viewer`.
+
+### Things round 1 guessed that are now explained
+
+- "pasted text lives only while the viewer stays connected" (round 1, 2.2): not re-tested. UNKNOWN.
+- The hub stand-in in round 1 had no keyboard; in this round the stand-in had one. That did not change `remote-viewer`'s behaviour, which confirms the viewer, not the stand-in, was the cause.
+
+---
+
+## R2.2 TigerVNC viewer as the replacement for `remote-viewer`
+
+| Item | Finding | Label |
+|---|---|---|
+| **What it is** | An X11 program (FLTK 1.3 toolkit). Ubuntu's package `tigervnc-viewer` installs one program, `/usr/bin/xtigervncviewer` (the plain name `vncviewer` is a Debian alternatives link, not unpacked here). Licence GPL-2+ (Ubuntu's copyright file). Depends include `libfltk1.3`, `libx11-6`, `libxrandr2`, `libgnutls30t64`, `libavcodec60`, `libswscale7`; no systemd library. 1.1 MB installed. | TESTED (`dpkg-deb -I`, `ldd`) |
+| **Where in the Ubuntu archive** | Source package `tigervnc`, component **universe**: noble (24.04) 1.13.1+dfsg-2build2; plucky 1.14.1; questing 1.15.0+dfsg-2; resolute 1.15.0+dfsg-2build1; stonking 1.15.0+dfsg-2.1 (2026-07-11). Upstream's newest tag is **v1.16.2**, so Ubuntu is one minor release behind. For comparison: wayvnc noble 0.7.2, plucky/questing/resolute 0.9.1, stonking 0.10.1 (universe); neatvnc noble 0.7.1, resolute 0.9.1, stonking 1.0.1; virt-viewer noble 11.0-3build2, stonking 11.0-4; gtk-vnc noble 1.3.1, resolute/stonking 1.5.0. | SOURCE: Launchpad API, `https://api.launchpad.net/devel/ubuntu/+archive/primary?ws.op=getPublishedSources&source_name=<name>&status=Published&exact_match=true`, read 2026-10-04; upstream tags by `git ls-remote --tags` on [TigerVNC/tigervnc](https://github.com/TigerVNC/tigervnc), [any1/wayvnc](https://github.com/any1/wayvnc), [any1/neatvnc](https://github.com/any1/neatvnc), 2026-10-04 |
+| **Wayland status** | **No native Wayland.** Upstream master's viewer opens the X display directly (`fl_open_display()` and `XkbSetDetectableAutoRepeat(fl_display, ...)`, `vncviewer/vncviewer.cxx` lines 742-743), and 1.16 added only a Wayland **server** (`w0vncserver`, which is for sharing a Wayland desktop; not what we need). On the hub it runs through Xwayland. | SOURCE: [vncviewer.cxx master](https://raw.githubusercontent.com/TigerVNC/tigervnc/master/vncviewer/vncviewer.cxx), 2026-10-04. The w0vncserver / "native viewer is still X11" wording of the release notes and news pages: (summarised) search result and fetch result; I did not read the release notes themselves, and the fetch tool's dates for them (2025) disagree with the tags, so treat those as unreliable |
+| **Under driftwm** | driftwm has no X11 support of its own. Its log says: `xwayland-satellite not found ... X11 apps disabled`. With **xwayland-satellite** on `PATH`, driftwm started it (`spawned xwayland-satellite pid=... on :1`) and the viewer ran as a window. xwayland-satellite is **not in the Ubuntu archive and not on crates.io** (`cargo install xwayland-satellite` said `could not find ... in registry crates-io`; the driftwm findings doc assumes it can be installed that way, which is wrong today). I built it from git (`Supreeeme/xwayland-satellite`, commit `b5690b56`, 2026-09-30): 1 min 27 s with 2 jobs, needs `libxcb-cursor`. It starts `Xwayland` (Ubuntu package `xwayland` 23.2.6; its dependency list has no systemd library) and **Xwayland calls `/usr/bin/xkbcomp` by a fixed path**, so the image would also need `x11-xkb-utils`. Net cost of choosing TigerVNC on the hub: three extra things in the hub image (Xwayland, xkbcomp, a Rust-built xwayland-satellite). | TESTED (build, run); the claim about the findings doc: SOURCE (`docs/driftwm-findings.md` section 12, last rows, read 2026-10-04) |
+| **App-id** | **Cannot be chosen.** `xtigervncviewer -name x -title y` prints the usage text and exits; the option list (`-h`) has no name, class or title option. As an X11 program its window class is `TigerVNC Viewer` (TESTED with `xprop`: `WM_CLASS = "TigerVNC Viewer", "TigerVNC Viewer"`), and under driftwm + xwayland-satellite the Wayland app-id is `TigerVNC Viewer` (TESTED, `driftwm msg state`). Under sway's own Xwayland there is no app-id at all (`app_id=None`, class in `window_properties`). Note: upstream's source calls `Fl_Window::default_xclass("vncviewer")` (line 341 of `vncviewer.cxx` v1.13.1) yet the Ubuntu build showed `TigerVNC Viewer`; why: UNKNOWN. So the class can differ between builds: do not match on it. | TESTED; SOURCE [vncviewer.cxx v1.13.1](https://raw.githubusercontent.com/TigerVNC/tigervnc/v1.13.1/vncviewer/vncviewer.cxx) |
+| **Title** | **Set by the server, not by hubd.** The window title is the server's desktop name followed by ` - TigerVNC`. wayvnc 0.7.2 hard-codes the name `WayVNC` (`src/main.c` line 752 of v0.7.2), so every node would be titled `WayVNC - TigerVNC`. wayvnc **v0.10.0 and newer** have `-n/--name` (commit `630ed4a`, 2025-06-06) and `wayvncctl set-desktop-name` (`f4d0518`, 2025-06-10). TESTED with v0.10.2: `wayvnc -n gui-b ...` gave the title `gui-b - TigerVNC`, and **hubd matched it** with `title_match = "{id} - TigerVNC"` (`sets_name = false`), recorded `matched by title`. No `(1)` suffix is added (unlike remote-viewer). | TESTED; SOURCE [wayvnc main.c v0.7.2](https://raw.githubusercontent.com/any1/wayvnc/v0.7.2/src/main.c) and git history, 2026-10-04 |
+| **Window matching with hubd under driftwm** | See R2.4. Because the app-id is shared, only title matching can tell two TigerVNC windows apart; that needs each node's desktop name set to its machine id. | TESTED |
+| **Error dialogs** | With nothing listening the viewer shows a small window (446 x 154, class `TigerVNC Viewer`, title `TigerVNC Viewer`) with an error and a way to retry. Its title differs from the real window's (`<name> - TigerVNC`), so hubd's `title_match` does **not** take the error dialog for the machine's window (an advantage over `remote-viewer`, whose error dialog carries the chosen app-id). A wrong password: the same kind of dialog (`Authentication failure: Invalid username or password`, title `TigerVNC Viewer`). | TESTED (sway + Xwayland for the refused connection; Xvfb for the wrong password) |
+| **Closing the window** | Under driftwm, `driftwm msg close TigerVNC` closed it at once, **no "close the session?" dialog** (unlike `remote-viewer`), the process exited, wayvnc and the node's windows stayed up, hubd showed the machine as not open and a new `hubd open` reconnected. | TESTED |
+| **Reconnect** | **No automatic reconnect in this setting.** When wayvnc was killed the viewer printed `End of stream` and exited with status 0, **without a dialog** (2 runs); the manual lists `-ReconnectOnError` ("Give a dialog on connection problems...", default 1) but that dialog did not appear for a dropped connection. When wayvnc was restarted, hubd's `open` made a fresh window. The node side keeps running. | TESTED |
+| **Shared or not** | A second non-shared viewer **disconnects the first.** With `remote-viewer` open, starting `xtigervncviewer` (default `Shared=0`) made `remote-viewer` disappear (checked with the process list, 1 run). With `-Shared` both stayed. Good for "never two windows of one node" but a trap if someone opens a second viewer by hand. | TESTED |
+| **Resize** | With wayvnc 0.7.2 the viewer's request to resize the node's screen fails (`SetDesktopSize failed: 1` in its log). With wayvnc **0.10.2** it works: the node's headless output followed the viewer window (`1016x753` at connect, `700x475` after `driftwm msg resize 700 500`). The manual's `-RemoteResize` and wayvnc's `-R/--disable-resizing` switch this off. For a node whose screen has a fixed size, switch it off on one side. | TESTED |
+| **Credentials without a command line** | The man page: "You can also add `VNC_USERNAME` and `VNC_PASSWORD` to environment variables" (`xtigervncviewer(1)` in the package). TESTED (that is how every login test ran). `-PasswordFile` only covers the old VNC password, not a user name. The environment of a process is readable only by the same user and root (BELIEVED, not tested); the command line is readable by everyone. | TESTED; BELIEVED |
+| **Clipboard** | R2.1. | |
+
+---
+
+## R2.3 wayvnc login and encryption without a certificate authority
+
+### The two smallest set-ups (both tested with wayvnc 0.7.2 **and** v0.10.2)
+
+**A. RSA-AES, no files at all (three essential lines: `enable_auth`, `username`, `password`; `address` and `port` are optional).** `round2/wayvnc-rsa-min.conf`:
+
+```
+address=127.0.0.1
+port=5931
+enable_auth=true
+username=hubos
+password=<the password>
+```
+
+Start with `wayvnc -C that.conf`. The server then offers only the security types **129 and 5** (RSA-AES-256 and RSA-AES; `rfb-security-types.py` printed `[129, 5]`), no "None". The man page of 0.7.2 says `enable_auth` "requires also setting certificate_file, private_key_file, username and password"; **that is wrong for the RSA-AES case**: it started without any file and without a warning (TESTED). Where the server's RSA key comes from in that case (made fresh at each start, or something else): UNKNOWN. With `rsa_private_key_file=` set (a key made with `openssl genrsa -traditional`) it offered the same two types. wayvnc's README tells you to make the key with `ssh-keygen -m pem -t rsa -N ""` (SOURCE: [README v0.10.2](https://github.com/any1/wayvnc/tree/v0.10.2), cloned and read 2026-10-04); I used openssl and it worked.
+
+**B. TLS with a self-signed certificate (the same three login lines plus two file lines, and one command to make the certificate).** `round2/wayvnc-tls.conf` adds `private_key_file=` and `certificate_file=`. Make the certificate **with the address (or name) the viewer will use in its subjectAltName**, otherwise the viewer complains about the name:
+
+```
+openssl req -x509 -newkey rsa:2048 -nodes -keyout tls.key -out tls.crt -days 3650 \
+   -subj "/CN=127.0.0.1" -addext "subjectAltName=IP:127.0.0.1,DNS:node-test"
+```
+
+The server then offers `[19, 129, 5]` (19 is VeNCrypt, which carries TLS). TigerVNC chose `VeNCrypt` and the sub-type `X509Plain` (user name and password inside TLS). The README suggests an EC key (`secp384r1`); I tested an RSA 2048 certificate only. No certificate authority is involved: the certificate signs itself, and the viewer is told to trust that one file. Password check works: a wrong password gave `Authentication failure: Invalid username or password`.
+
+### Is it really encrypted?
+
+TESTED, loopback, one run each, with a relay that records every byte (`round2/rfb-dump.py`) and a clipboard text sent from the TigerVNC viewer:
+
+| Link | Text found in the recorded bytes |
+|---|---|
+| no login (`security type 1`) | **6 times** (and the whole picture data in the clear: 249 KB) |
+| TLS (VeNCrypt) | 0 times |
+| RSA-AES | 0 times |
+
+The text still reached the node through both encrypted links (`wl-paste` on the node printed it). So on the wire a password-less wayvnc shows every clipboard text and every key you type; an authenticated one does not. (I did not try to attack the encryption; only "the text is not visible" was checked.)
+
+### What each viewer does with each set-up
+
+| | TigerVNC viewer 1.13.1 | `remote-viewer` 11.0 (gtk-vnc 1.3.1) |
+|---|---|---|
+| **RSA-AES** | Works with the user name and password from `VNC_USERNAME`/`VNC_PASSWORD`. **But it opens a dialog "Server key fingerprint ... press Yes" at every connection** and remembers nothing (more than six connections, with a fresh key made at each server start and with a fixed key file: the dialog came every time). An unattended open is therefore not possible; a person (or a script pressing Return) must confirm each time. `RA2` is not in `remote-viewer`. | **Not supported.** `remote-viewer` showed an error dialog "Unable to connect to the graphic server" (screenshot read). Its library names RA2 in its constants but the viewer failed (TESTED; the reason is not logged). |
+| **TLS, self-signed** | Without any setting: two dialogs on the first connection ("Certificate hostname mismatch" if the name does not match, then "Unknown certificate issuer"); after you accept, the certificate is stored in `~/.vnc/x509_known_hosts` and the **next connection has no dialog** (TESTED with a certificate whose name matched). With the certificate given as the trusted authority, `-X509CA /path/tls.crt`, **no dialog at all**, even on a fresh home folder (TESTED). A name mismatch asks every time. | **Works**, in one try: certificate placed as the trusted authority, login from a connection file (below). It trusts files only in fixed places: `<system config dir>/pki/CA/cacert.pem` or `<home>/.pki/CA/cacert.pem`, where `<home>` is the home folder from the **password file entry of the current user**, not `$HOME` (SOURCE: `src/vncconnection.c` v1.3.1, `vnc_connection_set_credential_x509`, read 2026-10-04; and TESTED: with `$HOME` pointing at a folder holding the file it said `The certificate is not trusted`; with the file in `/root/.pki/CA/cacert.pem` it connected). Without a file it falls back to the system trust store. The other `remote-viewer` cases (name mismatch, wrong password, the certificate bundle) were **not** run: the tool's safety check refused a second write into the real home folder, so I stopped and removed the file I had made. UNKNOWN. |
+| **Window title / app-id with login** | unchanged by the login | the connection file's `title=` gave `Test Node (1)`; `--name=hubos-test` kept the app-id |
+
+### Where the credential would live (input for the secrets design; nothing is designed)
+
+| Secret or public file | Where | Notes |
+|---|---|---|
+| Node: user name, password, TLS private key | the node's own per-machine config area, mode 0600, **never in git, never in the NAS copy** (`HUB-OS.md`: "Secrets do not [get the NAS backup copy]") | wayvnc reads them from its config file (`-C`); there is no way to give the password by environment or file descriptor that I found (UNKNOWN: not searched in the source). `wayvnc` also links PAM (`libpam0g` in its dependency list); `HUB-OS.md` says finished images do not contain PAM modules, so build wayvnc without PAM (`-Dpam=disabled` built fine, TESTED for v0.10.2) |
+| Node: certificate (public) | next to the key on the node; a copy on the hub | public, can go in the image or the config area |
+| Hub: the same user name and password, so hubd can open the viewer | the hub's per-machine config area, mode 0600, outside git and outside the NAS copy | **how hubd hands it to the viewer without a command line:** TigerVNC: the environment variables `VNC_USERNAME` and `VNC_PASSWORD` (TESTED); `remote-viewer`: a connection file with `username=` and `password=` (TESTED once; it must be mode 0600) written by hubd just before the start and removed after (BELIEVED safe enough; not designed). `hubd` today cannot do either: it starts the command from `viewers.toml` with placeholders only, and has no secret store. That is a **hubd change** to be designed with the owner. |
+| Hub: the node's certificate as the trusted authority | TigerVNC: any path (`-X509CA`); `remote-viewer`: one fixed file `~/.pki/CA/cacert.pem` for **all** nodes | with one self-signed certificate per node, `remote-viewer` would need all of them in that single file (BELIEVED to work as a bundle; not tested), or **one cluster certificate** with every node's name in its subjectAltName and the same key copied to every node (simplest; but then one stolen key impersonates every node) |
+| One password for the cluster, or one per node | decision for the owner | one password is the least work and gives away every node if it leaks |
+
+**My recommendation for the display protocol's login:** TLS with a self-signed certificate (set-up B), because it is the only one both viewers accept and the TigerVNC viewer then opens without any dialog. RSA-AES (set-up A) needs no file on the node and is a good fallback for tests, but TigerVNC asks for a click every time and `remote-viewer` cannot do it.
+
+---
+
+## R2.4 The hub side under driftwm: window id, title, app-id and hubd's matching
+
+TESTED. driftwm (pinned commit 352333a8, nested, software rendering) on Xvfb; `hubd serve` and `hubd open` from this repository's `cmd/hubd` (built with `go build ./cmd/hubd`; no Go code changed); `round2/hub-inventory.toml` and `round2/hub-viewers.toml` (two fake machines, both pointing at the same wayvnc on loopback). Window data from `driftwm msg state`.
+
+| Viewer (command) | driftwm id | app-id | title | size | hubd said |
+|---|---|---|---|---|---|
+| `remote-viewer --name=hubos-gui-a --title="Node A" -- vnc://127.0.0.1:5901` (`sets_name = true`) | `#0` first run (the number goes up with each new window; `#13` by the end; numbers are not reused) | `hubos-gui-a` | `Node A (1)` | 1022 x 800 after hubd shrank it from 1022 x 814 "to stay clear of the bar" | `opened Node A at home (-1500, 0), matched by name` |
+| `xtigervncviewer 127.0.0.1::5901` against wayvnc 0.7.2 (`sets_name = false`, `title_match = "WayVNC - TigerVNC"`) | `#1` | `TigerVNC Viewer` | `WayVNC - TigerVNC` | 1024 x 725 | `opened Node B at home (1500, 0), matched by title` |
+| same, against wayvnc 0.10.2 started with `-n gui-b` (`title_match = "{id} - TigerVNC"`) | `#7`, `#9`, `#12` (reopened) | `TigerVNC Viewer` | `gui-b - TigerVNC` | 1016 x 778 | `matched by title` |
+
+Other facts from the same runs:
+
+- Both viewers were **placed at their home positions** by hubd through driftwm's socket and the camera followed (`camera -1500 7`); the placement worked for the X11 program too.
+- driftwm reports **no window id of the program's own** other than its running number; app-id plus title is all there is, as round 1 assumed.
+- The app-id of the TigerVNC viewer is **shared by all its windows**, so two nodes in TigerVNC windows can be told apart only by title (R2.2).
+- Opening TigerVNC (default, not shared) for a machine while a `remote-viewer` window for the same wayvnc was open dropped the `remote-viewer` window (R2.2). This happened in my own test because both fake machines pointed at the same wayvnc; real machines have one viewer each.
+- driftwm advertises data-control (wlr v2 and ext v1), primary selection and the virtual keyboard protocol (`wayland-info`, TESTED); no virtual pointer, as before.
+- Nested driftwm needed a keyboard: it took key events from the Xvfb window, so `xdotool` could drive it. Clipboard from the hub to the node worked with the TigerVNC window focused (R2.1 row 8).
+- Not tested under driftwm: Moonlight, a real GPU, fractional scale, a real display backend.
+
+---
+
+## R2.5 Which wayvnc version the images need
+
+All results here that depend on newer behaviour came from wayvnc **v0.10.2 + neatvnc v1.0.3 built from source** (`-Dpam=disabled -Dman-pages=disabled -Dscreencopy-dmabuf=disabled -Dneatvnc:h264=disabled -Dneatvnc:gbm=disabled`, aml 1.0.0 as a subproject; built with 2 jobs in a few minutes (not timed); H.264 and GPU capture were left out and are UNTESTED). Facts:
+
+| Need | Version | Label |
+|---|---|---|
+| UTF-8 clipboard (extended clipboard) | neatvnc >= 0.9.0 (wayvnc 0.9.x or newer; Ubuntu questing/resolute have 0.9.1) | TESTED with 1.0.3; SOURCE for the first tag |
+| `--name` / `wayvncctl set-desktop-name` (for the TigerVNC title) | wayvnc >= **0.10.0** (Ubuntu stonking has 0.10.1; **no earlier series**) | SOURCE `git tag --contains 630ed4a` |
+| client-requested screen resize works | worked with 0.10.2; with 0.7.2 it failed | TESTED |
+| ext-data-control | wayvnc >= 0.10.0; needed only if a node compositor offers `ext_data_control` but not `zwlr_data_control` (sway 1.9 offers the wlr one; which compositors offer only ext: UNKNOWN) | SOURCE |
+| Ubuntu 24.04 (what the repo's image base uses) | wayvnc 0.7.2, neatvnc 0.7.1 (**too old for all of the above**) | TESTED, SOURCE (Launchpad) |
+
+So a node image based on the 24.04 snapshot would have to carry a **newer wayvnc and neatvnc taken from a newer Ubuntu series or built from source**. That is an image-builder decision (a pinned source build is what `HUB-OS.md` already does for driftwm). Not decided here.
+
+---
+
+## R2.6 Recommendation update (still a proposal) and what is not proven
+
+1. **Display protocol stays VNC with wayvnc** on the nodes, but at **wayvnc v0.10 or newer**, not the 24.04 package: only that gives UTF-8 clipboard, a settable desktop name and resizing.
+2. **Hub viewer for ordinary nodes: the TigerVNC viewer is the only one tested that carries the clipboard hub to node**, and the only one that opens an encrypted, password-protected session with no dialog. Its costs, each tested: it is an X11 program, so the hub image needs Xwayland, xkbcomp and xwayland-satellite (built from git); its app-id is fixed, so hubd must match by title and every node must name its desktop after its machine id; the clipboard works only while its window is focused (and a copy made while unfocused did not arrive in my test); with wayvnc 0.7.2 it garbles non-ASCII text.
+3. **`remote-viewer` stays for VM guests** (SPICE and VNC; the owner's decision) but is **not enough for nodes** while the clipboard hub to node is required: it never sends it, and no release of virt-viewer or gtk-vnc contains a fix.
+4. **Login and encryption:** TLS with a self-signed certificate plus user name and password (R2.3, set-up B). Nothing on the display link should be left unauthenticated: a no-password wayvnc showed clipboard text in the clear.
+5. **A change in hubd is needed for any of this** (not made): hand a user name and password to the viewer through the environment or a private file, and `title_match` with `{id}` already exists. The credential store is the open secrets design.
+6. Everything in sections 3, 4 and 6 of round 1 (sound by PipeWire RTP, the node helper, GPU apps) is unchanged and not re-examined.
+
+**Not proven this round (all UNKNOWN):** a real Wayland-native VNC viewer with clipboard hub to node (the candidates: gtk-vnc master, unreleased; `any1/wlvncc`, whose README calls it "a work-in-progress implementation ... Expect bugs and missing features" and which has no Ubuntu package [Launchpad listing empty, 2026-10-04]; neither was run); the unfocused-copy failure's cause; `remote-viewer` with a name-mismatched certificate or a wrong password; a certificate bundle in `~/.pki/CA/cacert.pem`; EC keys; H.264 or GPU capture in wayvnc; long-running behaviour; many windows at once; real hardware; the clipboard with several nodes open at once (only one window can be focused, so clipboard to a node you are not looking at cannot work, BELIEVED).
+
+---
+
+## R2.7 What this round changes in round 1's text (round 1 is left as written)
+
+- Plain-words item 4 and section 2.2: "UNKNOWN why [clipboard hub to node did not work]" is now answered: `remote-viewer` has no such feature (R2.1). "RDP stays the fallback if the clipboard cannot be made to work over VNC" is no longer needed: it works with the TigerVNC viewer.
+- Section 2.7: "`remote-viewer` does not accept a self-signed VNC certificate" is true only without a trust file; with the certificate in the fixed `~/.pki/CA/cacert.pem` it did (R2.3).
+- Section 5, wayvnc row: the security types are now identified: 19 VeNCrypt (TLS), 129 and 5 RSA-AES; "which of these `remote-viewer` can use" is answered: VeNCrypt only; TigerVNC: both.
+- Section 7: `vnc` entry. A TigerVNC entry would be `["xtigervncviewer", "{address}::{port}"]` with `sets_name = false` and `title_match = "{id} - TigerVNC"` (TESTED shape); the credentials need the hubd change above.
+- Section 8, recommendation 1 ("viewer: `remote-viewer` for now, with the TigerVNC viewer tested as a replacement"): now tested; see R2.6.
+- Section 8, question 3 (may I test the TigerVNC viewer): done.
+- Section 6.1: "driftwm has no virtual-pointer protocol" still stands; this round used a headless sway as the node.
+
+---
+
+## R2.8 Questions for the owner
+
+1. **Hub viewer for nodes.** The TigerVNC viewer is the only one that does clipboard hub to node today, but it needs Xwayland, xkbcomp and xwayland-satellite in the hub image and matches by title only. Accept that cost? Or wait for a Wayland-native viewer with the clipboard (none exists today)? Or accept node to hub only, and keep `remote-viewer`?
+2. **Clipboard rule.** Is "the node's window must be focused for the clipboard to move" acceptable (it is how the TigerVNC viewer is built), given that a copy made while the window was not focused did not arrive in my test?
+3. **Which wayvnc.** Nodes need wayvnc 0.10 or newer. May the image builder build wayvnc and neatvnc from source at pinned tags (as for driftwm), or take them from a newer Ubuntu series? Which pinned tags: v0.10.2 and v1.0.3 are what I tested.
+4. **Display login.** TLS with a self-signed certificate plus password: one certificate and one password for the whole cluster, or one per node? (One is simpler and gives everything away if it leaks.)
+5. **Secrets path.** hubd must hand a user name and password to the viewer. Environment variable (TigerVNC) and a private connection file (`remote-viewer`) both work. May a later task design this (the hub's config area, mode 0600, outside git and the NAS copy)?
+6. **Screen size.** The TigerVNC viewer makes the node's screen follow the window (with wayvnc 0.10). Do you want the node's screen size fixed per node (then it must be switched off with `RemoteResize=0` or `wayvnc -R`), or following the window?
+7. **Shared or not.** A second non-shared viewer kicks the first. Keep the default (one viewer per node), or pass `-Shared` so that a second window never kills the first?
+8. **Node naming.** Every node's wayvnc must be started with `--name <machine id>`. OK to make that part of the node helper's session start?
+9. **`docs/driftwm-findings.md`** says xwayland-satellite can be installed with `cargo install`; that is wrong today (not on crates.io). May a later task correct that file?
+10. **`HUB-OS.md`** (not edited): the Unverified list would gain "TigerVNC viewer clipboard needs focus; an unfocused copy did not arrive", "remote-viewer never sends the clipboard to a VNC server", "Xwayland and xwayland-satellite on the hub image", "wayvnc >= 0.10 on the nodes". May I draft the change for you to approve?
+
+---
+
+## R2.9 Sources read for round 2 (all 2026-10-04)
+
+Read by the helper itself (raw files, git history or JSON; not summarised): gtk-vnc `src/vncdisplay.c`, `src/vncconnection.c` at v1.3.1, v1.5.0 and master, and GNOME GitLab's commit and tag lists; virt-viewer `src/virt-viewer-session-vnc.c`, `src/virt-viewer-app.c` (v11.0) and the master copy, and GitLab's tag list; wayvnc `src/main.c` (v0.7.2 and master), the README at v0.10.2, and the git history of [any1/wayvnc](https://github.com/any1/wayvnc) and [any1/neatvnc](https://github.com/any1/neatvnc) (cloned); TigerVNC `vncviewer/vncviewer.cxx` (v1.13.1 and master), `vncviewer/Viewport.cxx` (v1.13.1) and the tag list from `git ls-remote`; the man pages and `-h` text of the unpacked packages; Launchpad's package-publishing API; the [wlvncc README](https://raw.githubusercontent.com/any1/wlvncc/master/README.md).
+
+Through a summarising tool: the TigerVNC releases page (fetch tool) and one web search about TigerVNC 1.16 and Wayland (linuxiac.com, phoronix.com, 9to5linux.com in the result list); I used them only for the sentence that 1.16 added `w0vncserver`, which is not needed for any conclusion.
+
+Could not be reached: the GitHub REST API and the GitHub release atom feeds (the session's proxy answers that those paths are not available); so release **dates** for wayvnc, neatvnc and TigerVNC come from git tag dates only where stated, and TigerVNC's 1.16.x dates are as round 1 gave them.
