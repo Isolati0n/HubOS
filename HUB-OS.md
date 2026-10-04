@@ -403,3 +403,4 @@ HubOS/
 - **2026-10-03:** Phase B images: recovery update at confirm, recovery can install, boot-loop breaker, per-machine timeouts.
 - **2026-10-03:** First hub image: keyring, hubd menu fix, hub.build with the desktop services and its QEMU test.
 - **2026-10-03:** Hub desktop decisions recorded: eudev, services as the normal user, driftwm state in RAM, key keyring.
+- **2026-10-04:** Phase B images: recovery installs on a changed hash, menu row click tested, QEMU crash retry.
