@@ -573,9 +573,9 @@ func (r *rig) restartIntoRecovery(step string) bool {
 	return false
 }
 
-// settleOnConfirmedSlot starts QEMU again on the same disk (after a crash) and waits until the machine runs the confirmed slot b:
+// settleOnConfirmedSlot starts QEMU again on the same disk (after a crash) and waits until the machine runs the confirmed slot `want`:
 // if the firmware starts an unconfirmed trial slot first, the trial fails and rolls back, and this waits for that.
-func (r *rig) settleOnConfirmedSlot() {
+func (r *rig) settleOnConfirmedSlot(want string) {
 	r.vm.kill()
 	v := r.startVM()
 	r.vm = v
@@ -591,7 +591,7 @@ func (r *rig) settleOnConfirmedSlot() {
 		}
 		r.bootPos = e
 		r.ready(v)
-		if slot, _, _, _ := r.status(); slot == "b" {
+		if slot, _, _, _ := r.status(); slot == want {
 			r.waitConfirmed()
 			return
 		}
@@ -1133,7 +1133,7 @@ func TestImage(t *testing.T) {
 						// QEMU died from a signal during the trial boot: record it, start QEMU again, wait until the machine is back on the
 						// confirmed slot, and do the whole step once more (a second crash here fails the step)
 						r.noteCrash(r.vm, sig, "the trial boot of "+name)
-						r.settleOnConfirmedSlot()
+						r.settleOnConfirmedSlot("b")
 						continue
 					}
 				}
@@ -1637,11 +1637,27 @@ func TestImage(t *testing.T) {
 		// P2: the counter survives kill -9 of QEMU. An update to slot b whose release never gets healthy is started
 		// (a trial boot); QEMU is killed right after stage 0 has counted the boot.
 		_, st0 := r.sh("hubos-ctl status")
-		rc, _ := r.update("v14-unhealthy")
-		m := r.vm.mark()
-		io.WriteString(r.vm.in, "sync; reboot -f\n")
-		sw := r.vm.wait(`STAGE0: switching to slot b`, 200*time.Second, m)
+		var rc, sw, m int
+		for attempt := 1; attempt <= 2; attempt++ {
+			rc, _ = r.update("v14-unhealthy")
+			m = r.vm.mark()
+			io.WriteString(r.vm.in, "sync; reboot -f\n")
+			sw = r.vm.wait(`STAGE0: switching to slot b`, 200*time.Second, m)
+			if sw < 0 && attempt == 1 {
+				if sig := r.vm.crashSignal(); sig != "" {
+					// QEMU died from a signal before the trial boot started: record it, start QEMU again, wait until the machine
+					// runs the confirmed slot a, and do the step once more
+					r.noteCrash(r.vm, sig, "the trial boot of slot b (boot-loop breaker test)")
+					r.settleOnConfirmedSlot("a")
+					continue
+				}
+			}
+			break
+		}
 		if sw < 0 {
+			if sig := r.vm.crashSignal(); sig != "" {
+				r.noteCrash(r.vm, sig, "the trial boot of slot b (boot-loop breaker test, retry)")
+			}
 			t.Fatalf("the trial boot of slot b did not start")
 		}
 		r.vm.kill()
