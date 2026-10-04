@@ -23,6 +23,7 @@ import (
 	"strings"
 	"sync"
 	"sync/atomic"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -30,13 +31,18 @@ import (
 const handoverRe = `HUBOS: handing over to s6-svscan`
 
 type vm struct {
-	t    *testing.T
-	cmd  *exec.Cmd
-	in   io.WriteCloser
-	mu   sync.Mutex
-	buf  strings.Builder
-	log  *os.File
-	done chan struct{}
+	t         *testing.T
+	cmd       *exec.Cmd
+	in        io.WriteCloser
+	mu        sync.Mutex
+	buf       strings.Builder
+	log       *os.File
+	done      chan struct{} // closed when QEMU's output ends
+	exit      chan struct{} // closed when QEMU has been reaped (ps is then set)
+	ps        *os.ProcessState
+	byUs      bool // the test itself killed QEMU (not a crash)
+	crashSeen bool
+	rig       *rig
 }
 
 type rig struct {
@@ -49,11 +55,14 @@ type rig struct {
 	hangs      int
 	hangLog    []string // every hang: number, step, saved log
 	hangDir    string
-	forceHang  int    // test hook: treat the next N boots as hangs (HUBOS_TEST_FORCE_HANG=once|twice)
-	dead       bool   // the run was stopped by a repeated hang; later VM tests skip
-	hungReboot bool   // a reboot hung and was retried: BootNext was used up, so the trial slot did NOT boot
-	repeating  bool   // a step is being repeated after such a hang; a second hang now fails the run
-	recSig     string // what the first recovery boot looked like (kernel command line and release), to compare later ones
+	forceHang  int      // test hook: treat the next N boots as hangs (HUBOS_TEST_FORCE_HANG=once|twice)
+	crashes    int      // times QEMU died from a signal (a crash, not a hang)
+	crashLog   []string // every crash: number, signal, step, saved log
+	forceCrash int      // test hook: kill the next N boots with SIGSEGV (HUBOS_TEST_FORCE_CRASH=once|twice)
+	dead       bool     // the run was stopped by a repeated hang; later VM tests skip
+	hungReboot bool     // a reboot hung and was retried: BootNext was used up, so the trial slot did NOT boot
+	repeating  bool     // a step is being repeated after such a hang; a second hang now fails the run
+	recSig     string   // what the first recovery boot looked like (kernel command line and release), to compare later ones
 	vm         *vm
 	logSeq     int
 	bootPos    int    // where the output of the current boot starts in the VM buffer
@@ -130,7 +139,7 @@ func (r *rig) startVM() *vm {
 	in, _ := cmd.StdinPipe()
 	out, _ := cmd.StdoutPipe()
 	cmd.Stderr = cmd.Stdout
-	v := &vm{t: r.t, cmd: cmd, in: in, log: lf, done: make(chan struct{})}
+	v := &vm{t: r.t, cmd: cmd, in: in, log: lf, done: make(chan struct{}), exit: make(chan struct{}), rig: r}
 	if err := cmd.Start(); err != nil {
 		r.t.Fatal(err)
 	}
@@ -147,6 +156,9 @@ func (r *rig) startVM() *vm {
 			}
 			if err != nil {
 				close(v.done)
+				cmd.Wait() // reap QEMU: its exit status tells a crash (a signal) from a hang
+				v.ps = cmd.ProcessState
+				close(v.exit)
 				return
 			}
 		}
@@ -200,6 +212,11 @@ func (v *vm) sh(cmd string, d time.Duration) (int, string) {
 	fmt.Fprintf(v.in, "%s\necho %s$?\n", cmd, tag)
 	end := v.wait(regexp.QuoteMeta(tag)+`\d+`, d, m)
 	if end < 0 {
+		if sig := v.crashSignal(); sig != "" && !v.crashSeen {
+			v.crashSeen = true
+			v.rig.noteCrash(v, sig, "a command on the guest: "+cmd)
+			v.t.Fatalf("QEMU died from %s while a command was running; a crash in the middle of a step cannot be retried here (only at boot and reboot points), so the run fails", sig)
+		}
 		return -1, "<timeout> " + v.text(m)
 	}
 	seg := v.text(m)[:end-m]
@@ -219,9 +236,27 @@ func (v *vm) kill() {
 	if v == nil {
 		return
 	}
+	v.byUs = true
 	v.cmd.Process.Kill()
-	v.cmd.Wait()
+	<-v.exit
 	v.log.Close()
+}
+
+// crashSignal returns the name of the signal that killed QEMU when it died by itself (for example "segmentation fault"), or
+// "" when QEMU is still running, exited normally, or was killed by the test.
+func (v *vm) crashSignal() string {
+	select {
+	case <-v.exit:
+	case <-time.After(3 * time.Second):
+		return ""
+	}
+	if v.byUs || v.ps == nil {
+		return ""
+	}
+	if ws, ok := v.ps.Sys().(syscall.WaitStatus); ok && ws.Signaled() {
+		return fmt.Sprintf("signal %d (%s)", int(ws.Signal()), ws.Signal())
+	}
+	return ""
 }
 
 // bootOnce starts QEMU on the disk and waits for the handover line. If the line does not come in time (an
@@ -235,6 +270,14 @@ func (r *rig) bootOnce(step string) *vm {
 		r.noteHang(v, step+" [forced by HUBOS_TEST_FORCE_HANG]")
 		v.kill()
 		return nil
+	}
+	if r.forceCrash > 0 {
+		// Test hook: really crash this boot. QEMU is started, then killed from outside with SIGSEGV, so the code that
+		// follows sees a real death by signal (not a kill by the test).
+		r.forceCrash--
+		time.Sleep(3 * time.Second)
+		v.cmd.Process.Signal(syscall.SIGSEGV)
+		step += " [forced by HUBOS_TEST_FORCE_CRASH]"
 	}
 	if v.wait(handoverRe, 150*time.Second, 0) >= 0 {
 		r.bootPos = 0
@@ -261,7 +304,7 @@ func (r *rig) retryBoot(step string) *vm {
 		return v
 	}
 	r.dead = true
-	r.t.Fatalf("the machine hung twice in the same step (%s); the run fails (hangs so far: %s)", step, strings.Join(r.hangLog, "; "))
+	r.t.Fatalf("the machine hung or crashed twice in the same step (%s); the run fails (hangs so far: %s; crashes so far: %s)", step, strings.Join(r.hangLog, "; "), strings.Join(r.crashLog, "; "))
 	return nil
 }
 
@@ -271,7 +314,22 @@ func (r *rig) ready(v *vm) {
 	time.Sleep(500 * time.Millisecond)
 }
 
+// noteCrash records a QEMU that died from a signal (a crash, for example a segmentation fault): not a hang. The callers
+// treat it like a hang: the step is retried once, a second one in the same step fails the run.
+func (r *rig) noteCrash(v *vm, sig, what string) {
+	r.crashes++
+	os.MkdirAll(r.hangDir, 0o755)
+	dst := filepath.Join(r.hangDir, fmt.Sprintf("crash-%d.log", r.crashes))
+	r.crashLog = append(r.crashLog, fmt.Sprintf("crash %d (QEMU died from %s) in step %q (serial log %s)", r.crashes, sig, what, dst))
+	os.WriteFile(dst, []byte(v.text(0)), 0o644)
+	r.t.Logf("CRASH %d (%s): QEMU died from %s; serial log saved to %s", r.crashes, what, sig, dst)
+}
+
 func (r *rig) noteHang(v *vm, what string) {
+	if sig := v.crashSignal(); sig != "" {
+		r.noteCrash(v, sig, what)
+		return
+	}
 	r.hangs++
 	os.MkdirAll(r.hangDir, 0o755)
 	dst := filepath.Join(r.hangDir, fmt.Sprintf("hang-%d.log", r.hangs))
@@ -489,6 +547,13 @@ func sha256File(t *testing.T, p string) string {
 	return strings.Fields(string(out))[0]
 }
 
+func crashList(r *rig) string {
+	if len(r.crashLog) == 0 {
+		return "none"
+	}
+	return "\n  " + strings.Join(r.crashLog, "\n  ")
+}
+
 func copyFile(t *testing.T, src, dst string) {
 	if out, err := exec.Command("cp", "--sparse=always", src, dst).CombinedOutput(); err != nil {
 		t.Fatalf("cp %s %s: %v %s", src, dst, err, out)
@@ -516,6 +581,12 @@ func TestImage(t *testing.T) {
 	case "twice":
 		r.forceHang = 2 // the first boot and its retry are treated as hangs; the run must fail
 	}
+	switch os.Getenv("HUBOS_TEST_FORCE_CRASH") {
+	case "once":
+		r.forceCrash = 1 // the first boot is crashed with SIGSEGV; the retry must succeed and the run continues
+	case "twice":
+		r.forceCrash = 2 // the first boot and its retry are crashed; the run must fail
+	}
 	var results []string
 	record := func(name string, ok bool, d time.Duration, note string) {
 		s := "PASS"
@@ -529,7 +600,7 @@ func TestImage(t *testing.T) {
 		if len(r.hangLog) > 0 {
 			hl = "\n  " + strings.Join(r.hangLog, "\n  ")
 		}
-		t.Logf("\nRESULTS (QEMU hangs seen and retried: %d; every hang: %s)\n%s", r.hangs, hl, strings.Join(results, "\n"))
+		t.Logf("\nRESULTS (QEMU hangs seen and retried: %d; every hang: %s; QEMU crashes (died from a signal) seen and retried: %d; every crash: %s)\n%s", r.hangs, hl, r.crashes, crashList(r), strings.Join(results, "\n"))
 		if r.vm != nil {
 			r.vm.kill()
 		}
@@ -625,6 +696,18 @@ func TestImage(t *testing.T) {
 	bundleSigned("22", "v22-k2-drops-k1", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=5")
 	bundleSigned("23", "v23-k1-after-drop", r.sec)
 	bundleSigned("24", "v24-k2", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2, "RECOVERY_VERSION_OVERRIDE=5")
+	// the recovery install rule (T17): a changed file at the SAME version (a rotation release that forgot to bump it) installs; a
+	// lower version never installs; the same file leaves things alone
+	recK2m := filepath.Join(outDir, "rec-k2-marked.efi") // the key-2 recovery kernel with a marker appended: another file, still boots
+	if kb, err := os.ReadFile(recK2); err != nil {
+		t.Fatal(err)
+	} else if err := os.WriteFile(recK2m, append(kb, []byte("hubos-test-marker-k2m")...), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	recK2mHash := sha(recK2m)
+	bundleSigned("25", "v25-same-version-new-file", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2m, "RECOVERY_VERSION_OVERRIDE=5")
+	bundleSigned("26", "v26-lower-version", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK12, "RECOVERY_VERSION_OVERRIDE=4")
+	bundleSigned("27", "v27-same-file", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2m, "RECOVERY_VERSION_OVERRIDE=5")
 	// refused variants: made from v2-good with hard links
 	variant := func(name string, change func(dir string)) {
 		d := filepath.Join(bdir, name)
@@ -1175,9 +1258,9 @@ func TestImage(t *testing.T) {
 		slot3, rel3, conf3, _, log3 := r.trialBoot(func() { r.update("v11-recovery2-again") })
 		v3, h3 := r.espRecovery()
 		ok3 := rc3 == 0 && strings.Contains(u3, "installed at the confirm step, not now") && slot3 == "a" && rel3 == "11" && conf3 &&
-			strings.Contains(log3, "version 2 is not newer than the installed 2; left alone") && v3 == "2" && h3 == recHash2
+			strings.Contains(log3, "version 2 is the same file as the installed one; left alone") && v3 == "2" && h3 == recHash2
 		t.Logf("recovery version/hash on the boot partition: start %s %s; after update 9 %s %s, after its confirm %s %s; after update 10 %s %s, after its confirm %s %s; after 11 %s %s", v0, h0[:12], va, ha[:12], v1, h1[:12], vb, hb[:12], v2, h2[:12], v3, h3[:12])
-		record("C1 the recovery kernel is installed at the confirm step: a release without one leaves recovery alone; the update itself never touches the boot partition; a newer recovery-version is installed after the healthy boot; the same version is left alone", ok1 && ok2 && ok3, time.Since(start),
+		record("C1 the recovery kernel is installed at the confirm step: a release without one leaves recovery alone; the update itself never touches the boot partition; a newer recovery-version is installed after the healthy boot; the same file is left alone", ok1 && ok2 && ok3, time.Since(start),
 			fmt.Sprintf("installed version %s -> %s (update 9, confirm) -> %s (update 10: unchanged until its confirm) -> %s -> %s (update 11)", v0, v1, vb, v2, v3))
 		if !ok1 || !ok2 || !ok3 {
 			t.Errorf("ok1=%v ok2=%v ok3=%v\n%s\n%s\n%s\n%q %q %q", ok1, ok2, ok3, u1, u2, u3, log1, log2, log3)
@@ -1314,6 +1397,23 @@ func TestImage(t *testing.T) {
 		m := r.vm.mark()
 		io.WriteString(r.vm.in, "echo b > /proc/sysrq-trigger\n")
 		banner := r.waitRecovery(r.vm, m)
+		if !banner {
+			if sig := r.vm.crashSignal(); sig != "" {
+				// QEMU died from a signal at this reboot. Retry the step once: start QEMU again on the same disk. Both roots are
+				// garbage, so the machine fails its boots and the boot-loop breaker brings up the recovery shell.
+				r.noteCrash(r.vm, sig, "recovery boot with both roots garbage")
+				r.vm.kill()
+				v2 := r.startVM()
+				banner = r.waitRecoveryFor(v2, 0, 900*time.Second)
+				if !banner {
+					if sig2 := v2.crashSignal(); sig2 != "" {
+						r.noteCrash(v2, sig2, "recovery boot with both roots garbage (retry)")
+					}
+					r.dead = true
+					t.Fatalf("QEMU crashed or the recovery shell did not come up twice in this step; the run fails")
+				}
+			}
+		}
 		var shell string
 		if banner {
 			_, shell = r.vm.sh(recoveryCmds, 60*time.Second)
@@ -1534,6 +1634,43 @@ func TestImage(t *testing.T) {
 			fmt.Sprintf("key-1 bundle rc=%d, key-2 bundle rc=%d; afterwards slot %s release %s confirmed %v", rcA, rcB, slot4, rel4, conf4))
 		if !ok4 {
 			t.Errorf("banner=%v rcA=%d rcB=%d slot=%s rel=%s\n%s\n%s", banner, rcA, rcB, slot4, rel4, oA, oB)
+			t.Fail()
+		}
+	})
+
+	// ---- the recovery kernel install rule at confirm: install when the file differs AND the version is not lower ----
+	t.Run("T17_recovery_install_rule", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// state after T16: release 24 (key 2 only) is confirmed; the boot partition has recovery version 5, the file recK2
+		v0, h0 := r.espRecovery()
+		ok0 := v0 == "5" && h0 == sha256File(t, recK2)
+		// 1. the same version (5) but a different file: a key-rotation release that forgot to bump the version. It installs.
+		rc1, u1 := r.update("v25-same-version-new-file")
+		slot1, rel1, conf1, _, log1 := r.trialBoot(func() { r.update("v25-same-version-new-file") })
+		v1, h1 := r.espRecovery()
+		ok1 := rc1 == 0 && strings.Contains(u1, "installed at the confirm step, not now") && slot1 == "a" && rel1 == "25" && conf1 &&
+			strings.Contains(log1, "recovery kernel version 5 installed (was 5)") && v1 == "5" && h1 == recK2mHash && h1 != h0
+		// 2. a LOWER version (4) with a different file never installs
+		rc2, _ := r.update("v26-lower-version")
+		slot2, rel2, conf2, _, log2 := r.trialBoot(func() { r.update("v26-lower-version") })
+		v2, h2 := r.espRecovery()
+		ok2 := rc2 == 0 && slot2 == "b" && rel2 == "26" && conf2 &&
+			strings.Contains(log2, "version 4 is lower than the installed 5; never a downgrade, left alone") && v2 == "5" && h2 == recK2mHash
+		// 3. the same file and version again: left alone
+		rc3, _ := r.update("v27-same-file")
+		slot3, rel3, conf3, _, log3 := r.trialBoot(func() { r.update("v27-same-file") })
+		v3, h3 := r.espRecovery()
+		ok3 := rc3 == 0 && slot3 == "a" && rel3 == "27" && conf3 &&
+			strings.Contains(log3, "version 5 is the same file as the installed one; left alone") && v3 == "5" && h3 == recK2mHash
+		ok := ok0 && ok1 && ok2 && ok3
+		record("C5 the recovery kernel install rule at confirm: a changed file at the same version installs (a rotation release that forgot to bump it); a lower version never installs; the same file is left alone", ok, time.Since(start),
+			fmt.Sprintf("boot partition: version %s file %s -> %s %s (same version, new file) -> %s %s (lower version 4: unchanged) -> %s %s (same file: unchanged)", v0, h0[:12], v1, h1[:12], v2, h2[:12], v3, h3[:12]))
+		if !ok {
+			t.Errorf("ok0=%v ok1=%v ok2=%v ok3=%v\nlog1=%q\nlog2=%q\nlog3=%q", ok0, ok1, ok2, ok3, log1, log2, log3)
 			t.Fail()
 		}
 	})

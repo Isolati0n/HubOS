@@ -156,7 +156,7 @@ func TestHubImage(t *testing.T) {
 		if len(r.hangLog) > 0 {
 			hl = "\n  " + strings.Join(r.hangLog, "\n  ")
 		}
-		t.Logf("\nRESULTS OF THE HUB IMAGE (QEMU hangs seen and retried: %d; every hang: %s)\n%s", r.hangs, hl, strings.Join(results, "\n"))
+		t.Logf("\nRESULTS OF THE HUB IMAGE (QEMU hangs seen and retried: %d; every hang: %s; QEMU crashes (died from a signal) seen and retried: %d; every crash: %s)\n%s", r.hangs, hl, r.crashes, crashList(r), strings.Join(results, "\n"))
 		if r.vm != nil {
 			r.vm.kill()
 		}
@@ -349,6 +349,71 @@ func TestHubImage(t *testing.T) {
 			fmt.Sprintf("open rc=%d; click attempts %d; list-background pixels %d (an empty list is under 20000); wofi running %s, after Escape %s", rc, attempts, list, wofi, wofi2))
 		if !ok {
 			t.Errorf("rc=%d home=%v list=%d\n%s\n%s", rc, home, list, out, st)
+			t.Fail()
+		}
+	})
+
+	t.Run("H3b_menu_row_click", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// close the AI Box window first, so the click has to open it again (not just go to a window that exists)
+		rcEnd, outEnd := r.sh(asHub("hubd end " + hubSock + " ai-1 2>&1"))
+		time.Sleep(3 * time.Second)
+		stEnd := state()
+		closed := rcEnd == 0 && !strings.Contains(stEnd, "hubos-ai-1")
+		wofiCount := func() string {
+			_, w := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
+			nums := regexp.MustCompile(`(?m)^\d+\s*$`).FindAllString(w, -1)
+			if len(nums) == 0 {
+				return "?"
+			}
+			return strings.TrimSpace(nums[len(nums)-1])
+		}
+		homeRe := regexp.MustCompile(`#\d+ hubos-ai-1 \[0, -100\] \d+x\d+\s+"AI Box"`)
+		// up to three tries: open the menu with the bar click, move the pointer onto the "ai-1  AI Box" row (the rows are
+		// 23 px apart; ai-1 is the 7th line) and click it
+		attempts, opened, home := 0, false, false
+		var st string
+		for attempts < 3 && !home {
+			attempts++
+			if wofiCount() == "0" {
+				r.monitor("mouse_move -4000 -4000")
+				time.Sleep(500 * time.Millisecond)
+				r.monitor("mouse_move 40 15")
+				time.Sleep(time.Second)
+				r.monitor("mouse_button 1")
+				time.Sleep(time.Second)
+				r.monitor("mouse_button 0")
+				time.Sleep(6 * time.Second)
+			}
+			if wofiCount() == "0" {
+				t.Logf("attempt %d: the menu did not open", attempts)
+				continue
+			}
+			opened = true
+			r.monitor("mouse_move 60 198") // from (40,15) to (100,213): the ai-1 row
+			time.Sleep(time.Second)
+			r.shot("hub-3-menu-row-hover")
+			r.monitor("mouse_button 1")
+			time.Sleep(time.Second)
+			r.monitor("mouse_button 0")
+			time.Sleep(8 * time.Second)
+			st = state()
+			home = homeRe.MatchString(st)
+			if !home {
+				t.Logf("attempt %d: no AI Box window at its home after the click", attempts)
+			}
+		}
+		r.shot("hub-3-row-click-opened")
+		after := wofiCount()
+		ok := closed && opened && home
+		record("H3b a click on a row of the wofi menu (relative QEMU mouse) makes hubd open that machine: the closed AI Box window comes back at its home (0,-100)", ok, time.Since(start),
+			fmt.Sprintf("window closed before: %v (end rc=%d); menu opened: %v; click attempts %d; window at home after the click: %v; wofi running after: %s", closed, rcEnd, opened, attempts, home, after))
+		if !ok {
+			t.Errorf("closed=%v opened=%v home=%v\n%s\n%s\n%s", closed, opened, home, outEnd, stEnd, st)
 			t.Fail()
 		}
 	})
