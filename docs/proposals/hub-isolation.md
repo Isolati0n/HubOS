@@ -30,7 +30,7 @@
 
 ---
 
-## 1. Constraints from the owner (SOURCE: `HUB-OS.md`, the task, `/tmp/.../RULES.md`)
+## 1. Constraints from the owner (SOURCE: `HUB-OS.md` and the owner's task text passed on to me)
 
 - The hub never reboots itself because of a service failure; it reboots only to roll back a trial boot that never became healthy, or when the hardware watchdog fires for a dead kernel or PID 1. A failing service is restarted, then its dependents, then retrying stops and an alert shows on the bar.
 - Priorities: (1) uptime and stability, (2) integration, (3) optimisation for the hub's one use, (4) building it ourselves only when it measurably wins, (5) simplicity.
