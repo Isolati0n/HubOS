@@ -1091,8 +1091,8 @@ func TestHubImage(t *testing.T) {
 			stable := false
 			msg := ""
 			if back {
-				_, lastMsg := r.sh(`grep 'the desktop restarted' /var/log/hubd/current | tail -n 1`)
-				msg = regexp.MustCompile(`the desktop restarted[^\n]*`).FindString(lastMsg)
+				_, lastMsg := r.sh(`grep 'the desktop restarted: ' /var/log/hubd/current | tail -n 1`)
+				msg = regexp.MustCompile(`the desktop restarted: [^\n]*`).FindString(lastMsg)
 				time.Sleep(8 * time.Second)
 				_, stable = pollState(30*time.Second, good)
 			}
