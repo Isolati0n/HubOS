@@ -1,0 +1,99 @@
+#!/bin/busybox sh
+# Black box recorder lab: PID 1 of the lab kernel. Not the real stage 0. Controlled by kernel command line words:
+#   bb.act=panic   on the first boot of a scenario, crash the kernel (sysrq c); what happens next depends on panic=
+#   bb.act=wdt     arm the (nowayout) hardware watchdog and never feed it: the machine is reset by the watchdog
+#   bb.act=hang    like wdt, with a log line every 2 s
+#   bb.act=none    just report and stay up
+#   bb.act=reboot  reboot -f (a clean restart, no crash)
+#   bb.act=fill    write 1000-byte EFI variables until the firmware refuses, then report how many fitted
+#   bb.loop=K      repeat bb.act on every boot up to boot number K (a boot loop); default 1
+#   bb.save=1      run the save prototype (blackbox-save.sh) into the second disk (/dev/vdb, ext4), bb.logs=1 also print blackbox-logs.sh
+#   bb.quiet=1     do not print the contents of the pstore files (only names and counts)
+#   bb.probe=1     on every boot also try to create a 1-byte variable like the boot-loop counter and say if it worked
+#   bb.erase=1     on later boots, delete the pstore files after printing them
+#   bb.end=off     on later boots, power off after the report (clean shutdown) instead of staying up
+# The boot counter is the first bytes of /dev/vda (a raw file made by the harness), so it survives everything the
+# QEMU disk file survives (it plays the part of the config partition).
+/bin/busybox --install -s /bin
+export PATH=/bin
+mount -t proc proc /proc; mount -t sysfs sysfs /sys; mount -t devtmpfs devtmpfs /dev
+mount -t efivarfs efivarfs /sys/firmware/efi/efivars 2>/dev/null
+mount -t pstore pstore /sys/fs/pstore 2>/dev/null
+CMD=$(cat /proc/cmdline)
+opt() { echo "$CMD" | sed -n "s/.*bb\.$1=\([a-z0-9]*\).*/\1/p"; }
+ACT=$(opt act)
+echo "BB: init start, cmdline: $CMD"
+echo "BB: backend in use: $(cat /sys/module/pstore/parameters/backend 2>/dev/null || echo none)"
+N=$(dd if=/dev/vda bs=16 count=1 2>/dev/null | tr -dc 0-9); [ -n "$N" ] || N=0
+N=$((N+1)); printf '%-16s' "$N" | dd of=/dev/vda bs=16 count=1 conv=notrunc 2>/dev/null
+echo "BB: boot number $N (counter on the raw disk)"
+echo "BB: efi: $(dmesg | grep 'efi: EFI v' | head -1)"
+echo "BB: pstore messages from the kernel log:"; dmesg | grep -i 'pstore\|ramoops\|persistent' | sed 's/^/BB:   /'
+echo "BB: pstore files at this boot:"
+ls -l /sys/fs/pstore 2>/dev/null | sed 's/^/BB:   /'
+NF=$(ls /sys/fs/pstore 2>/dev/null | wc -l)
+echo "BB: $NF pstore file(s); total bytes: $(cat /sys/fs/pstore/* 2>/dev/null | wc -c)"
+if [ "$(opt probe)" = 1 ]; then
+  P=/sys/firmware/efi/efivars/BBprobe$N-a0b7c0f5-4e7a-4d2b-9c61-5f0a1e3d8b72
+  printf '\007\000\000\0001' > $P 2>/dev/null
+  if [ -f "$P" ] && [ -s "$P" ]; then echo "BB: probe: creating the counter-like variable worked"; else echo "BB: probe: creating the counter-like variable FAILED"; fi
+fi
+for f in /sys/fs/pstore/*; do
+  [ "$(opt quiet)" = 1 ] && break
+  [ -f "$f" ] || continue
+  echo "BB: ---- $f ($(wc -c < $f) bytes), first 3 lines and last 3 lines:"
+  head -n 3 "$f" | cut -c1-160 | sed 's/^/BB:   | /'
+  echo "BB:   | [...]"
+  tail -n 3 "$f" | cut -c1-160 | sed 's/^/BB:   | /'
+done
+echo "BB: EFI variables with the Linux crash GUID (efi-pstore records): $(ls /sys/firmware/efi/efivars 2>/dev/null | grep -c cfc8fc79-be2e-4ddc-97f0-9f98bfe298a0)"
+if [ "$(opt save)" = 1 ] && [ -b /dev/vdb ]; then
+  # prototype of the save step: config partition read-write for a moment, copy pstore, empty it, unmount
+  if mount -t ext4 /dev/vdb /cfg; then
+    /bin/blackbox-save.sh /cfg $((N-1))
+    [ "$(opt logs)" = 1 ] && { echo "BB: ---- body of GET /v1/logs would be:"; /bin/blackbox-logs.sh /cfg | sed 's/^/BB:   L| /'; }
+    umount /cfg
+  else echo "BB: cannot mount the config disk"; fi
+fi
+echo "BB: REPORT-DONE"
+LOOP=$(opt loop); [ -n "$LOOP" ] || LOOP=1
+if [ "$N" -gt "$LOOP" ]; then
+  echo "BB: second or later boot of this scenario: not acting again"
+  [ "$(opt erase)" = 1 ] && { rm -f /sys/fs/pstore/*; echo "BB: erased pstore files; now: $(ls /sys/fs/pstore | wc -l) file(s), crash-GUID variables: $(ls /sys/firmware/efi/efivars | grep -c cfc8fc79)"; }
+  if [ "$(opt end)" = off ]; then sync; echo "BB: POWEROFF"; poweroff -f; fi
+  echo "BB: STAYING-UP"; exec sleep 100000
+fi
+[ -c /dev/pmsg0 ] && echo "BB-PMSG: a message written by user space during boot $N" > /dev/pmsg0
+echo "BB: first boot: acting: $ACT"
+case "$ACT" in
+  panic)
+    echo "BB: marker line before the crash (console)"
+    echo "BB: FAKE test line for the redaction check: password=hunter2 token: abc123XYZ and Secret_Key=s3cr3t"; sleep 1
+    # user-space output goes to the console device but NOT through printk, so pstore/console does not record it; /dev/kmsg does
+    echo "BB-KMSG: written through /dev/kmsg by user space (this reaches dmesg and pstore); FAKE password=hunter2 token: abc123XYZ and Secret_Key=s3cr3t" > /dev/kmsg
+    echo "BB-ONLY-STDOUT: this line is written to stdout only (not through /dev/kmsg)"
+    echo 1 > /proc/sys/kernel/sysrq; echo c > /proc/sysrq-trigger;;
+  wdt)
+    echo "BB: arming the watchdog (heartbeat from the kernel command line); never feeding it"
+    exec 3>/dev/watchdog; exec 3>&-
+    i=0; while :; do i=$((i+1)); echo "BB: still alive, tick $i (the watchdog is not fed)"; sleep 5; done;;
+  hang)
+    exec 3>/dev/watchdog; exec 3>&-
+    i=0; while :; do i=$((i+1)); echo "BB: tick $i, watchdog armed, not fed"; sleep 2; done;;
+  reboot) echo "BB: healthy boot, rebooting by reboot -f after 2 s"; sleep 2; reboot -f;;
+  fill)
+    k=0
+    # efivarfs wants attributes + data in ONE write(), so the content is prepared in a file and copied with cat
+    { printf '\007\000\000\000'; head -c 1000 /dev/zero | tr '\000' x; } > /dev/fillvar
+    while :; do
+      k=$((k+1))
+      cat /dev/fillvar > /sys/firmware/efi/efivars/BBfill$k-a0b7c0f5-4e7a-4d2b-9c61-5f0a1e3d8b72 2>/dev/null || break
+      [ -s /sys/firmware/efi/efivars/BBfill$k-a0b7c0f5-4e7a-4d2b-9c61-5f0a1e3d8b72 ] || break
+    done
+    echo "BB: FILL-DONE: $((k-1)) variables of 1000 bytes were accepted before the firmware said no (variable $k failed)"
+    P=/sys/firmware/efi/efivars/BBlate-a0b7c0f5-4e7a-4d2b-9c61-5f0a1e3d8b72
+    printf '\007\000\000\0001' > $P 2>/dev/null
+    if [ -s "$P" ]; then echo "BB: after filling, a 1-byte variable could still be created"; else echo "BB: after filling, a 1-byte variable could NOT be created"; fi
+    exec sleep 100000;;
+  *) echo "BB: STAYING-UP"; exec sleep 100000;;
+esac
