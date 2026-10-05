@@ -1,5 +1,7 @@
 # PROPOSAL AND EXPERIMENT: level of detail for many remote windows (Part 4)
 
+> **NOT PLANNED (owner decision, 2026-10-05).** The network is assumed perfect and bandwidth unlimited, so no level-of-detail, pausing or quality scaling of windows is planned; node screens keep a fixed size. This document stays as research only.
+
 **Status: PROPOSAL plus measurements. Nothing here is decided, nothing is in an image, and nothing here changes `HUB-OS.md`.** `HUB-OS.md` wins if this file disagrees with it. Written 2026-10-05 by a helper agent (Claude, session `session_01Kb6L66wDxnkQ4pMAxMZR4E`); the lead opens the pull request. The only code added is the test tools in `tools/bench/remote-display/lod/` (loopback, fake nodes, no real machine). I used no sub-helpers.
 
 **Labels on every item** (same as `docs/proposals/remote-display.md` and `docs/proposals/remote-display-benchmarks.md`):
