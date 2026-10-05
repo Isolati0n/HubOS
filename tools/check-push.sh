@@ -71,7 +71,9 @@ awk '
 # 3a: name = non-empty value. A value that starts with $ < { ( or ${ is a
 # reference, not a secret. Empty values and placeholders in <angle> are fine.
 credname='(AWS_SECRET_ACCESS_KEY|AWS_ACCESS_KEY_ID|AWS_SESSION_TOKEN|GITHUB_TOKEN|GH_TOKEN|ANTHROPIC_API_KEY|[A-Za-z0-9_]*_(TOKEN|SECRET|PASSWORD|KEY))'
-grep -E "(^|[^A-Za-z0-9_])$credname[\"']?[[:space:]]*[=:][[:space:]]*[\"']?[^[:space:]\"'\$<{(]" "$tmp/added" |
+# Shell expansions such as ${NAME:+yes} are references, not values: drop them first.
+sed -E 's/\$\{[^}]*\}//g' "$tmp/added" |
+	grep -E "(^|[^A-Za-z0-9_])$credname[\"']?[[:space:]]*[=:][[:space:]]*[\"']?[^[:space:]\"'\$<{(]" |
 	cut -f1 | sort -u |
 	while read -r f; do echo "$f"; done >"$tmp/namehits"
 while read -r f; do

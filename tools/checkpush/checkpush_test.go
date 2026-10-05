@@ -140,6 +140,15 @@ func TestCredentialLineFailsAndValueNotPrinted(t *testing.T) {
 	}
 }
 
+func TestShellExpansionIsNotAValue(t *testing.T) {
+	dir := newRepo(t)
+	name := "XDG_ACTIVATION_" + "TOKEN" // built at run time so this file passes its own scan
+	commitFile(t, dir, "open.sh", []byte("echo token_set=${"+name+":+yes} other=${"+name+":-none}\n"))
+	if out, code := run(t, dir); code != 0 {
+		t.Fatalf("a shell expansion is not a secret, got %d:\n%s", code, out)
+	}
+}
+
 func TestPrivateKeyHeaderFails(t *testing.T) {
 	dir := newRepo(t)
 	commitFile(t, dir, "k.pem", []byte("-----BEGIN OPENSSH "+"PRIVATE KEY-----\nAAAA\n"))
