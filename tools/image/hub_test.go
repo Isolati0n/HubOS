@@ -634,17 +634,36 @@ func TestHubImage(t *testing.T) {
 		r.shot("hub-3c-menu-after-end")
 
 		// search by name: type "two" (only the NAME of desk-2 has it; the id is desk-2); Enter picks the one match
-		for _, k := range []string{"t", "w", "o"} {
-			r.monitor("sendkey " + k)
-			time.Sleep(300 * time.Millisecond)
+		// A key typed into the virtual keyboard can be lost while the machine is busy (seen once: only "o" arrived and Enter then
+		// picked the first line, "? search"), so this is tried up to three times; each try starts from a closed menu.
+		var st4 string
+		var d24 winLine
+		var haveD24 bool
+		searchTries := 0
+		for searchTries < 3 && !haveD24 {
+			searchTries++
+			if searchTries > 1 {
+				for i := 0; i < 3 && wofiCount() != "0"; i++ { // Escape closes the search prompt, then the list
+					r.monitor("sendkey esc")
+					time.Sleep(3 * time.Second)
+				}
+				tries3 = openMenu()
+			}
+			for _, k := range []string{"t", "w", "o"} {
+				r.monitor("sendkey " + k)
+				time.Sleep(700 * time.Millisecond)
+			}
+			time.Sleep(2 * time.Second)
+			r.shot(fmt.Sprintf("hub-3c-search-two-%d", searchTries))
+			r.monitor("sendkey ret")
+			time.Sleep(10 * time.Second)
+			st4 = state()
+			ws4, _, _ := parseState(st4)
+			d24, haveD24 = findWin(ws4, "hubos-desk-2")
+			if !haveD24 {
+				t.Logf("search try %d: no desk-2 window after typing 'two' and Enter", searchTries)
+			}
 		}
-		time.Sleep(2 * time.Second)
-		r.shot("hub-3c-search-two")
-		r.monitor("sendkey ret")
-		time.Sleep(10 * time.Second)
-		st4 := state()
-		ws4, _, _ := parseState(st4)
-		d24, haveD24 := findWin(ws4, "hubos-desk-2")
 		// Only that the window exists and is the focused one is asserted: whether driftwm kept the window at its home is not what this
 		// step is about (in one run, under load, desk-2 stood at driftwm's own cascade spot [25, -125] instead; it is logged in the note).
 		searchOpened := tries3 > 0 && haveD24 && d24.focused && wofiCount() == "0"
@@ -654,8 +673,8 @@ func TestHubImage(t *testing.T) {
 
 		ok := rcD == 0 && !haveD2 && offscreen && marks && menuOK && pickedOffscreen && coverSetup && pickedBehind && afterEnd && searchOpened && searchMarker
 		record("H3c the open marker: two fake viewer windows are open (ai-1 and desk-1, far apart) and a third machine (desk-2) is not; the list opened by the bar click marks the two with a filled dot and the others with an empty dot; a click on the open ai-1 row (window off screen, then window behind another) focuses it and moves the view to it; hubd end desk-1 changes its marker; typing part of a NAME finds a marked line and a pick of it opens the machine", ok, time.Since(start),
-			fmt.Sprintf("windows open before: ai-1 %v, desk-1 %v, desk-2 %v; ai-1 off screen while desk-1 in view: %v; markers right (ai-1 and desk-1 filled, desk-2, nas-1, hub empty): %v; menu opened on try %d, list pixels %d; click on ai-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over ai-1: %v; second pick (%d clicks): ai-1 focused and in view: %v; after hubd end desk-1: desk-1 empty and ai-1 filled: %v; search 'two' + Enter opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
-				haveAI, haveD1, haveD2, offscreen, marks, tries, listPix, clicks, pickedOffscreen, coverSetup, clicks2, pickedBehind, afterEnd, searchOpened, d24.x, d24.y, searchMarker, cam0, cam1, camOK1))
+			fmt.Sprintf("windows open before: ai-1 %v, desk-1 %v, desk-2 %v; ai-1 off screen while desk-1 in view: %v; markers right (ai-1 and desk-1 filled, desk-2, nas-1, hub empty): %v; menu opened on try %d, list pixels %d; click on ai-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over ai-1: %v; second pick (%d clicks): ai-1 focused and in view: %v; after hubd end desk-1: desk-1 empty and ai-1 filled: %v; search 'two' + Enter (try %d) opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
+				haveAI, haveD1, haveD2, offscreen, marks, tries, listPix, clicks, pickedOffscreen, coverSetup, clicks2, pickedBehind, afterEnd, searchTries, searchOpened, d24.x, d24.y, searchMarker, cam0, cam1, camOK1))
 		if !ok {
 			t.Errorf("rcD=%d haveD2=%v offscreen=%v marks=%v menuOK=%v pickedOffscreen=%v coverSetup=%v pickedBehind=%v afterEnd=%v searchOpened=%v searchMarker=%v", rcD, haveD2, offscreen, marks, menuOK, pickedOffscreen, coverSetup, pickedBehind, afterEnd, searchOpened, searchMarker)
 			t.Fail()
