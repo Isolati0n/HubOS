@@ -1,0 +1,7 @@
+seed=40 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=240 sent=67894 killed_by_compositor=167 alive=True | 
+seed=41 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=239 sent=67447 killed_by_compositor=168 alive=True | 
+seed=42 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=238 sent=67632 killed_by_compositor=180 alive=True | 
+seed=43 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=240 sent=67622 killed_by_compositor=161 alive=True | 
+seed=44 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=239 sent=66631 killed_by_compositor=163 alive=True | 
+seed=45 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=240 sent=67213 killed_by_compositor=165 alive=True | 
+FINISHED

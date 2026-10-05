@@ -1,0 +1,11 @@
+samples 446 duration_s 9037 pids ['17286'] restarts 0
+RSS MB: min 134 max 266 last 240; VmHWM last 267
+  t=    0-  600 s: RSS mean 203.9 MB, max 221.0 MB; fds mean 68.1 max 94; threads 10-11; ipc ms median 0.3 p95 1.3 max 12.2; windows mean 17.5
+  t=  600- 1800 s: RSS mean 222.2 MB, max 234.8 MB; fds mean 65.0 max 77; threads 11-11; ipc ms median 0.3 p95 1.7 max 55.7; windows mean 19.1
+  t= 1800- 3600 s: RSS mean 232.2 MB, max 244.1 MB; fds mean 71.1 max 95; threads 11-11; ipc ms median 0.4 p95 6.6 max 38.0; windows mean 18.8
+  t= 3600- 7200 s: RSS mean 242.1 MB, max 265.7 MB; fds mean 74.4 max 101; threads 11-11; ipc ms median 0.3 p95 1.7 max 40.7; windows mean 19.1
+  t= 7200- 9037 s: RSS mean 241.8 MB, max 254.3 MB; fds mean 72.7 max 98; threads 11-11; ipc ms median 0.3 p95 1.1 max 24.7; windows mean 19.1
+linear RSS trend after 30 min: 6.05 MB per hour (noise from window churn is +/- 10 MB)
+linear fd trend after 30 min: -0.05 fds per hour
+IPC probe failures (ipc_ms<0): 0
+CPU of driftwm: 22.5% of one core on average
