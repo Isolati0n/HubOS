@@ -128,7 +128,7 @@ The chain `confirm` -> `hubd` -> `desk` -> `driftwm` keeps the rule "a release w
 
 - **H0** (the hub root): checks that the six desktop services exist and that "user hub in group seat". It would need: user `hubd`, group `hubctl`, the seventh service `desk`, the modes of section 4 (add checks: the secrets folder is 0700 `hubd`; the desktop user cannot read it).
 - **H1** (first boot): checks that "driftwm, Waybar and hubd run as the user hub". After the split `hubd` runs as `hubd`; add `desk` as `hub`; the check on the process owners changes.
-- **H2** (kill driftwm): counts the pid changes of Waybar and hubd after the restart; it would also have to check `desk`.
+- **H2** (kill driftwm): records the driftwm and Waybar pids before and after, and checks that hubd answers again and the bar is drawn; it would also have to check that `desk` came back.
 - **H3, H3b** (`hubd open`, menu, row click): run `hubd open` as the desktop user through `hubd.sock`, which still works if the socket is reachable (group `hubctl`, peer check allows `hub`). The window placement now goes hubd -> launcher -> driftwm; the test result (window at its home) stays the same.
 - **H4, H5** (A/B update, bad release): the confirm step asks `hubd.sock` as root (root can always connect). H5 breaks hubd by a flavour of the release (`unhealthy`); the same still works. A new variant should break only the launcher.
 - **New tests to add** (all possible in QEMU): the desktop user cannot read the management key or any display credential; user `hubd` cannot open `/run/dw` or driftwm's socket; killing the launcher gets the desktop's windows closed and hubd restarted; a launch hands the viewer its credential and the file in `/run/dw/launch` is gone afterwards.
