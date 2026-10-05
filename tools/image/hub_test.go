@@ -667,7 +667,16 @@ func TestHubImage(t *testing.T) {
 		// Only that the window exists and is the focused one is asserted: whether driftwm kept the window at its home is not what this
 		// step is about (in one run, under load, desk-2 stood at driftwm's own cascade spot [25, -125] instead; it is logged in the note).
 		searchOpened := tries3 > 0 && haveD24 && d24.focused && wofiCount() == "0"
-		_, list2 := r.sh(asHub("hubd list " + hubSock))
+		// The dot turns filled when hubd has recorded the window; while it is still placing it ("[opening]", slow under load)
+		// the line is empty, so wait for it for up to a minute.
+		var list2 string
+		for i := 0; i < 12; i++ {
+			_, list2 = r.sh(asHub("hubd list " + hubSock))
+			if markerOf(list2, "desk-2") == filled {
+				break
+			}
+			time.Sleep(5 * time.Second)
+		}
 		t.Logf("after typing 'two' and Enter:\n%s\nlist:\n%s", st4, list2)
 		searchMarker := markerOf(list2, "desk-2") == filled
 
