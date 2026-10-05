@@ -1,0 +1,9 @@
+trial 1: ok   
+trial 2: CRASHED   wayvnc: ../subprojects/neatvnc/src/server.c:2745: process_pending_fence: Assertion `!client->is_blocked_by_fence' failed
+trial 3: ok   
+trial 4: CRASHED   wayvnc: ../subprojects/neatvnc/src/server.c:2745: process_pending_fence: Assertion `!client->is_blocked_by_fence' failed
+trial 5: CRASHED   wayvnc: ../subprojects/neatvnc/src/server.c:2745: process_pending_fence: Assertion `!client->is_blocked_by_fence' failed
+trial 6: CRASHED   wayvnc: ../subprojects/neatvnc/src/server.c:2745: process_pending_fence: Assertion `!client->is_blocked_by_fence' failed
+trial 7: CRASHED   wayvnc: ../subprojects/neatvnc/src/server.c:2745: process_pending_fence: Assertion `!client->is_blocked_by_fence' failed
+trial 8: ok   
+phases=normal:2,fence:3 fence-flags=0  wayvnc aborted in 5 of 8 trials
