@@ -89,6 +89,8 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - wayvnc and neatvnc are built from source at pinned tags (wayvnc v0.10.2 with neatvnc v1.0.3 or newer; Ubuntu 24.04's 0.7.2 garbles non-ASCII clipboard text); every node's wayvnc is started with --name <machine id>; sessions are non-shared; the screen size is fixed per node in v1.
 - Display credentials are per node (the secrets design decides how they are made and stored); the management key's private half lives on the hub's config partition, readable only by root and hubd, never on a node; nodes hold only public keys.
 - The recovery agent is supervised by a plain shell restart loop in the recovery kernel. The boot partition of real machines is 512 MiB.
+- Requests to nodes and to the recovery agent name the target machine id in the signed text. The node helper and the recovery agent share one port (8480, to be checked against the IANA registry) and one API. The control link is signed but not encrypted on the isolated wired network for v1; TLS is revisited when the secrets tool exists.
+- The update signing key's private half lives only on a device that is never connected to a network, protected by a passphrase, with an encrypted second copy elsewhere; until December only throwaway test keys exist. One offline key plus a rehearsed two-release rotation is enough for v1. Display credentials are one file per node on the hub; rotation is always the owner's explicit action. The config partition is not encrypted (physical access is full access). Game account logins are not managed by Hub OS and are excluded from the NAS save copy. The hub user is split: hubd (holds the management key and display credentials) and a desktop user (viewers), with a launcher handing credentials to viewers (design in docs/proposals/hub-user-split.md).
 - The recovery kernel is carried inside every slot's root, listed by hash in the manifest, and installed at the confirm step after a healthy boot, never during the update.
 - The confirm timeout and the watchdog timeout are per-machine settings (real defaults 120 s and 180 s; the test image uses 30 s and 60 s); a check refuses a configuration where the watchdog does not exceed the confirm timeout plus a margin.
 - Update keys: the update tool and the recovery kernel accept any key in a keyring (/etc/hubos/keys/*.pub). A release signed with the old key can carry the next key; the old key is dropped only in a later release.
@@ -344,6 +346,16 @@ HubOS/
 - Hub-to-node clipboard: remote-viewer never sends clipboard text; the TigerVNC viewer does only while its window has focus and needs Xwayland (not planned)
 - wayvnc 0.10 or newer with neatvnc 0.9 or newer needs a source build on Ubuntu 24.04
 - The recovery agent inside the real recovery kernel, supervised, on real hardware
+- The real clipboard echo path (the node helper's wl-copy, wayvnc, the viewer, the hub clipboard) behaves like the stand-in used in tests
+- wl-paste (one-shot and --watch) under driftwm
+- hubd clipboard push, the focused-window-to-machine lookup and the bar button (not built)
+- Signed PUT and GET for the node helper, the full signed round trip, and a node helper binary run as an s6 or dinit service (not built)
+- The init collects the orphaned wl-copy holder processes (believed for s6, unknown for dinit)
+- A thin init-neutral "service up/down" command (does not exist)
+- Node helper session start and stop order, the sound retry, and wayvnc -R keeping the screen size fixed (design only)
+- Compositors that offer ext_data_control but not zwlr_data_control (wl-clipboard 2.2.1 would fall back to its window hack)
+- Node helper behaviour with many nodes at once, in a long run, on a real network, with TLS
+- Hub-to-node clipboard echo through remote-viewer overwrites the hub clipboard with a garbled copy (believed, not tested)
 - Per-node audio control: matching a PipeWire stream to a node (by process id or by stream name)
 - How many simultaneous hardware decodes the hub's GPU sustains with 20 open windows
 - The load of continuous remote-display encoding on each node
@@ -366,6 +378,8 @@ HubOS/
 - Which additional nodes to build, and when (suggested, not decided: a hardware test bench of two or three cheap boards, a build and test node with KVM, a release and netboot node, a spare hub)
 - Whether the no-systemd rule covers appliances that are not Hub OS machines (for example a PiKVM, which runs its own Linux); a December decision
 - Where each key and credential lives and how it rotates (see docs/proposals/secrets.md)
+- Clipboard push: a bar button and a key chord (the chord chosen after checking driftwm's bindings); the target is the focused window's machine, with a pick from the list; a pull button as fallback; no automatic push; size limit 1 MiB; hubd ignores a differing echo of the text it just pushed
+- Which viewer the hub uses (remote-viewer, TigerVNC, wlvncc or one we write; see docs/proposals/remote-display-benchmarks.md)
 - The clipboard bridge and the node helper API (see docs/proposals/node-helper-api.md)
 - The network recovery agent in the recovery kernel: protocol, authentication, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
@@ -432,3 +446,4 @@ HubOS/
 - **2026-10-04:** Scale reference 20 machines; hub stays a thin client; extra nodes suggested; recovery and display protocol decisions recorded; CLAUDE.md rules for packages and helper agents.
 - **2026-10-04:** Phase B images: test recovery agent supervised by a restart loop.
 - **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials, management key on the hub, recovery agent supervision, Go stays (Erlang parked).
+- **2026-10-04:** Round 3 decisions recorded: signed text names the machine, shared port, signing key custody, per-node credential files, user split, clipboard push rules.
