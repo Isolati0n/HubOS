@@ -14,14 +14,15 @@ import (
 // HubosBackend is the real backend for the TEST recovery kernel: the work is done by hubos-ctl, the same program the
 // recovery shell uses (so the checks are the same: update key keyring, floor, hashes, recovery kernel hash).
 type HubosBackend struct {
-	Ctl     string // path of hubos-ctl
-	Release string // path of /etc/hubos-release
-	LogFile string // the agent's own log
-	mu      sync.Mutex
+	Ctl      string // path of hubos-ctl
+	Release  string // path of /etc/hubos-release
+	LogFile  string // the agent's own log
+	NodeConf string // the node config with NAME=
+	mu       sync.Mutex
 }
 
 func NewHubosBackend() *HubosBackend {
-	return &HubosBackend{Ctl: "/usr/sbin/hubos-ctl", Release: "/etc/hubos-release", LogFile: "/run/recovery-agent.log"}
+	return &HubosBackend{Ctl: "/usr/sbin/hubos-ctl", Release: "/etc/hubos-release", LogFile: "/run/recovery-agent.log", NodeConf: "/config/hubos/node.conf"}
 }
 
 func (b *HubosBackend) run(timeout time.Duration, args ...string) (string, error) {
@@ -33,9 +34,24 @@ func (b *HubosBackend) run(timeout time.Duration, args ...string) (string, error
 
 var failuresRe = regexp.MustCompile(`boot-failures=(\d+) limit=(\d+)`)
 
+// Machine is the machine id the hub signs for: NAME= in the node config (/config/hubos/node.conf, mounted read-only in recovery),
+// else the host name. UNKNOWN: whether NAME is the same string as the inventory id (today nothing makes them equal).
+func (b *HubosBackend) Machine() string {
+	if raw, err := os.ReadFile(b.NodeConf); err == nil {
+		for _, l := range strings.Split(string(raw), "\n") {
+			if v, ok := strings.CutPrefix(strings.TrimSpace(l), "NAME="); ok {
+				if v = strings.Trim(v, "\"' "); v != "" {
+					return v
+				}
+			}
+		}
+	}
+	h, _ := os.Hostname()
+	return h
+}
+
 func (b *HubosBackend) Status() Status {
-	host, _ := os.Hostname()
-	st := Status{Machine: host, State: "recovery", BootFailures: -1, FailureLimit: -1}
+	st := Status{Machine: b.Machine(), State: "recovery", BootFailures: -1, FailureLimit: -1}
 	if raw, err := os.ReadFile(b.Release); err == nil {
 		for _, l := range strings.Split(string(raw), "\n") {
 			if v, ok := strings.CutPrefix(l, "version="); ok {

@@ -1870,12 +1870,15 @@ func TestImage(t *testing.T) {
 		var st struct {
 			State        string
 			Release      string `json:"recovery_release"`
+			API          int    `json:"api"`
+			MinHub       int    `json:"min_hub"`
 			Machine      string
 			BootFailures int `json:"boot_failures"`
 			FailureLimit int `json:"failure_limit"`
 		}
 		json.Unmarshal([]byte(body), &st)
-		okStatus := banner && strings.Contains(put, "put-done") && code == 200 && st.State == "recovery" && st.Release == "recovery-1" && st.FailureLimit == 3
+		ac.machine = st.Machine // the machine id the hub signs for: the agent's NAME= from node.conf
+		okStatus := banner && strings.Contains(put, "put-done") && code == 200 && st.State == "recovery" && st.Release == "recovery-1" && st.FailureLimit == 3 && st.Machine == "hub-qemu" && st.API == 1 && st.MinHub == 1
 		// 1b. the agent is supervised by a restart loop: kill it, it answers /v1/status again within a few seconds
 		r.sh(`kill -9 $(pidof recovery-agent); echo killed`)
 		tKill := time.Now()
@@ -1904,7 +1907,11 @@ func TestImage(t *testing.T) {
 		auth4 := ac.sign(mgmtSec, "POST", "/v1/clear-failures", n4, nil)
 		c4, b4 := ac.do("POST", "/v1/clear-failures", auth4, nil) // a good signed request: accepted ...
 		c5, b5 := ac.do("POST", "/v1/clear-failures", auth4, nil) // ... and the same bytes again: replayed
-		okRefused := c1 == 401 && c2 == 401 && c3 == 401 && c4 == 200 && c5 == 401 && strings.Contains(b5, "used or expired nonce") && strings.Contains(b2, "signature not accepted")
+		// signed with the right key but for another machine id: refused
+		otherM := *ac
+		otherM.machine = "ai-1"
+		c6, _ := otherM.signed(mgmtSec, "POST", "/v1/clear-failures", nil)
+		okRefused := c6 == 401 && c1 == 401 && c2 == 401 && c3 == 401 && c4 == 200 && c5 == 401 && strings.Contains(b5, "used or expired nonce") && strings.Contains(b2, "signature not accepted")
 		// 3. a signed install request: installs a signed bundle into slot b; the machine then boots it
 		ic, ib := ac.signed(mgmtSec, "POST", "/v1/install", reqBody)
 		okInstall := ic == 200 && strings.Contains(ib, "installed version 28 in slot b")

@@ -63,7 +63,7 @@ func challenge(t *testing.T, srv *httptest.Server) string {
 func signedDo(t *testing.T, srv *httptest.Server, k PublicKey, priv ed25519.PrivateKey, nonce, method, uri, body string) (int, string) {
 	t.Helper()
 	req, _ := http.NewRequest(method, srv.URL+uri, strings.NewReader(body))
-	req.Header.Set("Authorization", "HubOS-Sig nonce="+nonce+", sig="+sigBlob(k, priv, SignedMessage(method, uri, nonce, []byte(body))))
+	req.Header.Set("Authorization", "HubOS-Sig nonce="+nonce+", sig="+sigBlob(k, priv, SignedMessage("fake-1", method, uri, nonce, []byte(body))))
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatal(err)
@@ -84,6 +84,15 @@ func TestStatusNeedsNoSignatureAndShowsRecovery(t *testing.T) {
 	json.NewDecoder(resp.Body).Decode(&s)
 	if resp.StatusCode != 200 || s.State != "recovery" || s.BootFailures != 3 {
 		t.Fatalf("got %d %+v", resp.StatusCode, s)
+	}
+	if s.API != 1 || s.MinHub != 1 {
+		t.Fatalf("api/min_hub missing: %+v", s)
+	}
+	// the raw JSON carries the two add-only fields under their documented names
+	resp, _ = http.Get(srv.URL + "/v1/status")
+	raw, _ := io.ReadAll(resp.Body)
+	if !strings.Contains(string(raw), `"api":1`) || !strings.Contains(string(raw), `"min_hub":1`) {
+		t.Fatalf("status JSON: %s", raw)
 	}
 }
 
@@ -127,14 +136,14 @@ func TestSignedInstallWorksOnceAndIsBound(t *testing.T) {
 	// a signature for one path/body does not work for another
 	n = challenge(t, srv)
 	req, _ := http.NewRequest("POST", srv.URL+"/v1/install", strings.NewReader(`{"Slot":"a","BaseURL":"http://evil/"}`))
-	req.Header.Set("Authorization", "HubOS-Sig nonce="+n+", sig="+sigBlob(k, priv, SignedMessage("POST", "/v1/install", n, []byte(body))))
+	req.Header.Set("Authorization", "HubOS-Sig nonce="+n+", sig="+sigBlob(k, priv, SignedMessage("fake-1", "POST", "/v1/install", n, []byte(body))))
 	resp, _ := http.DefaultClient.Do(req)
 	if resp.StatusCode != 401 {
 		t.Errorf("changed body: %d, want 401", resp.StatusCode)
 	}
 	n = challenge(t, srv)
 	req, _ = http.NewRequest("POST", srv.URL+"/v1/clear-failures", nil)
-	req.Header.Set("Authorization", "HubOS-Sig nonce="+n+", sig="+sigBlob(k, priv, SignedMessage("POST", "/v1/install", n, nil)))
+	req.Header.Set("Authorization", "HubOS-Sig nonce="+n+", sig="+sigBlob(k, priv, SignedMessage("fake-1", "POST", "/v1/install", n, nil)))
 	resp, _ = http.DefaultClient.Do(req)
 	if resp.StatusCode != 401 {
 		t.Errorf("changed path: %d, want 401", resp.StatusCode)
@@ -229,7 +238,7 @@ func TestRealSignifyInterop(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	msg := SignedMessage("POST", "/v1/install", "00ff", []byte(`{}`))
+	msg := SignedMessage("fake-1", "POST", "/v1/install", "00ff", []byte(`{}`))
 	os.WriteFile(filepath.Join(d, "m"), msg, 0o600)
 	run("-S", "-s", filepath.Join(d, "k.sec"), "-m", filepath.Join(d, "m"), "-x", filepath.Join(d, "m.sig"))
 	sigText, _ := os.ReadFile(filepath.Join(d, "m.sig"))
@@ -266,7 +275,12 @@ func TestHubosBackend(t *testing.T) {
 	}
 	rel := filepath.Join(dir, "release")
 	os.WriteFile(rel, []byte("version=recovery-7\nflavor=recovery\n"), 0o644)
-	b := &HubosBackend{Ctl: ctl, Release: rel, LogFile: filepath.Join(dir, "log")}
+	conf := filepath.Join(dir, "node.conf")
+	os.WriteFile(conf, []byte("NAME=\"ai-1\"\nNET=dhcp\n"), 0o644)
+	b := &HubosBackend{Ctl: ctl, Release: rel, LogFile: filepath.Join(dir, "log"), NodeConf: conf}
+	if b.Machine() != "ai-1" {
+		t.Fatalf("machine id %q, want ai-1 (NAME= in node.conf)", b.Machine())
+	}
 	if st := b.Status(); st.Release != "recovery-7" || st.BootFailures != 2 || st.FailureLimit != 3 || st.State != "recovery" {
 		t.Fatalf("status %+v", st)
 	}
@@ -282,5 +296,41 @@ func TestHubosBackend(t *testing.T) {
 	}
 	if !strings.HasPrefix(b.Logs(), "no log") {
 		t.Fatalf("logs %q", b.Logs())
+	}
+}
+
+// A request signed for another machine id is refused, whoever holds the key: the signed text names the machine.
+func TestRequestSignedForAnotherMachineIsRefused(t *testing.T) {
+	k, priv := newKey(t, 1)
+	r := &rec{}
+	srv := httptest.NewServer(NewAgent([]PublicKey{k}, r)) // this machine is "fake-1"
+	defer srv.Close()
+	body := `{"Slot":"b","BaseURL":"http://10.0.0.1/bundle"}`
+	n := challenge(t, srv)
+	req, _ := http.NewRequest("POST", srv.URL+"/v1/install", strings.NewReader(body))
+	req.Header.Set("Authorization", "HubOS-Sig nonce="+n+", sig="+sigBlob(k, priv, SignedMessage("ai-1", "POST", "/v1/install", n, []byte(body))))
+	resp, _ := http.DefaultClient.Do(req)
+	if resp.StatusCode != 401 {
+		t.Errorf("signed for ai-1, sent to fake-1: %d, want 401", resp.StatusCode)
+	}
+	// the same request signed for this machine works
+	n = challenge(t, srv)
+	if code, out := signedDo(t, srv, k, priv, n, "POST", "/v1/install", body); code != 200 {
+		t.Fatalf("signed for this machine: %d %s", code, out)
+	}
+	// a request that says (machine=ai-1) in its header is refused with a clear message, and the nonce is used up
+	n = challenge(t, srv)
+	req, _ = http.NewRequest("POST", srv.URL+"/v1/install", strings.NewReader(body))
+	req.Header.Set("Authorization", "HubOS-Sig machine=ai-1, nonce="+n+", sig="+sigBlob(k, priv, SignedMessage("fake-1", "POST", "/v1/install", n, []byte(body))))
+	resp, _ = http.DefaultClient.Do(req)
+	b, _ := io.ReadAll(resp.Body)
+	if resp.StatusCode != 403 || !strings.Contains(string(b), "another machine") {
+		t.Errorf("header for another machine: %d %s", resp.StatusCode, b)
+	}
+	if code, _ := signedDo(t, srv, k, priv, n, "POST", "/v1/install", body); code != 401 {
+		t.Errorf("nonce of the refused request must be used up: %d", code)
+	}
+	if len(r.installs) != 1 {
+		t.Fatalf("installs: %v", r.installs)
 	}
 }
