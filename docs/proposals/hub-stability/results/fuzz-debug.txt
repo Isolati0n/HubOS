@@ -1,0 +1,13 @@
+seed=3 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=147 sent=27130 killed_by_compositor=136 alive=True | 
+seed=4 COMPOSITOR DIED | COMPOSITOR DEAD after 137 connections, 25846 messages; log saved | thread 'main' (648) panicked at /root/.cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/utils/geometry.rs:779:9: note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace. 
+seed=5 COMPOSITOR DIED | done conns=33 sent=5462 killed_by_compositor=33 alive=False | thread 'main' (9666) panicked at /root/.cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/utils/geometry.rs:779:9: note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace. 
+seed=6 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=148 sent=24598 killed_by_compositor=139 alive=True | 
+seed=7 COMPOSITOR DIED | done conns=83 sent=13097 killed_by_compositor=79 alive=False | thread 'main' (7356) panicked at /root/.cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/utils/geometry.rs:779:9: note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace. 
+seed=8 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=147 sent=24695 killed_by_compositor=140 alive=True | 
+seed=9 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=148 sent=23094 killed_by_compositor=146 alive=True | 
+seed=10 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=148 sent=22722 killed_by_compositor=139 alive=True | 
+seed=11 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=148 sent=21577 killed_by_compositor=145 alive=True | 
+seed=12 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=147 sent=24817 killed_by_compositor=140 alive=True | 
+seed=13 COMPOSITOR DIED | done conns=59 sent=10889 killed_by_compositor=57 alive=False | thread 'main' (32195) panicked at /root/.cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/utils/geometry.rs:779:9: note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace. 
+seed=14 COMPOSITOR DIED | done conns=14 sent=2032 killed_by_compositor=13 alive=False | thread 'main' (490) panicked at /root/.cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/utils/geometry.rs:779:9: note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace. 
+FINISHED

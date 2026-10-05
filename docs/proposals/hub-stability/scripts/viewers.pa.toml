@@ -1,0 +1,12 @@
+format = 1
+
+[default_ports]
+moonlight = 21000
+files = 21000
+ssh = 21000
+
+[[viewer]]
+id = "fake"
+programs = ["moonlight", "ssh", "vnc"]
+command = ["foot", "--app-id={app_id}", "--title={id}", "--", "sh", "-c", "echo token=$XDG_ACTIVATION_TOKEN > /tmp/hsy-tok/{id}.txt; sleep infinity"]
+sets_name = true
