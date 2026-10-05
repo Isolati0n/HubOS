@@ -1,6 +1,7 @@
 
 # Never commit core dumps, dumps or env files (see tools/check-push.sh)
 core
+!core/
 core.*
 *.core
 *.dump
