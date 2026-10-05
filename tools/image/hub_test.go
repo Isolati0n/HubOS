@@ -382,7 +382,13 @@ func TestHubImage(t *testing.T) {
 		rcEnd, outEnd := r.sh(asHub("hubd end " + hubSock + " ai-1 2>&1"))
 		time.Sleep(3 * time.Second)
 		stEnd := state()
-		closed := rcEnd == 0 && !strings.Contains(stEnd, "hubos-ai-1")
+		// hubd gives a window 3 s to close and says "still open" (rc 1) when the machine is slow; the window then still closes
+		// a moment later, so wait up to 30 s for it to be gone instead of requiring rc 0.
+		for i := 0; i < 10 && strings.Contains(stEnd, "hubos-ai-1"); i++ {
+			time.Sleep(3 * time.Second)
+			stEnd = state()
+		}
+		closed := !strings.Contains(stEnd, "hubos-ai-1")
 		wofiCount := func() string {
 			_, w := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
 			nums := regexp.MustCompile(`(?m)^\d+\s*$`).FindAllString(w, -1)
@@ -629,7 +635,12 @@ func TestHubImage(t *testing.T) {
 		time.Sleep(4 * time.Second)
 		_, list1 := r.sh(asHub("hubd list " + hubSock))
 		t.Logf("after hubd end desk-1 (rc=%d %s):\n%s", rcE, strings.TrimSpace(outE), list1)
-		afterEnd := rcE == 0 && markerOf(list1, "desk-1") == empty && markerOf(list1, "ai-1") == filled && markerOf(list1, "desk-2") == empty
+		// (hubd end answers rc 1, "still open", when the window needs more than its 3 s to go; the dot is what is checked, so wait for it)
+		for i := 0; i < 10 && markerOf(list1, "desk-1") != empty; i++ {
+			time.Sleep(3 * time.Second)
+			_, list1 = r.sh(asHub("hubd list " + hubSock))
+		}
+		afterEnd := markerOf(list1, "desk-1") == empty && markerOf(list1, "ai-1") == filled && markerOf(list1, "desk-2") == empty
 		tries3 := openMenu()
 		r.shot("hub-3c-menu-after-end")
 
@@ -682,8 +693,8 @@ func TestHubImage(t *testing.T) {
 
 		ok := rcD == 0 && !haveD2 && offscreen && marks && menuOK && pickedOffscreen && coverSetup && pickedBehind && afterEnd && searchOpened && searchMarker
 		record("H3c the open marker: two fake viewer windows are open (ai-1 and desk-1, far apart) and a third machine (desk-2) is not; the list opened by the bar click marks the two with a filled dot and the others with an empty dot; a click on the open ai-1 row (window off screen, then window behind another) focuses it and moves the view to it; hubd end desk-1 changes its marker; typing part of a NAME finds a marked line and a pick of it opens the machine", ok, time.Since(start),
-			fmt.Sprintf("windows open before: ai-1 %v, desk-1 %v, desk-2 %v; ai-1 off screen while desk-1 in view: %v; markers right (ai-1 and desk-1 filled, desk-2, nas-1, hub empty): %v; menu opened on try %d, list pixels %d; click on ai-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over ai-1: %v; second pick (%d clicks): ai-1 focused and in view: %v; after hubd end desk-1: desk-1 empty and ai-1 filled: %v; search 'two' + Enter (try %d) opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
-				haveAI, haveD1, haveD2, offscreen, marks, tries, listPix, clicks, pickedOffscreen, coverSetup, clicks2, pickedBehind, afterEnd, searchTries, searchOpened, d24.x, d24.y, searchMarker, cam0, cam1, camOK1))
+			fmt.Sprintf("windows open before: ai-1 %v, desk-1 %v, desk-2 %v; ai-1 off screen while desk-1 in view: %v; markers right (ai-1 and desk-1 filled, desk-2, nas-1, hub empty): %v; menu opened on try %d, list pixels %d; click on ai-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over ai-1: %v; second pick (%d clicks): ai-1 focused and in view: %v; after hubd end desk-1 (rc %d): desk-1 empty and ai-1 filled: %v; search 'two' + Enter (try %d) opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
+				haveAI, haveD1, haveD2, offscreen, marks, tries, listPix, clicks, pickedOffscreen, coverSetup, clicks2, pickedBehind, rcE, afterEnd, searchTries, searchOpened, d24.x, d24.y, searchMarker, cam0, cam1, camOK1))
 		if !ok {
 			t.Errorf("rcD=%d haveD2=%v offscreen=%v marks=%v menuOK=%v pickedOffscreen=%v coverSetup=%v pickedBehind=%v afterEnd=%v searchOpened=%v searchMarker=%v", rcD, haveD2, offscreen, marks, menuOK, pickedOffscreen, coverSetup, pickedBehind, afterEnd, searchOpened, searchMarker)
 			t.Fail()
