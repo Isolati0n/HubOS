@@ -1,0 +1,18 @@
+# TigerVNC viewer test; wayvnc log lines about the viewer:
+DEBUG: ../subprojects/neatvnc/src/server.c: 885: Client 0x5642d2cec6c0 set encodings: tight,zrle,copyrect,hextile,rre,raw,desktop-size,qemu-extended-key-event
+Info: Choosing tight encoding for client 0x5642d2cec6c0
+# window as opened:
+  window: lodnode rect 1280 x 720 visible True floating con
+full size, visible                     35.0 kB/s server->client
+# after floating + resize to 640x360:
+  window: lodnode rect 640 x 360 visible True floating floating_con
+window 640x360 (after 3 s settle)      34.9 kB/s server->client
+# after move to scratchpad (hidden):
+  window: lodnode rect 640 x 360 visible False floating floating_con
+hidden (scratchpad)                    35.1 kB/s server->client
+# after scratchpad show:
+  window: lodnode rect 640 x 360 visible True floating floating_con
+shown again                            36.4 kB/s server->client
+# client messages seen in the first 4 KB the viewer sent (type:count):
+   {'SetPixelFormat': 1, 'SetEncodings': 1, 'FBUpdateRequest': 397} first messages: ['SetPixelFormat', 'SetEncodings', 'FBUpdateRequest(incremental=0)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)', 'FBUpdateRequest(incremental=1)']
+./viewer-test.sh: line 100: 18426 Segmentation fault      XDG_RUNTIME_DIR=$HRT sway -c "$HRT/sway.conf" > $D/hubsway.log 2>&1

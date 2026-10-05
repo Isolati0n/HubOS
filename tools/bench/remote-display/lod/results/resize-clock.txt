@@ -1,0 +1,24 @@
+scene=clock size=1280x720 wayvnc_args=''
+cmd: rfbprobe.py --port 5901 --phases normal:5,resize@640x360:6,resize@320x180:6,resize@1280x720:6,normal:3  --pid sway=27008 --pid foot=27021 --pid wayvnc=27064
+# server RFB 003.008 name='lodnode' start size=1280x720 encoding=zrle bpp=32
+phase              secs      kB/s    upd/s  updates requests   first  1st kB  cpu%                     size
+normal             5.01      31.0     30.0      150      151  0.006s     6.8  sway=3.2 foot=1.0 wayvnc=2.4 1280x720
+resize@640x360      6.0      32.9     30.3      182      184  0.009s     0.9  sway=2.0 foot=0.8 wayvnc=2.5 1280x720->640x360  pseudo_only=1
+resize@320x180      6.0      25.9     30.2      181      183  0.030s     1.0  sway=1.3 foot=1.2 wayvnc=2.2 640x360->320x180  pseudo_only=1
+resize@1280x720     6.0      33.9     30.3      182      184  0.009s     0.9  sway=3.8 foot=1.2 wayvnc=2.8 320x180->1280x720  pseudo_only=1
+normal              3.0      31.4     30.0       90       90  0.023s     1.0  sway=3.7 foot=1.0 wayvnc=2.3 1280x720
+# event +-1.00s EndOfContinuousUpdates received
+# event +-0.99s ExtendedDesktopSize rect: initiator=0 status=0 size=1280x720
+# event +5.01s SetDesktopSize sent 640x360 (screen id 0)
+# event +5.01s ExtendedDesktopSize rect: initiator=1 status=4 size=640x360
+# event +5.05s ExtendedDesktopSize rect: initiator=0 status=0 size=640x360
+# event +5.05s ExtendedDesktopSize rect: initiator=0 status=0 size=640x360
+# event +11.01s SetDesktopSize sent 320x180 (screen id 0)
+# event +11.01s ExtendedDesktopSize rect: initiator=1 status=4 size=320x180
+# event +11.07s ExtendedDesktopSize rect: initiator=0 status=0 size=320x180
+# event +11.07s ExtendedDesktopSize rect: initiator=0 status=0 size=320x180
+# event +17.02s SetDesktopSize sent 1280x720 (screen id 0)
+# event +17.02s ExtendedDesktopSize rect: initiator=1 status=4 size=1280x720
+# event +17.07s ExtendedDesktopSize rect: initiator=0 status=0 size=1280x720
+# event +17.08s ExtendedDesktopSize rect: initiator=0 status=0 size=1280x720
+# server log lines that mention an assertion or abort:

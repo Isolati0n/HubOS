@@ -1,0 +1,15 @@
+scene=scroll size=1280x720 wayvnc_args=''
+cmd: rfbprobe.py --port 5901 --phases normal:3,fence:5  --pid sway=28170 --pid foot=28183 --pid wayvnc=28199
+Traceback (most recent call last):
+  File "tools/bench/remote-display/lod/rfbprobe.py", line 398, in <module>
+    main()
+  File "tools/bench/remote-display/lod/rfbprobe.py", line 394, in main
+    pr.run()
+  File "tools/bench/remote-display/lod/rfbprobe.py", line 335, in run
+    self.pump(sel, 0.005)
+  File "tools/bench/remote-display/lod/rfbprobe.py", line 349, in pump
+    d = self.sock.recv(1 << 20)
+        ^^^^^^^^^^^^^^^^^^^^^^^
+ConnectionResetError: [Errno 104] Connection reset by peer
+# server log lines that mention an assertion or abort:
+wayvnc: ../subprojects/neatvnc/src/server.c:2745: process_pending_fence: Assertion `!client->is_blocked_by_fence' failed.

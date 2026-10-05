@@ -1,0 +1,23 @@
+# TigerVNC viewer test; wayvnc log lines about the viewer:
+DEBUG: ../subprojects/neatvnc/src/server.c: 885: Client 0x5654dae286c0 set encodings: cursor,desktop-size,extended-desktop-size,qemu-led-state,vmware-led-state,desktop-name,extended-clipboard,continuo
+Info: Choosing tight encoding for client 0x5654dae286c0
+DEBUG: ../subprojects/neatvnc/src/server.c: 1974: Sending extended desktop resize rect: 1280x720: success
+# window as opened:
+  window: lodnode - TigerVNC rect 1280 x 720 visible True floating con
+full size, visible                     50.5 kB/s server->client
+# after floating + resize to 640x360:
+  window: lodnode - TigerVNC rect 640 x 360 visible True floating floating_con
+DEBUG: ../subprojects/neatvnc/src/server.c: 1974: Sending extended desktop resize rect: 1280x720: success
+DEBUG: ../subprojects/neatvnc/src/server.c: 2032: Client requested resize to 640x360, result: 4
+DEBUG: ../subprojects/neatvnc/src/server.c: 1974: Sending extended desktop resize rect: 640x360: request forwarded
+DEBUG: ../subprojects/neatvnc/src/server.c: 1974: Sending extended desktop resize rect: 640x360: success
+window 640x360 (after 3 s settle)      50.1 kB/s server->client
+# after move to scratchpad (hidden):
+  window: lodnode - TigerVNC rect 640 x 360 visible False floating floating_con
+hidden (scratchpad)                    51.0 kB/s server->client
+# after scratchpad show:
+  window: lodnode - TigerVNC rect 640 x 360 visible True floating floating_con
+shown again                            51.9 kB/s server->client
+# client messages seen in the first 4 KB the viewer sent (type:count):
+   {'SetEncodings': 1, 'FBUpdateRequest': 2, 'ClientCutText': 1, 'Fence': 230, 'EnableContinuousUpdates': 2, 'PointerEvent': 1} first messages: ['SetEncodings', 'FBUpdateRequest(incremental=0)', 'ClientCutText', 'Fence', 'FBUpdateRequest(incremental=1)', 'EnableContinuousUpdates(enable=1,region=(0, 0, 1280, 720))', 'PointerEvent', 'EnableContinuousUpdates(enable=1,region=(0, 0, 1280, 720))', 'Fence', 'Fence', 'Fence', 'Fence']
+./tigervnc-test.sh: line 97: 16638 Segmentation fault      XDG_RUNTIME_DIR=$HRT sway -c "$HRT/sway.conf" > $D/hubsway.log 2>&1

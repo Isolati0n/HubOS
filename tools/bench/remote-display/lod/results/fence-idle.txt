@@ -1,0 +1,9 @@
+scene=idle size=1280x720 wayvnc_args=''
+cmd: rfbprobe.py --port 5901 --phases normal:3,fence:5  --pid sway=28253 --pid foot=28266 --pid wayvnc=28282
+# server RFB 003.008 name='lodnode' start size=1280x720 encoding=zrle bpp=32
+phase              secs      kB/s    upd/s  updates requests   first  1st kB  cpu%                     size
+normal              3.0       2.1      0.3        1        2  0.006s     6.4  sway=0.0 foot=0.0 wayvnc=0.3 1280x720
+fence               5.0       0.0      0.0        0        0       -       -  sway=0.0 foot=0.0 wayvnc=0.0 1280x720  fence_rtt_ms=[]
+# event +-0.99s EndOfContinuousUpdates received
+# event +-0.99s ExtendedDesktopSize rect: initiator=0 status=0 size=1280x720
+# server log lines that mention an assertion or abort:
