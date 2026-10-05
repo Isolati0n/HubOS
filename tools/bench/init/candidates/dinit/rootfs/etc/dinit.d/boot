@@ -1,8 +1,8 @@
 type = internal
-depends-on = guard
-depends-on = seatd
-depends-on = udevd
-depends-on = dbus
-depends-on = driftwm
-depends-on = waybar
-depends-on = hubd
+waits-for = guard
+waits-for = seatd
+waits-for = udevd
+waits-for = dbus
+waits-for = driftwm
+waits-for = waybar
+waits-for = hubd
