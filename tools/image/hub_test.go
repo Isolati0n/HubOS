@@ -768,4 +768,66 @@ func TestHubImage(t *testing.T) {
 			t.Fail()
 		}
 	})
+	// H6: the owner's restart policy for the compositor (image/machines/hub/rootfs/etc/s6/sv/driftwm/finish): after 5 crashes within
+	// a minute s6 stops restarting it, a fixed message is on the screen, hubd and the recovery terminal stay up, and nothing reboots.
+	t.Run("H6_five_compositor_crashes_in_a_minute_stop_the_restarts", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		waitDesktop(240 * time.Second)
+		_, bootBefore := r.sh(`cat /proc/sys/kernel/random/boot_id`)
+		r.sh(`rm -f /run/hub/driftwm-crashes /run/hub/driftwm-gave-up`)
+		m := r.vm.mark()
+		// kill -9 the compositor five times, each time as soon as a new compositor process exists
+		_, kl := r.vm.sh(`last=0; for i in 1 2 3 4 5; do n=0; p=; while [ $n -lt 600 ]; do p=; for q in $(pidof driftwm); do tr '\000' ' ' < /proc/$q/cmdline | grep -q -- --backend && p=$q; done; [ -n "$p" ] && [ "$p" != "$last" ] && break; sleep 0.2; n=$((n+1)); done; echo "kill $i: pid $p"; [ -n "$p" ] && kill -9 $p; last=$p; done; echo kills-done`, 240*time.Second)
+		time.Sleep(25 * time.Second)
+		compositors := func() string {
+			_, o := r.sh(`n=0; for q in $(pidof driftwm); do tr '\000' ' ' < /proc/$q/cmdline | grep -q -- --backend && n=$((n+1)); done; echo "compositors:$n"`)
+			return regexp.MustCompile(`compositors:\d+`).FindString(o)
+		}
+		c1 := compositors()
+		_, svstat := r.sh(`s6-svstat /run/service/driftwm`)
+		rcMark, _ := r.sh(`test -e /run/hub/driftwm-gave-up`)
+		_, nCrash := r.sh(`wc -l < /run/hub/driftwm-crashes`)
+		rcHubd, _ := r.sh(asHub("hubd list " + hubSock + " > /dev/null"))
+		_, hubdPid := r.sh(`pidof hubd`)
+		img := loadPNG(t, r.shot("hub-6-after-five-crashes"))
+		light := 0 // light text pixels in the top left of the screen
+		for y := 0; y < 220; y++ {
+			for x := 0; x < 900; x++ {
+				rr, gg, bb, _ := img.At(x, y).RGBA()
+				if rr>>8 > 120 && gg>>8 > 120 && bb>>8 > 120 {
+					light++
+				}
+			}
+		}
+		barLeft, _ := barDrawn(img)
+		time.Sleep(30 * time.Second) // it must stay down (s6's own restart would be within a second)
+		c2 := compositors()
+		_, bootAfter := r.sh(`cat /proc/sys/kernel/random/boot_id`)
+		l := r.vm.text(m)
+		sawMsg := strings.Contains(l, "HUB OS: the desktop (driftwm) crashed 5 times within one minute and was stopped.")
+		sawGaveUp := strings.Contains(l, "driftwm: giving up")
+		stopped := c1 == "compositors:0" && c2 == "compositors:0" && rcMark == 0 && strings.Contains(svstat, "down")
+		sameBoot := strings.TrimSpace(bootBefore) != "" && strings.TrimSpace(bootBefore) == strings.TrimSpace(bootAfter)
+		// the screen: the message in light text, the bar gone
+		screenOK := light > 400 && barLeft < 2000
+		// then the manual way back: s6-svc -u starts the compositor again and the desktop follows
+		r.sh(`s6-svc -u /run/service/driftwm`)
+		st, back := waitDesktop(300 * time.Second)
+		rcMark2, _ := r.sh(`test -e /run/hub/driftwm-gave-up`)
+		time.Sleep(10 * time.Second)
+		rcHubd2, _ := r.sh(asHub("hubd list " + hubSock + " > /dev/null"))
+		ok := strings.Contains(kl, "kills-done") && stopped && rcHubd == 0 && strings.TrimSpace(hubdPid) != "" && sameBoot && sawMsg && sawGaveUp && screenOK && back && rcMark2 != 0 && rcHubd2 == 0
+		record("H6 five compositor crashes within a minute: s6 stops restarting it, the fixed message is on the screen and on the serial console, hubd still answers, the machine does not reboot; s6-svc -u brings the desktop back", ok, time.Since(start),
+			fmt.Sprintf("compositors after 25 s / 55 s: %s / %s; s6-svstat %q; marker written %v; crash lines %s; hubd answered %v (pid %s); same boot %v; message on the serial console %v, 'giving up' line %v; light pixels in the top left %d, bar pixels left %d; after s6-svc -u: desktop back %v, marker gone %v, hubd answers %v",
+				c1, c2, strings.TrimSpace(svstat), rcMark == 0, strings.TrimSpace(nCrash), rcHubd == 0, strings.TrimSpace(hubdPid), sameBoot, sawMsg, sawGaveUp, light, barLeft, back, rcMark2 != 0, rcHubd2 == 0))
+		t.Logf("kill loop:\n%s\nstate after s6-svc -u:\n%s", kl, st)
+		if !ok {
+			t.Errorf("stopped=%v rcHubd=%d sameBoot=%v sawMsg=%v sawGaveUp=%v screenOK=%v back=%v marker2=%d hubd2=%d", stopped, rcHubd, sameBoot, sawMsg, sawGaveUp, screenOK, back, rcMark2, rcHubd2)
+			t.Fail()
+		}
+	})
 }

@@ -1,0 +1,35 @@
+#!/bin/sh
+# s6 runs this after every end of ./run, with the exit code ($1; 256 = killed by a signal) and the signal number ($2).
+#
+# RESTART POLICY (owner decision, 2026-10-05): after 5 compositor crashes within one minute stop restarting it, show a
+# fixed message on the screen, keep hubd and the recovery terminal up, and never reboot. Until then s6 restarts the
+# compositor by itself (that is the normal case: one crash, a restart a second later).
+#   - an exit with code 0 is a deliberate quit, not a crash: it is not counted (s6 still restarts it);
+#   - the crash times are kept in RAM (/run/hub/driftwm-crashes, one Unix time per line);
+#   - on the fifth crash within 60 s: write the marker /run/hub/driftwm-gave-up, print the message on the screen (the
+#     kernel text console, /dev/tty0) and on the serial console, and tell s6 to leave the service down (s6-svc -d).
+#     hubd then runs without the compositor (hubd/run, follow-driftwm), the confirm step does not confirm a boot while
+#     the marker exists, and nothing here reboots the machine.
+# To start the compositor again by hand:  s6-svc -u /run/service/driftwm   (./run clears the marker and the record).
+exec 2>&1
+LIMIT=5; WINDOW=60
+DIR=/run/hub; LOG=$DIR/driftwm-crashes; GAVEUP=$DIR/driftwm-gave-up
+echo "driftwm: ended with exit code $1, signal $2"
+[ "$1" = 0 ] && exit 0
+mkdir -p $DIR
+now=$(date +%s)
+{ cat $LOG 2>/dev/null; echo "$now"; } | awk -v n="$now" -v w="$WINDOW" 'n - $1 < w' > $LOG.new && mv -f $LOG.new $LOG
+count=$(wc -l < $LOG)
+echo "driftwm: $count crash(es) in the last $WINDOW s (the limit is $LIMIT)"
+[ "$count" -ge "$LIMIT" ] || exit 0
+: > $GAVEUP
+# The fixed message. ESC[2J ESC[H clears the screen and puts the cursor at the top left.
+MSG1="HUB OS: the desktop (driftwm) crashed 5 times within one minute and was stopped."
+MSG2="It will not start again by itself, and the machine will NOT reboot."
+MSG3="hubd and the recovery terminal are still running."
+MSG4="To try the desktop again by hand: s6-svc -u /run/service/driftwm"
+{ printf '\033[2J\033[H\n'; printf '%s\n\n%s\n\n%s\n\n%s\n' "$MSG1" "$MSG2" "$MSG3" "$MSG4"; } > /dev/tty0 2>/dev/null
+printf '%s\n%s\n%s\n%s\n' "$MSG1" "$MSG2" "$MSG3" "$MSG4" > /dev/console 2>/dev/null
+echo "driftwm: giving up: $count crashes in $WINDOW s; not restarting"
+s6-svc -d .
+exit 0

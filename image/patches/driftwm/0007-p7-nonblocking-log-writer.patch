@@ -1,0 +1,200 @@
+Hub OS P7: log writer that cannot block the event loop. Log lines go into a bounded queue (4096 lines) and a
+writer thread writes them to standard output; when the queue is full lines are dropped and counted. The default
+panic hook (which writes to stderr and could block) is replaced by one that logs through the same queue.
+
+diff -ruN a/src/logwriter.rs b/src/logwriter.rs
+--- /dev/null
++++ b/src/logwriter.rs
+@@ -0,0 +1,166 @@
++//! Log output that can never block the compositor (Hub OS patch P7).
++//!
++//! `tracing_subscriber::fmt()` writes every log line to standard output on the
++//! thread that logs. When the reader of that pipe stops reading and the pipe
++//! is full, `write(2)` blocks and the event loop freezes. Here the compositor
++//! thread only puts the line into a bounded queue (`try_send`, never waits);
++//! a separate thread does the real, possibly blocking, write. If the queue is
++//! full the line is dropped and counted; the next line that does get written
++//! says how many were lost.
++//!
++//! Standard library only; no new dependency.
++
++use std::io::{self, Write};
++use std::sync::atomic::{AtomicU64, AtomicUsize, Ordering};
++use std::sync::mpsc::{SyncSender, sync_channel};
++use std::sync::{Arc, OnceLock};
++use std::time::{Duration, Instant};
++use tracing_subscriber::fmt::MakeWriter;
++
++/// How many log lines may wait for the writer thread.
++const QUEUE_LINES: usize = 4096;
++
++#[derive(Clone)]
++pub struct NonBlockingWriter {
++    tx: SyncSender<Vec<u8>>,
++    /// Lines dropped because the queue was full, not yet reported.
++    dropped: Arc<AtomicU64>,
++    /// Lines queued and not yet written (or given up on) by the writer thread.
++    pending: Arc<AtomicUsize>,
++}
++
++static WRITER: OnceLock<NonBlockingWriter> = OnceLock::new();
++
++impl NonBlockingWriter {
++    fn start() -> Self {
++        let (tx, rx) = sync_channel::<Vec<u8>>(QUEUE_LINES);
++        let dropped = Arc::new(AtomicU64::new(0));
++        let pending = Arc::new(AtomicUsize::new(0));
++        let (d, p) = (dropped.clone(), pending.clone());
++        let spawned = std::thread::Builder::new()
++            .name("driftwm-log".into())
++            .spawn(move || {
++                // Own duplicate of fd 1, so a write stuck on an unread pipe
++                // never holds the std stdout lock that other code may want.
++                // SAFETY: dup returns a new fd that nothing else owns.
++                let mut out: Box<dyn Write> = match unsafe { libc::dup(1) } {
++                    fd if fd >= 0 => Box::new(unsafe { <std::fs::File as std::os::fd::FromRawFd>::from_raw_fd(fd) }),
++                    _ => Box::new(io::stdout()),
++                };
++                let mut broken = false;
++                for line in rx {
++                    if !broken {
++                        let lost = d.swap(0, Ordering::Relaxed);
++                        let mut result = Ok(());
++                        if lost > 0 {
++                            result = writeln!(
++                                out,
++                                "driftwm: {lost} log line(s) were dropped because the log reader was too slow or stopped"
++                            );
++                        }
++                        // This write may block for ever on an unread pipe: that
++                        // is the point, only this thread waits.
++                        result = result.and_then(|()| out.write_all(&line)).and_then(|()| out.flush());
++                        // A closed pipe (EPIPE): keep draining the queue, write nothing more.
++                        broken = result.is_err();
++                    }
++                    p.fetch_sub(1, Ordering::Relaxed);
++                }
++            });
++        // If the thread could not start, `rx` was dropped with the closure and
++        // every `try_send` fails: logging is lost, the compositor is not harmed.
++        let _ = spawned;
++        NonBlockingWriter { tx, dropped, pending }
++    }
++
++    /// Wait until every queued line is written, but not longer than `timeout`
++    /// (the writer thread may be stuck on an unread pipe).
++    pub fn flush_for(&self, timeout: Duration) {
++        let end = Instant::now() + timeout;
++        while self.pending.load(Ordering::Relaxed) > 0 && Instant::now() < end {
++            std::thread::sleep(Duration::from_millis(5));
++        }
++    }
++}
++
++impl Write for NonBlockingWriter {
++    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
++        self.pending.fetch_add(1, Ordering::Relaxed);
++        if self.tx.try_send(buf.to_vec()).is_err() {
++            self.pending.fetch_sub(1, Ordering::Relaxed);
++            self.dropped.fetch_add(1, Ordering::Relaxed);
++        }
++        Ok(buf.len())
++    }
++    fn flush(&mut self) -> io::Result<()> {
++        Ok(())
++    }
++}
++
++impl<'a> MakeWriter<'a> for NonBlockingWriter {
++    type Writer = NonBlockingWriter;
++    fn make_writer(&'a self) -> Self::Writer {
++        self.clone()
++    }
++}
++
++/// Start the writer thread (once) and return the writer for the subscriber.
++pub fn writer() -> NonBlockingWriter {
++    WRITER.get_or_init(NonBlockingWriter::start).clone()
++}
++
++/// Give the writer thread up to `timeout` to write what is queued. Call before
++/// the process ends (`exit`, panic) so the last lines are not lost.
++pub fn flush_for(timeout: Duration) {
++    if let Some(w) = WRITER.get() {
++        w.flush_for(timeout);
++    }
++}
++
++/// Dropped at the end of `main` (also while unwinding): flushes, bounded.
++pub struct FlushGuard;
++
++impl Drop for FlushGuard {
++    fn drop(&mut self) {
++        flush_for(Duration::from_millis(500));
++    }
++}
++
++/// The default panic hook writes to standard error on the panicking thread and
++/// would block on an unread pipe, turning a crash into a freeze. This one logs
++/// the panic (and a backtrace when RUST_BACKTRACE asks for one) through the
++/// non-blocking writer, then waits at most half a second for it to be written.
++pub fn install_panic_hook() {
++    std::panic::set_hook(Box::new(|info| {
++        let backtrace = std::backtrace::Backtrace::capture();
++        tracing::error!("{info}\n{backtrace}");
++        flush_for(Duration::from_millis(500));
++    }));
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn a_full_queue_drops_lines_and_never_blocks() {
++        // A writer whose thread never reads: the receiver is kept but not drained.
++        let (tx, _rx) = sync_channel::<Vec<u8>>(2);
++        let mut w = NonBlockingWriter {
++            tx,
++            dropped: Arc::new(AtomicU64::new(0)),
++            pending: Arc::new(AtomicUsize::new(0)),
++        };
++        let start = Instant::now();
++        for _ in 0..100 {
++            assert_eq!(w.write(b"line\n").unwrap(), 5);
++        }
++        assert!(start.elapsed() < Duration::from_secs(1));
++        assert_eq!(w.dropped.load(Ordering::Relaxed), 98);
++        assert_eq!(w.pending.load(Ordering::Relaxed), 2);
++        // flush_for gives up after the timeout instead of waiting for ever
++        let t = Instant::now();
++        w.flush_for(Duration::from_millis(50));
++        assert!(t.elapsed() < Duration::from_secs(1));
++    }
++}
+diff -ruN a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -4,6 +4,7 @@
+ mod handlers;
+ mod input;
+ mod ipc;
++mod logwriter;
+ mod region;
+ mod render;
+ mod signals;
+@@ -111,9 +112,14 @@
+     if std::env::var("RUST_LOG").is_err() {
+         unsafe { std::env::set_var("RUST_LOG", "info") };
+     }
++    // HUB-OS PATCH P7: log lines go through a queue and a writer thread, so a
++    // log reader that stops reading cannot freeze the event loop.
++    let _log_flush = logwriter::FlushGuard;
+     tracing_subscriber::fmt()
++        .with_writer(logwriter::writer())
+         .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+         .init();
++    logwriter::install_panic_hook();
+ 
+     // --config <path>: override config file (useful for nested/test sessions).
+     // Set before --check-config so validation targets the requested file.

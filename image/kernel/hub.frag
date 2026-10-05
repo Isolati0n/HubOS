@@ -87,6 +87,15 @@ CONFIG_UNIX=y
 CONFIG_DRM=y
 CONFIG_DRM_KMS_HELPER=y
 CONFIG_DRM_VIRTIO_GPU=y
+# Kernel text console on the DRM framebuffer: the only way to show a message on the screen when the compositor is down
+# (the driftwm service's finish script prints the crash-loop message on /dev/tty0). It is not the system console
+# (no CONFIG_VT_CONSOLE: kernel messages stay on the serial port).
+CONFIG_VT=y
+CONFIG_FB=y
+CONFIG_DRM_FBDEV_EMULATION=y
+CONFIG_FRAMEBUFFER_CONSOLE=y
+CONFIG_FONTS=y
+CONFIG_FONT_8x16=y
 CONFIG_INPUT=y
 CONFIG_INPUT_EVDEV=y
 CONFIG_INPUT_KEYBOARD=y

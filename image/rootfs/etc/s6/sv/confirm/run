@@ -10,7 +10,9 @@ ensure
 # check slower, and counting checks would stretch it past the watchdog).
 end=$(( $(date +%s) + T ))
 while [ "$(date +%s)" -lt "$end" ]; do
-  if /usr/bin/hubd list --socket /run/hubos/hubd.sock >/dev/null 2>&1; then ok=$((ok+1)); else ok=0; fi
+  # (On the hub, hubd keeps running after the compositor was stopped for good after 5 crashes in a minute; the marker
+  # /run/hub/driftwm-gave-up then means "the desktop is not healthy", so a trial boot is not confirmed.)
+  if [ ! -e /run/hub/driftwm-gave-up ] && /usr/bin/hubd list --socket /run/hubos/hubd.sock >/dev/null 2>&1; then ok=$((ok+1)); else ok=0; fi
   [ $ok -ge 5 ] && break
   sleep 1
 done

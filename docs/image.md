@@ -19,7 +19,7 @@ Labels: **TESTED** (the command is in the runner or shown below), **BELIEVED**, 
 | `image/config/qemu-test/` | the config partition's `inventory.toml` and `viewers.toml` (copies of the examples) |
 | `tools/image/*.sh` | `fetch-tools.sh` (unpack QEMU and friends into a temporary directory), `build-kernel.sh`, `build-base.sh` (mmdebstrap), `build-root-image.sh`, `build-disk.sh`, `build-bundle.sh`; `strip-root.sh` (deletes apt, PAM modules, procps, login, passwd files from a finished root), `check-libs.sh` (`ldd` inside the root) and `recovery-list.py` (the file list of the recovery kernel's initramfs); `common.sh` is shared |
 | `image/machines/hub.build`, `image/kernel/hub.frag`, `image/packages/hub.list`, `image/machines/hub/rootfs/`, `image/config/hub/` | **the hub image** (section 9): its machine file, kernel fragment (the base fragment plus virtio-gpu, input, USB and DRM), package list, the files copied over the root (six desktop services, Waybar and wofi configuration, `hub-env.sh`, `follow-driftwm`) and its config partition (inventory and viewers). The qemu-test machine is unchanged |
-| `tools/image/build-hub-parts.sh` | builds driftwm (pinned commit) and eudev (pinned release 3.2.14, tarball hash checked) in a throw-away build root; the hub root build calls it |
+| `tools/image/build-hub-parts.sh` | builds driftwm (pinned commit, with the patch set in `image/patches/driftwm/`; the build fails if a patch does not apply) and eudev (pinned release 3.2.14, tarball hash checked) in a throw-away build root; the hub root build calls it |
 | `tools/image/qemu_test.go`, `tools/image/hub_test.go` | the test runner (Go, build tag `qemu`): `TestImage` (the tiny test machine) and `TestHubImage` (the hub image) |
 
 **No key is in the repo.** The runner makes two throwaway signing key pairs (`signify-openbsd -G -n`) in a temporary directory at run time and builds every bundle with them. The public key of the first pair is built **into the test images only**, into the update keyring (`/etc/hubos/keys/`, section 3.12); the second pair is the "wrong key"; a third pair ("next") is key 2 of the rotation tests. All are deleted with the temporary directory.
@@ -333,7 +333,7 @@ Real firmware (does it keep `BootNext`/`BootOrder`, what does it do after a CMOS
 |---|---|---|
 | Kernel | `image/kernel/hub.frag` = the base fragment plus DRM, virtio-gpu, input (evdev, keyboard, mouse), USB (xHCI, HID) and what Wayland clients and Mesa need (from the desktop experiment); built once per slot, plus the recovery kernel, as for the test machine | Linux 6.12 |
 | Packages | `image/packages/hub.list` from the Ubuntu 24.04 snapshot: seatd, libinput, Mesa (llvmpipe), Wayland and xkbcommon libraries, fonts, **foot** (the viewer of the test), **Waybar**, **wofi**, **dbus-daemon**, `libinput-tools`, s6, busybox | snapshot `20261001T000000Z`; the systemd apt pin and the banned-package test apply |
-| driftwm | built from source at the **pinned commit** `352333a8fa1b22171492d4b71a54102045c9a19d` in a throw-away build root (`tools/image/build-hub-parts.sh`, about 4 minutes) | the commit is checked after the checkout |
+| driftwm | built from source at the **pinned commit** `352333a8fa1b22171492d4b71a54102045c9a19d` in a throw-away build root (`tools/image/build-hub-parts.sh`, about 4 minutes) | the commit is checked after the checkout; the patch set (Smithay rev in `image/patches/driftwm/PINS`) is applied on top: docs/proposals/driftwm-patches.md |
 | eudev | built from source in the same build root: **release 3.2.14**, tarball sha256 `8da4319102f24abbf7fff5ce9c416af848df163b29590e666d334cc1927f006f` checked by the script (GPL-2.0-or-later programs, LGPL-2.1-or-later libudev; about 20 s) | version and hash |
 | eudev's libudev | its `libudev.so.1` **replaces** the one the `libudev1` package would give (the package's files are overwritten; `libinput10` depends on the package); `udevd`, `udevadm` and the rules come with it | test H0 checks the link |
 | hubd | the static `hubd` of this repo, as in the test machine | this repo |
@@ -346,7 +346,7 @@ Real firmware (does it keep `BootNext`/`BootOrder`, what does it do after a CMOS
 | `udevd` | root (it needs netlink and device nodes) | | eudev's udevd, then `udevadm trigger` and `settle`, then writes `/run/udev/ready` |
 | `seatd` | root (it opens the GPU and input devices for its clients) | | `seatd -g seat` |
 | `dbus` | hub | | the session bus (`dbus-daemon --session`, no systemd) on `/run/dw/bus` |
-| `driftwm` | hub (group seat) | seatd's socket, udevd's `ready` | `driftwm --backend udev`; s6 restarts it when it dies |
+| `driftwm` | hub (group seat) | seatd's socket, udevd's `ready` | `driftwm --backend udev --config /etc/hubos/driftwm.toml`; s6 restarts it when it dies, but not after 5 crashes within a minute (its `finish` script; docs/proposals/driftwm-patches.md section 5) |
 | `waybar` | hub | driftwm (`follow-driftwm`) | the bar; its one module runs `hubd feed`; a click runs `hubd menu` |
 | `hubd` | hub | driftwm (`follow-driftwm`) | inventory, health checks, the viewers, window placement through driftwm's socket; the confirm step asks it on `/run/hubos/hubd.sock` |
 

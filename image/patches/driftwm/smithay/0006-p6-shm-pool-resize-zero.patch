@@ -1,0 +1,13 @@
+Hub OS P6: Smithay shm/handlers.rs: add "return;" after post_error when wl_shm_pool.resize gets a size <= 0
+(otherwise NonZeroUsize::try_from(0).unwrap() panics the compositor). Against Smithay rev 4cf0b62028039661477d482ec4758b687d8f4392.
+
+--- a/src/wayland/shm/handlers.rs
++++ b/src/wayland/shm/handlers.rs
+@@ -185,6 +185,7 @@
+             Request::Resize { size } => {
+                 if size <= 0 {
+                     pool.post_error(wl_shm::Error::InvalidFd, "invalid wl_shm_pool size");
++                    return;
+                 }
+ 
+                 if let Err(err) = arc_pool.resize(NonZeroUsize::try_from(size as usize).unwrap()) {

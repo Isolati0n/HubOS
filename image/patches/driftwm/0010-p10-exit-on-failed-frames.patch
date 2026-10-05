@@ -1,0 +1,163 @@
+Hub OS P10: if every frame of an output fails for 2 s, log once and exit(70) so the supervisor starts a fresh
+compositor. Failed frames are retried at the refresh rate so the 2 s can be reached.
+
+diff -ruN a/src/backend/frame_health.rs b/src/backend/frame_health.rs
+--- /dev/null
++++ b/src/backend/frame_health.rs
+@@ -0,0 +1,107 @@
++//! Exit when frames keep failing (Hub OS patch P10).
++//!
++//! After a GPU reset or a lost graphics context `render_frame` can fail on
++//! every frame for ever while the event loop still answers (so an
++//! "is the loop alive" probe passes) and nothing reaches the screen. Smithay
++//! offers no way to rebuild the renderer, and a new process is the only way to
++//! get a fresh GL context. So: when every frame of an output has failed for
++//! [`FAILED_FRAMES_LIMIT`], log once and exit with [`EXIT_CODE`]; the supervisor
++//! starts a new compositor.
++
++use std::collections::HashMap;
++use std::sync::Mutex;
++use std::time::{Duration, Instant};
++
++/// How long frames of one output may fail in a row before the process exits.
++pub const FAILED_FRAMES_LIMIT: Duration = Duration::from_secs(2);
++/// Exit status (BSD sysexits EX_SOFTWARE).
++pub const EXIT_CODE: i32 = 70;
++
++/// The unbroken run of failed frames of one output.
++#[derive(Default, Debug, PartialEq)]
++pub struct FailureRun {
++    first: Option<Instant>,
++    count: u32,
++}
++
++impl FailureRun {
++    /// A frame was drawn (or was correctly empty): the run is over.
++    pub fn ok(&mut self) {
++        *self = FailureRun::default();
++    }
++
++    /// A frame failed at `now`. True when the run has lasted
++    /// [`FAILED_FRAMES_LIMIT`] and the process should exit. Needs at least two
++    /// failures, so one failed frame can never trigger it.
++    pub fn failed(&mut self, now: Instant) -> bool {
++        let first = *self.first.get_or_insert(now);
++        self.count = self.count.saturating_add(1);
++        self.count >= 2 && now.duration_since(first) >= FAILED_FRAMES_LIMIT
++    }
++
++    pub fn count(&self) -> u32 {
++        self.count
++    }
++}
++
++static RUNS: Mutex<Option<HashMap<String, FailureRun>>> = Mutex::new(None);
++
++fn with_run<R>(output: &str, f: impl FnOnce(&mut FailureRun) -> R) -> R {
++    let mut guard = RUNS.lock().unwrap_or_else(|e| e.into_inner());
++    let map = guard.get_or_insert_with(HashMap::new);
++    f(map.entry(output.to_string()).or_default())
++}
++
++/// A frame of `output` reached the screen (or was empty by design).
++pub fn frame_ok(output: &str) {
++    with_run(output, |run| run.ok());
++}
++
++/// A frame of `output` failed. Exits the process after 2 s of failures in a row.
++pub fn frame_failed(output: &str) {
++    let (exit, count) = with_run(output, |run| {
++        let exit = run.failed(Instant::now());
++        (exit, run.count())
++    });
++    if exit {
++        tracing::error!(
++            "Frames of output {output} have failed for {} s ({count} in a row): the GPU or its driver is probably lost. \
++             Exiting with status {EXIT_CODE} so the supervisor starts a fresh compositor.",
++            FAILED_FRAMES_LIMIT.as_secs()
++        );
++        crate::logwriter::flush_for(Duration::from_millis(500));
++        std::process::exit(EXIT_CODE);
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++
++    #[test]
++    fn one_failure_never_exits() {
++        let mut r = FailureRun::default();
++        assert!(!r.failed(Instant::now()));
++    }
++
++    #[test]
++    fn failures_over_two_seconds_exit() {
++        let t0 = Instant::now();
++        let mut r = FailureRun::default();
++        assert!(!r.failed(t0));
++        assert!(!r.failed(t0 + Duration::from_millis(1900)));
++        assert!(r.failed(t0 + Duration::from_millis(2000)));
++    }
++
++    #[test]
++    fn a_good_frame_resets_the_run() {
++        let t0 = Instant::now();
++        let mut r = FailureRun::default();
++        assert!(!r.failed(t0));
++        assert!(!r.failed(t0 + Duration::from_millis(1500)));
++        r.ok();
++        assert!(!r.failed(t0 + Duration::from_millis(1600)));
++        assert!(!r.failed(t0 + Duration::from_millis(3000)));
++        assert!(r.failed(t0 + Duration::from_millis(3600)));
++    }
++}
+diff -ruN a/src/backend/mod.rs b/src/backend/mod.rs
+--- a/src/backend/mod.rs
++++ b/src/backend/mod.rs
+@@ -1,4 +1,5 @@
+ pub mod cvt;
++pub mod frame_health;
+ pub mod gamma;
+ pub mod udev;
+ pub mod winit;
+diff -ruN a/src/backend/udev.rs b/src/backend/udev.rs
+--- a/src/backend/udev.rs
++++ b/src/backend/udev.rs
+@@ -1604,6 +1604,7 @@
+             };
+             match queue_result {
+                 Ok(()) => {
++                    super::frame_health::frame_ok(&output.name());
+                     data.frames_pending.insert(crtc);
+                     if lock_frame {
+                         data.lock_frame_queued.insert(crtc);
+@@ -1612,6 +1613,7 @@
+                     }
+                 }
+                 Err(FrameError::EmptyFrame) => {
++                    super::frame_health::frame_ok(&output.name());
+                     // No page flip - no real VBlank to wake us. Always arm the
+                     // estimated timer so the render gate paces re-renders to the refresh
+                     // period; otherwise a dirty-but-unchanged output spins render_frame.
+@@ -1637,6 +1639,10 @@
+                     tracing::warn!("Failed to queue frame: {e:?}");
+                     retry_dropped_lock_frame(data, output);
+                     queue_estimated_vblank_timer(data, output, crtc);
++                    // HUB-OS PATCH P10: try again at the next refresh, and give up
++                    // (exit, supervisor restarts) after 2 s of failures in a row.
++                    data.redraws_needed.insert(output.clone());
++                    super::frame_health::frame_failed(&output.name());
+                 }
+             }
+         }
+@@ -1644,6 +1650,9 @@
+             tracing::warn!("Render frame error: {e:?}");
+             retry_dropped_lock_frame(data, output);
+             queue_estimated_vblank_timer(data, output, crtc);
++            // HUB-OS PATCH P10 (see above).
++            data.redraws_needed.insert(output.clone());
++            super::frame_health::frame_failed(&output.name());
+         }
+     }
+ 

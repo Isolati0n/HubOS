@@ -1,6 +1,9 @@
 #!/bin/sh
 # hubd (inventory, health checks, launching viewers, placing windows through driftwm's socket), as the user hub.
-# Waits for driftwm and stops when driftwm goes away. The confirm step asks it on /run/hubos/hubd.sock.
+# Waits for driftwm and stops when driftwm goes away, EXCEPT when the driftwm service has been stopped for good after
+# 5 crashes in a minute: then hubd runs without the compositor (FOLLOW_GAVEUP=run, see follow-driftwm).
+# The confirm step asks it on /run/hubos/hubd.sock.
 exec 2>&1
 . /usr/lib/hubos/hub-env.sh
+export FOLLOW_GAVEUP=run
 exec /usr/lib/hubos/follow-driftwm s6-setuidgid hub env $HUBENV /usr/bin/hubd serve --inventory /config/hubos/inventory.toml --viewers /config/hubos/viewers.toml --socket /run/hubos/hubd.sock --bar-height 30

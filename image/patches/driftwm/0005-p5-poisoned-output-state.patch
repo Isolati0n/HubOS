@@ -1,0 +1,16 @@
+Hub OS P5: output_state(): use the data of a poisoned lock instead of panicking.
+
+diff -ruN a/src/state/mod.rs b/src/state/mod.rs
+--- a/src/state/mod.rs
++++ b/src/state/mod.rs
+@@ -554,7 +554,9 @@
+     match mutex.try_lock() {
+         Ok(guard) => guard,
+         Err(TryLockError::WouldBlock) => panic!("output_state locked re-entrantly"),
+-        Err(TryLockError::Poisoned(err)) => panic!("OutputState mutex poisoned: {err}"),
++        // HUB-STABILITY CHANGE: after a caught panic the mutex is poisoned; keep serving
++        // with the data as it is instead of panicking on every later call.
++        Err(TryLockError::Poisoned(err)) => err.into_inner(),
+     }
+ }
+ 

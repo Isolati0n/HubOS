@@ -1,0 +1,32 @@
+Hub OS P4: config parser: is_ascii() check in parse_color; get(..) instead of slicing in base_swipe_str.
+A colour such as "#aéaaa" no longer panics (at start, in --check-config, or on a config reload).
+
+diff -ruN a/src/config/mod.rs b/src/config/mod.rs
+--- a/src/config/mod.rs
++++ b/src/config/mod.rs
+@@ -69,7 +69,10 @@
+     let lower = combo.to_lowercase();
+     for suffix in ["-up", "-down", "-left", "-right"] {
+         if lower.ends_with(suffix) {
+-            return combo[..combo.len() - suffix.len()].to_string();
++            // HUB-STABILITY FIX: to_lowercase() can change the byte length; never slice by it blindly.
++            if let Some(base) = combo.get(..combo.len().saturating_sub(suffix.len())) {
++                return base.to_string();
++            }
+         }
+     }
+     combo.to_string()
+diff -ruN a/src/config/parse_helpers.rs b/src/config/parse_helpers.rs
+--- a/src/config/parse_helpers.rs
++++ b/src/config/parse_helpers.rs
+@@ -137,6 +137,10 @@
+ 
+ pub(super) fn parse_color(s: &str) -> Option<[u8; 4]> {
+     let hex = s.strip_prefix('#')?;
++    // HUB-STABILITY FIX: byte-slicing below panics inside a multi-byte char.
++    if !hex.is_ascii() {
++        return None;
++    }
+     match hex.len() {
+         6 => {
+             let r = u8::from_str_radix(&hex[0..2], 16).ok()?;
