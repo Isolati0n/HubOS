@@ -430,4 +430,5 @@ HubOS/
 - **2026-10-04:** AMD CPUs only, no proprietary BMC firmware (recovery built into Hub OS; out-of-band hardware decided in December), no terminals (every node has its own bespoke GUI), always-open windows on the hub, all nodes' sound at once with per-node mute and volume, hub services corrected (seatd and udevd run as root).
 - **2026-10-04:** Phase B images: recovery kernel arms the watchdog; recovery agent tested inside a test recovery kernel.
 - **2026-10-04:** Scale reference 20 machines; hub stays a thin client; extra nodes suggested; recovery and display protocol decisions recorded; CLAUDE.md rules for packages and helper agents.
+- **2026-10-04:** Phase B images: test recovery agent supervised by a restart loop.
 - **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials, management key on the hub, recovery agent supervision, Go stays (Erlang parked).

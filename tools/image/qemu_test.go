@@ -573,9 +573,9 @@ func (r *rig) restartIntoRecovery(step string) bool {
 	return false
 }
 
-// settleOnConfirmedSlot starts QEMU again on the same disk (after a crash) and waits until the machine runs the confirmed slot b:
+// settleOnConfirmedSlot starts QEMU again on the same disk (after a crash) and waits until the machine runs the confirmed slot `want`:
 // if the firmware starts an unconfirmed trial slot first, the trial fails and rolls back, and this waits for that.
-func (r *rig) settleOnConfirmedSlot() {
+func (r *rig) settleOnConfirmedSlot(want string) {
 	r.vm.kill()
 	v := r.startVM()
 	r.vm = v
@@ -591,7 +591,7 @@ func (r *rig) settleOnConfirmedSlot() {
 		}
 		r.bootPos = e
 		r.ready(v)
-		if slot, _, _, _ := r.status(); slot == "b" {
+		if slot, _, _, _ := r.status(); slot == want {
 			r.waitConfirmed()
 			return
 		}
@@ -1133,7 +1133,7 @@ func TestImage(t *testing.T) {
 						// QEMU died from a signal during the trial boot: record it, start QEMU again, wait until the machine is back on the
 						// confirmed slot, and do the whole step once more (a second crash here fails the step)
 						r.noteCrash(r.vm, sig, "the trial boot of "+name)
-						r.settleOnConfirmedSlot()
+						r.settleOnConfirmedSlot("b")
 						continue
 					}
 				}
@@ -1637,11 +1637,27 @@ func TestImage(t *testing.T) {
 		// P2: the counter survives kill -9 of QEMU. An update to slot b whose release never gets healthy is started
 		// (a trial boot); QEMU is killed right after stage 0 has counted the boot.
 		_, st0 := r.sh("hubos-ctl status")
-		rc, _ := r.update("v14-unhealthy")
-		m := r.vm.mark()
-		io.WriteString(r.vm.in, "sync; reboot -f\n")
-		sw := r.vm.wait(`STAGE0: switching to slot b`, 200*time.Second, m)
+		var rc, sw, m int
+		for attempt := 1; attempt <= 2; attempt++ {
+			rc, _ = r.update("v14-unhealthy")
+			m = r.vm.mark()
+			io.WriteString(r.vm.in, "sync; reboot -f\n")
+			sw = r.vm.wait(`STAGE0: switching to slot b`, 200*time.Second, m)
+			if sw < 0 && attempt == 1 {
+				if sig := r.vm.crashSignal(); sig != "" {
+					// QEMU died from a signal before the trial boot started: record it, start QEMU again, wait until the machine
+					// runs the confirmed slot a, and do the step once more
+					r.noteCrash(r.vm, sig, "the trial boot of slot b (boot-loop breaker test)")
+					r.settleOnConfirmedSlot("a")
+					continue
+				}
+			}
+			break
+		}
 		if sw < 0 {
+			if sig := r.vm.crashSignal(); sig != "" {
+				r.noteCrash(r.vm, sig, "the trial boot of slot b (boot-loop breaker test, retry)")
+			}
 			t.Fatalf("the trial boot of slot b did not start")
 		}
 		r.vm.kill()
@@ -1860,6 +1876,23 @@ func TestImage(t *testing.T) {
 		}
 		json.Unmarshal([]byte(body), &st)
 		okStatus := banner && strings.Contains(put, "put-done") && code == 200 && st.State == "recovery" && st.Release == "recovery-1" && st.FailureLimit == 3
+		// 1b. the agent is supervised by a restart loop: kill it, it answers /v1/status again within a few seconds
+		r.sh(`kill -9 $(pidof recovery-agent); echo killed`)
+		tKill := time.Now()
+		downSeen, backAgain := false, false
+		var backSec float64
+		for time.Since(tKill) < 20*time.Second {
+			c, _ := ac.do("GET", "/v1/status", "", nil)
+			if c != 200 {
+				downSeen = true
+			} else if downSeen {
+				backAgain, backSec = true, time.Since(tKill).Seconds()
+				break
+			}
+			time.Sleep(250 * time.Millisecond)
+		}
+		_, sup := r.sh(`grep supervisor /run/recovery-agent.log`)
+		okRestart := downSeen && backAgain && backSec < 10 && strings.Contains(sup, "the agent exited with status") && strings.Contains(sup, "starting the agent again")
 		// 2. refused requests: unsigned, a signature of another key, a body changed after signing, a replayed request
 		reqBody := []byte(`{"Slot":"b","BaseURL":"` + r.base + `/v28-agent"}`)
 		c1, b1 := ac.do("POST", "/v1/install", "", reqBody)
@@ -1883,13 +1916,54 @@ func TestImage(t *testing.T) {
 		slot, rel, conf, _ := r.status()
 		ev, eh := r.espRecovery()
 		okBoot := confirmed && slot == "b" && rel == "28" && conf && ev == "5" && eh == sha256File(t, recK2) // the confirm step put the normal recovery kernel back (same version, other file)
-		ok := okStatus && okRefused && okInstall && okBoot
+		ok := okStatus && okRestart && okRefused && okInstall && okBoot
 		record("T18 the recovery agent inside a TEST recovery kernel: GET /v1/status from the host answers recovery; unsigned, wrong-key, tampered and replayed requests are refused; a signed install request installs a signed bundle into slot b and the machine boots and confirms it", ok, time.Since(start),
-			fmt.Sprintf("status %d %s; refused: unsigned %d, other key %d, changed body %d, replay %d (good clear-failures %d); install %d; booted slot %s release %s confirmed %v; recovery kernel with the agent %d bytes, without %d bytes (+%d); normal recovery kernel back on the boot partition: %v", code, strings.TrimSpace(body), c1, c2, c3, c5, c4, ic, slot, rel, conf, agentSize, normalSize, agentSize-normalSize, eh == sha256File(t, recK2)))
+			fmt.Sprintf("agent killed: down seen %v, answering again after %.1f s (supervisor restart loop); status %d %s; refused: unsigned %d, other key %d, changed body %d, replay %d (good clear-failures %d); install %d; booted slot %s release %s confirmed %v; recovery kernel with the agent %d bytes, without %d bytes (+%d); normal recovery kernel back on the boot partition: %v", downSeen, backSec, code, strings.TrimSpace(body), c1, c2, c3, c5, c4, ic, slot, rel, conf, agentSize, normalSize, agentSize-normalSize, eh == sha256File(t, recK2)))
 		if !ok {
-			t.Errorf("okStatus=%v okRefused=%v okInstall=%v okBoot=%v\nput=%q\n%s\n%d %s | %d %s | %d %s | %d %s | %d %s\ninstall %d %s", okStatus, okRefused, okInstall, okBoot, put, shellOut, c1, b1, c2, b2, c3, b3, c4, b4, c5, b5, ic, ib)
+			t.Errorf("okStatus=%v okRestart=%v okRefused=%v okInstall=%v okBoot=%v\nsupervisor log: %s\nput=%q\n%s\n%d %s | %d %s | %d %s | %d %s | %d %s\ninstall %d %s", okStatus, okRestart, okRefused, okInstall, okBoot, sup, put, shellOut, c1, b1, c2, b2, c3, b3, c4, b4, c5, b5, ic, ib)
 			t.Fail()
 		}
+	})
+
+	// ---- the restart loop does not hide a crash loop ----
+	t.Run("T19_recovery_agent_restart_limit", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		// the TEST recovery kernel is put on the boot partition again (the confirm step of release 28 put the normal one back)
+		_, put := r.sh(`mount -t vfat $(findfs PARTLABEL=hubos-esp) /boot/efi && wget -q -O /boot/efi/EFI/hubos/kernel-recovery.efi.new ` + r.base + `/agent-kernel/kernel-recovery.efi && mv /boot/efi/EFI/hubos/kernel-recovery.efi.new /boot/efi/EFI/hubos/kernel-recovery.efi && sync; umount /boot/efi; echo put-done`)
+		banner, _ := r.bootRecoveryEntry()
+		ac := newAgentClient(t, r)
+		up := false
+		for i := 0; i < 20 && !up; i++ {
+			c, _ := ac.do("GET", "/v1/status", "", nil)
+			up = c == 200
+			if !up {
+				time.Sleep(2 * time.Second)
+			}
+		}
+		// kill the agent five times, each time as soon as it is running again: five short runs in a row
+		for i := 1; i <= 5; i++ {
+			r.vm.sh(`i=0; while [ -z "$(pidof recovery-agent)" ] && [ $i -lt 30 ]; do sleep 1; i=$((i+1)); done; kill -9 $(pidof recovery-agent); echo killed`, 60*time.Second)
+		}
+		time.Sleep(6 * time.Second)
+		_, lg := r.sh(`grep supervisor /run/recovery-agent.log; echo "agents running: $(pidof recovery-agent | wc -w)"`)
+		c, _ := ac.do("GET", "/v1/status", "", nil)
+		shortRuns := len(regexp.MustCompile(`short runs in a row: \d+ of 5`).FindAllString(lg, -1))
+		gaveUp := strings.Contains(lg, "5 short runs in a row: giving up")
+		none := strings.Contains(lg, "agents running: 0")
+		_, alive := r.sh(`echo shell-still-works`) // the recovery shell is not affected
+		ok := banner && strings.Contains(put, "put-done") && up && shortRuns == 5 && gaveUp && none && c != 200 && strings.Contains(alive, "shell-still-works")
+		record("T19 the restart loop does not hide a crash loop: after 5 short runs in a row (each under 30 s) the supervisor logs that it gives up and leaves the agent down; the recovery shell keeps working", ok, time.Since(start),
+			fmt.Sprintf("short-run lines %d, gave up %v, no agent left %v, /v1/status after that: %d", shortRuns, gaveUp, none, c))
+		if !ok {
+			t.Errorf("banner=%v up=%v shortRuns=%d gaveUp=%v none=%v status=%d\n%s", banner, up, shortRuns, gaveUp, none, c, lg)
+			t.Fail()
+		}
+		r.reboot()
+		r.waitConfirmed()
 	})
 
 	// ---- reproducibility (files only) ----
