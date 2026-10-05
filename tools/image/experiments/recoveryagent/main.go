@@ -12,6 +12,7 @@ import (
 // fake is the stand-in backend of the experiment: it changes nothing.
 type fake struct{ failures int }
 
+func (f *fake) Machine() string { return "fake-1" }
 func (f *fake) Status() Status {
 	return Status{Machine: "fake-1", State: "recovery", Release: "recovery-1", BootFailures: f.failures, FailureLimit: 3}
 }

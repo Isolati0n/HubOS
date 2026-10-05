@@ -20,6 +20,7 @@ import (
 // Backend is what the agent does on the machine. In the recovery kernel it would
 // call hubos-ctl; in the experiment it is a fake.
 type Backend interface {
+	Machine() string // this machine's name (the machine id the hub signs for)
 	Status() Status
 	ClearFailures() error
 	Install(slot, baseURL string) (string, error)
@@ -28,6 +29,8 @@ type Backend interface {
 
 // Status is the answer to GET /v1/status.
 type Status struct {
+	API          int    `json:"api"`     // version of this API (add-only inside a major)
+	MinHub       int    `json:"min_hub"` // the lowest hub API version this agent works with
 	Machine      string `json:"machine"`
 	State        string `json:"state"` // always "recovery" in the recovery kernel
 	Release      string `json:"recovery_release"`
@@ -36,6 +39,8 @@ type Status struct {
 }
 
 const (
+	apiVersion  = 1
+	minHub      = 1
 	proto       = "hubos-recovery-v1"
 	maxBody     = 4096
 	maxNonces   = 16
@@ -46,6 +51,7 @@ const (
 type Agent struct {
 	Keys    []PublicKey
 	Backend Backend
+	Name    string // this machine's name: the signed text names it, so a request signed for another machine is refused
 	Now     func() time.Time
 
 	mu     sync.Mutex
@@ -54,13 +60,15 @@ type Agent struct {
 
 // NewAgent makes an agent with the given management keyring.
 func NewAgent(keys []PublicKey, b Backend) *Agent {
-	return &Agent{Keys: keys, Backend: b, Now: time.Now, nonces: map[string]time.Time{}}
+	return &Agent{Keys: keys, Backend: b, Name: b.Machine(), Now: time.Now, nonces: map[string]time.Time{}}
 }
 
 func (a *Agent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	switch {
 	case r.Method == "GET" && r.URL.Path == "/v1/status":
-		writeJSON(w, 200, a.Backend.Status())
+		st := a.Backend.Status()
+		st.API, st.MinHub = apiVersion, minHub
+		writeJSON(w, 200, st)
 	case r.Method == "GET" && r.URL.Path == "/v1/challenge":
 		n, ok := a.newNonce()
 		if !ok {
@@ -140,11 +148,12 @@ func (a *Agent) takeNonce(n string) bool {
 	return ok && a.Now().Sub(t) <= nonceMaxAge
 }
 
-// SignedMessage is the exact text the hub signs. It binds the protocol name, the
-// method, the request path and query, the one-time nonce and the body's hash.
-func SignedMessage(method, requestURI, nonce string, body []byte) []byte {
+// SignedMessage is the exact text the hub signs: six lines joined by one "\n", no newline at the end. It binds the protocol
+// name, the TARGET MACHINE ("machine=ID"), the method, the request path and query, the one-time nonce and the body's hash.
+// The machine line stops a request meant for one machine (or a challenge relayed from another) being accepted by this one.
+func SignedMessage(machine, method, requestURI, nonce string, body []byte) []byte {
 	h := sha256.Sum256(body)
-	return []byte(proto + "\n" + method + "\n" + requestURI + "\n" + nonce + "\n" + hex.EncodeToString(h[:]))
+	return []byte(proto + "\nmachine=" + machine + "\n" + method + "\n" + requestURI + "\n" + nonce + "\n" + hex.EncodeToString(h[:]))
 }
 
 func (a *Agent) authorize(w http.ResponseWriter, r *http.Request) bool {
@@ -154,7 +163,8 @@ func (a *Agent) authorize(w http.ResponseWriter, r *http.Request) bool {
 
 // authorizeBody reads the body (at most maxBody bytes), checks the header
 //
-//	Authorization: HubOS-Sig nonce=HEX, sig=BASE64
+//	Authorization: HubOS-Sig nonce=HEX, sig=BASE64            (machine=ID may be added: if it is not this machine's name,
+//	                                                            the request is refused with 403 and a clear message)
 //
 // and returns the body. The nonce is used up whatever the outcome.
 func (a *Agent) authorizeBody(w http.ResponseWriter, r *http.Request) ([]byte, bool) {
@@ -170,7 +180,7 @@ func (a *Agent) authorizeBody(w http.ResponseWriter, r *http.Request) ([]byte, b
 	if !strings.HasPrefix(h, "HubOS-Sig ") {
 		return deny("signed request required (GET /v1/challenge first)")
 	}
-	var nonce, sigB64 string
+	var nonce, sigB64, machine string
 	for _, p := range strings.Split(strings.TrimPrefix(h, "HubOS-Sig "), ",") {
 		k, v, _ := strings.Cut(strings.TrimSpace(p), "=")
 		switch k {
@@ -178,16 +188,22 @@ func (a *Agent) authorizeBody(w http.ResponseWriter, r *http.Request) ([]byte, b
 			nonce = v
 		case "sig":
 			sigB64 = v
+		case "machine":
+			machine = v
 		}
 	}
 	if !a.takeNonce(nonce) {
 		return deny("unknown, used or expired nonce")
 	}
+	if machine != "" && machine != a.Name {
+		writeJSON(w, 403, map[string]string{"error": "this request is for another machine"})
+		return nil, false
+	}
 	sig, err := ParseSignatureBlob(sigB64)
 	if err != nil {
 		return deny("bad signature encoding")
 	}
-	msg := SignedMessage(r.Method, r.URL.RequestURI(), nonce, body)
+	msg := SignedMessage(a.Name, r.Method, r.URL.RequestURI(), nonce, body)
 	for _, k := range a.Keys {
 		if k.Verify(msg, sig) {
 			return body, true

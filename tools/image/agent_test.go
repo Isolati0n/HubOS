@@ -4,7 +4,7 @@ package image
 
 // Helpers for the recovery agent test (T18 in TestImage): signed requests to the agent that runs inside the TEST recovery
 // kernel (tools/image/experiments/recoveryagent). The request format is the one of the agent's SignedMessage:
-//   Authorization: HubOS-Sig nonce=HEX, sig=BASE64   over   "hubos-recovery-v1\nMETHOD\nREQUEST-URI\nNONCE\nsha256(body) in hex"
+//   Authorization: HubOS-Sig nonce=HEX, sig=BASE64   over   "hubos-recovery-v1\nmachine=ID\nMETHOD\nREQUEST-URI\nNONCE\nsha256(body) in hex"
 // signed with signify-openbsd (an Ed25519 signature in signify's format), by a management key whose public half is in the
 // test recovery kernel (/etc/hubos/mgmt).
 
@@ -25,10 +25,11 @@ import (
 )
 
 type agentClient struct {
-	t    *testing.T
-	r    *rig
-	url  string // http://127.0.0.1:PORT (QEMU forwards it to port 8480 of the guest)
-	http *http.Client
+	t       *testing.T
+	r       *rig
+	machine string // the machine id the hub signs for (the agent's NAME= in node.conf; the test reads it from /v1/status)
+	url     string // http://127.0.0.1:PORT (QEMU forwards it to port 8480 of the guest)
+	http    *http.Client
 }
 
 func (a *agentClient) do(method, uri, auth string, body []byte) (int, string) {
@@ -57,7 +58,7 @@ func (a *agentClient) nonce() string {
 // sign makes the Authorization header value for one request with the secret key file sec.
 func (a *agentClient) sign(sec, method, uri, nonce string, body []byte) string {
 	h := sha256.Sum256(body)
-	msg := "hubos-recovery-v1\n" + method + "\n" + uri + "\n" + nonce + "\n" + hex.EncodeToString(h[:])
+	msg := "hubos-recovery-v1\nmachine=" + a.machine + "\n" + method + "\n" + uri + "\n" + nonce + "\n" + hex.EncodeToString(h[:])
 	dir := a.t.TempDir()
 	mf, sf := filepath.Join(dir, "msg"), filepath.Join(dir, "msg.sig")
 	os.WriteFile(mf, []byte(msg), 0o644)
