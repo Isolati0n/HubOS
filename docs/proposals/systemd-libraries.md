@@ -1,5 +1,7 @@
 # The two systemd libraries in the images: `libsystemd0` and `libudev1`
 
+> Scope: this concerns the hub and the project's reference images; a node's distro may use systemd.
+
 > **PROPOSAL / RESEARCH; nothing here is a decision.** The owner decides (open question in `HUB-OS.md`).
 
 **Written:** 2026-10-03. **Why:** `docs/proposals/phase-b-image.md` found that the Ubuntu 24.04 base pulls in two *libraries* from the systemd source package, although no systemd program is installed or runs. The owner's rule is "no systemd, ever". This file collects what is needed to decide.

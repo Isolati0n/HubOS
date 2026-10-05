@@ -2,6 +2,17 @@
 
 **Written:** 2026-10-05. **Status:** proposal and experiments only. Nothing here changes the image, the kernel configuration or `HUB-OS.md`. Every decision in section 8 is the owner's.
 
+## Owner decisions (2026-10-05)
+
+These answer the questions in section 8. They are the owner's decisions; the lead recorded them from the owner's message. Recorded in `HUB-OS.md` as well.
+
+- efi-pstore stays OFF (it fills the firmware variable store and disables the boot-loop breaker).
+- ramoops is used, with about 1 MiB of reserved RAM per machine.
+- Stage 0 and the recovery kernel may mount the config partition read-write to save evidence.
+- Caps: 8 boots, 64 KiB per file and 256 KiB per boot.
+- The hub shows a machine's logs only while the machine is in recovery and does not store them.
+- Evidence is also saved after the first crash following a clean boot (counter 0).
+
 ## 0. How to read this
 
 Every claim carries exactly one label:

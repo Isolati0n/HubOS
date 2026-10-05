@@ -11,6 +11,8 @@ This file is the source of truth for Hub OS. If any other file, chat, or session
 - Single owner. New to running clusters. Explanations in the product and in sessions must stay plain.
 - Right now the owner has only a phone. No PCs, no cluster hardware, no access to either.
 - All hardware will be bought at once in December 2026.
+- Security is not a concern for Hub OS (owner decision): no further security work (user split, TLS, hardware tokens, key ceremonies) is planned unless the owner asks; what is already built stays.
+- Hub OS is for the owner only; the repository is unlicensed and stays unlicensed.
 - Until then, work only on what does not need hardware: design, documents, code tested against fake nodes, and our own system booted inside virtual machines in the cloud.
 - The bot (Claude Code) builds. Design is decided between the owner and Claude (manager), then handed to the bot.
 
@@ -20,10 +22,14 @@ This file is the source of truth for Hub OS. If any other file, chat, or session
 
 Hub OS has two parts:
 
-1. **A custom Linux-based operating system** that runs on every machine in a personal rack cluster. Each machine is purpose-built for its one role.
+1. **Every machine runs its own purpose-built operating system or distribution, chosen for that machine's services and workflows.** The machines are expected to differ and that never matters. Hub OS is the hub, the contracts between hub and nodes (the display protocol, the node helper API, the update and recovery interfaces) and shared tools any distro may use, including the image build, update and recovery plumbing. The A/B update and recovery plumbing (A/B slots, signed updates, rollback, recovery with a network recovery agent) is required on every machine; each distro implements that contract in its own way, and this project's tools are the reference implementation.
 2. **On the hub** (the machine at the desk), a thin broker that checks which machines are reachable and opens each machine's display as a normal native window on the driftwm infinite canvas.
 
 The hub is the owner's daily driver. Every capability is outsourced to a specialized node. The hub runs nothing but viewers.
+
+The hub is one computer: the main node and daily driver of the cluster, which handles remote sessions while specific work (AI, NAS and so on) is done by other nodes and shown on the hub.
+
+The hub is eventually built from scratch: every component chosen, built from source and optimized for the hub's one use. The current Ubuntu-based image is the scaffold, not the goal. The Linux kernel stays upstream Linux, built for the hub (see docs/proposals/from-scratch-hub.md for the staged plan).
 
 ## Core principles
 
@@ -31,9 +37,13 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 - **Every workload node is purpose-built for its job.**
 - **Build it ourselves when it measurably improves Hub OS.** For every part we replace, state what our version does better for this cluster and verify it. If a proven part does the job equally well, use it.
 - **The Linux kernel stays.** Moonlight, driftwm, and GPU drivers depend on it.
-- **glibc everywhere** (required by Steam/Proton and likely by GPU drivers).
+- **glibc where a machine needs it** (Steam and Proton on the gaming box, NVIDIA's driver); the hub stays glibc as built; other nodes may use any libc (confirmed by the owner).
 - **Say when something is unverified.** Never present a guess as fact. Never invent a protocol.
-- No systemd, ever.
+- No systemd in Hub OS (the hub, the project's tools and the images built for the hub). A node's distro is the owner's choice and may use systemd.
+- **The hub must never freeze or crash:** it is designed to remove as many causes of instability as possible, for maximum uptime (see docs/proposals/hub-stability.md). The hardware watchdog stays only as a last resort for a dead kernel or PID 1; the design goal is that it never fires.
+- **When principles collide the order is:** (1) uptime and stability, (2) integration, (3) optimization built for the hub's one use, (4) building it ourselves, only when it measurably wins, (5) simplicity.
+- **The hub is built to need as little maintenance and as few updates as possible;** the goal is the most rock-solid, stable, reliable, feature-packed distro possible. There are no spare hubs.
+- **Design assumption:** for design the cluster network and the internet are assumed perfect: zero latency, unlimited bandwidth, always on and unhackable. The 10GbE hardware is still bought, but no design effort goes into bandwidth, latency, traffic shaping, quality scaling or network security; node failures, the hub's own stability, window handling and audio still matter.
 - **Scale:** real-world reference is at most 20 machines; hardware, cabling and the hub's open windows are sized for 20. The panel and hubd keep headroom for 100 machines; 5000 is a stretch target: it must not break, and the measured numbers are recorded before anything is claimed.
 
 ---
@@ -44,7 +54,9 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 - **Hub display:** one ultra-short-throw projector. The hub has a single view of the canvas.
 - **Gaming monitors:** one or two, cabled directly to the gaming box's GPU. They are not part of the hub.
 - **Input:** one keyboard and one mouse, plugged into the gaming box (see Input sharing). A spare keyboard and mouse in a drawer can be plugged into the hub in an emergency.
-- **Network:** a fast wired network (10GbE-class) between machines. Every machine may reach the internet.
+- **Network:** a fast wired network (10GbE-class) between machines. Machines may reach the internet unless the owner chooses otherwise (see the next line).
+- **Internet:** the hub always has internet and serves time to the cluster. A machine that does not need the internet, the NAS by default, has none (the owner's choice per machine); the NAS gets internet 24/7 only if remote sessions are piped to it through the internet. The hub is updated only for a bug or a feature the owner wants, never on a schedule or for security. The hub keeps only saved layouts, mixer settings, credentials and the crash record, capped in size and in one place. A failed hub part is replaced and the hub restored from the NAS backup, so everything the hub needs to rebuild itself is backed up to the NAS.
+- **Hub memory:** the hub uses ECC memory (owner decision).
 - **Power:** treated as unlimited, free, and never failing. No battery backup (UPS). Electricity cost is not a design factor.
 - **Machines:** every machine uses an AMD CPU; GPUs are chosen per machine. No proprietary BMC firmware is used anywhere: boards are not required to have a BMC and their BMCs are not used. Recovery is built into Hub OS (hardware watchdog, boot-loop breaker, A/B rollback, and a recovery kernel with a network recovery agent that hubd talks to). Out-of-band control (power cycle, screen, BIOS) for a machine whose firmware or kernel is dead needs hardware wired to that machine; whether to have it, and which open device (a PiKVM-class device, a relay or a switched power strip), is decided in December. Any such device sits on its own isolated management network. Out-of-band devices, if any, sit on an isolated management network; the recovery agent lives on the normal network.
 
@@ -55,14 +67,14 @@ The hub is the owner's daily driver. Every capability is outsourced to a special
 | Role | Purpose | How the hub shows it |
 |---|---|---|
 | Hub | Daily driver; runs only viewers | This machine runs the broker |
-| Gaming box (one) | All games, Linux only | Moonlight window for casual play; competitive play on its own monitors |
-| AI / GPU box | Training, inference, Blender, ParaView, CUDA | Moonlight window (Sunshine on the node) |
+| Gaming box (one) | All games, Linux only | Its default display window only, the same one the other machines use, for working on its distro's GUI from the hub; all play happens at its own monitors |
+| AI / GPU box | Generating pictures, videos, music and prompts (generative media) | Moonlight window (Sunshine on the node) |
 | General desktop node | Web browser, text editor, everyday apps | Moonlight window |
 | NAS | Cluster file storage | Its own bespoke GUI in a window (the bespoke file manager is part of it) |
 | Backup NAS | Local backup copy of the NAS | Listed; opened like the NAS |
 | VM host | Operating system development and experiments | Its own bespoke GUI in a window; its guests open with remote-viewer (virt-viewer) |
 
-Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub stays a thin client: the browser and everyday apps run on the general desktop node (owner decision, 2026-10-04).
+Every machine runs its own purpose-built operating system or distribution (see What Hub OS is). TrueNAS and Proxmox are **not** used. The hub stays a thin client: the browser and everyday apps run on the general desktop node (owner decision, 2026-10-04).
 
 ---
 
@@ -77,16 +89,16 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - **Images are digitally signed.** A machine refuses an image that is not signed by the owner.
 - **A machine refuses to update or restart while a game or long job is running.**
 - **Master copies of the code and every built image live on the NAS.** GitHub is a convenience mirror. Long term, builds happen on a machine inside the cluster, so the cluster can rebuild itself if GitHub disappears.
-- **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used, under any circumstances.
-- systemd programs are never installed or run. The hub uses eudev's libudev (not the systemd-built one); libsystemd0 is tolerated for now as a plain library because Waybar and dbus-daemon link it. Headless role images may drop it later with rebuilt packages. See docs/proposals/systemd-libraries.md and docs/proposals/phase-b-desktop.md.
-- The image build pins systemd, systemd-sysv, libpam-systemd, dbus-user-session, udev, systemd-timesyncd and systemd-resolved to never install, and a build test fails if any of them, or any systemd unit directory, is in an image.
-- Finished images do not contain apt, PAM modules, procps, login and passwd (dpkg stays for now; it is an Essential package, so only its files could be deleted later). They are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
+- **Init (on the hub and in the project's reference images):** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used on the hub and in the project's reference images, under any circumstances.
+- On the hub and in the project's reference images, systemd programs are never installed or run. The hub uses eudev's libudev (not the systemd-built one); libsystemd0 is tolerated for now as a plain library because Waybar and dbus-daemon link it. Headless role images may drop it later with rebuilt packages. See docs/proposals/systemd-libraries.md and docs/proposals/phase-b-desktop.md.
+- On the hub and in the project's reference images, the image build pins systemd, systemd-sysv, libpam-systemd, dbus-user-session, udev, systemd-timesyncd and systemd-resolved to never install, and a build test fails if any of them, or any systemd unit directory, is in an image.
+- On the hub and in the project's reference images, finished images do not contain apt, PAM modules, procps, login and passwd (dpkg stays for now; it is an Essential package, so only its files could be deleted later). They are deleted after the build, and a test checks that no remaining file has an unresolved library. Nodes are never changed with a package manager.
 - **Hub recovery mode:** a boot option that gives a bare terminal, plus rollback to the previous image from the boot menu.
 - Recovery is a separate kernel (kernel-recovery.efi) that needs neither slot's root; its shell can install a signed bundle into a slot the owner names (manually; automatic repair for machines without a keyboard is a proposal only).
 - A boot-loop breaker counts failed boots in an EFI variable: stage 0 increments it at every boot, the confirm step clears it, and after N failures (default 3, per-machine setting) stage 0 starts the recovery shell instead of booting.
 - The recovery kernel arms the hardware watchdog and the network recovery agent feeds it.
 - The network recovery agent gets its address from a DHCP reservation per machine; its API is signed requests with one-time nonces, one API with the node helper (a state field says recovery or running). Reinstall is a button only, never automatic; the default release is the last one that machine confirmed, into the slot that failed.
-- wayvnc and neatvnc are built from source at pinned tags (wayvnc v0.10.2 with neatvnc v1.0.3 or newer; Ubuntu 24.04's 0.7.2 garbles non-ASCII clipboard text); every node's wayvnc is started with --name <machine id>; sessions are non-shared; the screen size is fixed per node in v1.
+- wayvnc and neatvnc are built from source at pinned tags (wayvnc v0.10.2 with neatvnc v1.0.3 or newer; Ubuntu 24.04's 0.7.2 garbles non-ASCII clipboard text); every node's wayvnc is started with --name <machine id>; sessions are shared (a second viewer, such as the phone, may join); the screen size is fixed per node in v1.
 - Display credentials are per node (the secrets design decides how they are made and stored); the management key's private half lives on the hub's config partition, readable only by root and hubd, never on a node; nodes hold only public keys.
 - The recovery agent is supervised by a plain shell restart loop in the recovery kernel. The boot partition of real machines is 512 MiB.
 - Requests to nodes and to the recovery agent name the target machine id in the signed text. The node helper and the recovery agent share one port (8480, to be checked against the IANA registry) and one API. The control link is signed but not encrypted on the isolated wired network for v1; TLS is revisited when the secrets tool exists.
@@ -99,6 +111,15 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - Kernels are independent per machine. Each machine's configuration names its own kernel (version, build options, extra modules); nothing is inherited from a role. Roles are text labels only: the inventory gives behaviour to hub, guest and vm-host and to nothing else. One default kernel is set in the build configuration; a machine that overrides it records the reason in its config.
 - Out-of-tree kernel modules (NVIDIA's driver, OpenZFS) are allowed only when a machine's configuration declares them. They are built together with that machine's kernel from one pinned source version; if the build fails, no image is produced. They are listed in the signed manifest and covered by the boot tests.
 - Kernel and graphics-stack versions are pinned and tested before rollout; nothing tracks 'latest'. Each image boots in a test machine before it is offered. The NAS and the backup NAS are updated a week apart, and the backup NAS only after the main one has run well.
+
+- A failing service on the hub is restarted, then its dependents are restarted, then retrying stops and an alert shows on the bar; the owner decides what happens next. The hub reboots by itself only (a) to roll back an update whose trial boot never becomes healthy, and (b) when the hardware watchdog fires because the kernel or PID 1 is dead.
+- Display sessions use uncompressed (lossless) pixels (owner decision; bandwidth is assumed unlimited).
+- No level-of-detail, pausing or quality scaling of windows is planned; node screens keep a fixed size (docs/proposals/remote-display-lod.md is marked not planned).
+- Node sessions use headless (virtual) outputs; wayvnc and neatvnc are built as release builds; the Fence abort found by the benchmark helper is not reported upstream for now (owner decisions, 2026-10-05).
+- The hub's system is copied into RAM at boot so a failing disk cannot stall it (owner decision; design in docs/proposals/hub-stability.md).
+- The hub itself is updated by pulling the signed image from the NAS when the owner tells it to.
+- The compositor and hubd get reserved CPU and priority (owner decision; design in docs/proposals/hub-stability.md).
+- Black box recorder (owner decisions, 2026-10-05; details in docs/proposals/black-box-recorder.md): efi-pstore stays OFF (it fills the firmware variable store and disables the boot-loop breaker); ramoops with about 1 MiB of reserved RAM per machine is used; stage 0 and the recovery kernel may mount the config partition read-write to save evidence; caps are 8 boots, 64 KiB per file and 256 KiB per boot; evidence is also saved after the first crash following a clean boot; the hub shows a machine's logs only while the machine is in recovery and does not store them.
 
 ### Parts we write ourselves
 
@@ -136,13 +157,17 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - Windows stay on the canvas. driftwm never magnifies: zoom stops at 100%, so 'zoom in' only means back to native size. Larger text comes from the output's scale setting and from window size, and is untested. 'Maximize' means driftwm's fit-to-viewport.
 - Navigation is by mouse.
 - The hub desktop is meant to run as a normal user in the seat group, not as root (untested).
-- Hub desktop: driftwm's session state lives in RAM (windows are never restored after a reboot). Waybar, hubd, driftwm and dbus-daemon are s6 services run as the normal user hub; seatd and udevd run as root (they open the GPU, input devices and netlink). Waybar and hubd wait for driftwm's socket and restart when it returns. No terminal starts by itself.
+- Hub desktop: window layouts (positions, sizes and the view) are saved by name and restored (how is being researched, see docs/proposals/driftwm-layouts.md); they live on the config partition. Windows never reopen by themselves after a reboot: the owner starts them and they take their saved places. Waybar, hubd, driftwm and dbus-daemon are s6 services run as the normal user hub; seatd and udevd run as root (they open the GPU, input devices and netlink). Waybar and hubd wait for driftwm's socket and restart when it returns. No terminal starts by itself.
+- If the compositor crashes and restarts, the windows reappear at their saved places with their sessions intact (the owner wants this; design and options in docs/proposals/hub-stability.md); after a reboot windows still do not reopen by themselves. The compositor is hardened so that it does not crash (see the same document); changes to driftwm stay under its GPL-3.0-or-later licence. The owner does not care about any visual effects (blur, shader backgrounds, animations): they may be turned off or removed from the hub's compositor to make it smaller, lighter and safer.
+- The hub's own viewer may be built on Qt6, because only Qt6 clients survive a compositor restart (Plan C), if the socket-handover patch to driftwm is small; otherwise Plan A (owner decision).
 - hubd keeps windows it places clear of the bar, and expects the camera to be offset by half the bar height.
 - hubd controls driftwm through its local socket (list windows, place a window, move the view, focus, resize, fit). The socket is only for the same user. See docs/driftwm-findings.md.
 - driftwm is pinned to one exact commit (352333a8fa1b22171492d4b71a54102045c9a19d, version 0.19.0). It is GPL-3.0-or-later; anything changed in it is published under that licence. It is a single-maintainer, pre-1.0, AI-built project, so expect to carry patches. Game-style windows use the per-window pass_keys = true rule; no patch for the shortcut-inhibit protocol for now.
 
 ### Panel
 - An always-visible bar item that opens a scrollable dropdown, grouped by role. Guests are nested under their host.
+- The dropdown (with scroll and search) is both the machine list and the list of open windows: each machine has at most one window, so they are the same thing. The list marks machines whose window is open; picking an open machine focuses its window and moves the view to it, picking a closed one opens it. There is no separate Windows button.
+- In the list an open window shows a filled dot and a closed one an empty dot; open machines stay in their role groups.
 - The bar is Waybar, on the top edge. The alert is a Waybar custom module fed by hubd. The dropdown is a list launcher (wofi) opened by a click on the bar item and filled by hubd; lines that are group headings are ignored if picked. A bespoke panel may replace this later. See docs/bar-findings.md.
 - Fullscreen hides the bar and its alert, so Moonlight windows use driftwm's fit-to-viewport by default, not fullscreen.
 - When a machine is down, the **bar item itself shows an alert** (for example, "3 of 4 up" in red).
@@ -151,17 +176,20 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - The bar shows which machine currently owns the keyboard and mouse (hub or gaming box).
 - No alerts are sent to the owner's phone.
 - Panel states: up, down (that machine does not answer), in recovery, unreachable (the hub suspects its own network, for example many machines failing at once).
-- A master volume button on the bar opens a mixer that lists every node's sound with its own volume slider and mute button, plus a master volume and a mute-all control. Each node's volume and mute are remembered and restored when its window opens; a node with no saved state starts unmuted at the default volume (owner to confirm).
+- A master volume button on the bar opens a mixer that lists every node's sound with its own volume slider and mute button, plus a master volume and a mute-all control. Each node's volume and mute are remembered and restored when its window opens; a node with no saved state starts unmuted at the normal level the first time its window opens (owner decision).
 
 ### Leaving a window
-- **Desktop-style windows** (AI box, general desktop, NAS, VM guests): the pointer stays free; leave by clicking outside the window.
-- **Game-style windows** (casual play through the hub): for v1, use Moonlight's built-in Ctrl + Alt + Shift + Z to release mouse and keyboard. A custom exit chord may come later, after testing how driftwm handles shortcuts.
+- Windows have a free pointer; leave a window by clicking outside it.
 
 ### Power actions (after the first working slice)
 - Each machine gets Restart and Shut down, with a confirmation that names what will be lost (for example, "this ends the open desktop session on the AI box").
 
 ### Adding machines
 - v1: hand-edit the inventory file. A guided "add machine" step may come later.
+
+### Phone access
+- Phone access when away: view windows, restart machines and check the bar. There is no VPN: the owner's design assumption is a perfect, unhackable internet, so the phone connects straight to the hub and the nodes. Display sessions are shared, so a second viewer (the phone) can join while the hub's window stays open.
+- Phone access is a web page served by the hub (list, restart buttons, the bar, windows viewed in the browser) (owner decision; owner to confirm how this fits the "Explicitly out" web-dashboard line and the Remote access section).
 
 ---
 
@@ -192,8 +220,7 @@ Every node runs the Hub OS system. TrueNAS and Proxmox are **not** used. The hub
 - Emulators ship inside the gaming box's sealed image as pinned upstream binaries (AppImage or standalone), listed with their SHA-256 in the machine's build config and run with extract-and-run (no FUSE). They are built from source only where no suitable binary exists or a patch is needed. No Flatpak. Steam, game files and Proton prefixes live on the box's own SSD data area.
 - N64: RMG by default (Gopher64 is the second candidate to test in December). NES: MesenCE (its Linux release format is still to be checked).
 - The gaming-box kernel configuration enables user namespaces (Steam's container runtime needs them).
-- **Competitive play** happens on the gaming monitors, with zero streaming delay.
-- **Casual play** can happen in a Moonlight window on the hub, showing the same picker.
+- All play happens on the gaming monitors, with zero streaming delay; the box has no game window on the hub.
 
 ---
 
@@ -308,24 +335,19 @@ HubOS/
 
 - How driftwm behaves on a projector, and how readable small text is
 - Whether PipeWire runs with driftwm on the real Hub OS image (driftwm itself ran without systemd in the build environment)
-- How Moonlight and driftwm hand keyboard and mouse input back and forth
-- Whether a Sunshine session stays alive after the viewer closes
-- What the gaming monitors show while the gaming box is being streamed
 - Clipboard and audio support in each viewer
-- Streaming delay on the real network and hardware
+- Streaming delay on the real network and hardware (low priority: the network is assumed perfect)
 - The input forwarder approach (reading raw input devices and creating virtual ones)
 - How much management software the VM host needs on top of KVM
 - Whether NVIDIA's driver requires glibc
 - Which per-game settings can change at launch without side effects
 - A report of Slippi dropping frames on Linux where Windows was smooth (one user's report)
 - Whether a bare TCP connect-then-close disturbs a real Sunshine, SPICE or VNC session
-- The hubd time limits (2 s per machine, 5 s total) are guesses, not measured on a real network
+- The hubd time limits (2 s per machine, 5 s total) are guesses, not measured on a real network (low priority)
 - Whether /etc/hubos/inventory.toml is where per-machine config will live on the Hub OS image
 - Whether the input forwarder can be tested at all: /dev/uinput is absent in the build environment (a test would need a virtual machine with a kernel built with uinput)
 - driftwm's real-display backend on a real or virtual GPU (only the nested software mode was run)
-- The window names and titles real Moonlight reports (remote-viewer, Remmina, foot and pcmanfm were tested under driftwm; Moonlight is read from source only)
-- Moonlight opens a status window first, with the fixed app-id and a believed title 'Moonlight'; where it appears and what it does is unknown (source only); hubd ignores it
-- Pointer constraints with a real Moonlight session
+- The window names and titles real viewers report (remote-viewer, Remmina, foot and pcmanfm were tested under driftwm)
 - Text readability on the projector, and output scale
 - A release build of driftwm: speed and memory
 - Waybar as a non-root user under s6 or dinit
@@ -333,7 +355,6 @@ HubOS/
 - hubd, the panel and wofi at 100 and at 5000 machines
 - Copy-paste across windows: Moonlight does not share the clipboard from the machine back to the hub (it only types the hub's clipboard text on the machine); see docs/viewers-research.md
 - remote-viewer shows a small error dialog that carries the chosen app-id when the connection fails; hubd cannot tell it from the viewer window
-- Moonlight window title '<id> - Moonlight' with Sunshine's name set to the machine id (read from source; Moonlight was never run)
 - tmux new-session -A -s hubos over ssh (not run against a real server)
 - libudev-zero with libinput, driftwm, OpenZFS and QEMU/libvirt (symbols match; nothing was run with them)
 - Real logins through sshd without PAM modules (only sshd -t was run)
@@ -369,13 +390,11 @@ HubOS/
 - Number of machines per role
 - Minecraft Java or Bedrock
 - Soul Calibur II netplay: Dolphin (GameCube, delay-based) or Ring Out (a recompiled port, delay-based, five weeks old); decide in December
-- A custom exit chord for game-style windows
-- Security note: every machine stays logged in and can reach the internet, so incoming connections from the internet must stay blocked (except the future remote-access piece). Owner to confirm.
+- What the phone runs (a viewer app or a view of the hub canvas)
 - Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
 - Display protocol for non-gaming nodes: the plan is VNC with wayvnc on the nodes, PipeWire RTP for sound (raw), and one signed control API; the AI box uses VNC until the December measurements, with Sunshine as its fallback; RDP is out of scope for now (docs/proposals/remote-display.md)
 - Clipboard: text only, both directions wanted; node to hub works in tests, hub to node is unresolved
 - Where the mixer settings live: the hub's config partition, included in the NAS backup
-- Which additional nodes to build, and when (suggested, not decided: a hardware test bench of two or three cheap boards, a build and test node with KVM, a release and netboot node, a spare hub)
 - Whether the no-systemd rule covers appliances that are not Hub OS machines (for example a PiKVM, which runs its own Linux); a December decision
 - Where each key and credential lives and how it rotates (see docs/proposals/secrets.md)
 - Clipboard push: a bar button and a key chord (the chord chosen after checking driftwm's bindings); the target is the focused window's machine, with a pick from the list; a pull button as fallback; no automatic push; size limit 1 MiB; hubd ignores a differing echo of the text it just pushed
@@ -383,14 +402,18 @@ HubOS/
 - The clipboard bridge and the node helper API (see docs/proposals/node-helper-api.md)
 - The network recovery agent in the recovery kernel: protocol, authentication, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
-- Moonlight pairing is by hand once per node for v1; secrets design later (pairing is scriptable: moonlight pair --pin and Sunshine's PIN API)
-- AI box: NVIDIA with CUDA, or AMD with ROCm (December hardware decision)
+- AI box: NVIDIA with CUDA, or AMD with ROCm, decided in December from the generative-media software the owner will run (images, video, music, language models); VRAM matters most
 - Forwarder design: always grab and re-inject, or grab only while forwarding (decided after December measurements)
 - N64: confirm RMG against Gopher64 in a December test
 - MesenCE's Linux release format (AppImage or other): the owner checks
 - Whether the Battle.net desktop app is needed for the Steam edition of Diablo II: test in December
 - Whether Steam runs without systemd on the image (32-bit libraries, user namespaces): test in December
 - Unattended recovery for machines without a keyboard: after December, when the boards' serial and BMC options are known
+- Which distro each node gets (undecided); node GUIs are designed after that
+- From-scratch hub: which components stay upstream and which are ours (see docs/proposals/from-scratch-hub.md)
+- Moonlight and Sunshine are not planned for use; hubd's Moonlight support (title matching, the session field, the default port) stays in the code and is not removed until the display protocol is final, and is then deleted.
+- Display sessions use uncompressed (lossless) pixels, since bandwidth is assumed unlimited: sharpest possible text and no decode limit on the hub (owner to confirm)
+- Which way windows survive a compositor crash: Plan A (hubd relaunches the viewers into driftwm's saved places), Plan B (a session daemon), or Plan C (a Qt6 viewer with a socket handover from driftwm); see docs/proposals/hub-stability.md
 
 ---
 
@@ -447,4 +470,6 @@ HubOS/
 - **2026-10-04:** Phase B images: test recovery agent supervised by a restart loop.
 - **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials, management key on the hub, recovery agent supervision, Go stays (Erlang parked).
 - **2026-10-04:** Round 3 decisions recorded: signed text names the machine, shared port, signing key custody, per-node credential files, user split, clipboard push rules.
+- **2026-10-05:** Each machine runs its own distro (Hub OS = contracts plus shared tools; A/B and recovery plumbing required on every machine); one list for machines and windows; saved layouts; no internet for the NAS; file clipboard planned; the gaming box has no game window on the hub; the AI box is for generative media; phone access through a VPN with shared sessions; security out of scope; unlicensed; the no-systemd rule is for the hub only; the hub is eventually built from scratch.
+- **2026-10-05 (later):** Hub stability and maintenance decisions recorded: the hub never reboots itself for a service failure, uptime first, priority order, perfect-network design assumption, no level-of-detail work, windows survive a compositor crash, hub defaults (Qt6 viewer if the handover patch is small, lossless sessions, system in RAM, ECC, updates pulled from the NAS, reserved CPU, list dots, unmuted first volume, phone web page), black box recorder decisions, glibc rule narrowed.
 - **2026-10-05:** hubd list marks every machine whose window is open with a filled dot (an empty dot when closed); a pick of an open machine goes to its window; see docs/hubd-slice2.md section 17.

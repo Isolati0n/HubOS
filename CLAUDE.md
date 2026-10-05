@@ -17,13 +17,14 @@ If it is missing, stop and tell the owner. Do not guess its contents.
 - Do **not** use: Selkies, Apache Guacamole, NICE/Amazon DCV.
 - Secrets never go in the inventory file and never go in git.
 - Never rewrite, amend, or force-push existing commits without asking the owner first. Fix mistakes with a new commit.
-- Never use systemd, under any circumstances. Init: start with an existing small init (candidates s6, dinit), kept swappable. Write our own only after a measured benefit and owner approval.
+- Never use systemd in Hub OS (the hub, the project's tools and the images built for the hub). The distro of a node is the owner's choice and may use systemd; do not add or remove systemd in a node's distro unless the owner says so. Init: start with an existing small init (candidates s6, dinit), kept swappable. Write our own only after a measured benefit and owner approval.
+- Never commit or push a core dump, an environment dump, a process memory file or anything that could contain a credential. Helper agents follow the same rule, and you put it in their instructions. Scan every diff before pushing (see tools/check-push.sh).
 - Never use cloud credentials found in the environment (AWS_*, CLOUDSDK_*, or similar), and never print any secret. The only credential you may use is the GitHub token, and only for GitHub.
 
 ## How to work
 
 - Do only the task the owner gives you. Nothing extra.
-- Ask the owner before every choice (questions may be batched).
+- Ask the owner before every choice (questions may be batched). Ask the owner about any and all design questions, batched; do not decide design details yourself.
 - Do not edit HUB-OS.md unless asked; record every change in its Change log.
 - If something is unsolved or unverified, say so plainly. Do not invent architecture or protocols.
 - Speak plainly. The owner is not a cluster operator.
