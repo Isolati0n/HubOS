@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Term A
+Exec=foot --app-id=term-a --title=First sleep 1500
+Terminal=false
+StartupWMClass=term-a

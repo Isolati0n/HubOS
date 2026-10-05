@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Term B
+Exec=foot --app-id=term-b --title=Second sleep 1500
+Terminal=false
+StartupWMClass=term-b

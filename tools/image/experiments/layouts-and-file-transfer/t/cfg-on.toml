@@ -1,0 +1,5 @@
+[session]
+suspend_on_close = true
+restore_windows = true
+restore_camera = true
+restore_bookmarks = true
