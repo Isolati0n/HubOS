@@ -888,7 +888,7 @@ hubd adopted the three machines that have exactly one window with their title (`
 
 Unit tests (`internal/hub/marker_test.go`): `TestMarkerOpenIsFilledClosedIsEmpty`, `TestMarkerWindowClosedByHandTurnsEmpty` (also `hubd end`), `TestMarkerWindowAppearsLate`, `TestMarkerWithTheDuplicateTitleWarning` (both a known window with a duplicate, filled, and two same-titled windows hubd cannot tell apart, empty), `TestPickAMarkedLineGoesToTheWindowOrOpens`, `TestSearchStillMatchesByNameAndIdWithTheMarker`, `TestWindowsOfNoMachineNeverAppearInTheList`, `TestPickingAnOpenMachineFocusesItsWindowAndMovesTheView` (the fake driftwm models focus: raise, and pan unless in view). Existing tests that quoted machine lines were changed to the new lines (`view_test.go`, `ipc_test.go`).
 
-Hub image test H3c (`tools/image/hub_test.go`, build tag `qemu`): two fake viewer windows (ai-1 and desk-1, homes 3000 canvas units apart), a third machine (desk-2) not open; the bar click opens the menu; the list (screenshot and `hubd list`) shows two filled dots and the others empty; a click on the open ai-1 row while its window is off screen, then while it is behind desk-1's window, focuses it and brings it into view; `hubd end desk-1` turns its dot empty; typing `two` and Enter opens desk-2. The test inventory (`image/config/hub/inventory.toml`) got two machines for this, `desk-1` and `desk-2` (role desktop, fake listeners started by the test). The runs are in `docs/image.md` style RESULTS blocks, given to the lead with this change.
+Hub image test H3c (`tools/image/hub_test.go`, build tag `qemu`): two fake viewer windows (ai-1 and desk-1, homes 3000 canvas units apart), a third machine (desk-2) not open; the bar click opens the menu; the list (screenshot and `hubd list`) shows two filled dots and the others empty; a click on the open ai-1 row while its window is off screen, then while it is behind desk-1's window, focuses it and brings it into view; `hubd end desk-1` turns its dot empty; typing `two` and Enter opens desk-2. The test inventory (`image/config/hub/inventory.toml`) got two machines for this, `desk-1` and `desk-2` (role desktop, fake listeners started by the test). The RESULTS blocks of the runs were given to the lead with this change (section 17.6).
 
 ### 17.5 Not shown, and questions for the owner
 
@@ -896,3 +896,13 @@ Hub image test H3c (`tools/image/hub_test.go`, build tag `qemu`): two fake viewe
 - Question: keep ` [open]` as well as the dot? (Now: dot only.)
 - Question: should the hub's own line have no dot? (Now: empty dot.)
 - Question: should the bar item show how many windows are open (for example in the tooltip)? Nothing was added, because it is a design choice.
+
+### 17.6 Hub image test runs (TESTED, 2026-10-05, build environment, QEMU without KVM, a busy computer: load average 8 to 12 on 4 CPUs)
+
+`go test -tags qemu -count=1 -v -run TestHubImage ./tools/image`, the build cached between runs (`HUBOS_HUB_WORK`). Nine runs were made while the test was written; the last two, of the final test code, both gave all PASS (1050 s and 1057 s; H3c took about 2 minutes), and so did two earlier ones. Five runs of earlier versions failed, for these reasons, found and fixed **in the test**, not in hubd:
+
+- A typed key was lost once (only `o` of `two` arrived; Enter then picked the first line, `? search`). The search step now retries up to three times.
+- Under load, `hubd end` answered `asked the window of … to close, but it is still open` (hubd waits 3 s for a window to close, a guess from the first slice) in H3b (an existing test) and in H3c, although the window closed a moment later. The two tests now wait up to 30 s for the window or the dot instead of requiring `end` to answer 0. **This 3 s wait is too short on a slow machine (UNKNOWN on real hardware); not changed.**
+- Under load a machine shows `UP [opening]` with the empty dot for a few seconds after the pick, until hubd has placed and recorded the window; H3c waits up to a minute for the filled dot.
+- One run (H3 itself, an existing test) had no window within the 10 s window wait because the computer was overloaded (the machine went to the late-window state); that run's later tests failed with it. Not caused by this change.
+- Once, a window opened by a pick stood at driftwm's own cascade spot `[25, -125]` instead of its home `[3000, 1000]` (hubd's message still said it was placed at home). **Cause UNKNOWN** (believed: the move came before the window was mapped, on a slow machine); seen once in 9 runs, not investigated, not related to the marker.
