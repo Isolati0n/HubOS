@@ -1,0 +1,539 @@
+# results.txt: the output of t/runall.sh (section L10 added afterwards from t/t14.sh), run on 2026-10-05 in the build environment.
+# Paths are shortened: $LFT is the work folder, $SCRATCH the session's scratch folder.
+# Lines about processes named hubos-sNN come from other helpers' tests running at the same time and were filtered out of the
+# foot lists; window ids and timestamps change from run to run. The one flaky line is explained in docs/proposals/file-transfer.md.
+
+################################################################ L1-L3: save, kill -9, restart, relaunch, dismiss (all four [session] flags on)
+######## T1 (save, kill -9)
+parent=wayland-1 driftwm display=wayland-2
+--- state after launch
+camera 50 -50.5
+zoom 1
+layout  (us)
+windows 3
+  * #1 term-a [50, -50] 700x525  "First"
+    #0 nodesk [0, 0] 700x525  "NoDesktopEntry"
+    #2 term-b [25, -25] 700x525  "Second"
+fullscreen 0
+pinned 0
+layers 0
+canvas-layers 0
+outputs 1
+  * winit camera 50 -50.5 zoom 1 1280x800
+300 200
+640 480
+-500 -300
+500 350
+0 -600
+120 80
+0.8
+700 -400
+--- state before kill
+camera 120 80
+zoom 0.8
+layout  (us)
+windows 3
+  * #1 term-a [300, 200] 640x480  "First"
+    #2 term-b [-500, -300] 500x350  "Second"
+    #0 nodesk [0, -600] 700x525  "NoDesktopEntry"
+fullscreen 0
+pinned 0
+layers 0
+canvas-layers 0
+outputs 1
+  * winit camera 120 80 zoom 0.8 1280x800
+--- session.json before kill
+{"version":2,"saved_at":1791214310,"entries":[{"id":0,"app_id":"term-a","desktop_id":"term-a","display_name":"Term A","position":[300,200],"size":[640,480],"origin":"quit","csd":false,"focused":true},{"id":1,"app_id":"term-b","desktop_id":"term-b","display_name":"Term B","position":[-500,-300],"size":[500,350],"origin":"quit","csd":false,"focused":false}],"outputs":{"winit":{"camera":[-680.0,-580.0],"zoom":0.8}},"bookmarks":{"1":[-1750.0,1750.0],"2":[1750.0,1750.0],"3":[1750.0,-1750.0],"4":[-1750.0,-1750.0],"myplace":[700.0,-400.0]}}
+total 12
+drwxr-xr-x 2 root root 4096 Oct  5 15:31 .
+drwxr-xr-x 3 root root 4096 Oct  5 15:31 ..
+-rw-r--r-- 1 root root 1010 Oct  5 15:31 session.json
+--- KILL -9 compositor pid 20331
+$LFT/t/t1.sh: line 36: 20331 Killed                  env WAYLAND_DISPLAY=$PARENT RUST_LOG=info $DW --backend winit --config $cfg "$@" > $T/dw.log 2>&1
+--- after kill: foot alive?
+16846 [foot] <defunct>
+--- files left
+$LFT/t/state/driftwm:
+total 12
+drwxr-xr-x 2 root root 4096 Oct  5 15:31 .
+drwxr-xr-x 3 root root 4096 Oct  5 15:31 ..
+-rw-r--r-- 1 root root 1010 Oct  5 15:31 session.json
+
+/tmp/dwx:
+total 12
+drwx------  3 root root 4096 Oct  5 15:31 .
+drwxrwxrwt 34 root root 4096 Oct  5 15:31 ..
+drwxr-xr-x  2 root root 4096 Oct  5 15:31 driftwm
+srwxr-xr-x  1 root root    0 Oct  5 15:01 sway-ipc.0.4004.sock
+srwxr-xr-x  1 root root    0 Oct  5 15:01 wayland-1
+-rw-r-----  1 root root    0 Oct  5 15:31 wayland-1.lock
+srwxr-xr-x  1 root root    0 Oct  5 15:31 wayland-2
+-rw-r-----  1 root root    0 Oct  5 15:31 wayland-2.lock
+
+/tmp/dwx/driftwm:
+total 12
+drwxr-xr-x 2 root root 4096 Oct  5 15:31 .
+drwx------ 3 root root 4096 Oct  5 15:31 ..
+srw------- 1 root root    0 Oct  5 15:31 ipc-wayland-2.sock
+-rw-r--r-- 1 root root  604 Oct  5 15:31 state
+--- stale ipc socket test
+driftwm msg: cannot connect to /tmp/dwx/driftwm/ipc-wayland-2.sock: Connection refused (os error 111)
+######## T2 (restart)
+--- stale files before restart
+ipc-wayland-2.sock
+state
+display=wayland-2
+--- warnings in log
+--- state right after restart (no app started)
+camera 0 -0
+zoom 1
+layout  (us)
+windows 2
+  * #0 term-a [300, 200] 640x480
+    #1 term-b [-500, -300] 500x350
+fullscreen 0
+pinned 0
+layers 0
+canvas-layers 0
+outputs 1
+  * winit camera 0 -0 zoom 1 1280x800
+--- json for windows
+[{"id":0,"app_id":"term-a","title":"","position":[300,200],"size":[640,480],"is_focused":true,"is_widget":false,"suspended":true,"mode":"Normal"},{"id":1,"app_id":"term-b","title":"","position":[-500,-300],"size":[500,350],"is_focused":false,"is_widget":false,"suspended":true,"mode":"Normal"}]
+
+--- pgrep foot (anything auto-launched?)
+20964 [foot] <defunct>
+23556 [foot] <defunct>
+(end)
+--- session.json now
+{"version":2,"saved_at":1791214322,"entries":[{"id":0,"app_id":"term-a","desktop_id":"term-a","display_name":"Term A","position":[300,200],"size":[640,480],"origin":"quit","csd":false,"focused":true},{"id":1,"app_id":"term-b","desktop_id":"term-b","display_name":"Term B","position":[-500,-300],"size":[500,350],"origin":"quit","csd":false,"focused":false}],"outputs":{"winit":{"camera":[-640.0,-400.0],"zoom":1.0}},"bookmarks":{"1":[-1750.0,1750.0],"2":[1750.0,1750.0],"3":[1750.0,-1750.0],"4":[-1750.0,-1750.0],"myplace":[700.0,-400.0]}}
+######## T3 (relaunch etc.)
+--- bookmarks after restart (restore_bookmarks=true)
+1: [-1750, 1750]
+2: [1750, 1750]
+3: [1750, -1750]
+4: [-1750, -1750]
+myplace: [700, -400]
+--- relaunch term-a (IPC)
+ok
+windows 2
+  * #0 term-a [300, 200] 640x480  "First"
+    #1 term-b [-500, -300] 500x350
+fullscreen 0
+pinned 0
+--- relaunched app command line
+23952 foot --app-id=term-a --title=First sleep 1500
+--- close term-a window (client-initiated: kill the foot)
+windows 2
+  * #0 term-a [300, 200] 640x480
+    #1 term-b [-500, -300] 500x350
+fullscreen 0
+pinned 0
+--- session.json entries
+{"app_id":"term-a","origin":"explicit","position":[300,200],"size":[640,480]}
+{"app_id":"term-b","origin":"quit","position":[-500,-300],"size":[500,350]}
+--- msg close on the stand-in (dismiss)
+ok
+windows 1
+    #1 term-b [-500, -300] 500x350
+fullscreen 0
+pinned 0
+layers 0
+{"app_id":"term-b","origin":"quit","position":[-500,-300],"size":[500,350]}
+
+################################################################ L4: default flags (all off) + --session-file; explicit suspend; kill -9; restart; relaunch
+display=wayland-2 binary=$LFT/target-rel/release/driftwm
+--- suspend term-a (explicit)
+ok
+windows 2
+  * #1 term-a [-500, -300] 500x350
+    #0 term-b [300, 200] 640x480  "Second"
+fullscreen 0
+pinned 0
+--- session.json (default flags)
+{"app_id":"term-a","origin":"explicit","position":[-500,-300],"size":[500,350],"focused":true}
+--- KILL -9
+$LFT/t/t4.sh: line 21: 25203 Killed                  env WAYLAND_DISPLAY=$PARENT RUST_LOG=info $DW --backend winit --config $cfg "$@" > $T/dw.log 2>&1
+25509 [foot] <defunct>
+(foot list end)
+--- after restart
+camera 0 -0
+zoom 1
+layout  (us)
+windows 1
+  * #0 term-a [-500, -300] 500x350
+fullscreen 0
+pinned 0
+layers 0
+--- relaunch term-a
+ok
+windows 1
+  * #0 term-a [-500, -300] 500x350  "First"
+fullscreen 0
+pinned 0
+layers 0
+--- alive?
+27227
+
+################################################################ L5: two windows with one app_id
+{"id":1,"title":"nas - viewer","position":[25,-25],"size":[700,525]}
+{"id":0,"title":"ai-1 - viewer","position":[0,0],"size":[700,525]}
+titles by id:
+{"id":1,"title":"nas - viewer","position":[-400,0]}
+{"id":0,"title":"ai-1 - viewer","position":[400,0]}
+--- session.json
+{"id":0,"app_id":"viewer","desktop_id":"viewer","display_name":"Viewer","position":[-400,0],"size":[700,525],"origin":"quit","csd":false,"focused":true}
+{"id":1,"app_id":"viewer","desktop_id":"viewer","display_name":"Viewer","position":[400,0],"size":[700,525],"origin":"quit","csd":false,"focused":false}
+$LFT/t/t7.sh: line 19: 29045 Killed                  env WAYLAND_DISPLAY=$PARENT RUST_LOG=info $DW --backend winit --config $cfg "$@" > $T/dw.log 2>&1
+--- after restart
+{"id":0,"title":"","position":[-400,0],"suspended":true}
+{"id":1,"title":"","position":[400,0],"suspended":true}
+--- relaunch viewer (selector resolves to one stand-in), twice
+ok
+ok
+{"id":0,"title":"GENERIC-RELAUNCH","position":[-400,0],"suspended":false}
+{"id":1,"title":"GENERIC-RELAUNCH","position":[400,0],"suspended":false}
+
+################################################################ L6: robustness of the session file
+##### A. corrupt file
+session.json.corrupt.1791214394
+windows 0
+fullscreen 0
+session.json
+session.json.corrupt.1791214394
+##### B. file from a NEWER version (version 999)
+session.json.corrupt.1791214405
+##### C. unwritable path (parent is a regular file; stands in for a read-only root)
+windows 1
+  * #0 term-a [0, 0] 700x525  "First"
+driftwm alive: 1629
+2026-10-05T15:33:31.423748Z  WARN driftwm::session: session store unreadable (Not a directory (os error 20)); quarantining
+2026-10-05T15:33:36.486802Z  WARN driftwm::state::session_store: failed to write durable session store: Not a directory (os error 20)
+##### D. SIGTERM right after a move: is the last change saved?
+file after SIGTERM:
+session.json
+{"app_id":"term-a","position":[0,0]}
+##### E. rule restore_windows=false for term-b only
+{"app_id":"term-a","origin":"quit"}
+
+################################################################ L7: window rules (static layout) and hot reload
+{"id":1,"title":"nas - viewer","position":[1550,362],"size":[800,600]}
+{"id":2,"title":"other - viewer","position":[0,0],"size":[700,525]}
+{"id":0,"title":"ai-1 - viewer","position":[-1450,362],"size":[800,600]}
+--- change the rule file while running (hot reload): move ai-1 rule to [-1000,0]
+2026-10-05T15:34:03.721087Z  INFO input_seat{name="seat-0"}:add_keyboard_with_context_flags{xkb_config=XkbConfig { rules: "", model: "", layout: "us", variant: "", options: None } repeat_delay=200 rep
+2026-10-05T15:34:03.757949Z  INFO backend_winit{window=94790616058064}: smithay::backend::egl::display: Supported EGL display extensions: EGLExtensions { extensions: ["EGL_ANDROID_blob_cache", "EGL_EX
+2026-10-05T15:34:11.782143Z  INFO driftwm::state::reload: Config reloaded
+{"id":3,"title":"ai-1 - second","position":[-950,-38],"size":[800,600]}
+{"id":2,"title":"other - viewer","position":[0,0],"size":[700,525]}
+{"id":0,"title":"ai-1 - viewer","position":[-1450,362],"size":[800,600]}
+{"id":1,"title":"nas - viewer","position":[1550,362],"size":[800,600]}
+
+################################################################ L8: stale files after kill -9, restart without cleanup
+first start: display=wayland-2
+$LFT/t/t11.sh: line 12: 18199 Killed                  env WAYLAND_DISPLAY=$PARENT RUST_LOG=info $DW --backend winit --config $cfg "$@" > $T/dw.log 2>&1
+after kill -9:
+/tmp/dwx: driftwm sway-ipc.0.4004.sock wayland-1 wayland-1.lock wayland-2 wayland-2.lock  /tmp/dwx/driftwm: ipc-wayland-2.sock state 
+second start, no cleanup, same WAYLAND_DISPLAY name wanted:
+2026-10-05T15:34:28.419793Z  INFO smithay::wayland::socket: Created new socket name=Some("wayland-2")
+2026-10-05T15:34:28.419806Z  INFO driftwm: Listening on WAYLAND_DISPLAY=wayland-2
+2026-10-05T15:34:28.419847Z  INFO driftwm::ipc: IPC socket started at /tmp/dwx/driftwm/ipc-wayland-2.sock
+/tmp/dwx: driftwm sway-ipc.0.4004.sock wayland-1 wayland-1.lock wayland-2 wayland-2.lock  /tmp/dwx/driftwm: ipc-wayland-2.sock state 
+windows 1
+  * #0 term-a [0, 0] 700x525
+fullscreen 0
+
+################################################################ L9: camera and zoom set back to back
+camera-then-zoom (asked camera 300 -200, zoom 0.8) -> camera 15.9310693191552 -16.249690705538285 zoom 0.8 
+zoom-then-camera (asked camera 300 -200, zoom 0.8) -> camera 15.9310693191552 -16.249690705538285 zoom 0.8 
+zoom-wait-camera (asked camera 300 -200, zoom 0.8) -> camera 300 -200 zoom 0.8 
+camera-wait-zoom (asked camera 300 -200, zoom 0.8) -> camera 300 -200 zoom 0.8 
+
+################################################################ L10: suspend then relaunch in the same run: DEBUG build, then RELEASE build
+binary: $LFT/target/debug/driftwm
+ok
+windows 1
+  * #0 term-a [0, 0] 700x525
+ok
+driftwm msg: cannot connect to /tmp/dwx/driftwm/ipc-wayland-2.sock: No such file or directory (os error 2)
+alive: 
+thread 'main' (4533) panicked at src/state/mod.rs:1457:13:
+decoration entry for a window not on the stage
+binary: $LFT/target-rel/release/driftwm
+ok
+windows 1
+  * #0 term-a [0, 0] 700x525
+ok
+windows 1
+  * #0 term-a [0, 0] 700x525  "First"
+alive: 8056
+
+################################################################ D1: implicit grab (plain client A holds the pointer)
+######## t6 with A role=plain
+--- driftwm focus while the button is still held:
+windows 2
+  * #1 term-a [-300, 0] 400x300  "term-a"
+    #0 term-b [300, 0] 400x300  "term-b"
+--- A log since press
+6.724 term-a pointer.button serial=22 button=272 state=1
+7.221 term-a pointer.motion x=260 y=170
+7.534 term-a pointer.motion x=360 y=170
+7.848 term-a pointer.motion x=460 y=170
+8.159 term-a pointer.motion x=560 y=170
+8.462 term-a pointer.motion x=660 y=170
+8.755 term-a pointer.motion x=760 y=170
+9.080 term-a pointer.motion x=800 y=170
+9.909 term-a pointer.button serial=30 button=272 state=0
+9.909 term-a pointer.leave serial=31
+--- B log since press
+10.024 term-b pointer.enter serial=31 x=200 y=170
+
+################################################################ D2: a real Wayland drag from A (source) to B (target)
+######## t6 with A role=src
+--- driftwm focus while the button is still held:
+windows 2
+  * #0 term-a [-300, 0] 400x300  "term-a"
+    #1 term-b [300, 0] 400x300  "term-b"
+--- A log since press
+6.999 term-a pointer.button serial=20 button=272 state=1
+7.000 term-a start_drag serial=20
+7.477 term-a pointer.leave serial=21
+7.477 term-a offer.mime text/uri-list
+7.477 term-a data_device.enter x=260 y=170
+7.735 term-a data_device.motion x=360 y=170
+8.030 term-a data_device.leave
+8.030 term-a source.action 0
+8.634 term-a source.action 1
+10.152 term-a source.dnd_drop_performed
+10.152 term-a source.send text/uri-list
+10.153 term-a source.dnd_finished
+--- B log since press
+8.631 term-b offer.mime text/uri-list
+8.631 term-b data_device.enter x=60 y=170
+8.974 term-b data_device.motion x=160 y=170
+9.278 term-b data_device.motion x=200 y=170
+10.151 term-b data_device.drop
+10.151 term-b data_device.leave
+10.151 term-b pointer.enter serial=28 x=200 y=170
+10.151 term-b pointer.motion x=200 y=170
+10.151 term-b dropped data: b'file:///srv/share/report.txt\r\n'
+
+################################################################ D3: overlay mapped DURING the drag
+windows 2
+  * #1 term-b [300, 0] 400x300  "term-b"
+    #0 term-a [-300, 0] 400x300  "term-a"
+--- button held in A; now mapping the overlay
+0.005 overlay ready
+0.025 overlay mapped 1280x800
+--- overlay log after moves (button still held):
+0.005 overlay ready
+0.025 overlay mapped 1280x800
+--- overlay log after release
+0.005 overlay ready
+0.025 overlay mapped 1280x800
+3.363 overlay pointer.enter serial=32 x=940 y=420
+3.363 overlay destroyed layer surface; exit
+3.363 overlay pointer.leave
+--- A log since press
+6.662 term-a pointer.button serial=21 button=272 state=1
+9.175 term-a pointer.motion x=360 y=170
+9.601 term-a pointer.motion x=560 y=170
+9.977 term-a pointer.motion x=760 y=170
+10.377 term-a pointer.motion x=800 y=170
+10.784 term-a pointer.button serial=31 button=272 state=0
+10.784 term-a pointer.leave serial=32
+--- B log since press
+10.783 term-b pointer.enter serial=34 x=200 y=170
+--- layers left on driftwm:
+layers 0
+
+################################################################ D4: overlay mapped BEFORE the press (armed)
+--- overlay log
+0.004 overlay ready
+0.010 overlay mapped 1280x800
+0.010 overlay pointer.enter serial=25 x=340 y=420
+1.761 overlay pointer.motion x=345 y=425
+2.310 overlay pointer.button 272 1
+2.697 overlay pointer.motion x=500 y=420
+3.015 overlay pointer.motion x=700 y=420
+3.307 overlay pointer.motion x=900 y=420
+3.605 overlay pointer.motion x=940 y=420
+3.931 overlay pointer.button 272 0
+3.931 overlay pointer.motion x=940 y=420
+3.931 overlay pointer.motion x=940 y=420
+--- A log since arming
+7.391 term-a pointer.leave serial=25
+--- B log since arming
+--- window rects for the lookup (id, centre Y-up, size) and camera/zoom:
+{"app_id":"term-a","position":[-300,0],"size":[400,300]}
+{"app_id":"term-b","position":[300,0],"size":[400,300]}
+camera 0 -0 zoom 1 
+
+################################################################ F1: file clipboard as text/uri-list
+types on the clipboard:
+text/uri-list
+text/plain
+text/plain;charset=utf-8
+TEXT
+STRING
+UTF8_STRING
+--- read as uri-list:
+0000000   f   i   l   e   :   /   /   /   s   r   v   /   s   h   a   r
+0000020   e   /   a   %   2   0   b   .   t   x   t  \r  \n   f   i   l
+0000040   e   :   /   /   /   s   r   v   /   s   h   a   r   e   /   p
+0000060   r   o   j  \r  \n
+--- read as plain text (what wayvnc asks for):
+file:///srv/share/a%20b.txt
+file:///srv/share/proj
+exit=0
+--- read as 'text' (hub clipboard bridge's wl-paste --type text):
+file:///srv/share/a%20b.txt
+file:///srv/share/proj
+exit=0
+--- set plain text afterwards: uri-list is replaced:
+text/plain;charset=utf-8 text/plain TEXT STRING UTF8_STRING 
+
+################################################################ F2: one-time signed URLs (prototype)
+T1 valid token, small file:
+HTTP/1.1 200 OK
+  content identical
+Last-Modified: Thu, 02 Jan 2020 03:04:05 GMT
+T2 same token again:
+  HTTP 403
+T3 expired token (ttl -5):
+  HTTP 403
+T4 tampered path (flip one char of the payload):
+  HTTP 403
+T5 token for another sender:
+  HTTP 403
+T6 path outside the shared root (/etc/hostname), correctly signed:
+  HTTP 403
+T6b symlink inside root pointing outside (proj/outer-link) as a single file:
+  HTTP 403
+T7 awkward names:
+  ok: -leading\ dash.txt
+  ok: $'my file (1) \303\274n\303\257 \346\227\245\346\234\254.txt'
+  ok: $'new\nline.txt'
+T8 folder (tar stream) with symlinks, empty dir, mode 0755:
+  same file list
+-rwxr-xr-x
+sub/a.txt
+/etc/hostname
+T9 1 GiB file: time, rate, server peak memory
+  1 GiB in 2.756092406 s on loopback
+  1 GiB identical
+  server VmHWM:	    9468 kB
+T10 interrupted download then resume with a Range request:
+  got 144676864 bytes before the cut
+  reusing the SAME token with Range: HTTP 403
+cmp: EOF on $LFT/xfer/recv/part.bin after byte 212037632, in line 1
+--- server log
+ft serve: listening on 127.0.0.1:18081
+deny 403: token already used
+deny 403: expired
+deny 403: bad signature
+deny 403: token is for another sender
+deny 403: path outside the shared root
+deny 403: path outside the shared root
+deny 403: token already used
+
+################################################################ F3: rsync daemon and sftp-server
+R1 rsync daemon, right password:
+  same file list, modes: -rwxr-xr-x, links: sub/a.txt /etc/hostname
+R2 wrong password:
+@ERROR: auth failed on module xfer
+rsync error: error starting client-server protocol (code 5) at main.c(1885) [Receiver=3.2.7]
+R3 -L (follow links) tries to read the link that points outside the module path:
+rsync: [sender] send_files failed to open "outer-link" (in xfer): Invalid cross-device link (18)
+rsync error: some files/attrs were not transferred (see previous errors) (code 23) at main.c(1887) [generator=3.2.7]
+-rw-r--r-- 1 root root    5 Oct  5 15:36 inner-link
+R4 same password used again (nothing makes it one-time):
+  second use accepted
+R5 interrupt a 512 MiB copy, resume with --partial --append-verify:
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at rsync.c(716) [generator=3.2.7]
+rsync error: received SIGUSR1 (code 19) at main.c(1635) [receiver=3.2.7]
+  partial file: 216498176 bytes (big.bin)
+  resumed copy identical
+R6 after the daemon is stopped:
+rsync: [Receiver] failed to connect to 127.0.0.1 (127.0.0.1): Connection refused (111)
+--- rsync daemon log
+2026/10/05 15:36:35 [32543] rsync on xfer/big.bin from tok@localhost (127.0.0.1)
+2026/10/05 15:36:35 [32543] building file list
+2026/10/05 15:36:35 [32543] sent 320451071 bytes  received 48 bytes  total size 536870912
+2026/10/05 15:36:36 [32445] sent 0 bytes  received 0 bytes  total size 0
+S1 sftp client driving a local sftp-server (-D), batch:
+sftp> ls -l $LFT/xfer2/share/proj
+-rw-r--r--    ? root     root     536870912 Oct  5 15:36 $SCRATCH
+drwxr-xr-x    ? root     root         4096 Oct  5 15:36 $SCRATCH
+lrwxrwxrwx    ? root     root            9 Oct  5 15:36 $SCRATCH
+lrwxrwxrwx    ? root     root           13 Oct  5 15:36 $SCRATCH
+-rwxr-xr-x    ? root     root           10 Oct  5 15:36 $SCRATCH
+drwxr-xr-x    ? root     root         4096 Oct  5 15:36 $SCRATCH
+sftp> get $LFT/xfer2/share/proj/sub/a.tx
+sftp> get -p $LFT/xfer2/share/proj/run.s
+sftp> put $LFT/xfer2/share/proj/sub/a.tx
+-rwxr-xr-x
+S2 reget after a cut:
+sftp> reget $LFT/xfer2/share/proj/big.bi
+  reget finished identical
+
+################################################################ F4: adapter conformance test
+== good adapter
+
+18 passed, 0 failed
+== BAD=relpath: exit 1, failed checks: C3b 
+== BAD=dotdot: exit 1, failed checks: C3b 
+== BAD=missing: exit 1, failed checks: C2 C3b 
+== BAD=bytes: exit 1, failed checks: C3b 
+== BAD=nonutf8: exit 1, failed checks: C3b C3c 
+== BAD=noise: exit 1, failed checks: C1 C1b C2 C3a C3c C4 C8 C10 C14 
+== BAD=nullitems: exit 1, failed checks: C2 
+== BAD=slow: exit 1, failed checks: C1 C1b C2 C3a C3c C4 C5 C8 C10 C13 C14 
+== BAD=symleak: exit 1, failed checks: C3b C3d 
+== BAD=sideeffect: exit 1, failed checks: C7 C9 
+== BAD=dirnotdir: exit 1, failed checks: C8 
+== BAD=nodest-error: exit 1, failed checks: C10 
+== BAD=rect: exit 1, failed checks: C11 
+== BAD=exitcode: exit 1, failed checks: C1 C1b C2 C3a C8 C10 C14 
+
+################################################################ F5: end to end, two fake nodes
+######## paste 1
+-- hub: ask nas for the selection
+{"name":"data.bin","kind":"file","bytes":20000000}
+{"name":"new\nline.txt","kind":"file","bytes":3}
+{"name":"proj","kind":"dir","bytes":13}
+{"name":"report (final).txt","kind":"file","bytes":10}
+-- hub: ask ai-1 for the destination
+   dir = $LFT/e2e/ai/destination
+-- hub: sign one token per item (no file is opened here)
+-- ai-1 helper: fetch each token straight from nas, write safely into the destination
+   wrote: data.bin
+   wrote: new
+line.txt
+   wrote: proj
+   wrote: report (final).txt
+{"ok":true}
+######## compare
+same: report\ \(final\).txt
+same: $'new\nline.txt'
+same: data.bin
+same: proj/sub/a.txt
+same: proj/run.sh
+-rwxr-xr-x
+######## paste 2 (same files again: names must not overwrite)
+   wrote: data.bin (2)
+   wrote: new
+   wrote: proj (2)
+   wrote: report (final).txt (2)
+######## the destination now:
+data.bin
+data.bin (2)
+new
+line.txt
+new
+line.txt (2)
+proj
+proj (2)
+report (final).txt
+report (final).txt (2)
+######## replaying an old token:
+HTTP 403
