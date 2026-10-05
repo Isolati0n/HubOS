@@ -1,0 +1,8 @@
+# s6 + s6-rc: PID 1 = s6-svscan, the service graph is a compiled s6-rc database (dependencies, readiness by
+# notification-fd, logging pipelines). The database is compiled on the host with s6-rc-compile at build time.
+copy_s6
+cp "$W"/skel/bin/* "$R/opt/s6/bin/"   # s6-rc needs the fdholder and ipcserver programs too
+# s6-rc writes the absolute path of execlineb (here the host build prefix) into the run scripts it generates
+mkdir -p "$R$W/skel" "$R/opt/s6/libexec"; ln -s /opt/s6/bin "$R$W/skel/bin"; cp "$W"/skel/libexec/* "$R/opt/s6/libexec/"; ln -s /opt/s6/libexec "$R$W/skel/libexec"
+mkdir -p "$R/etc/s6-rc"
+"$W/skel/bin/s6-rc-compile" "$R/etc/s6-rc/compiled" "$HERE/candidates/s6rc/source"

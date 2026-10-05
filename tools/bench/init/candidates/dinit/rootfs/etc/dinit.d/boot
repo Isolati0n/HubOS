@@ -1,0 +1,8 @@
+type = internal
+depends-on = guard
+depends-on = seatd
+depends-on = udevd
+depends-on = dbus
+depends-on = driftwm
+depends-on = waybar
+depends-on = hubd

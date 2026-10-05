@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+echo -900 > /proc/self/oom_score_adj
+exec driftwm --backend udev -mem 100 -notify 3

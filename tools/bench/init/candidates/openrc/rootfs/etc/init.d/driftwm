@@ -1,0 +1,19 @@
+#!/sbin/openrc-run
+supervisor=supervise-daemon
+name=driftwm
+command=/bin/sh
+command_args="-c 'echo -900 > /proc/self/oom_score_adj; exec /bin/driftwm --backend udev -mem 100 -notify 3'"
+notify=fd:3
+respawn_delay=1
+respawn_max=10
+respawn_period=60
+output_logger="/opt/s6/bin/s6-log -b n5 s100000 /var/log/driftwm"
+error_log=/dev/null
+start_pre() { mkdir -p /var/log/driftwm; }
+healthcheck_delay=10
+healthcheck_timer=2
+healthcheck() { /bin/hubsim probe /run/dw/wayland-1 >/dev/null; }
+unhealthy() { echo "driftwm failed its health check"; }
+depend() {
+	need seatd udevd
+}

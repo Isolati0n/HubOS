@@ -1,0 +1,7 @@
+type = process
+command = /bin/hubd -notify 3
+restart = true
+log-type = buffer
+ready-notification = pipefd:3
+depends-on = driftwm
+oom-score-adj = -900

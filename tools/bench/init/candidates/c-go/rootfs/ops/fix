@@ -1,0 +1,4 @@
+#!/bin/sh
+hubsim ctl /run/hubos/brain.sock "retry $1" 2>/dev/null
+s6-rc -l /run/s6-rc -u change top 2>/dev/null
+s6-svc -u /run/service/$1 2>/dev/null

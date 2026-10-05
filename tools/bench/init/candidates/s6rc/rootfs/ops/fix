@@ -1,0 +1,3 @@
+#!/bin/sh
+s6-rc -l /run/s6-rc -u change top 2>/dev/null
+s6-svc -u /run/service/$1 2>/dev/null; s6-svc -r /run/service/$1 2>/dev/null
