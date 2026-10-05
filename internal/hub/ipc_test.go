@@ -46,7 +46,7 @@ func TestSocketServesAllCommands(t *testing.T) {
 		t.Errorf("status: %+v %v", st, err)
 	}
 	ls, _ := Call(sock, Request{Cmd: "list"})
-	if len(ls.Lines) < 3 || !strings.Contains(strings.Join(ls.Lines, "\n"), "   a ") {
+	if len(ls.Lines) < 3 || !strings.Contains(strings.Join(ls.Lines, "\n"), " ○ a ") {
 		t.Errorf("list: %q", ls.Lines)
 	}
 	op, _ := Call(sock, Request{Cmd: "pick", Line: "   a                A                        UP"})

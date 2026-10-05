@@ -29,3 +29,25 @@ open    = ["ssh"]
 home    = { x = -2000, y = 0 }
 port    = 21004
 user    = "owner"
+
+# desk-1 and desk-2 are for the open-marker test (H3c): both are "up" while fakenode listens on their ports. Their homes are
+# far to the right of ai-1 (a 1024 px wide screen shows about 1000 canvas units), so opening one takes the view away from ai-1.
+[[machine]]
+id      = "desk-1"
+name    = "Desk One"
+role    = "desktop"
+address = "127.0.0.13"
+open    = ["ssh"]
+home    = { x = 3000, y = -100 }
+port    = 21003
+user    = "owner"
+
+[[machine]]
+id      = "desk-2"
+name    = "Desk Two"
+role    = "desktop"
+address = "127.0.0.15"
+open    = ["ssh"]
+home    = { x = 3000, y = 1000 }
+port    = 21005
+user    = "owner"

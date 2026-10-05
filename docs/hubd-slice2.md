@@ -163,18 +163,21 @@ x forget unknown window for <name> (<id>)   clears the block on that machine (on
 < back to groups                       back from the search
 - AI (250 machines, 12 down)           open group; picking it folds it
 + Desktop (500 machines, 25 down)      folded group; picking it opens it, and the menu reopens at once
-   ai-19            ai 19                    DOWN         machine line: the first word is the id
+ ○ ai-19            ai 19                    DOWN         machine line, window closed: empty dot, then the id
+ ● ai-20            ai 20                    UP           machine line, window open: filled dot, then the id
    - Guests of vmhost-1 (50 machines)       nested under the host (3 more spaces)
-      guest-1          Guest 1                  UP [open]
+    ● guest-1          Guest 1                  UP
 ```
+
+(Before section 17 the machine lines had no dot, three spaces of indent, and ended with ` [open]` when a window was open: `   guest-1          Guest 1                  UP [open]`. Section 17 has the change.)
 
 - A **Down machines** group is at the top (cap `--down-max`, 50, then a line saying how many more); it can be folded like any group. Groups by role (Hub, Gaming, AI, Desktop, NAS, Backup NAS, VM host) follow; guests nested under their host; **down first** inside a group, then not checked, then up.
 - **Nothing is hidden without a line that says so**: a folded group shows its heading with the count and how many are down; a capped list ends with a `! N more …` line.
 - **Typed search and the 1000-line cap change the approved design.** The design said wofi's own search would find any machine. It cannot: wofi only searches the lines it is given, and it cannot be given thousands of lines (section 7.5). So `? search by id or name...` asks for text, hubd filters (case-insensitive, id or name), and wofi shows the matches. This was approved by the owner.
 - A group with more than `--fold` machines starts folded. Fold choices are kept in `hubd`'s memory (gone when it restarts).
 - No list has more than `--list-max` machine lines; the rest are replaced by a `! N more … not shown` line.
-- **Pick** (`hubd pick LINE`): acts only if the line is exactly a switch line, a group heading, or an **indented** machine line whose first word is an existing id. Anything else — a heading with an unknown name, an unknown id, an id without indent, a `!` line, an empty line — does nothing. TESTED: `TestPickIgnoresHeadingsUnknownAndEmptyLines` (a heading, an unknown line, an empty line, and six more).
-- Status texts: `UP`, `DOWN`, `checking...`, `NOT CHECKED (no port in the inventory and no default port for <program>)`, `NOT CHECKED (nothing to open)`, `NOT CHECKED (out of file handles)`, `THIS HUB`, plus ` [open]`, ` [opening]`, ` [window not identified]`.
+- **Pick** (`hubd pick LINE`): acts only if the line is exactly a switch line, a group heading, or an **indented** machine line whose first word (after the open marker, if there is one) is an existing id. Anything else — a heading with an unknown name, an unknown id, an id without indent, a `!` line, an empty line — does nothing. TESTED: `TestPickIgnoresHeadingsUnknownAndEmptyLines` (a heading, an unknown line, an empty line, and six more).
+- Status texts: `UP`, `DOWN`, `checking...`, `NOT CHECKED (no port in the inventory and no default port for <program>)`, `NOT CHECKED (nothing to open)`, `NOT CHECKED (out of file handles)`, `THIS HUB`, plus ` [opening]`, ` [waiting for its window]`, ` [window not identified]`. A window that is open is shown by the filled dot at the start of the line, not by a text (section 17; the old ` [open]` text is gone).
 - wofi is always started with `--cache-file /dev/null` (otherwise it re-orders by past picks) and `LC_ALL=C.UTF-8`. With `examples/wofi.style.css` as `/etc/hubos/wofi.css` the list uses a fixed-width font (DejaVu Sans Mono) so the columns line up (TESTED, screenshot: id, name and status columns aligned).
 
 ---
@@ -845,3 +848,61 @@ hubd adopted the three machines that have exactly one window with their title (`
 - Waybar and wofi were not started in this run; the feed line was read with `hubd feed`.
 
 **Note (2026-10-03, later): why hubd passes `--height` and not `--lines`.** wofi 1.4.1 with `--lines 12` showed only its search box under driftwm's real display backend (a Wayland layer-shell surface). Evidence (`WAYLAND_DEBUG=1` on the guest): wofi asks the compositor for 720x1, then 720x5, prints `Gtk-CRITICAL ... gtk_widget_set_size_request: assertion 'height >= -1' failed` (its code computes `max_height * lines + 5` while `max_height` is still 0, then asks for a list height of 5 minus the search box's height, a negative number), and later asks for 720x281, which driftwm grants (`configure(720, 281)`), yet no row is drawn. With `--height 480` the surface is sized once (720x480) and the list is drawn. The first investigation (above) ran wofi on a virtual X display, where wofi does not use layer-shell and none of this code runs, so it never saw the problem. This is a wofi 1.4.1 behaviour (the negative request is in wofi's own source, `src/wofi.c`); it is not known whether newer wofi fixes it. TESTED in `cmd/hubd/menu_test.go` (hubd never passes `--lines`) and in the hub image test (the list is drawn).
+
+---
+
+## 17. The open marker (2026-10-05)
+
+**Owner decision (already made):** the list marks every machine whose window is open with a **filled dot** and every other machine with an **empty dot**. Open machines stay in their role groups; the order inside a group is not changed by the marker.
+
+### 17.1 What changed
+
+| | Before | After |
+|---|---|---|
+| Machine line | `   ai-1             AI Box                   UP [open]` | ` ● ai-1             AI Box                   UP` |
+| Machine line, window not open | `   desk-2           Desk Two                 UP` | ` ○ desk-2           Desk Two                 UP` |
+| Guest line (6 spaces of indent before) | `      guest-1          Guest 1                  UP [open]` | `    ● guest-1          Guest 1                  UP` |
+
+- **Marker characters:** `●` U+25CF BLACK CIRCLE (open) and `○` U+25CB WHITE CIRCLE (not open), constants `hub.MarkerOpen` and `hub.MarkerClosed` in `internal/hub/view.go`.
+- **Where:** the marker takes the last two columns of the indent (marker, one space), so the id, name and status columns are exactly where they were. Nothing else on the line moved.
+- **The old ` [open]` text is gone.** The dot replaces it (two signs for one fact would be noise). Owner: say if you want both.
+- **What "open" means:** hubd holds a window for the machine (the same fact that makes a pick go to that window instead of starting a viewer). A machine in the late-window state (`[waiting for its window]`) or with an unidentified window is not open until its window is recorded.
+- **Every machine line has a marker**, also the hub itself and a machine with nothing to open: those always show the empty dot. (Owner: say if the hub line should have no dot.)
+- **Down machines group, search results and the flat list** use the same line, so they carry the marker too.
+- **Order:** unchanged. Down first, then not checked, then up; inside those, inventory order. An open machine does not move. (No strong reason to change it was found, so no change is proposed; TESTED in `TestMarkerOpenIsFilledClosedIsEmpty`.)
+- **The bar item's feed (`hubd feed`) is not changed.** It carries counts and the down machines' names, not a machine list, so there is nothing to mark. (Question for the owner below.)
+
+### 17.2 Search and picking still work (checked how wofi matches and how the line is read back)
+
+- **Typed search** (`? search by id or name...`) is done by hubd, not by wofi: hubd filters machines by id and name only (case-insensitive) and sends wofi the matching lines. The marker is not part of what is searched. TESTED: `TestSearchStillMatchesByNameAndIdWithTheMarker` (searching `box` finds both "A Box" and "B Box", each with its own marker; searching for a dot character finds nothing).
+- **wofi's own filter** (typing into the menu while it shows the list) matches the text of each line (wofi 1.4.1 default mode "contains", started with `--insensitive`; BELIEVED from its manual, not read in source). The marker does not hide a name from it. TESTED in the hub image test H3c: typing `two` (only the *name* of `desk-2`, "Desk Two") leaves exactly the line `○ desk-2   Desk Two   UP`; Enter picks it and hubd opens `desk-2` at its home.
+- **Reading the picked line back (`Pick`):** wofi prints the whole line. hubd takes the line, requires it to be indented, takes the first word, and if that word is `●` or `○` it skips it; the next word is the machine id. A line without a marker (a script, an older menu) is still accepted. A marker alone, a marker with an unknown id, a marker line with no indent, or a marker followed by a name instead of an id is ignored. TESTED: `TestPickAMarkedLineGoesToTheWindowOrOpens`.
+- **Font:** the dots are in DejaVu Sans Mono (the font of `wofi.css`); TESTED on the hub image's screenshots that both draw as a dot, the filled one a little bigger than the empty one. Another font could lack them (UNKNOWN).
+
+### 17.3 A pick of an open machine, and windows that belong to no machine
+
+- **Focus and view:** a pick of an open machine calls driftwm's `focus --id` (which raises and focuses the window and pans the view to it unless it is already fully visible, `docs/driftwm-findings.md` section 4). It starts no viewer. TESTED with the real driftwm in the hub image (H3c): with `ai-1` far off screen (view at x=3000, window at x=0) a click on its row made `ai-1` the focused window and the view moved to x=0; with `desk-1` placed exactly over `ai-1` and focused, a click on the `ai-1` row made `ai-1` the focused, top window again (driftwm prints the windows top first). Two viewers (foot) were running before and after.
+- **Windows of no machine never appear in the list:** the list is built from the inventory only, so the menu program (wofi), the bar (Waybar) and any other window cannot be in it. They are also never taken for a machine's window (the bar and the menu are layer surfaces, not windows, in driftwm: `driftwm msg state` lists the bar under `layers`). TESTED: `TestWindowsOfNoMachineNeverAppearInTheList` (windows named `wofi`, `waybar`, `foot` and `hubos-nobody` are in driftwm; the list has none of them and no machine looks open).
+
+### 17.4 Tests
+
+Unit tests (`internal/hub/marker_test.go`): `TestMarkerOpenIsFilledClosedIsEmpty`, `TestMarkerWindowClosedByHandTurnsEmpty` (also `hubd end`), `TestMarkerWindowAppearsLate`, `TestMarkerWithTheDuplicateTitleWarning` (both a known window with a duplicate, filled, and two same-titled windows hubd cannot tell apart, empty), `TestPickAMarkedLineGoesToTheWindowOrOpens`, `TestSearchStillMatchesByNameAndIdWithTheMarker`, `TestWindowsOfNoMachineNeverAppearInTheList`, `TestPickingAnOpenMachineFocusesItsWindowAndMovesTheView` (the fake driftwm models focus: raise, and pan unless in view). Existing tests that quoted machine lines were changed to the new lines (`view_test.go`, `ipc_test.go`).
+
+Hub image test H3c (`tools/image/hub_test.go`, build tag `qemu`): two fake viewer windows (ai-1 and desk-1, homes 3000 canvas units apart), a third machine (desk-2) not open; the bar click opens the menu; the list (screenshot and `hubd list`) shows two filled dots and the others empty; a click on the open ai-1 row while its window is off screen, then while it is behind desk-1's window, focuses it and brings it into view; `hubd end desk-1` turns its dot empty; typing `two` and Enter opens desk-2. The test inventory (`image/config/hub/inventory.toml`) got two machines for this, `desk-1` and `desk-2` (role desktop, fake listeners started by the test). The RESULTS blocks of the runs were given to the lead with this change (section 17.6).
+
+### 17.5 Not shown, and questions for the owner
+
+- Not shown: a real Moonlight/virt-viewer window (only the foot stand-in); the marker on a projector; a font without the dots; a window that the owner moved by hand and the pick (the view still goes to it, by the same driftwm call, but only the cases above were run); a pick of an open machine whose window is behind a *fullscreen* window.
+- Question: keep ` [open]` as well as the dot? (Now: dot only.)
+- Question: should the hub's own line have no dot? (Now: empty dot.)
+- Question: should the bar item show how many windows are open (for example in the tooltip)? Nothing was added, because it is a design choice.
+
+### 17.6 Hub image test runs (TESTED, 2026-10-05, build environment, QEMU without KVM, a busy computer: load average 8 to 12 on 4 CPUs)
+
+`go test -tags qemu -count=1 -v -run TestHubImage ./tools/image`, the build cached between runs (`HUBOS_HUB_WORK`). Nine runs were made while the test was written; the last two, of the final test code, both gave all PASS (1050 s and 1057 s; H3c took about 2 minutes), and so did two earlier ones. Five runs of earlier versions failed, for these reasons, found and fixed **in the test**, not in hubd:
+
+- A typed key was lost once (only `o` of `two` arrived; Enter then picked the first line, `? search`). The search step now retries up to three times.
+- Under load, `hubd end` answered `asked the window of … to close, but it is still open` (hubd waits 3 s for a window to close, a guess from the first slice) in H3b (an existing test) and in H3c, although the window closed a moment later. The two tests now wait up to 30 s for the window or the dot instead of requiring `end` to answer 0. **This 3 s wait is too short on a slow machine (UNKNOWN on real hardware); not changed.**
+- Under load a machine shows `UP [opening]` with the empty dot for a few seconds after the pick, until hubd has placed and recorded the window; H3c waits up to a minute for the filled dot.
+- One run (H3 itself, an existing test) had no window within the 10 s window wait because the computer was overloaded (the machine went to the late-window state); that run's later tests failed with it. Not caused by this change.
+- Once, a window opened by a pick stood at driftwm's own cascade spot `[25, -125]` instead of its home `[3000, 1000]` (hubd's message still said it was placed at home). **Cause UNKNOWN** (believed: the move came before the window was mapped, on a slow machine); seen once in 9 runs, not investigated, not related to the marker.

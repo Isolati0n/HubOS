@@ -447,3 +447,4 @@ HubOS/
 - **2026-10-04:** Phase B images: test recovery agent supervised by a restart loop.
 - **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials, management key on the hub, recovery agent supervision, Go stays (Erlang parked).
 - **2026-10-04:** Round 3 decisions recorded: signed text names the machine, shared port, signing key custody, per-node credential files, user split, clipboard push rules.
+- **2026-10-05:** hubd list marks every machine whose window is open with a filled dot (an empty dot when closed); a pick of an open machine goes to its window; see docs/hubd-slice2.md section 17.
