@@ -1,0 +1,4 @@
+#!/bin/sh
+mkdir -p /var/log/seatd
+printf 's100000\nn5\n' > /var/log/seatd/config
+exec svlogd -tt /var/log/seatd

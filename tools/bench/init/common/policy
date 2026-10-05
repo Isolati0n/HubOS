@@ -1,0 +1,11 @@
+#!/bin/sh
+# policy PROGRAM ARGS... : the resource policy for the hub's two essential programs (BENCH CODE): OOM protection, a higher
+# CPU priority and their own cgroup v2 group. Candidates that can declare this natively (dinit) do not use this script.
+case "$1" in
+driftwm|hubd)
+  echo -900 > /proc/self/oom_score_adj
+  mkdir -p /sys/fs/cgroup/hub
+  echo $$ > /sys/fs/cgroup/hub/cgroup.procs 2>/dev/null
+  exec hubsim nice -5 "$@" ;;
+esac
+exec "$@"

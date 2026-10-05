@@ -1,0 +1,15 @@
+#!/sbin/openrc-run
+supervisor=supervise-daemon
+name=udevd
+command=/bin/udevd
+command_args="-log 2 -notify 3"
+notify=fd:3
+respawn_delay=1
+respawn_max=10
+respawn_period=60
+output_logger="/opt/s6/bin/s6-log -b n5 s100000 /var/log/udevd"
+error_log=/dev/null
+start_pre() { mkdir -p /var/log/udevd; }
+depend() {
+	:
+}

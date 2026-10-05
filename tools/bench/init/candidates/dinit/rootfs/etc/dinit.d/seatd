@@ -1,0 +1,5 @@
+type = process
+command = /bin/seatd -log 2 -notify 3
+restart = true
+log-type = buffer
+ready-notification = pipefd:3

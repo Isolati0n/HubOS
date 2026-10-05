@@ -1,0 +1,2 @@
+#!/bin/sh
+echo 'CH runit stage 3 (stage 2 returned or shutdown)'

@@ -1,0 +1,10 @@
+type = process
+command = /bin/driftwm --backend udev -mem 100 -notify 3
+restart = true
+log-type = buffer
+ready-notification = pipefd:3
+depends-on = seatd
+depends-on = udevd
+oom-score-adj = -900
+nice = -5
+run-in-cgroup = /hub

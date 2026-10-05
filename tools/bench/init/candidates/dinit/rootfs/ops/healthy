@@ -1,0 +1,2 @@
+#!/bin/sh
+for s in seatd udevd dbus driftwm waybar hubd; do /opt/dinit/bin/dinitctl is-started $s >/dev/null 2>&1 || exit 1; done

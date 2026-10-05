@@ -1,0 +1,7 @@
+stub                size bytes  VmRSS kB threads   exit-mode ms (median of 300)  panic behaviour
+stub-c                  706584       668       1                           1.09  signal 11; first line: (no message)
+stub-rust-abort        1157056      1060       1                           1.87  signal 6; first line: thread 'main' (29481) panicked at /home/user/HubOS/.claude/w
+stub-rust-unwind       1215984      1176       1                           1.52  exit code 101; first line: thread 'main' (29815) panicked at /home/user/HubOS/.claude/w
+stub-go                1233080      1784       7                           4.35  exit code 2; first line: panic: assignment to entry in nil map
+stub-zig                134288       408       1                           2.17  signal 6; first line: thread 31697 panic: stub panic
+load: 10.21 10.90 11.68, host CPUs: 4; zig 0.17.0, rustc rustc 1.97.0 (2d8144b78 2026-07-07), gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, go version go1.24.7 linux/amd64

@@ -1,0 +1,7 @@
+type = process
+command = /bin/waybar -notify 3
+restart = true
+log-type = buffer
+ready-notification = pipefd:3
+depends-on = driftwm
+depends-on = dbus

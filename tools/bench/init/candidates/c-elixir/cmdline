@@ -1,0 +1,1 @@
+hub.cand=c-elixir hub.sup=s6-supervise hub.brain=beam.smp

@@ -1,0 +1,5 @@
+type = process
+command = /bin/hubsim guard /dev/watchdog
+restart = true
+log-type = buffer
+oom-score-adj = -1000

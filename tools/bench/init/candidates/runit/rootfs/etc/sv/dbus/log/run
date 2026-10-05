@@ -1,0 +1,4 @@
+#!/bin/sh
+mkdir -p /var/log/dbus
+printf 's100000\nn5\n' > /var/log/dbus/config
+exec svlogd -tt /var/log/dbus

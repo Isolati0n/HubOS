@@ -1,0 +1,36 @@
+H# start 2026-10-05 17:46:14 cand=s6plain suite=boot cpus_seen=4 loadavg_at_start=['7.86', '8.75', '8.92']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6plain.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=boot hub.dur=600 hub.seed=103 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=s6plain hub.sup=s6-supervise
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     6.73 Booting from ROM..c[?7l[2JCH STAGE1 up=4.16
+H     6.96 CH CAND s6plain pid1=s6-svscan
+H     7.08 CH SUP-START up=4.51
+H     7.37 CH t=0.2 CHAOS start cand=s6plain suite=boot seed=103 cpus=2
+H    13.71 CH t=6.5 BOOT-OK up=11.13 ok=1 (seconds since kernel start; waited 6.1)
+H    13.79 CH t=6.6 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10436 memavail_kb=728700 init_side_cpu_ticks=296
+H    23.88 CH t=16.7 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10436 memavail_kb=728488 init_side_cpu_ticks=297
+H    33.99 CH t=26.8 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10436 memavail_kb=728496 init_side_cpu_ticks=297
+H    44.13 CH t=37.0 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10436 memavail_kb=728028 init_side_cpu_ticks=297
+H    54.49 CH t=47.3 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10436 memavail_kb=726012 init_side_cpu_ticks=297
+H    58.86 CH t=51.7 IDLE-CPU window=30s whole_vm_busy_ticks=540 whole_vm_idle_ticks=4593 init_side_ticks=0 (1 tick = 10 ms, 2 vCPUs)
+H    58.88 CH t=51.7 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H    58.88 CH t=51.7 MEM pid=107 comm=s6-supervise rss_kb=720 pss_kb=106
+H    58.88 CH t=51.7 MEM pid=108 comm=s6-supervise rss_kb=724 pss_kb=110
+H    58.89 CH t=51.7 MEM pid=109 comm=s6-supervise rss_kb=720 pss_kb=106
+H    58.89 CH t=51.7 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.89 CH t=51.7 MEM pid=111 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.89 CH t=51.7 MEM pid=112 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.89 CH t=51.7 MEM pid=114 comm=s6-supervise rss_kb=724 pss_kb=110
+H    58.89 CH t=51.7 MEM pid=116 comm=s6-supervise rss_kb=720 pss_kb=106
+H    58.90 CH t=51.7 MEM pid=118 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.90 CH t=51.7 MEM pid=120 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.90 CH t=51.7 MEM pid=122 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.90 CH t=51.7 MEM pid=123 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.90 CH t=51.7 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=102
+H    58.98 CH t=51.8 POLICY driftwm oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    59.02 CH t=51.9 POLICY hubd oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    59.06 CH t=51.9 POLICY waybar oom_score_adj=0 nice=0 cgroup=0::/
+H    59.09 CH t=51.9 LISTEN tcp_listening_sockets=0 epmd_running=false
+H    59.09 CH t=51.9 SUITE-DONE
+H    61.11 [   58.536581] reboot: Power down
+H# vm exit code 0 after 61s, loadavg ['8.55', '8.76', '8.91']
+H# end wall=61.1s launches=1 suite_done=True
