@@ -170,12 +170,21 @@ var roleLabel = map[string]string{
 //	"x forget unknown window for <name> (<id>)"   drop the block on that machine
 //	"- Label (...)"    an open group heading; picking it folds the group
 //	"+ Label (...)"    a folded group heading; picking it opens the group
-//	"   id  name  S"   a machine; the first word is the machine id
+//	" ● id  name  S"   a machine whose window is open (the marker is filled)
+//	" ○ id  name  S"   a machine whose window is not open (the marker is empty)
+//
+// The marker sits inside the indent, so the id, name and status columns stay
+// where they were. The machine's first word after the marker is its id.
 const (
 	forgetPrefix = "x forget unknown window for "
 	stopPrefix   = "x stop waiting for "
 	searchLine   = "? search by id or name..."
 	backLine     = "< back to groups"
+	// MarkerOpen and MarkerClosed start every machine line: filled when hubd
+	// holds a window for the machine, empty otherwise. Both are one column wide
+	// in the menu's fixed-width font (DejaVu Sans Mono has both).
+	MarkerOpen   = "\u25cf" // ●
+	MarkerClosed = "\u25cb" // ○
 	// SearchHint is the one line shown when the menu asks for text to search
 	// for. If it comes back unchanged, nothing was typed.
 	SearchHint = "type part of an id or name, then press Enter"
@@ -205,9 +214,6 @@ func (h *Hub) statusTextLocked(s *mstate) string {
 	default:
 		t = "NOT CHECKED (" + s.reason + ")"
 	}
-	if s.win != nil {
-		t += " [open]"
-	}
 	if s.phase == phaseStarting {
 		t += " [opening]"
 	}
@@ -220,8 +226,20 @@ func (h *Hub) statusTextLocked(s *mstate) string {
 	return t
 }
 
+// markerLocked is the open marker of a machine: filled when hubd holds a window
+// for it (the same fact that makes a pick go to that window), empty otherwise.
+// A window that belongs to no machine (the menu, the bar) is never in the list.
+func markerLocked(s *mstate) string {
+	if s.win != nil {
+		return MarkerOpen
+	}
+	return MarkerClosed
+}
+
+// entryLocked is one machine line: the marker takes the last two columns of the
+// indent (indent is at least 3), so the columns do not move.
 func (h *Hub) entryLocked(s *mstate, indent int) string {
-	return fmt.Sprintf("%s%-16s %-24s %s", strings.Repeat(" ", indent), s.m.ID, s.m.Name, h.statusTextLocked(s))
+	return fmt.Sprintf("%s%s %-16s %-24s %s", strings.Repeat(" ", indent-2), markerLocked(s), s.m.ID, s.m.Name, h.statusTextLocked(s))
 }
 
 // rank puts down machines first, then those not checked, then up.
@@ -459,7 +477,8 @@ type PickResult struct {
 }
 
 // Pick handles one line chosen in the launcher. It acts only on a line that
-// is exactly a machine line (indented, first word an id that exists), a
+// is exactly a machine line (indented, first word an id that exists, after the
+// open marker if there is one), a
 // group heading, or one of the two switch lines. Anything else is ignored.
 func (h *Hub) Pick(line string) PickResult {
 	line = strings.TrimRight(line, "\r\n")
@@ -509,7 +528,14 @@ func (h *Hub) Pick(line string) PickResult {
 	case !indented:
 		return PickResult{Action: "ignored"} // "! message" lines and anything unknown
 	}
-	id := strings.Fields(trim)[0]
+	fields := strings.Fields(trim)
+	if fields[0] == MarkerOpen || fields[0] == MarkerClosed {
+		fields = fields[1:] // the open marker is not part of the id
+		if len(fields) == 0 {
+			return PickResult{Action: "ignored"}
+		}
+	}
+	id := fields[0]
 	h.mu.Lock()
 	_, ok := h.byID[id]
 	h.mu.Unlock()

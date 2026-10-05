@@ -42,9 +42,9 @@ func TestListGroupsNestingFoldingAndDownFirst(t *testing.T) {
 	for _, want := range []string{
 		"? search by id or name...",
 		"- Hub (1 machine)",
-		"   hub              Hub                      THIS HUB",
+		" ○ hub              Hub                      THIS HUB",
 		"- AI (2 machines, 1 down)",
-		"   vmhost-1         VM Host                  UP",
+		" ○ vmhost-1         VM Host                  UP",
 		"   + Guests of vmhost-1 (20 machines, 2 down)", // 20 > fold threshold 12: folded
 	} {
 		if !strings.Contains(got, want) {
@@ -68,7 +68,7 @@ func TestPickingAFoldedHeadingOpensItAndAsksForReopen(t *testing.T) {
 	}
 	got := r.h.List(false, "")
 	text := strings.Join(got, "\n")
-	if !strings.Contains(text, "   - Guests of vmhost-1 (20 machines, 2 down)") || !strings.Contains(text, "      g01") {
+	if !strings.Contains(text, "   - Guests of vmhost-1 (20 machines, 2 down)") || !strings.Contains(text, "    ○ g01 ") {
 		t.Errorf("group not open:\n%s", text)
 	}
 	// Down guests come first inside the opened group.
