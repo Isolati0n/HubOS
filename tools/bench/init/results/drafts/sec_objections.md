@@ -1,0 +1,15 @@
+### 6.3 The four objections from `language-comparison.md`: which still apply on the hub
+
+That file (SOURCE: `docs/proposals/language-comparison.md`, read 2026-10-05) compared Go and Elixir for the **recovery agent and the node helper**. It said the data did not argue for changing Go. Its objections, one by one, for a policy brain **on the hub**:
+
+| Objection there | Applies to the brain on the hub? | Why, with the evidence |
+|---|---|---|
+| The recovery kernel would grow (6.3 MB to about 12.6 MB with the Elixir release) | **No.** The brain is part of the hub's slot root, not of the recovery kernel (HUB-OS.md: the recovery kernel is separate and carries only the recovery agent). It does still apply to the recovery kernel and to the nodes, which this document does not touch. | In this test the BEAM files shipped for the brain are 11.7 MB (Erlang runtime, `kernel` and `stdlib` only) plus 4.9 MB (Elixir's `ebin`) (TESTED, `results/sizes.txt`); that is about 17 MB on a hub root of about 160 MB (SOURCE: `docs/hub-user-split.md` section 1 quotes the hub root as about 160 MB). Owner decision: size matters little on the hub. |
+| The `epmd` helper, the distribution port on all interfaces and the cookie on the command line | **No, if distribution stays off, and it is off here.** It would apply again the moment anyone turns distribution on. | TESTED: with no `-name`/`-sname` the brain opened no TCP listening socket and no `epmd` ran (the `LISTEN` line of the boot runs, section 5.1), and no `epmd` binary was put in the image. The cookie is only created when distribution starts. The brain's only door is the unix status socket. |
+| `erlang-base` depends on `libsystemd0` and ships systemd unit files; `epmd` links `libsystemd.so.0` | **Only if the Ubuntu package is installed as it is.** Taking just the runtime files avoids it. | TESTED: `ldd beam.smp` shows no `libsystemd`; the c-elixir initramfs contains 0 files with "systemd" in the name (`results/sizes.txt`). The hub is to be built from scratch (glibc, upstream), so a self-built OTP would have no systemd dependency unless configured so (UNKNOWN: building OTP from source was not tried). |
+| The OTP version in Ubuntu 24.04 is old (OTP 25 here; the docs read earlier were for OTP 29.1.1) | **Yes, as a build decision, not a technical blocker.** | This test ran OTP 25.3.2.8 and Elixir 1.14.0. Everything the brain uses (`supervisor`, `gen_server`, ETS, `gen_tcp` on a unix socket, `System.cmd`) exists in OTP 25. The hub would pin a version and build it; the effort and the patch-level policy are UNKNOWN. |
+
+Two further points about the BEAM that the earlier file did not ask:
+
+- **Boot cost and memory (TESTED).** The Elixir brain needs about 10 s to start in this emulation (the Go one under 1 s); the numbers are in section 5.1 ("BRAIN-READY" and the PSS column). Under emulation both are inflated, so only the ratio is meaningful.
+- **Hot code upgrade and distribution add nothing here** (same reasoning as `language-comparison.md` section 6); nothing in the brain uses them.

@@ -1,0 +1,225 @@
+diff -ruN a/src/config/mod.rs b/src/config/mod.rs
+--- a/src/config/mod.rs
++++ b/src/config/mod.rs
+@@ -69,7 +69,10 @@
+     let lower = combo.to_lowercase();
+     for suffix in ["-up", "-down", "-left", "-right"] {
+         if lower.ends_with(suffix) {
+-            return combo[..combo.len() - suffix.len()].to_string();
++            // HUB-STABILITY FIX: to_lowercase() can change the byte length; never slice by it blindly.
++            if let Some(base) = combo.get(..combo.len().saturating_sub(suffix.len())) {
++                return base.to_string();
++            }
+         }
+     }
+     combo.to_string()
+diff -ruN a/src/config/parse_helpers.rs b/src/config/parse_helpers.rs
+--- a/src/config/parse_helpers.rs
++++ b/src/config/parse_helpers.rs
+@@ -137,6 +137,10 @@
+ 
+ pub(super) fn parse_color(s: &str) -> Option<[u8; 4]> {
+     let hex = s.strip_prefix('#')?;
++    // HUB-STABILITY FIX: byte-slicing below panics inside a multi-byte char.
++    if !hex.is_ascii() {
++        return None;
++    }
+     match hex.len() {
+         6 => {
+             let r = u8::from_str_radix(&hex[0..2], 16).ok()?;
+diff -ruN a/src/ipc/mod.rs b/src/ipc/mod.rs
+--- a/src/ipc/mod.rs
++++ b/src/ipc/mod.rs
+@@ -102,7 +102,20 @@
+     let registered = state
+         .loop_handle
+         .insert_source(source, move |_, stream, state| {
+-            Ok(serve_connection(stream, &mut buffer, state))
++            // HUB-STABILITY EXPERIMENT: catch panics in IPC handling when HS_CATCH_PANICS is set.
++            if std::env::var_os("HS_CATCH_PANICS").is_some() {
++                match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++                    serve_connection(stream, &mut buffer, state)
++                })) {
++                    Ok(a) => Ok(a),
++                    Err(_) => {
++                        tracing::error!("PANIC CAUGHT in IPC handler; dropping that IPC connection");
++                        Ok(PostAction::Remove)
++                    }
++                }
++            } else {
++                Ok(serve_connection(stream, &mut buffer, state))
++            }
+         });
+     if let Err(e) = registered {
+         tracing::warn!("IPC: failed to register client connection: {e}");
+@@ -205,6 +218,23 @@
+         Request::Close(sel) => cmd_close(sel, state),
+         Request::Suspend(sel) => cmd_suspend(sel, state),
+         Request::Relaunch(sel) => cmd_relaunch(sel, state),
++        // HUB-STABILITY TEST HOOKS (never for production): reproduce the three
++        // ways the event loop can stop answering, to test hang detection.
++        Request::Action(spec) if spec == "hs-test-busyloop" => loop {
++            std::hint::spin_loop();
++        },
++        Request::Action(spec) if spec == "hs-test-deadlock" => {
++            // Same shape as the caveats.md freeze: re-lock a non-reentrant Mutex.
++            let m = std::sync::Mutex::new(0);
++            let _a = m.lock().unwrap();
++            let _b = m.lock().unwrap();
++            Ok(Response::Ok)
++        }
++        Request::Action(spec) if spec == "hs-test-panic" => {
++            let v: Vec<u8> = Vec::new();
++            let i = std::hint::black_box(3usize);
++            Ok(if v[i] == 0 { Response::Ok } else { Response::Ok })
++        }
+         Request::Action(spec) => cmd_action(&spec, state),
+         Request::Bookmark { name, to, delete } => cmd_bookmark(name, to, delete, state),
+         Request::Screenshot {
+diff -ruN a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -42,6 +42,13 @@
+     /// dev session opt into session restore (it skips it otherwise).
+     #[arg(long, value_name = "PATH")]
+     session_file: Option<std::path::PathBuf>,
++    /// Name the Wayland socket (HUB-STABILITY PATCH, wl-restart contract)
++    #[arg(long, value_name = "NAME")]
++    socket: Option<String>,
++    /// Adopt an already-listening Wayland socket inherited as this fd
++    /// (HUB-STABILITY PATCH, wl-restart contract: used with --socket)
++    #[arg(long, value_name = "FD")]
++    wayland_fd: Option<i32>,
+     #[command(subcommand)]
+     command: Option<Sub>,
+ }
+@@ -208,16 +215,48 @@
+     event_loop
+         .handle()
+         .insert_source(display_source, |_, display, data: &mut DriftWm| {
+-            // SAFETY: Display is never dropped while the Generic source is alive.
+-            unsafe { display.get_mut() }.dispatch_clients(data).ok();
++            // HUB-STABILITY EXPERIMENT (catch panics in client dispatch): if
++            // HS_CATCH_PANICS is set, a panic in a request handler is logged
++            // and the loop continues. State may be half-updated: see the proposal.
++            if std::env::var_os("HS_CATCH_PANICS").is_some() {
++                let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++                    // SAFETY: Display is never dropped while the Generic source is alive.
++                    unsafe { display.get_mut() }.dispatch_clients(data).ok();
++                }));
++                if r.is_err() {
++                    tracing::error!("PANIC CAUGHT in Wayland client dispatch; continuing");
++                }
++            } else {
++                // SAFETY: Display is never dropped while the Generic source is alive.
++                unsafe { display.get_mut() }.dispatch_clients(data).ok();
++            }
+             Ok(smithay::reexports::calloop::PostAction::Continue)
+         })?;
+ 
+-    let listening_socket = smithay::wayland::socket::ListeningSocketSource::new_auto()?;
+-    let socket_name = listening_socket
+-        .socket_name()
+-        .to_string_lossy()
+-        .into_owned();
++    // HUB-STABILITY PATCH: with --wayland-fd the socket was bound by a parent
++    // (wl-restart style) and stays open across compositor restarts; we only
++    // accept on it. Without it, behave exactly as upstream.
++    enum Listener {
++        Own(smithay::wayland::socket::ListeningSocketSource),
++        Inherited(std::os::unix::net::UnixListener),
++    }
++    let (listening_socket, socket_name) = if let Some(fd) = cli.wayland_fd {
++        use std::os::fd::FromRawFd;
++        let name = cli
++            .socket
++            .clone()
++            .ok_or("--wayland-fd needs --socket NAME")?;
++        // SAFETY: the parent passed a listening unix socket as this fd.
++        let l = unsafe { std::os::unix::net::UnixListener::from_raw_fd(fd) };
++        l.set_nonblocking(true)?;
++        // Do not leak the listening socket into apps we spawn.
++        unsafe { libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) };
++        (Listener::Inherited(l), name)
++    } else {
++        let s = smithay::wayland::socket::ListeningSocketSource::new_auto()?;
++        let n = s.socket_name().to_string_lossy().into_owned();
++        (Listener::Own(s), n)
++    };
+     tracing::info!("Listening on WAYLAND_DISPLAY={socket_name}");
+     unsafe { std::env::set_var("WAYLAND_DISPLAY", &socket_name) };
+     unsafe { std::env::set_var("XDG_SESSION_TYPE", "wayland") };
+@@ -280,17 +319,48 @@
+         tracing::warn!("Failed to send READY=1 to systemd: {e}");
+     }
+ 
+-    event_loop
+-        .handle()
+-        .insert_source(listening_socket, |stream, _, data: &mut DriftWm| {
+-            tracing::info!("New client connected");
+-            if let Err(e) = data
+-                .display_handle
+-                .insert_client(stream, Arc::new(ClientState::default()))
+-            {
+-                tracing::warn!("Failed to insert client: {e}");
+-            }
+-        })?;
++    match listening_socket {
++        Listener::Own(listening_socket) => {
++            event_loop
++                .handle()
++                .insert_source(listening_socket, |stream, _, data: &mut DriftWm| {
++                    tracing::info!("New client connected");
++                    if let Err(e) = data
++                        .display_handle
++                        .insert_client(stream, Arc::new(ClientState::default()))
++                    {
++                        tracing::warn!("Failed to insert client: {e}");
++                    }
++                })?;
++        }
++        Listener::Inherited(listener) => {
++            use smithay::reexports::calloop::{Interest, Mode, PostAction, generic::Generic};
++            event_loop.handle().insert_source(
++                Generic::new(listener, Interest::READ, Mode::Level),
++                |_, listener, data: &mut DriftWm| {
++                    loop {
++                        match listener.accept() {
++                            Ok((stream, _)) => {
++                                tracing::info!("New client connected (inherited socket)");
++                                if let Err(e) = data
++                                    .display_handle
++                                    .insert_client(stream, Arc::new(ClientState::default()))
++                                {
++                                    tracing::warn!("Failed to insert client: {e}");
++                                }
++                            }
++                            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => break,
++                            Err(e) => {
++                                tracing::warn!("accept on inherited socket: {e}");
++                                break;
++                            }
++                        }
++                    }
++                    Ok(PostAction::Continue)
++                },
++            )?;
++        }
++    }
+ 
+     // inotify watch instead of an mtime poll, so an idle session never wakes
+     // the CPU. Watch the directory, not the file: editor atomic-saves replace
+diff -ruN a/src/state/mod.rs b/src/state/mod.rs
+--- a/src/state/mod.rs
++++ b/src/state/mod.rs
+@@ -554,7 +554,9 @@
+     match mutex.try_lock() {
+         Ok(guard) => guard,
+         Err(TryLockError::WouldBlock) => panic!("output_state locked re-entrantly"),
+-        Err(TryLockError::Poisoned(err)) => panic!("OutputState mutex poisoned: {err}"),
++        // HUB-STABILITY CHANGE: after a caught panic the mutex is poisoned; keep serving
++        // with the data as it is instead of panicking on every later call.
++        Err(TryLockError::Poisoned(err)) => err.into_inner(),
+     }
+ }
+ 

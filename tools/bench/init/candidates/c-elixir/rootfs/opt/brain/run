@@ -1,0 +1,5 @@
+#!/bin/sh
+exec 2>&1
+export ERL_CRASH_DUMP_SECONDS=0 ROOTDIR=/usr/lib/erlang BINDIR=/usr/lib/erlang/erts-13.2.2.5/bin EMU=beam PROGNAME=erl HOME=/root
+# one scheduler, no busy-waiting (the VM would otherwise burn CPU while idle); distribution off: no epmd, no cookie, no open port
+exec /usr/lib/erlang/erts-13.2.2.5/bin/erlexec +S 1:1 +A 1 +sbwt none +sbwtdcpu none +sbwtdio none -noshell -noinput -boot start_clean -pa /opt/brain/ebin -pa /usr/lib/elixir/lib/elixir/ebin -eval "'Elixir.Brain':main()."

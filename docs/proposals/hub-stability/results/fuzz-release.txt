@@ -1,0 +1,7 @@
+seed=20 COMPOSITOR DIED | done conns=100 sent=14379 killed_by_compositor=94 alive=False | thread 'main' (623) panicked at /root/.cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/wayland/shm/handlers.rs:190:89: note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace. 
+seed=21 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=295 sent=43035 killed_by_compositor=276 alive=True | 
+seed=22 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=296 sent=35713 killed_by_compositor=284 alive=True | 
+seed=23 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=295 sent=46811 killed_by_compositor=281 alive=True | 
+seed=24 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=295 sent=44381 killed_by_compositor=280 alive=True | 
+seed=25 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=293 sent=46913 killed_by_compositor=271 alive=True | 
+FINISHED

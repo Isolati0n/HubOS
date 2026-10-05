@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Viewer
+Exec=foot --app-id=viewer --title=GENERIC-RELAUNCH sleep 1500
+Terminal=false
+StartupWMClass=viewer

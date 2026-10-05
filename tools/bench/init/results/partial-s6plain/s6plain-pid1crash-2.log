@@ -1,0 +1,50 @@
+H# start 2026-10-05 17:50:03 cand=s6plain suite=pid1crash cpus_seen=4 loadavg_at_start=['8.89', '8.93', '8.96']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6plain.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1crash hub.dur=600 hub.seed=112 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=s6plain hub.sup=s6-supervise
+H     0.20 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.21 Booting from ROM...
+H     7.46 c[?7l[2JCH STAGE1 up=5.09
+H     7.53 CH CAND s6plain pid1=s6-svscan
+H     7.59 CH SUP-START up=5.23
+H     8.05 CH t=0.2 CHAOS start cand=s6plain suite=pid1crash seed=112 cpus=2
+H    14.49 CH t=6.8 BOOT-OK up=12.11 ok=1 (seconds since kernel start; waited 6.3)
+H    14.59 CH t=6.9 SAMPLE zombies=0 nproc=95 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=739752 init_side_cpu_ticks=289
+H    19.50 CH t=11.8 INJECT pid1-segv
+H    19.60 [   17.289740] s6-svscan[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffd0bd893d0 error 15 likely on CPU 1 (core 1, socket 0)
+H    19.60 [   17.292474] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    19.60 [   17.294560] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    19.60 [   17.294999] CPU: 1 PID: 1 Comm: s6-svscan Not tainted 6.8.0-146-generic #146-Ubuntu
+H    19.60 [   17.294999] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    19.60 [   17.294999] Call Trace:
+H    19.60 [   17.294999]  <TASK>
+H    19.61 [   17.294999]  dump_stack_lvl+0x27/0xa0
+H    19.61 [   17.294999]  dump_stack+0x10/0x20
+H    19.61 [   17.294999]  panic+0x366/0x3c0
+H    19.61 [   17.294999]  do_exit+0x513/0x530
+H    19.61 [   17.294999]  do_group_exit+0x35/0x90
+H    19.61 [   17.294999]  get_signal+0x96e/0x9b0
+H    19.61 [   17.294999]  ? force_sig_info_to_task+0x128/0x1c0
+H    19.61 [   17.294999]  arch_do_signal_or_restart+0x42/0x210
+H    19.61 [   17.294999]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    19.61 [   17.294999]  irqentry_exit+0x43/0x50
+H    19.61 [   17.294999]  exc_page_fault+0x94/0x1b0
+H    19.61 [   17.294999]  asm_exc_page_fault+0x27/0x30
+H    19.61 [   17.294999] RIP: 0033:0xfffffffffffffffe
+H    19.61 [   17.294999] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    19.61 [   17.294999] RSP: 002b:00007ffd0bd893d0 EFLAGS: 00000202
+H    19.61 [   17.294999] RAX: 000000000000010f RBX: 00007ffd0bdde5f0 RCX: 00000000004267ed
+H    19.61 [   17.294999] RDX: 00007ffd0bd893f0 RSI: 0000000000000002 RDI: 00007ffd0bdde5f0
+H    19.61 [   17.294999] RBP: 00007ffd0bd89420 R08: 0000000000000008 R09: 000000000040d440
+H    19.61 [   17.294999] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000002
+H    19.61 [   17.294999] R13: 00007ffd0bd893f0 R14: 00007ffd0bd89430 R15: 00007ffd0bd89440
+H    19.61 [   17.294999]  </TASK>
+H    19.61 [   17.294999] Kernel Offset: 0x34000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    19.61 [   17.294999] Rebooting in 5 seconds..
+H    25.29 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    32.07 Booting from ROM..c[?7l[2JCH STAGE1 up=4.78
+H    32.18 CH CAND s6plain pid1=s6-svscan
+H    32.27 CH SUP-START up=4.99
+H    32.94 CH t=0.5 CHAOS start cand=s6plain suite=pid1crash seed=112 cpus=2
+H    39.48 CH t=7.0 BOOT-OK up=12.18 ok=1 (seconds since kernel start; waited 6.3)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 39s, loadavg ['9.05', '8.95', '8.97']
+H# end wall=39.5s launches=1 suite_done=True

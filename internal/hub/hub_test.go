@@ -29,6 +29,10 @@ type fakeComp struct {
 	stuck    map[int]bool // windows that ignore a close request
 	subs     []chan *driftwm.State
 	failSub  bool
+	// modelFocus makes Focus behave like driftwm's: the window gets the focus
+	// flag and is raised to the top of the list (last = on top), and the camera
+	// pans to it unless its centre is already in view.
+	modelFocus bool
 }
 
 func newFake() *fakeComp {
@@ -89,6 +93,23 @@ func (f *fakeComp) Focus(id int) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
 	f.focused = append(f.focused, id)
+	if f.modelFocus {
+		for i := range f.windows {
+			f.windows[i].Focused = f.windows[i].ID == id
+		}
+		for i, w := range f.windows {
+			if w.ID != id {
+				continue
+			}
+			f.windows = append(append([]driftwm.Window(nil), f.windows[:i]...), f.windows[i+1:]...)
+			f.windows = append(f.windows, w)
+			dx, dy := float64(w.Position[0])-f.camera[0], float64(w.Position[1])-f.camera[1]
+			if dx < -float64(f.viewport[0])/2 || dx > float64(f.viewport[0])/2 || dy < -float64(f.viewport[1])/2 || dy > float64(f.viewport[1])/2 {
+				f.camera = [2]float64{float64(w.Position[0]), float64(w.Position[1])}
+			}
+			break
+		}
+	}
 	return nil
 }
 func (f *fakeComp) Close(id int) error {

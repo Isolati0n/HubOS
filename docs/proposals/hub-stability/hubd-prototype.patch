@@ -1,0 +1,274 @@
+--- a/internal/driftwm/driftwm.go
++++ b/internal/driftwm/driftwm.go
+@@ -27,8 +27,15 @@
+ 	Size     [2]int `json:"size"`
+ 	Focused  bool   `json:"is_focused"`
+ 	Mode     string `json:"mode"`
++	// Suspended is true for a dormant stand-in that driftwm restored after a
++	// restart: it is not a live viewer window. (HUB-STABILITY PROTOTYPE)
++	Suspended bool `json:"suspended"`
+ }
+ 
++// Relaunch asks driftwm to relaunch a stand-in (it runs the stand-in's
++// desktop-entry command, with an activation token). (HUB-STABILITY PROTOTYPE)
++func (c *Client) Relaunch(id int) error { return c.call(map[string]any{"Relaunch": id}, nil) }
++
+ // Output is one screen.
+ type Output struct {
+ 	Name   string     `json:"name"`
+--- a/internal/hub/hub.go
++++ b/internal/hub/hub.go
+@@ -108,6 +108,11 @@
+ 	checkedAt time.Time
+ 	phase     phase
+ 	win       *winRec
++	skipPlace bool // PROTOTYPE: a stand-in was there; driftwm puts the window in its place
++	// PROTOTYPE ("direct" restore): the last position and size hubd saw for this
++	// machine's window, kept while driftwm is up, and the one to apply after a restart.
++	lastGeom    *[4]int // centre x, centre y, width, height
++	restoreGeom *[4]int
+ 	// While phase is phaseLate: closing lateCancel stops the wait; lateCmp
+ 	// says the viewer is matched by comparison (not by name).
+ 	lateCancel chan struct{}
+--- a/internal/hub/open.go
++++ b/internal/hub/open.go
+@@ -1,6 +1,7 @@
+ package hub
+ 
+ import (
++	"os"
+ 	"fmt"
+ 	"slices"
+ 	"strings"
+@@ -172,7 +173,7 @@
+ 	name := s.m.Name
+ 	appID := viewers.AppID(s.m.ID)
+ 	title, _, _ := v.MatchTitle(s.m)
+-	if title == "" {
++	if title == "" && !(v.SetsName && os.Getenv("HUBD_PROTO_NOSERIAL") != "") {
+ 		// One launch at a time, so "the window that is new" is never
+ 		// ambiguous. A title-matched window is told apart by its title, so
+ 		// those launches do not wait for each other.
+@@ -185,7 +186,14 @@
+ 		return h.done("failed", "cannot reach driftwm: %v", err)
+ 	}
+ 	known := map[int]bool{}
++	standin := false
+ 	for _, w := range before.Windows {
++		if w.Suspended {
++			if w.AppID == appID {
++				standin = true // PROTOTYPE: a stand-in of this machine exists; the new window will take its place
++			}
++			continue
++		}
+ 		known[w.ID] = true
+ 	}
+ 	proc, err := h.launch(s.m.ID, args)
+@@ -261,6 +269,9 @@
+ 		h.mu.Unlock()
+ 		return h.done("failed", "%s", ambiguousMessage(name, cands, title))
+ 	}
++	h.mu.Lock()
++	s.skipPlace = standin
++	h.mu.Unlock()
+ 	return h.recordWindow(s, v, cands[0], "")
+ }
+ 
+@@ -296,6 +307,9 @@
+ 	}
+ 	h.mu.Unlock()
+ 	for _, w := range st.Windows {
++		if w.Suspended {
++			continue // a restored stand-in is not a viewer window (PROTOTYPE)
++		}
+ 		if known[w.ID] || claimed[w.ID] {
+ 			continue
+ 		}
+@@ -332,7 +346,21 @@
+ 	case v.TitleMatch != "":
+ 		by = "title"
+ 	}
+-	note := h.place(s, w)
++	h.mu.Lock()
++	skip := s.skipPlace
++	s.skipPlace = false
++	h.mu.Unlock()
++	note := ""
++	h.mu.Lock()
++	rg := s.restoreGeom
++	s.restoreGeom = nil
++	h.mu.Unlock()
++	if rg != nil { // PROTOTYPE direct restore: put the window back where it was
++		h.comp.Resize(w.ID, rg[2], rg[3])
++		h.comp.Move(w.ID, rg[0], rg[1])
++	} else if !skip {
++		note = h.place(s, w)
++	}
+ 	h.mu.Lock()
+ 	s.win = &winRec{Machine: s.m.ID, Window: w.ID, AppID: w.AppID, Title: w.Title, By: by}
+ 	h.saveLocked(h.identityLocked())
+--- a/internal/hub/watch.go
++++ b/internal/hub/watch.go
+@@ -15,6 +15,7 @@
+ // goes away (every window id is meaningless after that).
+ func (h *Hub) RunWatch(ctx context.Context) {
+ 	backoff := 500 * time.Millisecond
++	var pendingRestore []string
+ 	for ctx.Err() == nil {
+ 		ch, err := h.comp.Subscribe(ctx)
+ 		if err != nil {
+@@ -34,11 +35,16 @@
+ 			h.adopt(st)
+ 		}
+ 		h.setDriftwmUp(true)
++		if len(pendingRestore) > 0 {
++			go h.restore(ctx, pendingRestore)
++			pendingRestore = nil
++		}
+ 		for st := range ch {
+ 			h.syncWindows(st)
+ 		}
+ 		// The stream ended: driftwm quit or restarted.
+ 		h.setDriftwmUp(false)
++		pendingRestore = h.openMachines()
+ 		h.clearAll()
+ 	}
+ }
+@@ -80,7 +86,11 @@
+ 			continue
+ 		}
+ 		cur, ok := st.Window(s.win.Window)
+-		if !ok || cur.AppID != s.win.AppID {
++		if ok && !cur.Suspended {
++			g := [4]int{cur.Position[0], cur.Position[1], cur.Size[0], cur.Size[1]}
++			s.lastGeom = &g // PROTOTYPE: remember where this machine's window is
++		}
++		if !ok || cur.AppID != s.win.AppID || cur.Suspended {
+ 			s.win = nil
+ 			changed = true
+ 		}
+@@ -88,6 +98,9 @@
+ 	// Two or more windows with the same hubos- name: tell the owner.
+ 	counts := map[string]int{}
+ 	for _, w := range st.Windows {
++		if w.Suspended {
++			continue
++		}
+ 		if id, ok := strings.CutPrefix(w.AppID, viewers.AppIDPrefix); ok && h.byID[id] != nil {
+ 			counts[id]++
+ 		}
+@@ -161,7 +174,7 @@
+ 			for _, rec := range r.Windows {
+ 				s := h.byID[rec.Machine]
+ 				cur, found := st.Window(rec.Window)
+-				if s != nil && s.win == nil && found && cur.AppID == rec.AppID && cur.Title == rec.Title {
++				if s != nil && s.win == nil && found && !cur.Suspended && cur.AppID == rec.AppID && cur.Title == rec.Title {
+ 					rec := rec
+ 					s.win = &rec
+ 				}
+@@ -170,6 +183,9 @@
+ 	}
+ 	byName := map[string][]driftwm.Window{}
+ 	for _, w := range st.Windows {
++		if w.Suspended {
++			continue
++		}
+ 		if id, ok := strings.CutPrefix(w.AppID, viewers.AppIDPrefix); ok {
+ 			byName[id] = append(byName[id], w)
+ 		}
+--- a/internal/hub/restore_proto.go
++++ b/internal/hub/restore_proto.go
+@@ -0,0 +1,93 @@
++package hub
++
++import (
++	"context"
++	"os"
++	"time"
++)
++
++// HUB-STABILITY PROTOTYPE (research only, not for merge): after driftwm
++// restarts (the event stream ended while hubd kept running), relaunch the
++// viewers of the machines that were open, through driftwm's own stand-ins.
++// Mode comes from HUBD_PROTO_RESTORE: "" = off, "all" = ask for all relaunches
++// at once, "stagger" = one at a time, each after the previous one is recorded.
++
++func (h *Hub) openMachines() []string {
++	h.mu.Lock()
++	defer h.mu.Unlock()
++	var ids []string
++	for _, s := range h.ms {
++		if s.win != nil {
++			ids = append(ids, s.m.ID)
++		}
++	}
++	return ids
++}
++
++type relauncher interface{ Relaunch(id int) error }
++
++func (h *Hub) restore(ctx context.Context, want []string) {
++	mode := os.Getenv("HUBD_PROTO_RESTORE")
++	rl, ok := h.comp.(relauncher)
++	if mode == "" || !ok || len(want) == 0 {
++		return
++	}
++	if mode == "direct" {
++		// No stand-ins needed: hubd saved each window's place itself; open every
++		// machine that was open, all at once, and put the new window back.
++		for _, id := range want {
++			h.mu.Lock()
++			if s := h.byID[id]; s != nil && s.lastGeom != nil {
++				g := *s.lastGeom
++				s.restoreGeom = &g
++			}
++			h.mu.Unlock()
++			go h.Open(id)
++		}
++		return
++	}
++	// The signal we wait for: a stand-in for every machine that was open
++	// (driftwm restores them before it answers IPC) -- or 10 s.
++	deadline := time.Now().Add(10 * time.Second)
++	standin := map[string]int{}
++	for time.Now().Before(deadline) && ctx.Err() == nil {
++		st, err := h.comp.State()
++		if err == nil {
++			standin = map[string]int{}
++			for _, w := range st.Windows {
++				if w.Suspended {
++					standin[w.AppID] = w.ID
++				}
++			}
++			n := 0
++			for _, id := range want {
++				if _, ok := standin["hubos-"+id]; ok {
++					n++
++				}
++			}
++			if n == len(want) {
++				break
++			}
++		}
++		time.Sleep(50 * time.Millisecond)
++	}
++	for _, id := range want {
++		sid, ok := standin["hubos-"+id]
++		if !ok {
++			continue
++		}
++		_ = rl.Relaunch(sid)
++		if mode == "stagger" {
++			t := time.Now()
++			for time.Since(t) < 10*time.Second {
++				h.mu.Lock()
++				done := h.byID[id].win != nil
++				h.mu.Unlock()
++				if done {
++					break
++				}
++				time.Sleep(20 * time.Millisecond)
++			}
++		}
++	}
++}

@@ -1,0 +1,2 @@
+#!/bin/sh
+for s in /run/service/*/; do n=$(basename $s); [ -d $s/supervise ] && echo "$n: $(s6-svstat $s)"; done

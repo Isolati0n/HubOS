@@ -1,0 +1,19 @@
+H# start 2026-10-05 17:53:59 cand=s6plain suite=trial cpus_seen=4 loadavg_at_start=['8.72', '8.49', '8.76']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6plain.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=132 hub.reps=5 hub.skip=0 hub.trial=hang hub.preflag= hub.cand=s6plain hub.sup=s6-supervise
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     6.85 Booting from ROM..c[?7l[2JCH STAGE1 up=4.11
+H     6.93 CH CAND s6plain pid1=s6-svscan
+H     6.99 CH SUP-START up=4.26
+H     7.59 CH t=0.5 CHAOS start cand=s6plain suite=trial seed=132 cpus=2
+H    16.39 CH t=9.3 TRIAL-INJECT driftwm stopped (wedged)
+H    27.46 CH t=20.4 TRIAL CONFIRMED scenario=hang after=19.8s true_state="driftwm stopped"
+H    27.78 CH t=20.7 STATUS dbus: up (pid 129 pgid 129) 20 seconds
+H    27.78 CH t=20.7 STATUS driftwm: up (pid 124 pgid 124) 20 seconds
+H    27.79 CH t=20.7 STATUS guard: up (pid 142 pgid 142) 20 seconds
+H    27.79 CH t=20.7 STATUS hubd: up (pid 117 pgid 117) 20 seconds
+H    27.80 CH t=20.7 STATUS seatd: up (pid 113 pgid 113) 20 seconds
+H    27.80 CH t=20.7 STATUS udevd: up (pid 114 pgid 114) 20 seconds
+H    27.80 CH t=20.7 STATUS waybar: up (pid 128 pgid 128) 20 seconds
+H# trial finished
+H# vm exit code -9 after 48s, loadavg ['7.79', '8.29', '8.67']
+H# end wall=47.8s launches=1 suite_done=True

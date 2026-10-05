@@ -1,0 +1,7 @@
+seed=30 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=294 sent=49671 killed_by_compositor=272 alive=True | HEALTH: ipc ok; windows before 0; a new foot window mapped: True; move reply: {'Ok': {'Position': {'x': 10, 'y': 10}}} | 
+seed=31 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=295 sent=50737 killed_by_compositor=272 alive=True | HEALTH: ipc ok; windows before 0; a new foot window mapped: True; move reply: {'Ok': {'Position': {'x': 10, 'y': 10}}} | 
+seed=32 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=294 sent=49607 killed_by_compositor=276 alive=True | HEALTH: ipc ok; windows before 0; a new foot window mapped: True; move reply: {'Ok': {'Position': {'x': 10, 'y': 10}}} | 
+seed=33 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=295 sent=50368 killed_by_compositor=274 alive=True | HEALTH: ipc ok; windows before 0; a new foot window mapped: True; move reply: {'Ok': {'Position': {'x': 10, 'y': 10}}} | 
+seed=34 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=295 sent=53417 killed_by_compositor=273 alive=True | HEALTH: ipc ok; windows before 0; a new foot window mapped: True; move reply: {'Ok': {'Position': {'x': 10, 'y': 10}}} | 
+seed=35 COMPOSITOR ALIVE after fuzz; VmHWM/RSS: | done conns=295 sent=51067 killed_by_compositor=278 alive=True | HEALTH: ipc ok; windows before 0; a new foot window mapped: True; move reply: {'Ok': {'Position': {'x': 10, 'y': 10}}} | 
+FINISHED
