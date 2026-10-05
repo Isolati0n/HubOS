@@ -40,6 +40,7 @@ type Output struct {
 // State is the part of driftwm's snapshot hubd uses.
 type State struct {
 	Camera  [2]float64 `json:"camera"`
+	Zoom    float64    `json:"zoom"`
 	Windows []Window   `json:"windows"`
 	Outputs []Output   `json:"outputs"`
 }
@@ -152,6 +153,46 @@ func (c *Client) Move(id, x, y int) error {
 // Resize asks for a visible-frame size (clamped by the client's limits).
 func (c *Client) Resize(id, w, h int) error {
 	return c.call(map[string]any{"Resize": map[string]any{"window": id, "to": [2]int{w, h}}}, nil)
+}
+
+// SetZoom asks for a zoom level (animated; driftwm clamps it, and never above 1).
+func (c *Client) SetZoom(z float64) error { return c.call(map[string]any{"Zoom": z}, nil) }
+
+// SetCamera asks the view to move so that the canvas point (x, y), Y up, is at
+// its centre (animated). Setting it right after SetZoom gives a wrong camera:
+// wait until the camera has stopped between the two (docs/proposals/driftwm-layouts.md, section 2.9).
+func (c *Client) SetCamera(x, y float64) error {
+	return c.call(map[string]any{"Camera": [2]float64{x, y}}, nil)
+}
+
+// PeerPID is the process id of the program that listens on the socket,
+// read from the kernel (SO_PEERCRED of a connection to it). It is the
+// compositor, so hubd can tell it to restart.
+func (c *Client) PeerPID() (int, error) {
+	conn, err := c.dial()
+	if err != nil {
+		return 0, err
+	}
+	defer conn.Close()
+	uc, ok := conn.(*net.UnixConn)
+	if !ok {
+		return 0, errors.New("not a unix socket")
+	}
+	raw, err := uc.SyscallConn()
+	if err != nil {
+		return 0, err
+	}
+	var cred *syscall.Ucred
+	var cerr error
+	if err := raw.Control(func(fd uintptr) {
+		cred, cerr = syscall.GetsockoptUcred(int(fd), syscall.SOL_SOCKET, syscall.SO_PEERCRED)
+	}); err != nil {
+		return 0, err
+	}
+	if cerr != nil {
+		return 0, cerr
+	}
+	return int(cred.Pid), nil
 }
 
 // Focus focuses and raises a window and pans the view to it unless it is

@@ -1,6 +1,9 @@
 #!/bin/sh
 # hubd (inventory, health checks, launching viewers, placing windows through driftwm's socket), as the user hub.
-# Waits for driftwm and stops when driftwm goes away. The confirm step asks it on /run/hubos/hubd.sock.
+# Waits for driftwm to start (once) and then keeps running when driftwm goes away or restarts: hubd remembers where the
+# windows were and brings them back by itself (docs/hubd-slice2.md section 18). The confirm step asks it on /run/hubos/hubd.sock.
+# The folder of saved layouts is on the config partition and belongs to the user hub.
 exec 2>&1
 . /usr/lib/hubos/hub-env.sh
-exec /usr/lib/hubos/follow-driftwm s6-setuidgid hub env $HUBENV /usr/bin/hubd serve --inventory /config/hubos/inventory.toml --viewers /config/hubos/viewers.toml --socket /run/hubos/hubd.sock --bar-height 30
+mkdir -p /config/hubos/layouts 2>/dev/null && chown hub:hub /config/hubos/layouts 2>/dev/null
+exec /usr/lib/hubos/follow-driftwm --once s6-setuidgid hub env $HUBENV /usr/bin/hubd serve --inventory /config/hubos/inventory.toml --viewers /config/hubos/viewers.toml --socket /run/hubos/hubd.sock --bar-height 30 --layouts /config/hubos/layouts

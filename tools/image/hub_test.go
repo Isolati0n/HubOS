@@ -16,12 +16,15 @@ import (
 	"image/png"
 	"io"
 	"math"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -196,6 +199,14 @@ func TestHubImage(t *testing.T) {
 	bdir := filepath.Join(work, "bundles")
 	os.RemoveAll(bdir)
 	os.MkdirAll(bdir, 0o755)
+	// hubd is built from the source tree every run (build-root-image.sh keeps a built copy in the work folder between runs)
+	os.Remove(filepath.Join(work, "out", "hubd"))
+	// files for the layout and restore tests (H3d to H3f), served to the guest over HTTP
+	for name, content := range map[string]string{"h6lib.sh": h6lib(), "h6kill.sh": h6kill, "inventory-20.toml": h20Inventory(), "viewers-20.toml": h20Viewers} {
+		if err := os.WriteFile(filepath.Join(bdir, name), []byte(content), 0o644); err != nil {
+			t.Fatal(err)
+		}
+	}
 	for _, b := range []struct{ v, f string }{{"1", "good"}, {"2", "good"}, {"3", "unhealthy"}} {
 		r.script("build-bundle.sh", nil, b.v, b.f, filepath.Join(bdir, "h"+b.v+"-"+b.f), r.pub, r.sec)
 	}
@@ -297,18 +308,22 @@ func TestHubImage(t *testing.T) {
 			_, o := r.sh(`pidof ` + n)
 			return regexp.MustCompile(`(?m)^\d+`).FindString(strings.TrimSpace(o))
 		}
-		old, owb := pidOf("driftwm"), pidOf("waybar")
+		servePid := func() string {
+			_, o := r.sh(`ps | grep '[h]ubd serve' | awk '{print $1}' | head -n 1`)
+			return regexp.MustCompile(`(?m)^\d+`).FindString(strings.TrimSpace(o))
+		}
+		old, owb, hubd0 := pidOf("driftwm"), pidOf("waybar"), servePid()
 		r.sh(`kill -9 $(pidof driftwm)`)
 		time.Sleep(3 * time.Second)
 		st, back := waitDesktop(180 * time.Second)
 		time.Sleep(10 * time.Second)
-		nw, nwb := pidOf("driftwm"), pidOf("waybar")
+		nw, nwb, hubd1 := pidOf("driftwm"), pidOf("waybar"), servePid()
 		rcL, _ := r.sh(asHub("hubd list " + hubSock + " > /dev/null"))
 		img := loadPNG(t, r.shot("hub-2-after-driftwm-restart"))
 		bg, alert := barDrawn(img)
-		ok := back && old != "" && nw != "" && old != nw && owb != nwb && rcL == 0 && bg > 20000 && alert > 500
-		record("H2 killing driftwm (kill -9) brings the desktop back: s6 restarts it, Waybar and hubd are restarted by their wait-for-driftwm scripts, hubd answers again and the bar is drawn", ok, time.Since(start),
-			fmt.Sprintf("driftwm pid %s -> %s, waybar pid %s -> %s, back after %.0f s", old, nw, owb, nwb, time.Since(start).Seconds()))
+		ok := back && old != "" && nw != "" && old != nw && owb != nwb && hubd0 != "" && hubd0 == hubd1 && rcL == 0 && bg > 20000 && alert > 500
+		record("H2 killing driftwm (kill -9) brings the desktop back: s6 restarts it, Waybar is restarted by its wait-for-driftwm script, hubd keeps running (same process) and answers, and the bar is drawn", ok, time.Since(start),
+			fmt.Sprintf("driftwm pid %s -> %s, waybar pid %s -> %s, hubd pid %s -> %s, back after %.0f s", old, nw, owb, nwb, hubd0, hubd1, time.Since(start).Seconds()))
 		if !ok {
 			t.Errorf("back=%v old=%q new=%q bg=%d alert=%d\n%s", back, old, nw, bg, alert, st)
 			t.Fail()
@@ -382,8 +397,8 @@ func TestHubImage(t *testing.T) {
 		rcEnd, outEnd := r.sh(asHub("hubd end " + hubSock + " ai-1 2>&1"))
 		time.Sleep(3 * time.Second)
 		stEnd := state()
-		// hubd gives a window 3 s to close and says "still open" (rc 1) when the machine is slow; the window then still closes
-		// a moment later, so wait up to 30 s for it to be gone instead of requiring rc 0.
+		// hubd now waits up to 30 s for a window to close (it was 3 s, which was too short on this slow machine); the test still waits up
+		// to 30 s for the window to be gone instead of requiring rc 0.
 		for i := 0; i < 10 && strings.Contains(stEnd, "hubos-ai-1"); i++ {
 			time.Sleep(3 * time.Second)
 			stEnd = state()
@@ -584,7 +599,7 @@ func TestHubImage(t *testing.T) {
 		offscreen := haveAI && haveD1 && camOK0 && !inView(ai0, cam0) && inView(d1, cam0)
 		_, list0 := r.sh(asHub("hubd list " + hubSock))
 		t.Logf("two windows open (desk-1 rc=%d %s):\n%s\nlist:\n%s", rcD, strings.TrimSpace(outD), st0, list0)
-		marks := markerOf(list0, "ai-1") == filled && markerOf(list0, "desk-1") == filled && markerOf(list0, "desk-2") == empty && markerOf(list0, "nas-1") == empty && markerOf(list0, "hub") == empty
+		marks := markerOf(list0, "ai-1") == filled && markerOf(list0, "desk-1") == filled && markerOf(list0, "desk-2") == empty && markerOf(list0, "nas-1") == empty && markerOf(list0, "hub") == "none"
 		r.shot("hub-3c-two-windows-open")
 
 		// the menu opened by the bar click shows the list
@@ -693,10 +708,449 @@ func TestHubImage(t *testing.T) {
 
 		ok := rcD == 0 && !haveD2 && offscreen && marks && menuOK && pickedOffscreen && coverSetup && pickedBehind && afterEnd && searchOpened && searchMarker
 		record("H3c the open marker: two fake viewer windows are open (ai-1 and desk-1, far apart) and a third machine (desk-2) is not; the list opened by the bar click marks the two with a filled dot and the others with an empty dot; a click on the open ai-1 row (window off screen, then window behind another) focuses it and moves the view to it; hubd end desk-1 changes its marker; typing part of a NAME finds a marked line and a pick of it opens the machine", ok, time.Since(start),
-			fmt.Sprintf("windows open before: ai-1 %v, desk-1 %v, desk-2 %v; ai-1 off screen while desk-1 in view: %v; markers right (ai-1 and desk-1 filled, desk-2, nas-1, hub empty): %v; menu opened on try %d, list pixels %d; click on ai-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over ai-1: %v; second pick (%d clicks): ai-1 focused and in view: %v; after hubd end desk-1 (rc %d): desk-1 empty and ai-1 filled: %v; search 'two' + Enter (try %d) opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
+			fmt.Sprintf("windows open before: ai-1 %v, desk-1 %v, desk-2 %v; ai-1 off screen while desk-1 in view: %v; markers right (ai-1 and desk-1 filled, desk-2 and nas-1 empty, the hub line has no dot): %v; menu opened on try %d, list pixels %d; click on ai-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over ai-1: %v; second pick (%d clicks): ai-1 focused and in view: %v; after hubd end desk-1 (rc %d): desk-1 empty and ai-1 filled: %v; search 'two' + Enter (try %d) opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
 				haveAI, haveD1, haveD2, offscreen, marks, tries, listPix, clicks, pickedOffscreen, coverSetup, clicks2, pickedBehind, rcE, afterEnd, searchTries, searchOpened, d24.x, d24.y, searchMarker, cam0, cam1, camOK1))
 		if !ok {
 			t.Errorf("rcD=%d haveD2=%v offscreen=%v marks=%v menuOK=%v pickedOffscreen=%v coverSetup=%v pickedBehind=%v afterEnd=%v searchOpened=%v searchMarker=%v", rcD, haveD2, offscreen, marks, menuOK, pickedOffscreen, coverSetup, pickedBehind, afterEnd, searchOpened, searchMarker)
+			t.Fail()
+		}
+	})
+
+	// ---- H3d to H3f: saved layouts, the STALE marker, and 20 windows that survive kill -9 of the compositor (docs/hubd-slice2.md section 18) ----
+	// pollState reads `driftwm msg state` every 3 s until cond is true, for at most d.
+	pollState := func(d time.Duration, cond func(ws []hubWin, cam [2]float64, zoom float64) bool) (string, bool) {
+		end := time.Now().Add(d)
+		var st string
+		for {
+			st = state()
+			ws, cam, zoom, ok := parseHubState(st)
+			if ok && cond(ws, cam, zoom) {
+				return st, true
+			}
+			if time.Now().After(end) {
+				return st, false
+			}
+			time.Sleep(3 * time.Second)
+		}
+	}
+	// servePID is the process id of `hubd serve` ("" if none).
+	servePID := func() string {
+		_, o := r.sh(`for p in $(pidof hubd); do tr '\000' ' ' < /proc/$p/cmdline | grep -q ' serve ' && echo SERVEPID=$p; done; true`)
+		return regexp.MustCompile(`SERVEPID=(\d+)`).FindString(o)
+	}
+	waitHubd := func(d time.Duration) bool {
+		end := time.Now().Add(d)
+		for time.Now().Before(end) {
+			if rc, _ := r.vm.sh(asHub("hubd list "+hubSock+" > /dev/null 2>&1"), 30*time.Second); rc == 0 {
+				return true
+			}
+			time.Sleep(3 * time.Second)
+		}
+		return false
+	}
+	lay := func(rest string) (int, string) { return r.sh(asHub("hubd layout " + hubSock + " " + rest + " 2>&1")) }
+
+	t.Run("H3d_layouts_on_the_real_driftwm", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		r.sh(`wget -q -O /tmp/h6lib.sh ` + r.base + `/h6lib.sh && wget -q -O /tmp/h6kill.sh ` + r.base + `/h6kill.sh && echo scripts-ok`)
+		for _, id := range []string{"ai-1", "desk-1", "desk-2"} {
+			r.sh(asHub("hubd open " + hubSock + " " + id + " 2>&1"))
+		}
+		three := func(ws []hubWin, _ [2]float64, _ float64) bool {
+			m := hubWinsByApp(ws, "hubos-")
+			return len(m) == 3 && m["hubos-ai-1"].ID >= 0 && m["hubos-desk-1"].W >= 64 && m["hubos-desk-2"].W >= 64 && m["hubos-ai-1"].W >= 64
+		}
+		st0, three0 := pollState(180*time.Second, three)
+		ws0, _, _, _ := parseHubState(st0)
+		ids := map[string]int{}
+		for app, w := range hubWinsByApp(ws0, "hubos-") {
+			ids[app] = w.ID
+		}
+		// arrangement A: three small windows side by side, view zoomed out and shifted
+		put := func(app string, x, y, w, h int) {
+			r.sh(asHub(fmt.Sprintf("driftwm msg resize %d %d --id %d", w, h, ids[app])))
+			r.sh(asHub(fmt.Sprintf("driftwm msg move %d %d --id %d", x, y, ids[app])))
+		}
+		put("hubos-ai-1", -400, 0, 300, 200)
+		put("hubos-desk-1", 0, 0, 300, 200)
+		put("hubos-desk-2", 400, 0, 300, 200)
+		r.sh(asHub("driftwm msg zoom 0.8"))
+		time.Sleep(3 * time.Second)
+		r.sh(asHub("driftwm msg camera 120 -60"))
+		time.Sleep(3 * time.Second)
+		stA, _ := pollState(60*time.Second, func(ws []hubWin, cam [2]float64, z float64) bool {
+			m := hubWinsByApp(ws, "hubos-")
+			return len(m) == 3 && m["hubos-ai-1"].X == -400 && m["hubos-desk-1"].X == 0 && m["hubos-desk-2"].X == 400 && z > 0.79 && z < 0.81 && cam[0] > 119 && cam[0] < 121
+		})
+		wsA, camA, zoomA, _ := parseHubState(stA)
+		mapA := hubWinsByApp(wsA, "hubos-")
+		rcSaveA, outSaveA := lay("save arr-a")
+		_, lsOut := r.sh(`ls -l /config/hubos/layouts; grep -c '"sha256"' /config/hubos/layouts/arr-a.layout.json; grep -c '"machine"' /config/hubos/layouts/arr-a.layout.json`)
+		// arrangement B: all three on top of each other: saved with a warning, not an error
+		for app := range ids {
+			r.sh(asHub(fmt.Sprintf("driftwm msg move 0 0 --id %d", ids[app])))
+		}
+		time.Sleep(2 * time.Second)
+		rcSaveB, outSaveB := lay("save arr-b")
+		// the view and the windows are changed, then A is applied
+		r.sh(asHub("driftwm msg zoom 1"))
+		time.Sleep(3 * time.Second)
+		r.sh(asHub("driftwm msg camera 0 0"))
+		time.Sleep(3 * time.Second)
+		rcApply, outApply := lay("apply arr-a")
+		stBack, backOK := pollState(60*time.Second, func(ws []hubWin, cam [2]float64, z float64) bool {
+			return len(placeDiff(mapA, hubWinsByApp(ws, "hubos-"))) == 0 && z > 0.79 && z < 0.81 && cam[0] > 119 && cam[0] < 121 && cam[1] > -61 && cam[1] < -59
+		})
+		_, listOut := lay("list")
+		// the active layout is remembered when hubd starts again, and hubd takes its windows back (nothing is reopened)
+		pidBefore := servePID()
+		r.sh(`s6-svc -t /run/service/hubd`)
+		time.Sleep(3 * time.Second)
+		up := waitHubd(180 * time.Second)
+		pidAfter := servePID()
+		_, listAfter := lay("list")
+		_, hubList := r.sh(asHub("hubd list " + hubSock))
+		remembered := strings.Contains(listAfter, "* arr-a") && markerOf(hubList, "ai-1") == "●" && markerOf(hubList, "desk-1") == "●" && markerOf(hubList, "desk-2") == "●"
+		// the active layout also governs a machine opened later; after "clear" the home position is used again
+		r.sh(asHub("hubd end " + hubSock + " desk-2 2>&1"))
+		_, gone := pollState(60*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool {
+			_, ok := hubWinsByApp(ws, "hubos-desk-2")["hubos-desk-2"]
+			return !ok
+		})
+		r.sh(asHub("hubd open " + hubSock + " desk-2 2>&1"))
+		_, atLayout := pollState(120*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool {
+			w, ok := hubWinsByApp(ws, "hubos-desk-2")["hubos-desk-2"]
+			return ok && w.X == mapA["hubos-desk-2"].X && w.Y == mapA["hubos-desk-2"].Y && w.W == mapA["hubos-desk-2"].W && w.H == mapA["hubos-desk-2"].H
+		})
+		rcClear, outClear := lay("clear")
+		r.sh(asHub("hubd end " + hubSock + " desk-2 2>&1"))
+		pollState(60*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool {
+			_, ok := hubWinsByApp(ws, "hubos-desk-2")["hubos-desk-2"]
+			return !ok
+		})
+		r.sh(asHub("hubd open " + hubSock + " desk-2 2>&1"))
+		_, atHome := pollState(120*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool {
+			w, ok := hubWinsByApp(ws, "hubos-desk-2")["hubos-desk-2"]
+			return ok && w.X == 3000 && w.Y == 1000
+		})
+		// a half-written layout file is detected, set aside and ignored; hubd keeps running
+		r.sh(asHub(`sh -c 'f=/config/hubos/layouts/arr-b.layout.json; head -c 120 $f > $f.part && mv $f.part $f'`))
+		pidBeforeCorrupt := servePID()
+		_, listCorrupt := lay("list")
+		_, lsCorrupt := r.sh(`ls -A /config/hubos/layouts`)
+		rcSaveC, _ := lay("save arr-c")
+		pidAfterCorrupt := servePID()
+		corruptOK := strings.Contains(listCorrupt, "WARNING: layout arr-b") && strings.Contains(listCorrupt, "moved aside") && strings.Contains(lsCorrupt, "arr-b.layout.json.corrupt.") && !strings.Contains(lsCorrupt, "arr-b.layout.json\n") && pidBeforeCorrupt == pidAfterCorrupt && rcSaveC == 0
+		lay("delete arr-a")
+		lay("delete arr-c")
+		r.sh(`rm -f /config/hubos/layouts/*.corrupt.*; ls -A /config/hubos/layouts`)
+		narrow := mapA["hubos-ai-1"].W <= 390 && mapA["hubos-desk-1"].W <= 390 && mapA["hubos-desk-2"].W <= 390 // the three windows really stand apart
+		ok := three0 && rcSaveA == 0 && strings.Contains(outSaveA, "3 windows") && (!narrow || !strings.Contains(outSaveA, "overlap")) &&
+			strings.Contains(lsOut, "hub") && strings.Contains(lsOut, "arr-a.layout.json") && strings.Contains(lsOut, "\n1\n3\n") &&
+			rcSaveB == 0 && strings.Contains(outSaveB, "WARNING: these windows overlap") &&
+			rcApply == 0 && strings.Contains(outApply, "moved 3 windows") && backOK && strings.Contains(listOut, "* arr-a") &&
+			up && pidBefore != "" && pidAfter != "" && pidBefore != pidAfter && remembered &&
+			gone && atLayout && rcClear == 0 && atHome && corruptOK
+		record("H3d saved layouts on the real driftwm: save (3 windows and the view; the folder belongs to the user hub; checksum in the file), an overlap is a warning, apply moves the open windows and the view back, the active layout is remembered when hubd starts again and the windows are taken back, a machine opened later goes to its place in the active layout and, after clear, to its home, and a half-written layout file is set aside with a warning while hubd keeps running", ok, time.Since(start),
+			fmt.Sprintf("save A rc=%d %q; overlap warning on B: rc=%d %v; apply rc=%d %q; back at A with the view (zoom %.2f camera %.0f,%.0f): %v; hubd %s -> %s; remembered after restart: %v; desk-2 opened later at its layout place: %v (closed first: %v); clear rc=%d %q; then at home (3000,1000): %v; damaged file handled: %v",
+				rcSaveA, strings.TrimSpace(outSaveA), rcSaveB, strings.Contains(outSaveB, "WARNING: these windows overlap"), rcApply, firstLine(outApply), zoomA, camA[0], camA[1], backOK, pidBefore, pidAfter, remembered, atLayout, gone, rcClear, strings.TrimSpace(outClear), atHome, corruptOK))
+		if !ok {
+			t.Errorf("three0=%v saveA=%d %q ls=%q saveB=%d %q apply=%d %q back=%v list=%q up=%v pids %q %q remembered=%v gone=%v atLayout=%v clear=%d atHome=%v corrupt=%v\nlist after: %s\ncorrupt list: %s\nls: %s\nstate back: %s",
+				three0, rcSaveA, outSaveA, lsOut, rcSaveB, outSaveB, rcApply, outApply, backOK, listOut, up, pidBefore, pidAfter, remembered, gone, atLayout, rcClear, atHome, corruptOK, listAfter, listCorrupt, lsCorrupt, stBack)
+			t.Fail()
+		}
+	})
+
+	t.Run("H3e_hubd_killed_the_bar_and_the_menu_show_the_last_state_marked_STALE", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		_, live := r.sh(`/bin/busybox timeout 6 ` + asHub("hubd feed "+hubSock) + ` | head -n 1`)
+		time.Sleep(2 * time.Second)
+		imgLive := loadPNG(t, r.shot("hub-3e-bar-live"))
+		wLive := alertWidth(imgLive)
+		// kill -9 of hubd, and s6 is told not to start it again (the bar and the menu must then show the last state)
+		r.sh(`. /tmp/h6lib.sh; s6-svc -O /run/service/hubd; kill_hubd; sleep 1; pidof hubd > /dev/null && echo still-some-hubd; true`)
+		time.Sleep(8 * time.Second)
+		_, down := r.sh(`/bin/busybox timeout 8 ` + asHub("hubd feed "+hubSock) + ` | head -n 1`)
+		imgStale := loadPNG(t, r.shot("hub-3e-bar-stale"))
+		wStale := alertWidth(imgStale)
+		_, srv := r.sh(`ps | grep -c '[h]ubd serve'`)
+		// the menu: a stand-in for wofi saves the lines it is shown
+		r.sh(`printf '#!/bin/sh\ncat > /tmp/stale-menu.txt\n' > /tmp/fakewofi; chmod 755 /tmp/fakewofi; rm -f /tmp/stale-menu.txt`)
+		rcMenu, _ := r.sh(asHub("hubd menu " + hubSock + " --wofi /tmp/fakewofi --style /nonexistent 2>&1"))
+		_, menuTxt := r.sh(`head -n 4 /tmp/stale-menu.txt`)
+		// the real menu from a click on the bar item
+		tries := openMenu()
+		time.Sleep(8 * time.Second)
+		img := loadPNG(t, r.shot("hub-3e-menu-stale"))
+		listPix := countColor(img, 0, 60, 660, 460, menuBg)
+		wofiAfter := wofiCount()
+		for i := 0; i < 3 && wofiAfter != "0"; i++ {
+			r.monitor("sendkey esc")
+			time.Sleep(3 * time.Second)
+			wofiAfter = wofiCount()
+		}
+		// hubd comes back: the bar is live again
+		r.sh(`s6-svc -u /run/service/hubd`)
+		up := waitHubd(180 * time.Second)
+		time.Sleep(12 * time.Second)
+		_, back := r.sh(`/bin/busybox timeout 8 ` + asHub("hubd feed "+hubSock) + ` | head -n 1`)
+		liveText := regexp.MustCompile(`"text":"([^"]*)"`).FindStringSubmatch(live)
+		staleOK := strings.Contains(down, `"text":"STALE: `) && strings.Contains(down, `"class":"alert"`) && strings.Contains(down, "hubd is not running: this is the last known state") &&
+			liveText != nil && strings.Contains(down, `"text":"STALE: `+liveText[1]+`"`)
+		ok := staleOK && wStale > wLive+30 && strings.HasPrefix(strings.TrimSpace(srv), "0") && rcMenu == 1 && strings.Contains(menuTxt, "! STALE: hubd is not running") &&
+			tries > 0 && listPix > 40000 && wofiAfter == "0" && up && !strings.Contains(back, "STALE")
+		record("H3e hubd killed (kill -9, not restarted): the bar item shows the last known state marked STALE (the red box gets longer; the tooltip says how old it is), the menu opened by a click shows the last list with a STALE first line, and both are live again when hubd is back", ok, time.Since(start),
+			fmt.Sprintf("live line %q; stale line %q; red box %d px -> %d px; menu: first lines %q, real menu opened on try %d with list pixels %d; after hubd is back: %q", strings.TrimSpace(live), strings.TrimSpace(down), wLive, wStale, firstLine(menuTxt), tries, listPix, strings.TrimSpace(back)))
+		if !ok {
+			t.Errorf("stale=%v widths %d %d serve=%q rcMenu=%d menu=%q tries=%d list=%d wofi=%s up=%v back=%q", staleOK, wLive, wStale, srv, rcMenu, menuTxt, tries, listPix, wofiAfter, up, back)
+			t.Fail()
+		}
+	})
+
+	t.Run("H3f_twenty_windows_survive_kill_9_of_the_compositor", func(t *testing.T) {
+		r.t = t
+		if r.dead {
+			t.Skip("run stopped by a repeated hang")
+		}
+		start := time.Now()
+		cycles := 8
+		if v, err := strconv.Atoi(os.Getenv("HUBOS_KILL_CYCLES")); err == nil && v > 0 {
+			cycles = v
+		}
+		seed := time.Now().UnixNano()
+		if v, err := strconv.ParseInt(os.Getenv("HUBOS_KILL_SEED"), 10, 64); err == nil {
+			seed = v
+		}
+		rng := rand.New(rand.NewSource(seed))
+		t.Logf("kill cycles: %d, random seed: %d", cycles, seed)
+		// close the windows of the earlier tests, then switch to the 20-machine inventory and viewers
+		for _, id := range []string{"ai-1", "desk-1", "desk-2"} {
+			r.sh(asHub("hubd end " + hubSock + " " + id + " 2>&1"))
+		}
+		pollState(90*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool { return len(hubWinsByApp(ws, "hubos-")) == 0 })
+		r.sh(`kill $(pidof foot) 2>/dev/null; true`)
+		r.sh(`wget -q -O /tmp/h6lib.sh ` + r.base + `/h6lib.sh && wget -q -O /tmp/h6kill.sh ` + r.base + `/h6kill.sh && wget -q -O /tmp/inventory-20.toml ` + r.base + `/inventory-20.toml && wget -q -O /tmp/viewers-20.toml ` + r.base + `/viewers-20.toml && echo files-ok`)
+		r.sh(`cp /config/hubos/inventory.toml /config/hubos/inventory.toml.orig && cp /config/hubos/viewers.toml /config/hubos/viewers.toml.orig && cp /tmp/inventory-20.toml /config/hubos/inventory.toml && cp /tmp/viewers-20.toml /config/hubos/viewers.toml && sync && echo swapped`)
+		r.sh(asHub("sh -c '/tmp/fakenode " + h20Addrs() + " > /tmp/fakenode20.log 2>&1 &'"))
+		r.sh(`s6-svc -t /run/service/hubd`)
+		time.Sleep(3 * time.Second)
+		up := waitHubd(180 * time.Second)
+		// open all 20 at the same time
+		var ids20 []string
+		for i := 1; i <= 20; i++ {
+			ids20 = append(ids20, fmt.Sprintf("w%02d", i))
+		}
+		openStart := time.Now()
+		r.vm.sh(`. /tmp/h6lib.sh; for i in `+strings.Join(ids20, " ")+`; do hubc open $i > /tmp/open-$i.log 2>&1 & done; wait; echo opened`, 600*time.Second)
+		all20 := func(ws []hubWin, _ [2]float64, _ float64) bool {
+			m := hubWinsByApp(ws, "hubos-w")
+			for _, w := range m {
+				if w.W < 64 {
+					return false
+				}
+			}
+			return len(m) == 20
+		}
+		_, opened := pollState(600*time.Second, all20)
+		openTook := time.Since(openStart)
+		// arrange: every window at a place that is not its home, some resized; then the view
+		_, stOpen := r.sh(asHub("driftwm msg state"))
+		wsOpen, _, _, _ := parseHubState(stOpen)
+		var arrange strings.Builder
+		for i, w := range wsOpen {
+			if !strings.HasPrefix(w.App, "hubos-w") {
+				continue
+			}
+			n, _ := strconv.Atoi(strings.TrimPrefix(w.App, "hubos-w"))
+			col, row := (n-1)%5, (n-1)/5
+			x, y := -1000+col*500+37+rng.Intn(40), -row*300-23-rng.Intn(30)
+			if i%3 == 0 {
+				fmt.Fprintf(&arrange, "dwm resize %d %d --id %d; ", 260+rng.Intn(60), 150+rng.Intn(40), w.ID)
+			}
+			fmt.Fprintf(&arrange, "dwm move %d %d --id %d; ", x, y, w.ID)
+		}
+		r.vm.sh(`. /tmp/h6lib.sh; `+arrange.String()+`dwm zoom 0.8 > /dev/null; sleep 3; dwm camera 150 -420 > /dev/null; sleep 3; echo arranged`, 600*time.Second)
+		settled := func() (map[string]hubWin, [2]float64, float64, bool) {
+			var prev map[string]hubWin
+			for i := 0; i < 8; i++ {
+				ws, cam, z, ok := parseHubState(state())
+				cur := hubWinsByApp(ws, "hubos-w")
+				if ok && len(cur) == 20 && prev != nil && len(placeDiff(prev, cur)) == 0 {
+					return cur, cam, z, true
+				}
+				prev = cur
+				time.Sleep(3 * time.Second)
+			}
+			return prev, [2]float64{}, 0, false
+		}
+		expected, expCam, expZoom, armed := settled()
+		t.Logf("arranged: %d windows, zoom %.2f camera %.1f,%.1f", len(expected), expZoom, expCam[0], expCam[1])
+		// a 20-window layout: save, scramble five windows, apply
+		rcBig, outBig := lay("save big")
+		var scramble strings.Builder
+		n := 0
+		for _, w := range expected {
+			if n++; n > 5 {
+				break
+			}
+			fmt.Fprintf(&scramble, "dwm move %d %d --id %d; dwm resize 200 120 --id %d; ", 4000+n*10, 4000, w.ID, w.ID)
+		}
+		r.vm.sh(`. /tmp/h6lib.sh; `+scramble.String()+`echo scrambled`, 300*time.Second)
+		rcBigApply, outBigApply := lay("apply big")
+		_, bigBack := pollState(120*time.Second, func(ws []hubWin, cam [2]float64, z float64) bool {
+			return len(placeDiff(expected, hubWinsByApp(ws, "hubos-w"))) == 0 && z > expZoom-0.02 && z < expZoom+0.02
+		})
+
+		// the kill cycles
+		modes := []string{"idle", "move", "save", "restore", "restart", "move", "restore", "save"}
+		type cycleResult struct {
+			mode        string
+			delay       float64
+			took        time.Duration
+			ok          bool
+			note        string
+			hubdMessage string
+		}
+		var results20 []cycleResult
+		allCyclesOK := true
+		pidBase := servePID()
+		for c := 0; c < cycles && !r.dead; c++ {
+			mode := modes[c%len(modes)]
+			delay := rng.Float64() * 3
+			var movedApp string
+			var nx, ny, mid int
+			switch mode {
+			case "move":
+				delay = rng.Float64() * 0.4
+				var apps []string
+				for a := range expected {
+					apps = append(apps, a)
+				}
+				sort.Strings(apps)
+				movedApp = apps[rng.Intn(len(apps))]
+				mw := expected[movedApp]
+				nx, ny, mid = mw.X+61+rng.Intn(80), mw.Y-47-rng.Intn(40), mw.ID
+			case "save":
+				delay = 0.05 + rng.Float64()*1.5
+			}
+			want1 := expected
+			want2 := map[string]hubWin{}
+			for k, v := range expected {
+				want2[k] = v
+			}
+			if movedApp != "" {
+				mw := want2[movedApp]
+				mw.X, mw.Y = nx, ny
+				want2[movedApp] = mw
+			}
+			dwPid := func() string {
+				_, o := r.sh(`for p in $(pidof driftwm); do tr '\000' ' ' < /proc/$p/cmdline 2>/dev/null | grep -q -- '--backend' && echo DWPID=$p; done; true`)
+				return regexp.MustCompile(`DWPID=(\d+)`).FindString(o)
+			}
+			dwBefore := dwPid()
+			t0 := time.Now()
+			var killOut string
+			if mode == "restart" {
+				_, killOut = r.vm.sh(asHub("hubd restart-desktop "+hubSock+" 2>&1"), 120*time.Second)
+			} else {
+				_, killOut = r.vm.sh(fmt.Sprintf("sh /tmp/h6kill.sh %s %d %d %d %.2f", mode, mid, nx, ny, delay), 400*time.Second)
+			}
+			t.Logf("cycle %d (%s, delay %.2f s): %s", c+1, mode, delay, strings.TrimSpace(killOut))
+			var gotMap map[string]hubWin
+			var diffs []string
+			good := func(ws []hubWin, cam [2]float64, z float64) bool {
+				got := hubWinsByApp(ws, "hubos-w")
+				if len(ws) != 20 || len(got) != 20 {
+					diffs = []string{fmt.Sprintf("%d windows in all, %d of the machines", len(ws), len(got))}
+					return false
+				}
+				d1 := placeDiff(want1, got)
+				d2 := placeDiff(want2, got)
+				viewOK := z > expZoom-0.02 && z < expZoom+0.02 && cam[0] > expCam[0]-3 && cam[0] < expCam[0]+3 && cam[1] > expCam[1]-3 && cam[1] < expCam[1]+3
+				if !viewOK {
+					diffs = []string{fmt.Sprintf("view: zoom %.3f camera %.1f,%.1f, saved zoom %.3f camera %.1f,%.1f", z, cam[0], cam[1], expZoom, expCam[0], expCam[1])}
+					return false
+				}
+				if len(d1) == 0 || (movedApp != "" && len(d2) == 0) {
+					gotMap = got
+					return true
+				}
+				diffs = d1
+				return false
+			}
+			_, back := pollState(360*time.Second, good)
+			took := time.Since(t0)
+			stable := false
+			msg := ""
+			if back {
+				_, lastMsg := r.sh(`grep 'the desktop restarted' /var/log/hubd/current | tail -n 1`)
+				msg = regexp.MustCompile(`the desktop restarted[^\n]*`).FindString(lastMsg)
+				time.Sleep(8 * time.Second)
+				_, stable = pollState(30*time.Second, good)
+			}
+			dwAfter := dwPid()
+			_, hubdLog := r.sh(`tail -n 600 /var/log/hubd/current | grep -E 'hubd: (restore |the desktop restarted)' | tail -n 30`)
+			t.Logf("cycle %d: what hubd logged about the restore:\n%s", c+1, hubdLog)
+			_, extra := r.sh(`echo FOOT=$(ps | grep -c '[f]oot '); echo TMP=$(ls -A /config/hubos/layouts | grep -c -E 'tmp|corrupt'); ls /config/hubos/layouts`)
+			footOK := strings.Contains(extra, "FOOT=20")
+			tmpOK := strings.Contains(extra, "TMP=0")
+			pidOK := servePID() == pidBase
+			res := cycleResult{mode: mode, delay: delay, took: took, hubdMessage: msg}
+			res.ok = back && stable && footOK && tmpOK && pidOK && dwBefore != "" && dwAfter != "" && dwBefore != dwAfter
+			if movedApp != "" && gotMap != nil {
+				if len(placeDiff(want2, gotMap)) == 0 {
+					res.note = "the last move was kept"
+				} else {
+					res.note = "the last move came too late for hubd to see it (the window is at its place before the move)"
+				}
+			}
+			if res.ok && gotMap != nil {
+				expected = gotMap // also takes the new window ids (they start again from 0 in every new compositor)
+			}
+			if !res.ok {
+				res.note += fmt.Sprintf(" FAILED: back=%v stable=%v foot20=%v noTempOrCorrupt=%v hubdSamePid=%v compositor pid %s -> %s diffs=%v", back, stable, footOK, tmpOK, pidOK, dwBefore, dwAfter, diffs)
+				allCyclesOK = false
+			}
+			results20 = append(results20, res)
+			if !res.ok {
+				break
+			}
+		}
+		var summary []string
+		var times []float64
+		for i, rr := range results20 {
+			summary = append(summary, fmt.Sprintf("%d %s delay %.2f s: %v in %.0f s %s [%s]", i+1, rr.mode, rr.delay, rr.ok, rr.took.Seconds(), rr.note, rr.hubdMessage))
+			times = append(times, rr.took.Seconds())
+		}
+		sort.Float64s(times)
+		median := 0.0
+		if len(times) > 0 {
+			median = times[len(times)/2]
+		}
+		// the view after all the kills, and the layout folder is clean
+		_, lsEnd := lay("list")
+		// clean up: close the windows, bring back the first inventory and viewers
+		lay("delete big")
+		lay("delete h6-save")
+		r.vm.sh(`. /tmp/h6lib.sh; for i in `+strings.Join(ids20, " ")+`; do hubc end $i > /tmp/end-$i.log 2>&1 & done; wait; echo ended`, 300*time.Second)
+		pollState(120*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool { return len(hubWinsByApp(ws, "hubos-")) == 0 })
+		r.sh(`kill $(pidof foot) 2>/dev/null; kill $(pidof fakenode) 2>/dev/null; mv /config/hubos/inventory.toml.orig /config/hubos/inventory.toml; mv /config/hubos/viewers.toml.orig /config/hubos/viewers.toml; rm -f /config/hubos/layouts/*; sync; s6-svc -t /run/service/hubd; echo restored-config`)
+		waitHubd(180 * time.Second)
+		r.sh(asHub("sh -c '/tmp/fakenode 127.0.0.12:21002 127.0.0.13:21003 127.0.0.15:21005 > /tmp/fakenode.log 2>&1 &'"))
+		ok := up && opened && armed && rcBig == 0 && strings.Contains(outBig, "20 windows") && rcBigApply == 0 && bigBack && allCyclesOK && len(results20) == cycles
+		record(fmt.Sprintf("H3f 20 fake windows survive kill -9 of the compositor: %d cycles of kill -9 at random moments (idle, right after a window move, during a row of layout saves, a second kill during the restore, and hubd restart-desktop); after each one hubd, which keeps running, starts the 20 viewers again and puts every window at its place, size and the view back; no duplicate, no leftover temp or damaged layout file", cycles), ok, time.Since(start),
+			fmt.Sprintf("seed %d; 20 windows opened at once in %.0f s; 20-window layout save rc=%d, apply after scrambling 5 windows rc=%d back=%v (%s); cycles run %d of %d, median %.0f s to be back; hubd pid unchanged: %v; results: %s; layouts at the end: %s", seed, openTook.Seconds(), rcBig, rcBigApply, bigBack, firstLine(outBigApply), len(results20), cycles, median, pidBase, strings.Join(summary, " | "), firstLine(lsEnd)))
+		_ = outBigApply
+		if !ok {
+			t.Errorf("up=%v opened=%v armed=%v big=%d %q applied=%d back=%v cycles ok=%v ran %d/%d\n%s", up, opened, armed, rcBig, outBig, rcBigApply, bigBack, allCyclesOK, len(results20), cycles, strings.Join(summary, "\n"))
 			t.Fail()
 		}
 	})

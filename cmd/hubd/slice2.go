@@ -24,7 +24,7 @@ import (
 )
 
 // subcommands of the second slice. "check" is the first slice, unchanged.
-var subcommands = map[string]bool{"serve": true, "feed": true, "list": true, "menu": true, "pick": true, "open": true, "end": true, "forget": true}
+var subcommands = map[string]bool{"serve": true, "feed": true, "list": true, "menu": true, "pick": true, "open": true, "end": true, "forget": true, "layout": true, "restart-desktop": true}
 
 func dispatch(args []string, stdout, stderr io.Writer) int {
 	if len(args) > 0 {
@@ -83,6 +83,21 @@ func slice2(name string, args []string, stdout, stderr io.Writer) int {
 	switch name {
 	case "feed":
 		return feed(path, stdout)
+	case "layout":
+		return layoutCmd(path, rest, stdout, stderr)
+	case "restart-desktop":
+		if !need(0) {
+			return exitFailure
+		}
+		r, err := hub.Call(path, hub.Request{Cmd: "restart-desktop"})
+		if err != nil {
+			fmt.Fprintln(stderr, "hubd:", err)
+			return exitFailure
+		}
+		fmt.Fprintln(stdout, r.Message)
+		if !r.OK {
+			return exitFailure
+		}
 	case "list":
 		if !need(0) {
 			return exitFailure
@@ -125,7 +140,9 @@ func slice2(name string, args []string, stdout, stderr io.Writer) int {
 }
 
 // feed copies hubd's status lines to stdout for Waybar. If hubd is not
-// running it shows an alert and keeps trying, so the bar recovers by itself.
+// running it shows the last line hubd sent, marked STALE (from the file hubd
+// keeps for this, hub.SnapshotPath), or an alert if there is none, and keeps
+// trying, so the bar recovers by itself.
 func feed(socket string, stdout io.Writer) int {
 	last := ""
 	emit := func(l string) {
@@ -136,9 +153,63 @@ func feed(socket string, stdout io.Writer) int {
 	}
 	for {
 		err := hub.Feed(socket, emit)
-		emit(hub.StatusLine{Text: "hubd stopped", Class: "alert", Tooltip: "hubd is not running: " + err.Error()}.JSON())
+		if snap, rerr := hub.ReadSnapshot(hub.SnapshotPath(socket)); rerr == nil {
+			emit(snap.StaleLine(time.Now()).RawJSON())
+		} else {
+			emit(hub.StatusLine{Text: "hubd stopped", Class: "alert", Tooltip: "hubd is not running: " + err.Error()}.JSON())
+		}
 		time.Sleep(2 * time.Second)
 	}
+}
+
+// layoutCmd is `hubd layout save|apply|list|delete|clear`.
+func layoutCmd(socket string, rest []string, stdout, stderr io.Writer) int {
+	usage := func() int {
+		fmt.Fprintln(stderr, "usage: hubd layout save NAME [--replace] | apply NAME | list | delete NAME | clear")
+		return exitFailure
+	}
+	if len(rest) == 0 {
+		return usage()
+	}
+	sub := rest[0]
+	replace := false
+	var args []string
+	for _, a := range rest[1:] {
+		if a == "--replace" {
+			replace = true
+			continue
+		}
+		args = append(args, a)
+	}
+	switch sub {
+	case "save", "apply", "delete":
+		if len(args) != 1 || (replace && sub != "save") {
+			return usage()
+		}
+	case "list", "clear":
+		if len(args) != 0 || replace {
+			return usage()
+		}
+	default:
+		return usage()
+	}
+	name := ""
+	if len(args) == 1 {
+		name = args[0]
+	}
+	r, err := hub.Call(socket, hub.Request{Cmd: "layout", Sub: sub, Name: name, Replace: replace})
+	if err != nil {
+		fmt.Fprintln(stderr, "hubd:", err)
+		return exitFailure
+	}
+	fmt.Fprintln(stdout, r.Message)
+	for _, l := range r.Lines {
+		fmt.Fprintln(stdout, l)
+	}
+	if !r.OK {
+		return exitFailure
+	}
+	return exitOK
 }
 
 func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
@@ -160,6 +231,8 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	listMax := fs.Int("list-max", def.ListMax, "most machine lines in one menu list")
 	tipcap := fs.Int("tooltip-cap", def.TooltipCap, "most down machines named in the tooltip")
 	ttl := fs.Duration("message-ttl", def.MessageTTL, "how long a message stays on the bar item")
+	layouts := fs.String("layouts", defaultLayouts, "the folder of saved layouts and the remembered active layout (owned by the user hubd runs as)")
+	waylandSock := fs.String("wayland-socket", "", "the compositor's Wayland socket, which a restore waits for (default from XDG_RUNTIME_DIR and WAYLAND_DISPLAY; none if they are not set)")
 	logRounds := fs.Bool("log-rounds", false, "print one line per check round (how long it took, how many up and down)")
 	sock := socketFlags(fs)
 	if err := fs.Parse(args); err != nil {
@@ -235,6 +308,13 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 		Settle: def.Settle, CloseWait: def.CloseWait, FoldThreshold: *fold, ListMax: *listMax, DownMax: *downMax, TooltipCap: *tipcap,
 		MessageTTL: *ttl, BarHeight: *bar, FileLimit: limit, LateGrace: *grace, NoEscape: *noEscape, IgnoreAppIDs: ignore,
 	}
+	set.Log = func(line string) { fmt.Fprintln(stderr, "hubd: "+line) }
+	set.LayoutDir = *layouts
+	set.WaylandSocket = *waylandSock
+	if set.WaylandSocket == "" && os.Getenv("XDG_RUNTIME_DIR") != "" && os.Getenv("WAYLAND_DISPLAY") != "" {
+		set.WaylandSocket = filepath.Join(os.Getenv("XDG_RUNTIME_DIR"), os.Getenv("WAYLAND_DISPLAY"))
+	}
+	set.SettleStep, set.SettleMax, set.FastReconnect, set.KillWait = def.SettleStep, def.SettleMax, def.FastReconnect, def.KillWait
 	if *logRounds {
 		round := 0
 		set.OnRound = func(took time.Duration, c hub.Counts) {
@@ -250,6 +330,9 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	dw := &driftwm.Client{Path: dwPath}
 	h := hub.New(inv, vt, dw, hub.NewExecLauncher(set.LogDir, set.LogMax), set, strings.TrimSuffix(socket, ".sock")+".record.json")
 
+	for _, w := range h.Warnings() {
+		fmt.Fprintln(stderr, "hubd: warning: layouts:", w)
+	}
 	l, err := hub.Listen(socket)
 	if err != nil {
 		fmt.Fprintln(stderr, "hubd:", err)
@@ -281,6 +364,7 @@ func serve(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	go h.RunProbes(ctx)
 	go h.RunWatch(ctx)
 	go h.RunLogTrim(ctx)
+	go h.RunSnapshot(ctx, hub.SnapshotPath(socket))
 	<-ctx.Done()
 	l.Close()
 	fmt.Fprintln(stderr, "hubd: stopped (windows it started were left alone)")
@@ -330,7 +414,16 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 	for {
 		r, err := hub.Call(path, hub.Request{Cmd: "list", Flat: flat, Filter: filter})
 		if err != nil {
-			fmt.Fprintln(stderr, "hubd:", err)
+			// hubd is down: show the last list it sent, marked STALE. Nothing in
+			// it works, so whatever is picked, the menu says so and closes.
+			snap, rerr := hub.ReadSnapshot(hub.SnapshotPath(path))
+			if rerr != nil {
+				fmt.Fprintln(stderr, "hubd:", err)
+				return exitFailure
+			}
+			if pick := runLauncher(opts, snap.StaleList(time.Now()), stderr); pick != "" {
+				fmt.Fprintln(stderr, "hubd: hubd is not running, so nothing was done")
+			}
 			return exitFailure
 		}
 		pick := runLauncher(opts, r.Lines, stderr)
@@ -363,6 +456,10 @@ func menu(fs *flag.FlagSet, args []string, stdout, stderr io.Writer) int {
 
 // defaultWofiStyle is where the menu look is read from if the file exists.
 const defaultWofiStyle = "/etc/hubos/wofi.css"
+
+// defaultLayouts is where saved layouts live: on the config partition, in a
+// folder owned by the user hubd runs as (owner decision).
+const defaultLayouts = "/config/hubos/layouts"
 
 // defaultMenuHeight is the menu's height in pixels: the search box and about 12 rows of the example style.
 //
