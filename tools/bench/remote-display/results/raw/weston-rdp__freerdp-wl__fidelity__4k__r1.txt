@@ -1,0 +1,16 @@
+status=ok
+stack=weston-rdp
+client=freerdp-wl
+scene=fidelity
+res=3840x2160
+run=1
+date=2026-10-05T04:17:00Z
+stack_desc=Weston 13.0.0 rdp backend, kiosk shell, pixman renderer (RDP over TLS, user name and password not checked)
+client_desc=FreeRDP 3.32.0 wlfreerdp3 (Wayland), full screen, TLS security
+load_start=0.24 0.29 0.90
+stack_versions=weston 13.0.0 
+client_version=[04:17:00:315] [7089:00001bb1] [WARN][com.freerdp.client.common.cmdline] - [freerdp_warn_deprecated]: [deprecated] wlfreerdp3 client has been deprecated
+time_to_first_frame_ms=1403
+fidelity_full=ssim=0.998714 psnr=44.34 width=3840 height=2160
+fidelity_textarea=ssim=0.998024 psnr=42.93 width=2304 height=2160
+load_end=0.33 0.31 0.89

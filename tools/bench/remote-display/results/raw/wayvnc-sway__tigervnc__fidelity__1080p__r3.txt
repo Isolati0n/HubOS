@@ -1,0 +1,17 @@
+status=ok
+stack=wayvnc-sway
+client=tigervnc
+scene=fidelity
+res=1920x1080
+run=3
+date=2026-10-05T03:56:59Z
+stack_desc=headless sway 1.9 + wayvnc v0.10.2 + neatvnc v1.0.3, pixman renderer
+client_desc=TigerVNC viewer 1.13.1 (xtigervncviewer, X11, through Xwayland), full screen
+load_start=0.33 1.67 2.09
+stack_versions=sway sway version 1.9; wayvnc: v0.10.2-bb83745 (HEAD) neatvnc: v1.0.3-783437a (HEAD)  
+client_version=
+time_to_first_frame_ms=182
+fidelity_full=ssim=0.992954 psnr=37.03 width=1920 height=1080
+fidelity_textarea=ssim=0.988243 psnr=34.86 width=1152 height=1080
+client_encodings=ContinuousUpdates,1464686180,Cursor,XCursor,1464686182,DesktopSize,ExtendedDesktopSize,-261,1464686184,DesktopName,LastRect,-1063131698,ExtendedMouseButtons,Fence,SubsampLevel0,Tight,CopyRect,OpenH264,ZRLE,Hextile,RRE,CopyRect,Raw,CompressLevel2,QualityLevel8
+load_end=0.43 1.65 2.08

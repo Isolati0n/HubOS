@@ -1,0 +1,17 @@
+status=ok
+stack=weston-vnc
+client=remote-viewer
+scene=fidelity
+res=3840x2160
+run=1
+date=2026-10-05T04:17:28Z
+stack_desc=Weston 13.0.0 vnc backend, kiosk shell, pixman renderer (VNC over TLS)
+client_desc=remote-viewer 11.0 (virt-viewer, gtk-vnc 1.3.1), GTK on Wayland, full screen
+load_start=0.34 0.31 0.89
+stack_versions=weston 13.0.0 
+client_version=remote-viewer version 11.0
+time_to_first_frame_ms=2178
+fidelity_full=ssim=1.000000 psnr=inf width=3840 height=2160
+fidelity_textarea=ssim=1.000000 psnr=inf width=2304 height=2160
+client_encodings=unreadable (TLS or not plain RFB)
+load_end=0.41 0.33 0.88

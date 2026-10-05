@@ -1,0 +1,17 @@
+status=ok
+stack=wayvnc-sway
+client=remote-viewer
+scene=fidelity
+res=3840x2160
+run=1
+date=2026-10-05T04:16:21Z
+stack_desc=headless sway 1.9 + wayvnc v0.10.2 + neatvnc v1.0.3, pixman renderer
+client_desc=remote-viewer 11.0 (virt-viewer, gtk-vnc 1.3.1), GTK on Wayland, full screen
+load_start=0.31 0.31 0.93
+stack_versions=sway sway version 1.9; wayvnc: v0.10.2-bb83745 (HEAD) neatvnc: v1.0.3-783437a (HEAD)  
+client_version=remote-viewer version 11.0
+time_to_first_frame_ms=877
+fidelity_full=ssim=1.000000 psnr=inf width=3840 height=2160
+fidelity_textarea=ssim=1.000000 psnr=inf width=2304 height=2160
+client_encodings=Tight,ExtendedClipboard,SubsampLevel0,-261,ExtendedDesktopSize,DesktopSize,DesktopName,LastRect,1464686185,-259,ContinuousUpdates,Cursor,XCursor,-257,ZRLE,Hextile,RRE,CopyRect,Raw
+load_end=0.26 0.30 0.92

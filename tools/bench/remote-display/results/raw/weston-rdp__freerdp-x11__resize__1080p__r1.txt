@@ -1,0 +1,9 @@
+status=unsupported:stack cannot change the node screen size
+stack=weston-rdp
+client=freerdp-x11
+scene=resize
+res=1920x1080
+run=1
+date=2026-10-05T04:08:38Z
+stack_desc=Weston 13.0.0 rdp backend, kiosk shell, pixman renderer (RDP over TLS, user name and password not checked)
+client_desc=FreeRDP 3.32.0 xfreerdp3 (X11, through Xwayland), full screen, TLS security

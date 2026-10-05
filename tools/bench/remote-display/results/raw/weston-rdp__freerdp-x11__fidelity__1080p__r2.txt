@@ -1,0 +1,16 @@
+status=ok
+stack=weston-rdp
+client=freerdp-x11
+scene=fidelity
+res=1920x1080
+run=2
+date=2026-10-05T03:35:09Z
+stack_desc=Weston 13.0.0 rdp backend, kiosk shell, pixman renderer (RDP over TLS, user name and password not checked)
+client_desc=FreeRDP 3.32.0 xfreerdp3 (X11, through Xwayland), full screen, TLS security
+load_start=0.29 1.50 1.90
+stack_versions=weston 13.0.0 
+client_version=This is FreeRDP version 3.32.0 (3.32.0)
+time_to_first_frame_ms=1206
+fidelity_full=ssim=0.997675 psnr=42.43 width=1920 height=1080
+fidelity_textarea=ssim=0.996288 psnr=40.72 width=1152 height=1080
+load_end=0.24 1.45 1.88

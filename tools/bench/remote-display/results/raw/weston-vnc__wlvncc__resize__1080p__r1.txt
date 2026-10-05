@@ -1,0 +1,9 @@
+status=unsupported:stack cannot change the node screen size
+stack=weston-vnc
+client=wlvncc
+scene=resize
+res=1920x1080
+run=1
+date=2026-10-05T04:08:40Z
+stack_desc=Weston 13.0.0 vnc backend, kiosk shell, pixman renderer (VNC over TLS)
+client_desc=wlvncc (any1/wlvncc @ cc0abf8, 2026-04-29), Wayland-native VNC viewer, -s software renderer

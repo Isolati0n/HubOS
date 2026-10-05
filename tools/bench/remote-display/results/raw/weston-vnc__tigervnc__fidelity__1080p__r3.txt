@@ -1,0 +1,17 @@
+status=ok
+stack=weston-vnc
+client=tigervnc
+scene=fidelity
+res=1920x1080
+run=3
+date=2026-10-05T03:57:54Z
+stack_desc=Weston 13.0.0 vnc backend, kiosk shell, pixman renderer (VNC over TLS)
+client_desc=TigerVNC viewer 1.13.1 (xtigervncviewer, X11, through Xwayland), full screen
+load_start=0.20 1.42 1.98
+stack_versions=weston 13.0.0 
+client_version=
+time_to_first_frame_ms=1223
+fidelity_full=ssim=0.992956 psnr=37.03 width=1920 height=1080
+fidelity_textarea=ssim=0.988247 psnr=34.86 width=1152 height=1080
+client_encodings=102105859
+load_end=0.37 1.39 1.96
