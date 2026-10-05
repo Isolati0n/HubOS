@@ -1,0 +1,18 @@
+status=ok
+stack=weston-vnc
+client=wlvncc
+scene=fidelity
+res=3840x2160
+run=1
+date=2026-10-05T05:36:21Z
+stack_desc=Weston 13.0.0 vnc backend, kiosk shell, pixman renderer (VNC over TLS)
+client_desc=wlvncc (any1/wlvncc @ cc0abf8, 2026-04-29), Wayland-native VNC viewer, -s software renderer
+load_start=0.28 0.77 0.94
+stack_versions=weston 13.0.0 
+client_version=wlvncc cc0abf87c37920540f2439a556e6a480c28f8f (tag-less master, built from source); Usage: wlvncc <address> [port]
+time_to_first_frame_ms=1445
+fidelity_reference=sway capture of the same page (the stack's own capture did not complete)
+fidelity_full=ssim=0.986082 psnr=34.42 width=3840 height=2160
+fidelity_textarea=ssim=0.976808 psnr=32.35 width=2304 height=2160
+client_encodings=unreadable (TLS or not plain RFB)
+load_end=0.23 0.74 0.93

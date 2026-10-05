@@ -1,0 +1,17 @@
+status=ok
+stack=wayvnc-cage
+client=tigervnc
+scene=fidelity
+res=1280x720
+run=2
+date=2026-10-05T05:02:03Z
+stack_desc=headless cage 0.1.5 (kiosk) + wayvnc v0.10.2 + neatvnc v1.0.3, pixman renderer
+client_desc=TigerVNC viewer 1.13.1 (xtigervncviewer, X11, through Xwayland), full screen
+load_start=0.62 1.18 1.32
+stack_versions=cage Cage version 0.1.5; wayvnc: v0.10.2-bb83745 (HEAD) neatvnc: v1.0.3-783437a (HEAD)  
+client_version=
+time_to_first_frame_ms=156
+fidelity_full=ssim=0.989388 psnr=35.40 width=1280 height=720
+fidelity_textarea=ssim=0.982583 psnr=33.23 width=768 height=720
+client_encodings=ContinuousUpdates,1464686180,Cursor,XCursor,1464686182,DesktopSize,ExtendedDesktopSize,-261,1464686184,DesktopName,LastRect,-1063131698,ExtendedMouseButtons,Fence,SubsampLevel0,Tight,CopyRect,OpenH264,ZRLE,Hextile,RRE,CopyRect,Raw,CompressLevel2,QualityLevel8
+load_end=0.57 1.16 1.31
