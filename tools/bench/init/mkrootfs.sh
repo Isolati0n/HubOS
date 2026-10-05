@@ -10,7 +10,7 @@ for a in $("$R/bin/busybox" --list); do [ -e "$R/bin/$a" ] || ln -s busybox "$R/
 cp "$W/hubsim" "$R/bin/hubsim"
 for s in seatd udevd dbus driftwm waybar hubd; do ln -s hubsim "$R/bin/$s"; done
 unzstd -q -c "$W"/modroot/lib/modules/*/kernel/drivers/watchdog/i6300esb.ko.zst > "$R/lib/modules/i6300esb.ko"
-cp "$HERE/common/init.sh" "$R/init"; chmod +x "$R/init"
+cp "$HERE/common/init.sh" "$R/init"; cp "$HERE/common/policy" "$R/bin/policy"; chmod +x "$R/init" "$R/bin/policy"
 # addbin SRC [DEST]: copy a program and the shared libraries it needs
 addbin() { local src=$1 dst=${2:-$1}; mkdir -p "$R$(dirname "$dst")"; cp "$src" "$R$dst"
   for l in $(ldd "$src" 2>/dev/null | grep -oE '/[^ ]+' ); do mkdir -p "$R$(dirname "$l")"; cp -n "$l" "$R$l" 2>/dev/null || true; done; }

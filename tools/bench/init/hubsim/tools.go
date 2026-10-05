@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -176,4 +177,20 @@ func ctl(args []string) {
 			return
 		}
 	}
+}
+
+// niceExec N PROGRAM ARGS...: setpriority(N), then exec PROGRAM (found in PATH).
+func niceExec(args []string) {
+	n, err := strconv.Atoi(args[0])
+	if err != nil || len(args) < 2 {
+		fmt.Println("usage: hubsim nice N PROGRAM ARGS...")
+		os.Exit(2)
+	}
+	syscall.Setpriority(syscall.PRIO_PROCESS, 0, n)
+	path, err := exec.LookPath(args[1])
+	if err == nil {
+		err = syscall.Exec(path, args[1:], os.Environ())
+	}
+	fmt.Println("nice:", errors.Unwrap(err), err)
+	os.Exit(127)
 }

@@ -15,6 +15,7 @@ ap.add_argument("--dur", type=int, default=600); ap.add_argument("--seed", type=
 ap.add_argument("--reps", type=int, default=5); ap.add_argument("--timeout", type=int, default=3600)
 ap.add_argument("--out", default=None); ap.add_argument("--mem", type=int, default=1024)
 ap.add_argument("--smp", type=int, default=2)
+ap.add_argument("--trial", default="healthy"); ap.add_argument("--preflag", default="")
 a = ap.parse_args()
 W, T, REPO = os.environ["W"], os.environ["T"], os.environ.get("REPO", ".")
 extra = open(f"{REPO}/tools/bench/init/candidates/{a.cand}/cmdline").read().strip()
@@ -34,16 +35,19 @@ with open(out, "wb") as f:
                "-nographic", "-nodefaults", "-no-user-config", "-display", "none", "-monitor", "none",
                "-serial", "stdio", "-device", "i6300esb", "-watchdog-action", "reset", "-nic", "none",
                "-kernel", f"{T}/boot/vmlinuz-6.8.0-146-generic", "-initrd", f"{W}/rf/{a.cand}.cpio.gz",
-               "-append", f"console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite={a.suite} hub.dur={dur_left} hub.seed={a.seed + launches - 1} hub.reps={a.reps} hub.skip={skip} {extra}"]
+               "-append", f"console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite={a.suite} hub.dur={dur_left} hub.seed={a.seed + launches - 1} hub.reps={a.reps} hub.skip={skip} hub.trial={a.trial} hub.preflag={a.preflag} {extra}"]
         f.write(f"H# launch {launches} skip={skip} dur={dur_left} cmd: {' '.join(cmd)}\n".encode())
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, preexec_fn=os.setsid)
         t0 = time.monotonic()
         stuck_step = None
         boot_ok = 0
+        trial_seen = None
         while True:
             if time.monotonic() - T0 > a.timeout:
                 f.write(b"H# TIMEOUT, killing qemu\n"); break
             r, _, _ = select.select([p.stdout], [], [], 5)
+            if a.suite == "trial" and trial_seen and time.monotonic() - trial_seen > 20:
+                f.write(b"H# trial finished\n"); done = True; break
             if not r:
                 continue
             line = p.stdout.readline()
@@ -52,6 +56,10 @@ with open(out, "wb") as f:
             f.write(f"H{time.monotonic()-T0:9.2f} ".encode() + line.rstrip(b"\r\n") + b"\n"); f.flush()
             if b"SUITE-DONE" in line:
                 done = True
+            if a.suite == "trial" and b" TRIAL " in line and (b"CONFIRMED" in line or b"ROLLBACK" in line):
+                trial_seen = time.monotonic()
+            if a.suite == "trial" and trial_seen and (b"STAGE1" in line or time.monotonic() - trial_seen > 20):
+                f.write(b"H# trial finished\n"); done = True; break
             if b"BOOT-OK" in line:
                 boot_ok += 1
                 if a.suite in ("pid1crash", "pid1wedge") and boot_ok >= 2:

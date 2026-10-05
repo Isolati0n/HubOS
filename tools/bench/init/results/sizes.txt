@@ -1,0 +1,44 @@
+== binary sizes (bytes, stripped as built/installed)
+skel/bin/s6-svscan                          834352  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+skel/bin/s6-supervise                       871240  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+skel/bin/s6-svc                             822024  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+skel/bin/s6-svstat                          799176  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+skel/bin/s6-rc                              844760  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+skel/bin/s6-log                            1094944  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+dinit-root/usr/bin/dinit                   2268832  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+dinit-root/usr/bin/dinitctl                2120496  ELF 64-bit LSB executable, x86-64, version 1 (GNU/Linux), st
+root/sbin/runit                              22960  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+root/usr/bin/runsv                           31072  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+root/usr/bin/runsvdir                        26976  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+root/usr/bin/sv                              27016  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+root/usr/bin/svlogd                          43400  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+openrc-root/sbin/openrc-init                 52456  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+openrc-root/sbin/supervise-daemon           163216  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+openrc-root/sbin/openrc                     156616  ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dyn
+brain-go                                   2687160  ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statica
+hubsim                                     2556088  ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statica
+== source lines (C/C++ only, wc -l, no libraries)
+  816 /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/src/s6-2.15.1.0/src/supervision/s6-svscan.c
+  880 /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/src/s6-2.15.1.0/src/supervision/s6-supervise.c
+ 1696 total
+s6-rc src/s6-rc + libs6rc:
+3836
+dinit src/*.cc + include:
+23567
+dinit dasynq (event loop):
+0
+openrc openrc-init + supervise-daemon + librc:
+5304
+runit runit.c + runsv.c + runsvdir.c + sv.c:
+1633
+hub prototypes (Go): 
+682
+ladder.go + probe.go:
+150
+elixir brain.ex:
+238
+== BEAM runtime files shipped in the c-elixir initramfs
+11722255	/tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/c-elixir/usr/lib/erlang
+4917850	/tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/c-elixir/usr/lib/elixir
+35173	/tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/c-elixir/opt/brain
+(systemd names in the c-elixir image: 0)

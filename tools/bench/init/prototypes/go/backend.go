@@ -151,6 +151,9 @@ func (b *directBackend) Start(name string) {
 	b.procs[name] = p
 	if name == "driftwm" || name == "hubd" {
 		os.WriteFile(fmt.Sprintf("/proc/%d/oom_score_adj", p.pid), []byte("-900"), 0o644)
+		os.MkdirAll("/sys/fs/cgroup/hub", 0o755)
+		os.WriteFile("/sys/fs/cgroup/hub/cgroup.procs", []byte(fmt.Sprint(p.pid)), 0o644)
+		syscall.Setpriority(syscall.PRIO_PROCESS, p.pid, -5)
 	}
 	go func() { // readiness line
 		buf := make([]byte, 8)

@@ -2,7 +2,7 @@
 supervisor=supervise-daemon
 name=driftwm
 command=/bin/sh
-command_args="-c 'echo -900 > /proc/self/oom_score_adj; exec /bin/driftwm --backend udev -mem 100 -notify 3'"
+command_args="-c 'exec /bin/policy driftwm --backend udev -mem 100 -notify 3'"
 notify=fd:3
 respawn_delay=1
 respawn_max=10

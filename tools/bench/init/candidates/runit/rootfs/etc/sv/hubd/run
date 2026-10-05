@@ -1,4 +1,3 @@
 #!/bin/sh
 exec 2>&1
-echo -900 > /proc/self/oom_score_adj
-exec follow-driftwm hubd -wait /run/dw/wayland-1
+exec follow-driftwm policy hubd -wait /run/dw/wayland-1

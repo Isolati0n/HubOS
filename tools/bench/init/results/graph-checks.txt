@@ -1,0 +1,32 @@
+=== s6-rc-compile: missing dependency
+s6-rc-compile: fatal: during dependency resolution for service a: undefined service name ghost
+exit=1
+=== s6-rc-compile: cycle
+s6-rc-compile: fatal: cyclic service dependency reached from b and involving b
+exit=1
+=== s6-rc-compile: run script not executable / missing run
+s6-rc-compile: fatal: unable to find a run script in /tmp/claude-0/graphtest/s6c/a/run
+exit=1
+=== dinit-check: missing dependency and cycle
+Checking service: boot...
+Checking service: a...
+Checking service: b...
+Checking service: ghost...
+Unable to load service 'ghost': service description not found.
+Checking service: c...
+Performing secondary checks...
+Found dependency cycle:
+    b ->
+    c ->
+    b.
+Secondary checks complete.
+One or more errors/warnings issued.
+exit=1
+=== dinit-check: unknown setting and missing command executable
+Checking service: boot...
+Service 'boot' (/tmp/claude-0/graphtest/di2/boot:3): unknown setting: 'restartt'.
+Service 'boot': warning: could not stat command executable '/nonexistent/prog': No such file or directory
+Performing secondary checks...
+Secondary checks complete.
+One or more errors/warnings issued.
+exit=1

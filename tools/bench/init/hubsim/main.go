@@ -10,6 +10,7 @@
 //	hubsim probe   one health probe of the compositor ("driftwm msg state" stand-in)
 //	hubsim hog     allocate memory until killed (out-of-memory test)
 //	hubsim crash1  make PID 1 segfault (ptrace) or hold it stopped
+//	hubsim nice    set the CPU priority (nice value) and exec a program: busybox here has no nice applet
 //	hubsim ctl     send one line to a unix socket and print the reply
 package main
 
@@ -45,6 +46,8 @@ func main() {
 		crash1(args)
 	case "ctl":
 		ctl(args)
+	case "nice":
+		niceExec(args)
 	default:
 		fmt.Fprintln(os.Stderr, "unknown subcommand", os.Args[1])
 		os.Exit(2)

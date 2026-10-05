@@ -206,6 +206,9 @@ func serve(path string) {
 					}
 					fmt.Fprintf(c, "%s state=%s up=%v pid=%d restarts=%d last_failure=%s needs=%v cause=%q\n", n, s.L.Step, s.lastUp, s.pid, s.L.Restarts, ago, s.Needs, s.L.LastCause)
 				}
+			case len(f) == 2 && f[0] == "crashtest": // TEST HOOK: a bug in the policy code. In Go an unrecovered panic in any goroutine ends the whole program.
+				go func() { panic("test hook: bug in the policy code") }()
+				fmt.Fprintln(c, "ok (panicking)")
 			case len(f) == 2 && f[0] == "retry" && byName[f[1]] != nil:
 				s := byName[f[1]]
 				s.L.Retry()

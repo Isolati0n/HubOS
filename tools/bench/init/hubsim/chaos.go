@@ -603,6 +603,10 @@ func chaos(args []string) {
 	seed := int64(cfgInt("seed", 1))
 	rng := rand.New(rand.NewSource(seed))
 	say("CHAOS start cand=%s suite=%s seed=%d cpus=%s", cfg["cand"], cfg["suite"], seed, sh("nproc"))
+	if cfg["suite"] == "trial" {
+		trial(cfg["trial"])
+		return
+	}
 	boot, ok := waitOK(300 * time.Second)
 	say("BOOT-OK up=%.2f ok=%d (seconds since kernel start; waited %.1f)", uptime(), b2i(ok), boot)
 	if !ok {
@@ -614,6 +618,16 @@ func chaos(args []string) {
 	time.Sleep(5 * time.Second)
 	switch cfg["suite"] {
 	case "boot":
+		if cfg["brain"] != "" {
+			bs := time.Now()
+			for time.Since(bs) < 90*time.Second {
+				if n, _ := brainStatus(); n == 6 {
+					break
+				}
+				time.Sleep(time.Second)
+			}
+			say("BRAIN-READY after %.1fs from BOOT-OK", time.Since(bs).Seconds())
+		}
 		time.Sleep(10 * time.Second)
 		b0, i0 := cpuStat()
 		g0 := cpuTicks(supGroup())
@@ -621,6 +635,8 @@ func chaos(args []string) {
 		b1, i1 := cpuStat()
 		say("IDLE-CPU window=30s whole_vm_busy_ticks=%d whole_vm_idle_ticks=%d init_side_ticks=%d (1 tick = 10 ms, %s vCPUs)", b1-b0, i1-i0, cpuTicks(supGroup())-g0, sh("nproc"))
 		memReport()
+		policyReport()
+		listenReport()
 	case "pid1crash":
 		say("INJECT pid1-segv")
 		c := exec.Command(os.Args[0], "crash1", "segv")
@@ -635,6 +651,22 @@ func chaos(args []string) {
 		for i := 0; i < 20; i++ {
 			time.Sleep(5 * time.Second)
 			say("PID1-STATE %c guard=%c watchdog_dev=%v", state(1), guardState(), exists("/dev/watchdog"))
+		}
+	case "bug":
+		bs := time.Now()
+		for time.Since(bs) < 90*time.Second { // the policy layer starts after the desktop; wait until it answers
+			if n, _ := brainStatus(); n == 6 {
+				break
+			}
+			time.Sleep(time.Second)
+		}
+		say("BRAIN-READY after %.1fs from BOOT-OK", time.Since(bs).Seconds())
+		syscall.Kill(pidOf("udevd"), syscall.SIGKILL)
+		waitOK(60 * time.Second)
+		time.Sleep(5 * time.Second)
+		for i := 0; i < 5; i++ {
+			fPolicyBug()
+			between()
 		}
 	case "faults":
 		faultSuite(cfgInt("reps", 5))
@@ -779,4 +811,126 @@ func memReport() {
 		}
 		say("MEM pid=%d comm=%s rss_kb=%d pss_kb=%d", p, comm(p), rss, pss)
 	}
+}
+
+// policyReport: what resource policy the candidate really applied to the two essential programs.
+func policyReport() {
+	for _, n := range []string{"driftwm", "hubd", "waybar"} {
+		p := pidOf(n)
+		cg := strings.TrimSpace(sh(fmt.Sprintf("cat /proc/%d/cgroup", p)))
+		st, _ := os.ReadFile(fmt.Sprintf("/proc/%d/stat", p))
+		f := strings.Fields(string(st)[strings.LastIndex(string(st), ")")+2:])
+		nice := "?"
+		if len(f) > 16 {
+			nice = f[16]
+		}
+		say("POLICY %s oom_score_adj=%s nice=%s cgroup=%s", n, strings.TrimSpace(sh(fmt.Sprintf("cat /proc/%d/oom_score_adj", p))), nice, cg)
+	}
+}
+
+// listenReport: TCP/UDP sockets in LISTEN state on any address and whether epmd runs (the Erlang distribution check).
+func listenReport() {
+	n := 0
+	for _, f := range []string{"/proc/net/tcp", "/proc/net/tcp6"} {
+		b, _ := os.ReadFile(f)
+		for _, l := range strings.Split(string(b), "\n")[1:] {
+			if fl := strings.Fields(l); len(fl) > 3 && fl[3] == "0A" {
+				n++
+			}
+		}
+	}
+	say("LISTEN tcp_listening_sockets=%d epmd_running=%v", n, pidOf("epmd") != 0)
+}
+
+// trial: the update's trial boot. A confirm step (this function, standing in for it) asks the init's OWN view of
+// service health once a second and confirms after 15 good answers in a row, or gives up after 60 s and reboots (the
+// rollback, one of the two allowed automatic reboots). The watchdog guard keeps running all the time and knows nothing
+// about services. Scenarios: healthy; crash (driftwm cannot start at all); hang (driftwm is wedged 2 s after it first
+// worked). "true_state" is what the harness itself sees at the moment of confirmation: a wedged compositor that is
+// confirmed anyway is a false confirmation.
+func trial(scn string) {
+	start := time.Now()
+	good := 0
+	hung := false
+	sawOK := time.Time{}
+	for time.Since(start) < 60*time.Second {
+		if why() == "" && sawOK.IsZero() {
+			sawOK = time.Now()
+		}
+		if scn == "hang" && !hung && !sawOK.IsZero() && time.Since(sawOK) > 2*time.Second {
+			syscall.Kill(pidOf("driftwm"), syscall.SIGSTOP)
+			hung = true
+			say("TRIAL-INJECT driftwm stopped (wedged)")
+		}
+		if _, err := os.Stat("/ops/healthy"); err == nil && exec.Command("/bin/sh", "/ops/healthy").Run() == nil {
+			good++
+		} else {
+			good = 0
+		}
+		if good >= 15 {
+			say("TRIAL CONFIRMED scenario=%s after=%.1fs true_state=%q", scn, time.Since(start).Seconds(), why())
+			status()
+			return
+		}
+		time.Sleep(time.Second)
+	}
+	say("TRIAL ROLLBACK scenario=%s after=60s true_state=%q guard_still_feeding=%v", scn, why(), guardState() != '-')
+	status()
+	time.Sleep(time.Second)
+	syscall.Sync()
+	syscall.Reboot(syscall.LINUX_REBOOT_CMD_RESTART)
+}
+
+func brainStatus() (lines int, udevdRestarts int) {
+	out := sh("hubsim ctl /run/hubos/brain.sock status")
+	for _, l := range strings.Split(out, "\n") {
+		if strings.Contains(l, "state=") {
+			lines++
+		}
+		if strings.HasPrefix(l, "udevd ") {
+			for _, w := range strings.Fields(l) {
+				if strings.HasPrefix(w, "restarts=") {
+					udevdRestarts, _ = strconv.Atoi(strings.TrimPrefix(w, "restarts="))
+				}
+			}
+		}
+	}
+	return
+}
+
+// fPolicyBug: a bug in the policy layer's own code (test hook "crashtest" on its status socket). What is lost, how fast does
+// the layer answer again, and do the managed services keep running untouched?
+func fPolicyBug() result {
+	if !begin("fPolicyBug") {
+		return result{ok: true}
+	}
+	old := map[string]int{}
+	for _, s := range allSvc {
+		old[s] = pidOf(s)
+	}
+	b0 := pidOf(cfg["brain"])
+	_, r0 := brainStatus()
+	sh("hubsim ctl /run/hubos/brain.sock crashtest driftwm")
+	st := time.Now()
+	back := -1.0
+	for time.Since(st) < 30*time.Second {
+		time.Sleep(300 * time.Millisecond)
+		if n, _ := brainStatus(); n == 6 && time.Since(st) > 600*time.Millisecond {
+			back = time.Since(st).Seconds()
+			break
+		}
+	}
+	if back < 0 {
+		for _, l := range strings.Split(sh("tail -n 25 /var/log/brain/current 2>/dev/null"), "\n") {
+			say("BRAIN-LOG %s", l)
+		}
+	}
+	_, r1 := brainStatus()
+	kept := 1
+	for _, s := range allSvc {
+		if pidOf(s) != old[s] {
+			kept = 0
+		}
+	}
+	return settle("policy-bug", "brain", fmt.Sprintf("brain_answers_again_after=%.1f services_kept_running=%d brain_process_replaced=%d udevd_restart_count_before=%d after=%d", back, kept, b2i(pidOf(cfg["brain"]) != b0), r0, r1))
 }

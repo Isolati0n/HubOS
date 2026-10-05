@@ -8,6 +8,9 @@ mount -t devtmpfs devtmpfs /dev
 mount -t tmpfs tmpfs /run
 mount -t tmpfs -o size=4m tmpfs /var       # stands in for the hub's small writable disk (ENOSPC test)
 mount -t cgroup2 none /sys/fs/cgroup 2>/dev/null
+echo "+memory +cpu +pids" > /sys/fs/cgroup/cgroup.subtree_control 2>/dev/null
+mkdir -p /sys/fs/cgroup/hub
+for f in $(sed -n 's/.*hub\.preflag=\([^ ]*\).*/\1/p' /proc/cmdline | tr , " "); do mkdir -p /run/fault; : > /run/fault/$f; done
 exec >/dev/console 2>&1
 echo "CH STAGE1 up=$(cut -d' ' -f1 /proc/uptime)"
 insmod /lib/modules/i6300esb.ko heartbeat=30 nowayout=0 2>&1

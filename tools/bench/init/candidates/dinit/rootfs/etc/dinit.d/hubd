@@ -5,3 +5,5 @@ log-type = buffer
 ready-notification = pipefd:3
 depends-on = driftwm
 oom-score-adj = -900
+nice = -5
+run-in-cgroup = /hub

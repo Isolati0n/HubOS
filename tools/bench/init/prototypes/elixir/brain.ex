@@ -88,7 +88,8 @@ defmodule Brain.Watcher do
   @impl true
   def init(spec) do
     st = Map.merge(spec, %{l: %Ladder{}, last_up: false, expect_down: false, held: false, pid: 0, started: 0, bad: 0})
-    :ets.insert(:brain, {spec.name, false, false, 0, 0})
+    # insert_new: a restarted watcher must not wipe what the others already know about this service
+    :ets.insert_new(:brain, {spec.name, false, false, 0, 0})
     Process.send_after(self(), :tick, @tick)
     {:ok, st}
   end
@@ -111,11 +112,22 @@ defmodule Brain.Watcher do
     {:noreply, s}
   end
 
+  @impl true
+  # TEST HOOK: a bug in the policy code of one service's watcher. OTP ends only this process and restarts it.
+  def handle_cast(:boom, _s), do: raise("test hook: bug in the policy code")
+
   defp needs_ok?(s), do: Enum.all?(s.needs, fn n -> match?([{_, _, true, _, _}], :ets.lookup(:brain, n)) end)
 
   defp step(s, now) do
     {up, pid, ready, last} = S6.status(s.name)
-    s = if up and pid != s.pid, do: %{s | pid: pid, started: now}, else: s
+    s =
+      if up and pid != s.pid do
+        s = if s.pid != 0 and s.last_up and not s.held, do: fail(s, now, "restarted unseen"), else: s
+        %{s | pid: pid, started: now}
+      else
+        s
+      end
+
     :ets.insert(:brain, {s.name, up, ready, pid, s.started})
 
     cond do
@@ -207,6 +219,7 @@ defmodule Brain.Status do
       case String.split(String.trim(line)) do
         ["status"] -> Enum.map_join(Brain.services(), fn n -> GenServer.call(Brain.Watcher.via(n), :status) end)
         ["retry", n] -> if n in Brain.services(), do: (GenServer.call(Brain.Watcher.via(n), :retry); File.rm("/run/hubos/alert"); "ok\n"), else: "error: unknown service\n"
+        ["crashtest", n] -> GenServer.cast(Brain.Watcher.via(n), :boom); "ok (raising)\n"
         _ -> "error: status | retry NAME\n"
       end
     :gen_tcp.send(c, reply)

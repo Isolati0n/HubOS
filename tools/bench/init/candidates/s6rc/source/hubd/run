@@ -1,4 +1,3 @@
 #!/bin/sh
 exec 2>&1
-echo -900 > /proc/self/oom_score_adj
-exec hubd -notify 3
+exec policy hubd -notify 3
