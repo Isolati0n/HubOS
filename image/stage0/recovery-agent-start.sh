@@ -1,7 +1,8 @@
 #!/bin/sh
 # Started by recovery-init after DHCP, ONLY in the TEST recovery kernel that carries the recovery agent
-# (docs/proposals/recovery-and-out-of-band.md). Serves /v1/status and the signed requests on port 8480 of the recovery
-# kernel's address; the management public keys are in /etc/hubos/mgmt. The real work is done by hubos-ctl.
+# (docs/proposals/recovery-and-out-of-band.md). Serves /v1/status and the other requests on port 8480 of the recovery
+# kernel's address. Requests are NOT signed; the install request is checked by hubos-ctl, which refuses any bundle not signed
+# by the update key (the image signature). The real work is done by hubos-ctl.
 #
 # The agent is SUPERVISED by a plain shell restart loop (no s6 in the recovery kernel):
 #  - when the agent exits for any reason, a line is logged (to /run/recovery-agent.log and the console) and it is started again
@@ -14,7 +15,7 @@ supervise() {
   short=0
   while :; do
     start=$(date +%s)
-    /usr/sbin/recovery-agent -backend hubos -listen :8480 -keys /etc/hubos/mgmt >>$LOG 2>&1
+    /usr/sbin/recovery-agent -backend hubos -listen :8480 >>$LOG 2>&1
     rc=$?
     ran=$(( $(date +%s) - start ))
     if [ "$ran" -lt 30 ]; then short=$((short + 1)); else short=0; fi

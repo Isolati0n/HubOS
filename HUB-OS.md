@@ -579,3 +579,4 @@ HubOS/
 - **2026-10-05:** Systemd corrected (no machine runs it; dev-node experiments only); hub stability, layout, init and distro-contract decisions recorded.
 - **2026-10-06:** No display passwords and no request signing; session layer as the hub's core; 4K nodes; clipboard and notification designs; compositor answers; run schedule.
 - **2026-10-06:** driftwm patch set adopted: Smithay P7 to P11, driftwm D1 to D5, BC-11 to BC-13 fixes, config checks, protocol list; window stacking order restored.
+- **2026-10-06:** Recovery agent prototype: request signing removed (no challenge, signature or nonces); the image signature check stays.

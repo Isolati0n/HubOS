@@ -716,9 +716,7 @@ func TestImage(t *testing.T) {
 	recK2 := filepath.Join(outDir, "rec-k2.efi")
 	copyFile(t, filepath.Join(outDir, "kernel-recovery.efi"), recK2)
 	// The TEST recovery kernel with the recovery agent (T18): key 2 only (the machine runs key-2 releases by then), version 5, the
-	// agent built static, and a management key the test signs its requests with. kernel-recovery.efi is not touched by this build.
-	mgmtPub, mgmtSec := genKey("mgmt")
-	_, otherMgmtSec := genKey("othermgmt")
+	// agent built static. Requests to the agent are not signed. kernel-recovery.efi is not touched by this build.
 	agentBin := filepath.Join(outDir, "recovery-agent")
 	{
 		cmd := exec.Command("go", "build", "-trimpath", "-ldflags=-s -w", "-o", agentBin, "./experiments/recoveryagent")
@@ -727,7 +725,7 @@ func TestImage(t *testing.T) {
 			t.Fatalf("go build recovery-agent: %v\n%s", err, out)
 		}
 	}
-	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + pub2, "RECOVERY_VERSION=5", "RECOVERY_AGENT_BIN=" + agentBin, "RECOVERY_AGENT_KEYS=" + mgmtPub})
+	r.script("build-kernel.sh", []string{"UPDATE_KEYS=" + pub2, "RECOVERY_VERSION=5", "RECOVERY_AGENT_BIN=" + agentBin})
 	recAgent := filepath.Join(outDir, "kernel-recovery-agent.efi")
 	r.script("build-kernel.sh", []string{"UPDATE_PUB=" + r.pub}) // back to key 1 only, version 1: the kernel the disk and the bundles use
 	if sha256File(t, recK1) != sha256File(t, filepath.Join(outDir, "kernel-recovery.efi")) {
@@ -802,16 +800,21 @@ func TestImage(t *testing.T) {
 	bundleSigned("26", "v26-lower-version", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK12, "RECOVERY_VERSION_OVERRIDE=4")
 	bundleSigned("27", "v27-same-file", sec2k, "KEYRING_PUBS="+pub2, "RECOVERY_KERNEL_FILE="+recK2m, "RECOVERY_VERSION_OVERRIDE=5")
 	// refused variants: made from v2-good with hard links
-	variant := func(name string, change func(dir string)) {
+	variantOf := func(src, name string, change func(dir string)) {
 		d := filepath.Join(bdir, name)
 		os.MkdirAll(d, 0o755)
-		for _, f := range []string{"manifest", "manifest.sig", "kernel-a.efi", "kernel-b.efi", "rootfs.sqsh"} {
-			if err := os.Link(filepath.Join(bdir, "v2-good", f), filepath.Join(d, f)); err != nil {
+		ents, err := os.ReadDir(filepath.Join(bdir, src))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, e := range ents {
+			if err := os.Link(filepath.Join(bdir, src, e.Name()), filepath.Join(d, e.Name())); err != nil {
 				t.Fatal(err)
 			}
 		}
 		change(d)
 	}
+	variant := func(name string, change func(dir string)) { variantOf("v2-good", name, change) }
 	rewrite := func(d, f string, fn func([]byte) []byte) {
 		p := filepath.Join(d, f)
 		b, _ := os.ReadFile(p)
@@ -828,6 +831,18 @@ func TestImage(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%v %s", err, out)
 		}
+	})
+	// refused variants of the release the recovery agent installs (T18), all made from v28-agent: unsigned, signed by another key,
+	// manifest changed after signing
+	variantOf("v28-agent", "v28-unsigned", func(d string) { os.Remove(filepath.Join(d, "manifest.sig")) })
+	variantOf("v28-agent", "v28-wrongkey", func(d string) {
+		os.Remove(filepath.Join(d, "manifest.sig"))
+		if out, err := exec.Command(r.tool("bin/signify-openbsd"), "-S", "-s", sec2, "-m", filepath.Join(d, "manifest"), "-x", filepath.Join(d, "manifest.sig")).CombinedOutput(); err != nil {
+			t.Fatalf("%v %s", err, out)
+		}
+	})
+	variantOf("v28-agent", "v28-badmanifest", func(d string) {
+		rewrite(d, "manifest", func(b []byte) []byte { return bytes.Replace(b, []byte("version 28"), []byte("version 29"), 1) })
 	})
 	resign := func(d string) {
 		os.Remove(filepath.Join(d, "manifest.sig"))
@@ -1862,7 +1877,7 @@ func TestImage(t *testing.T) {
 		var code int
 		var body string
 		for i := 0; i < 20; i++ { // the agent starts after DHCP; the forward needs a moment
-			if code, body = ac.do("GET", "/v1/status", "", nil); code == 200 {
+			if code, body = ac.do("GET", "/v1/status", nil); code == 200 {
 				break
 			}
 			time.Sleep(2 * time.Second)
@@ -1877,7 +1892,6 @@ func TestImage(t *testing.T) {
 			FailureLimit int `json:"failure_limit"`
 		}
 		json.Unmarshal([]byte(body), &st)
-		ac.machine = st.Machine // the machine id the hub signs for: the agent's NAME= from node.conf
 		okStatus := banner && strings.Contains(put, "put-done") && code == 200 && st.State == "recovery" && st.Release == "recovery-1" && st.FailureLimit == 3 && st.Machine == "hub-qemu" && st.API == 1 && st.MinHub == 1
 		// 1b. the agent is supervised by a restart loop: kill it, it answers /v1/status again within a few seconds
 		r.sh(`kill -9 $(pidof recovery-agent); echo killed`)
@@ -1885,7 +1899,7 @@ func TestImage(t *testing.T) {
 		downSeen, backAgain := false, false
 		var backSec float64
 		for time.Since(tKill) < 20*time.Second {
-			c, _ := ac.do("GET", "/v1/status", "", nil)
+			c, _ := ac.do("GET", "/v1/status", nil)
 			if c != 200 {
 				downSeen = true
 			} else if downSeen {
@@ -1896,24 +1910,33 @@ func TestImage(t *testing.T) {
 		}
 		_, sup := r.sh(`grep supervisor /run/recovery-agent.log`)
 		okRestart := downSeen && backAgain && backSec < 10 && strings.Contains(sup, "the agent exited with status") && strings.Contains(sup, "starting the agent again")
-		// 2. refused requests: unsigned, a signature of another key, a body changed after signing, a replayed request
+		// 2. install requests for bundles the IMAGE signature check must refuse (the request itself is not signed): a bundle
+		// without a signature, one signed by another key, one whose manifest was changed after signing, and the not-newer
+		// rule (release 24 is below the floor the machine is at). Each is answered with an error naming the refusal.
+		slotB := `head -c 4194304 $(findfs PARTLABEL=hubos-root-b) | sha256sum`
+		_, beforeB := r.sh(slotB)
+		refuse := func(name, want string) (int, bool) {
+			c, out := ac.do("POST", "/v1/install", []byte(`{"Slot":"b","BaseURL":"`+r.base+`/`+name+`"}`))
+			good := c == 500 && strings.Contains(out, "REFUSED") && strings.Contains(out, want)
+			if !good {
+				t.Logf("%s: expected 500/REFUSED/%q, got %d %s", name, want, c, out)
+			}
+			return c, good
+		}
+		c1, g1 := refuse("v28-unsigned", "no signature")
+		c2, g2 := refuse("v28-wrongkey", "bad signature")
+		c3, g3 := refuse("v28-badmanifest", "bad signature")
+		c4, g4 := refuse("v24-k2", "below the floor")
+		_, afterB := r.sh(slotB)
+		unchanged := beforeB == afterB && regexp.MustCompile(`[0-9a-f]{64}`).FindString(beforeB) != ""
+		okRefused := g1 && g2 && g3 && g4 && unchanged
+		// the other requests need no signature: GET /v1/logs, POST /v1/clear-failures
+		lc, lb := ac.do("GET", "/v1/logs", nil)
+		cc, _ := ac.do("POST", "/v1/clear-failures", nil)
+		okPlain := lc == 200 && strings.Contains(lb, "supervisor") && cc == 200
+		// 3. an install request for the correctly signed bundle: installs it into slot b; the machine then boots it
 		reqBody := []byte(`{"Slot":"b","BaseURL":"` + r.base + `/v28-agent"}`)
-		c1, b1 := ac.do("POST", "/v1/install", "", reqBody)
-		c2, b2 := ac.signed(otherMgmtSec, "POST", "/v1/install", reqBody)
-		n3 := ac.nonce()
-		auth3 := ac.sign(mgmtSec, "POST", "/v1/install", n3, []byte(`{"Slot":"a","BaseURL":"`+r.base+`/v28-agent"}`))
-		c3, b3 := ac.do("POST", "/v1/install", auth3, reqBody) // signed for slot a, sent for slot b
-		n4 := ac.nonce()
-		auth4 := ac.sign(mgmtSec, "POST", "/v1/clear-failures", n4, nil)
-		c4, b4 := ac.do("POST", "/v1/clear-failures", auth4, nil) // a good signed request: accepted ...
-		c5, b5 := ac.do("POST", "/v1/clear-failures", auth4, nil) // ... and the same bytes again: replayed
-		// signed with the right key but for another machine id: refused
-		otherM := *ac
-		otherM.machine = "ai-1"
-		c6, _ := otherM.signed(mgmtSec, "POST", "/v1/clear-failures", nil)
-		okRefused := c6 == 401 && c1 == 401 && c2 == 401 && c3 == 401 && c4 == 200 && c5 == 401 && strings.Contains(b5, "used or expired nonce") && strings.Contains(b2, "signature not accepted")
-		// 3. a signed install request: installs a signed bundle into slot b; the machine then boots it
-		ic, ib := ac.signed(mgmtSec, "POST", "/v1/install", reqBody)
+		ic, ib := ac.do("POST", "/v1/install", reqBody)
 		okInstall := ic == 200 && strings.Contains(ib, "installed version 28 in slot b")
 		m := r.vm.mark()
 		io.WriteString(r.vm.in, "sync; reboot -f\n")
@@ -1923,11 +1946,11 @@ func TestImage(t *testing.T) {
 		slot, rel, conf, _ := r.status()
 		ev, eh := r.espRecovery()
 		okBoot := confirmed && slot == "b" && rel == "28" && conf && ev == "5" && eh == sha256File(t, recK2) // the confirm step put the normal recovery kernel back (same version, other file)
-		ok := okStatus && okRestart && okRefused && okInstall && okBoot
-		record("T18 the recovery agent inside a TEST recovery kernel: GET /v1/status from the host answers recovery; unsigned, wrong-key, tampered and replayed requests are refused; a signed install request installs a signed bundle into slot b and the machine boots and confirms it", ok, time.Since(start),
-			fmt.Sprintf("agent killed: down seen %v, answering again after %.1f s (supervisor restart loop); status %d %s; refused: unsigned %d, other key %d, changed body %d, replay %d (good clear-failures %d); install %d; booted slot %s release %s confirmed %v; recovery kernel with the agent %d bytes, without %d bytes (+%d); normal recovery kernel back on the boot partition: %v", downSeen, backSec, code, strings.TrimSpace(body), c1, c2, c3, c5, c4, ic, slot, rel, conf, agentSize, normalSize, agentSize-normalSize, eh == sha256File(t, recK2)))
+		ok := okStatus && okRestart && okRefused && okPlain && okInstall && okBoot
+		record("T18 the recovery agent inside a TEST recovery kernel: GET /v1/status from the host answers recovery; requests are not signed; install requests for an unsigned, another-key, tampered or below-the-floor bundle are refused by the image check and slot b is unchanged; the install request for the correctly signed bundle installs it into slot b and the machine boots and confirms it", ok, time.Since(start),
+			fmt.Sprintf("agent killed: down seen %v, answering again after %.1f s (supervisor restart loop); status %d %s; refused bundles (HTTP code): unsigned %d, other key %d, tampered manifest %d, below the floor %d (slot b unchanged %v); logs %d, clear-failures %d (no signature needed); install %d; booted slot %s release %s confirmed %v; recovery kernel with the agent %d bytes, without %d bytes (+%d); normal recovery kernel back on the boot partition: %v", downSeen, backSec, code, strings.TrimSpace(body), c1, c2, c3, c4, unchanged, lc, cc, ic, slot, rel, conf, agentSize, normalSize, agentSize-normalSize, eh == sha256File(t, recK2)))
 		if !ok {
-			t.Errorf("okStatus=%v okRestart=%v okRefused=%v okInstall=%v okBoot=%v\nsupervisor log: %s\nput=%q\n%s\n%d %s | %d %s | %d %s | %d %s | %d %s\ninstall %d %s", okStatus, okRestart, okRefused, okInstall, okBoot, sup, put, shellOut, c1, b1, c2, b2, c3, b3, c4, b4, c5, b5, ic, ib)
+			t.Errorf("okStatus=%v okRestart=%v okRefused=%v okPlain=%v okInstall=%v okBoot=%v\nsupervisor log: %s\nput=%q\n%s\nrefusals %d %d %d %d\ninstall %d %s", okStatus, okRestart, okRefused, okPlain, okInstall, okBoot, sup, put, shellOut, c1, c2, c3, c4, ic, ib)
 			t.Fail()
 		}
 	})
@@ -1945,7 +1968,7 @@ func TestImage(t *testing.T) {
 		ac := newAgentClient(t, r)
 		up := false
 		for i := 0; i < 20 && !up; i++ {
-			c, _ := ac.do("GET", "/v1/status", "", nil)
+			c, _ := ac.do("GET", "/v1/status", nil)
 			up = c == 200
 			if !up {
 				time.Sleep(2 * time.Second)
@@ -1957,7 +1980,7 @@ func TestImage(t *testing.T) {
 		}
 		time.Sleep(6 * time.Second)
 		_, lg := r.sh(`grep supervisor /run/recovery-agent.log; echo "agents running: $(pidof recovery-agent | wc -w)"`)
-		c, _ := ac.do("GET", "/v1/status", "", nil)
+		c, _ := ac.do("GET", "/v1/status", nil)
 		shortRuns := len(regexp.MustCompile(`short runs in a row: \d+ of 5`).FindAllString(lg, -1))
 		gaveUp := strings.Contains(lg, "5 short runs in a row: giving up")
 		none := strings.Contains(lg, "agents running: 0")

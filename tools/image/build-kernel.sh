@@ -24,12 +24,12 @@ KEYS=${UPDATE_KEYS:-$UPDATE_PUB}
 # the base root and the update key. Skip what has not changed (FORCE=1 builds everything).
 SSTAMP=$(cat "$REPO/$MACHINE" "$REPO/$KERNEL_FRAGMENT" "$REPO/image/stage0/init" "$REPO/image/stage0/stage0.list.in" "$REPO/image/rootfs/usr/lib/hubos/check-timers.sh" | sha256sum | cut -d' ' -f1)
 RSTAMP=$(cat "$REPO/image/stage0/recovery-init" "$REPO/image/stage0/recovery.rc" "$REPO/tools/image/recovery-list.py" "$REPO/image/rootfs/usr/sbin/hubos-ctl" "$REPO/image/rootfs/usr/lib/hubos/udhcpc.script" "$REPO/image/rootfs/usr/lib/hubos/check-timers.sh" "$WORK/out/base.stamp" $KEYS | sha256sum | cut -d' ' -f1)
-# TEST variant: RECOVERY_AGENT_BIN=path of the static recovery-agent program (RECOVERY_AGENT_KEYS = management public keys) builds a
+# TEST variant: RECOVERY_AGENT_BIN=path of the static recovery-agent program builds a
 # SECOND recovery kernel, kernel-recovery-agent.efi, that carries the agent. The normal kernel-recovery.efi is not touched.
 RECOUT=kernel-recovery.efi; RSTAMPFILE=kernel.rstamp
 if [ -n "$RECOVERY_AGENT_BIN" ]; then
   RECOUT=kernel-recovery-agent.efi; RSTAMPFILE=kernel.rstamp-agent
-  RSTAMP=$(cat "$REPO/image/stage0/recovery-agent-start.sh" "$RECOVERY_AGENT_BIN" $RECOVERY_AGENT_KEYS | sha256sum | cut -d' ' -f1)$RSTAMP
+  RSTAMP=$(cat "$REPO/image/stage0/recovery-agent-start.sh" "$RECOVERY_AGENT_BIN" | sha256sum | cut -d' ' -f1)$RSTAMP
 fi
 RSTAMP=$(echo "$SSTAMP $RSTAMP ${RECOVERY_VERSION:-1} ${RECOVERY_CMDLINE:-}" | sha256sum | cut -d' ' -f1)
 SRC=$WORK/linux-$V; KB=$WORK/kbuild-$V
