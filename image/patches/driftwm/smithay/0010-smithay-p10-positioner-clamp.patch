@@ -1,0 +1,51 @@
+--- a/src/wayland/shell/xdg/handlers/positioner.rs
++++ b/src/wayland/shell/xdg/handlers/positioner.rs
+@@ -33,6 +33,12 @@
+         _data_init: &mut DataInit<'_, D>,
+     ) {
+         let mut state = self.inner.lock().unwrap();
++        // BULLETPROOF-COMPOSITOR PATCH P10: positioner numbers come straight from the client and are added up later
++        // (get_anchor_point, get_geometry, compute_offsets). Values near the 32-bit limit overflow (debug builds panic
++        // "attempt to add with overflow", release builds wrap and produce garbage popup positions). No real popup is
++        // 16 million pixels away, so limit every number to +-2^24.
++        const LIM: i32 = 1 << 24;
++        let cl = |v: i32| v.clamp(-LIM, LIM);
+         match request {
+             xdg_positioner::Request::SetSize { width, height } => {
+                 if width < 1 || height < 1 {
+@@ -41,7 +47,7 @@
+                         "Invalid size for positioner.",
+                     );
+                 } else {
+-                    state.rect_size = (width, height).into();
++                    state.rect_size = (cl(width), cl(height)).into();
+                 }
+             }
+             xdg_positioner::Request::SetAnchorRect { x, y, width, height } => {
+@@ -51,7 +57,7 @@
+                         "Invalid size for positioner's anchor rectangle.",
+                     );
+                 } else {
+-                    state.anchor_rect = Rectangle::new((x, y).into(), (width, height).into());
++                    state.anchor_rect = Rectangle::new((cl(x), cl(y)).into(), (cl(width), cl(height)).into());
+                 }
+             }
+             xdg_positioner::Request::SetAnchor { anchor } => {
+@@ -72,7 +78,7 @@
+                 }
+             }
+             xdg_positioner::Request::SetOffset { x, y } => {
+-                state.offset = (x, y).into();
++                state.offset = (cl(x), cl(y)).into();
+             }
+             xdg_positioner::Request::SetReactive => {
+                 state.reactive = true;
+@@ -81,7 +87,7 @@
+                 parent_width,
+                 parent_height,
+             } => {
+-                state.parent_size = Some((parent_width, parent_height).into());
++                state.parent_size = Some((parent_width.clamp(0, LIM), parent_height.clamp(0, LIM)).into());
+             }
+             xdg_positioner::Request::SetParentConfigure { serial } => {
+                 state.parent_configure = Some(Serial::from(serial));

@@ -30,7 +30,7 @@ import (
 //     again) AND its Wayland socket accepts a connection (the viewers need it);
 //  3. starts the viewer of every machine on that list, all at once, and when
 //     each window appears puts it at its saved place and size;
-//  4. puts the view back.
+//  4. puts the stacking order back (which window is on top of which), then the view.
 //
 // Nothing is restored after a reboot: the list lives only in hubd's memory.
 // The sessions on the machines are not touched, so the viewers reconnect to
@@ -52,6 +52,33 @@ func (h *Hub) rememberLocked(st *driftwm.State) {
 	if st.Zoom > 0 && !h.restoringLocked() {
 		h.lastView = viewSnap{cam: st.Camera, zoom: st.Zoom, ok: true}
 	}
+	// The same holds for the stacking order: every window that comes back is raised, so the order seen while
+	// windows are being restored is not the owner's.
+	if !h.restoringLocked() {
+		h.lastOrder = h.machineOrderLocked(st)
+	}
+}
+
+// machineOrderLocked returns the machine ids that have a window in the snapshot, bottom of the stack first. Windows
+// that are not a machine's (a terminal started by hand, say) are left out: only the order between the machines' windows
+// is kept. Caller holds h.mu.
+func (h *Hub) machineOrderLocked(st *driftwm.State) []string {
+	byWin := make(map[int]string, len(h.ms))
+	for _, s := range h.ms {
+		if s.win == nil {
+			continue
+		}
+		if cur, ok := st.Window(s.win.Window); ok && cur.AppID == s.win.AppID {
+			byWin[s.win.Window] = s.m.ID
+		}
+	}
+	var out []string
+	for _, id := range st.StackOrder() {
+		if m, ok := byWin[id]; ok {
+			out = append(out, m)
+		}
+	}
+	return out
 }
 
 // restoringLocked says whether windows are waiting to be brought back or are being brought back.
@@ -63,6 +90,9 @@ func (h *Hub) noteGoneLocked() {
 	// The view first: once the list is filled the restore counts as pending and the view is no longer taken.
 	if h.lastView.ok && !h.restoringLocked() {
 		h.restoreView = h.lastView
+	}
+	if !h.restoringLocked() {
+		h.restoreOrder = append([]string(nil), h.lastOrder...)
 	}
 	for _, s := range h.ms {
 		if s.win != nil {
@@ -78,17 +108,17 @@ func (h *Hub) RestartPending() bool {
 	return len(h.restoreSet) > 0 || h.restoreRun
 }
 
-func (h *Hub) takeRestore() (map[string]Place, viewSnap) {
+func (h *Hub) takeRestore() (map[string]Place, viewSnap, []string) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	if len(h.restoreSet) == 0 {
-		return nil, viewSnap{}
+		return nil, viewSnap{}, nil
 	}
 	out := make(map[string]Place, len(h.restoreSet))
 	for k, v := range h.restoreSet {
 		out[k] = v
 	}
-	return out, h.restoreView
+	return out, h.restoreView, append([]string(nil), h.restoreOrder...)
 }
 
 // waitWayland waits until the compositor's Wayland socket accepts a
@@ -124,7 +154,7 @@ func (h *Hub) fast() time.Duration {
 
 // runRestore brings the windows back. ctx ends when the compositor goes away
 // again; what was not finished stays on the list for the next time.
-func (h *Hub) runRestore(ctx context.Context, set map[string]Place, view viewSnap) {
+func (h *Hub) runRestore(ctx context.Context, set map[string]Place, view viewSnap, order []string) {
 	start := time.Now()
 	h.mu.Lock()
 	h.restoreRun = true
@@ -206,6 +236,12 @@ func (h *Hub) runRestore(ctx context.Context, set map[string]Place, view viewSna
 		h.mu.Unlock()
 		return
 	}
+	// The stacking order goes back before the view: focusing a window pans the view to it unless it is fully in
+	// view, and the view is put back afterwards.
+	orderNote := ""
+	if err := h.applyStackOrder(ctx, order); err != nil {
+		orderNote = "; the stacking order could not be put back: " + err.Error()
+	}
 	viewNote := ""
 	if view.ok {
 		if err := h.setView(view); err != nil {
@@ -231,7 +267,7 @@ func (h *Hub) runRestore(ctx context.Context, set map[string]Place, view viewSna
 		}
 		failed = append(failed, fmt.Sprintf("%s (%s)", id, m))
 	}
-	msg := fmt.Sprintf("the desktop restarted: %d of %d windows are back at their places in %s%s", back, len(ids), time.Since(start).Round(100*time.Millisecond), viewNote)
+	msg := fmt.Sprintf("the desktop restarted: %d of %d windows are back at their places in %s%s%s", back, len(ids), time.Since(start).Round(100*time.Millisecond), orderNote, viewNote)
 	if len(failed) > 0 {
 		sort.Strings(failed)
 		msg += "; not restored: " + strings.Join(failed, "; ")
@@ -239,6 +275,39 @@ func (h *Hub) runRestore(ctx context.Context, set map[string]Place, view viewSna
 	h.setMessageLocked(msg)
 	h.mu.Unlock()
 	h.logf("%s", msg)
+}
+
+// applyStackOrder puts the windows of the machines in order (bottom of the stack first) by focusing them one after the
+// other from the bottom: driftwm raises a window it focuses, so the last one ends on top, which is where the
+// window that had the focus was. A machine without a window now is skipped. The only way to raise a window in driftwm's
+// socket is Focus (there is no separate raise request), so the keyboard focus ends on the top window and the view may
+// pan; setView puts the view back afterwards.
+func (h *Hub) applyStackOrder(ctx context.Context, order []string) error {
+	var failed []string
+	var last error
+	for _, id := range order {
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		h.mu.Lock()
+		s := h.byID[id]
+		win := -1
+		if s != nil && s.win != nil {
+			win = s.win.Window
+		}
+		h.mu.Unlock()
+		if win < 0 {
+			continue
+		}
+		if err := h.comp.Focus(win); err != nil {
+			failed = append(failed, id)
+			last = err
+		}
+	}
+	if len(failed) > 0 {
+		return fmt.Errorf("%s: %v", strings.Join(failed, ", "), last)
+	}
+	return nil
 }
 
 // anyLate says whether any of the machines is still waiting for a late window.

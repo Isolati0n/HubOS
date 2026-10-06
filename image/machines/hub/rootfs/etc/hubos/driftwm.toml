@@ -10,3 +10,9 @@
 shadow = false
 corner_radius = 0
 border_width = 0
+
+# driftwm's own window restore stays OFF: hubd puts the windows back after a compositor restart (owner decision, HUB-OS.md).
+# It is written here on purpose and not left to the default: a file that lacks the line works only while the default stays
+# false, and the image build (tools/image/check-driftwm-config.sh) fails if this line is missing or not false (BC-7, BC-8).
+[session]
+restore_windows = false

@@ -1,0 +1,116 @@
+== shm / unpatched
+    IPC up at start: True
+    client: sent wl_shm_pool.resize(0)
+    compositor exit status: 101 ; IPC answers afterwards: False
+    log: thread 'main' (3606) panicked at /host/cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/wayland/shm/handlers.rs:190:89:
+    log: called `Result::unwrap()` on an `Err` value: TryFromIntError(Zero)
+    VERDICT shm unpatched: compositor DIED (exit status 101)
+== shm / patched
+    IPC up at start: True
+    client: sent wl_shm_pool.resize(0)
+    compositor exit status: None ; IPC answers afterwards: True
+    VERDICT shm patched: compositor SURVIVED (still running, IPC answers)
+== config / unpatched
+    --check-config on the bad file: exit status 101: thread 'main' (3652) panicked at src/config/parse_helpers.rs:142:44: | end byte index 2 is not a char boundary; it is inside 'é' (bytes 1..3 of string) | stack backtrace: |    0: __rustc::rust_begin_u
+    IPC up at start: True
+    running compositor after the bad file was written: exit status 101; IPC answers: False
+    log: thread 'main' (3653) panicked at src/config/parse_helpers.rs:142:44:
+    VERDICT config unpatched: KILLED (check-config exit 101, running compositor exit 101)
+== config / patched
+    --check-config on the bad file: exit status 0: Config OK, 1 warning(s) | 2026-10-06T12:06:09.710592Z  WARN driftwm::config::parse_helpers: config: invalid bg_color color '#aéaaa', using default
+    IPC up at start: True
+    running compositor after the bad file was written: exit status None; IPC answers: True
+    VERDICT config patched: SURVIVED (check-config exit 0, running compositor alive)
+== pipe / unpatched
+    IPC up at start: False
+    IPC State round trip 0: NO ANSWER (0 ms)
+    IPC State round trip 1: NO ANSWER (0 ms)
+    IPC State round trip 2: NO ANSWER (0 ms)
+    IPC State round trip 3: NO ANSWER (0 ms)
+    IPC State round trip 4: NO ANSWER (0 ms)
+    process state: S (sleeping), wchan: anon_pipe_write, bytes waiting in the unread pipe: 65536
+    VERDICT pipe unpatched: FROZEN or slow (0 of 5 IPC requests answered; wchan anon_pipe_write)
+== pipe / patched
+    IPC up at start: True
+    IPC State round trip 0: answered (1 ms)
+    IPC State round trip 1: answered (11 ms)
+    IPC State round trip 2: answered (1 ms)
+    IPC State round trip 3: answered (1 ms)
+    IPC State round trip 4: answered (2 ms)
+    process state: R (running), wchan: 0, bytes waiting in the unread pipe: 65536
+    VERDICT pipe patched: NOT frozen (5 of 5 IPC requests answered)
+== startup / unpatched
+    IPC answered: False after 25.0 s (the helper sleeps 60 s)
+    the helper program was started by driftwm: True
+    VERDICT startup unpatched: BLOCKED: no IPC after 20 s (the main thread waits for the helper, which was started: True)
+== startup / patched
+    IPC answered: True after 0.2 s (the helper sleeps 60 s)
+    the helper program was started by driftwm: False
+    VERDICT startup patched: started in 0.2 s and did not even try the helper (patch P8 removed the call)
+== reload / unpatched
+    IPC up at start: True
+    "Config reloaded" lines in the log after the file was edited: 1
+    IPC action reload-config answer: {"Ok":"Ok"}
+    VERDICT reload unpatched: HOT RELOAD works: edit reloaded 1 time(s), reload-config answer: {"Ok":"Ok"}
+== reload / patched
+    IPC up at start: True
+    "Config reloaded" lines in the log after the file was edited: 0
+    IPC action reload-config answer: {"Err":"reload-config is not available (config hot reload is removed, Hub OS patch P12)"}
+    VERDICT reload patched: NO hot reload: the edit changed nothing, reload-config refused ({"Err":"reload-config is not available (config hot reload is), compositor alive
+== session / unpatched
+    IPC up at start: True
+    IPC State 0: no answer within 2 s
+    IPC State 1: no answer within 2 s
+    IPC State 2: no answer within 2 s
+    IPC State 3: no answer within 2 s
+    process state: S (sleeping), wchan: wait_for_partner
+    IPC state counters (patch P11): {'error': 'timed out'}
+    VERDICT session unpatched: FROZEN (0 of 4 answered; wchan wait_for_partner)
+== session / patched
+    IPC up at start: True
+    IPC State 0: answered (1 ms)
+    IPC State 1: answered (1 ms)
+    IPC State 2: answered (1 ms)
+    IPC State 3: answered (1 ms)
+    process state: S (sleeping), wchan: ep_poll
+    IPC state counters (patch P11): {'failed_writes': 0, 'pending_writes': 1}
+    VERDICT session patched: NOT frozen (4 of 4 answered); {'failed_writes': 0, 'pending_writes': 1}
+== sessionfail / unpatched
+    IPC up at start: True
+    IPC answers: True; IPC state counters (patch P11): {}
+    log: 2026-10-06T12:07:45.295166Z  WARN driftwm::state::session_store: failed to write durable session store: Is a directory (os erro
+    VERDICT sessionfail unpatched: no counter or no answer: answers=True {}
+== sessionfail / patched
+    IPC up at start: True
+    IPC answers: True; IPC state counters (patch P11): {'failed_writes': 1, 'pending_writes': 0}
+    log: 2026-10-06T12:07:48.491339Z  WARN driftwm::bgwrite: failed to write /tmp/dpr-sessionfail/state/session.json: Is a directory (os
+    VERDICT sessionfail patched: IPC keeps answering and the failed writes are counted: {'failed_writes': 1, 'pending_writes': 0}
+== pipepanic / unpatched+hooks
+    IPC up at start: False
+    IPC State round trip 0: NO ANSWER (0 ms)
+    IPC State round trip 1: NO ANSWER (0 ms)
+    IPC State round trip 2: NO ANSWER (0 ms)
+    IPC State round trip 3: NO ANSWER (0 ms)
+    IPC State round trip 4: NO ANSWER (0 ms)
+    process state: S (sleeping), wchan: anon_pipe_write, bytes waiting in the unread pipe: 65536
+    VERDICT pipepanic unpatched+hooks: already FROZEN by the full pipe (0 of 5 IPC requests answered), so no panic could be sent
+== pipepanic / patched+hooks
+    IPC up at start: True
+    IPC State round trip 0: answered (1 ms)
+    IPC State round trip 1: answered (1 ms)
+    IPC State round trip 2: answered (14 ms)
+    IPC State round trip 3: answered (1 ms)
+    IPC State round trip 4: answered (4 ms)
+    process state: S (sleeping), wchan: ep_poll, bytes waiting in the unread pipe: 65536
+    VERDICT pipepanic patched+hooks: panic ended the process (exit status 101 after 0.6 s)
+== badshader / unpatched+badshader
+    IPC up at start: False
+    compositor exit status: 101 ; IPC answers: False
+    log: thread 'main' (4287) panicked at src/render/background.rs:748:22:
+    log: Default shader must compile: ShaderCompileError
+    VERDICT badshader unpatched+badshader: DIED (exit status 101)
+== badshader / patched+badshader
+    IPC up at start: True
+    compositor exit status: None ; IPC answers: True
+    log: 2026-10-06T12:08:37.610844Z ERROR driftwm::render::background: Default background shader failed to compile: Failed to compile S
+    VERDICT badshader patched+badshader: SURVIVED with a flat background (still running, IPC answers)

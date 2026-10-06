@@ -1,0 +1,111 @@
+--- a/src/state/init.rs
++++ b/src/state/init.rs
+@@ -50,7 +50,7 @@
+ use std::time::Instant;
+ 
+ use super::{
+-    CursorState, DriftWm, ErrorSource, RenderCache, SessionLock, TapTracker, client_is_unrestricted,
++    CursorState, DriftWm, ErrorSource, RenderCache, SessionLock, TapTracker, client_is_unrestricted, client_never,
+ };
+ 
+ impl DriftWm {
+@@ -132,11 +132,11 @@
+         let _pointer_gestures_state = PointerGesturesState::new::<Self>(&dh);
+         let keyboard_shortcuts_inhibit_state = KeyboardShortcutsInhibitState::new::<Self>(&dh);
+         TextInputManagerState::new::<Self>(&dh);
+-        InputMethodManagerState::new::<Self, _>(&dh, client_is_unrestricted);
++        InputMethodManagerState::new::<Self, _>(&dh, client_never);
+         let security_context_state =
+-            SecurityContextState::new::<Self, _>(&dh, client_is_unrestricted);
++            SecurityContextState::new::<Self, _>(&dh, client_never);
+         let virtual_keyboard_state =
+-            VirtualKeyboardManagerState::new::<Self, _>(&dh, client_is_unrestricted);
++            VirtualKeyboardManagerState::new::<Self, _>(&dh, client_never);
+         let idle_inhibit_state = IdleInhibitManagerState::new::<Self>(&dh);
+         let idle_notifier_state = IdleNotifierState::new(&dh, loop_handle.clone());
+         let presentation_state = PresentationState::new::<Self>(&dh, 1); // CLOCK_MONOTONIC
+@@ -146,19 +146,19 @@
+         let foreign_toplevel_state =
+             driftwm::protocols::foreign_toplevel::ForeignToplevelManagerState::new::<Self, _>(
+                 &dh,
+-                client_is_unrestricted,
++                client_never,
+             );
+         let foreign_toplevel_list_state =
+             smithay::wayland::foreign_toplevel_list::ForeignToplevelListState::new_with_filter::<
+                 Self,
+-            >(&dh, client_is_unrestricted);
++            >(&dh, client_never);
+         let ext_workspace_state = driftwm::protocols::ext_workspace::ExtWorkspaceManagerState::new::<
+             Self,
+             _,
+-        >(&dh, client_is_unrestricted);
++        >(&dh, client_never);
+         let screencopy_state = driftwm::protocols::screencopy::ScreencopyManagerState::new::<Self, _>(
+             &dh,
+-            client_is_unrestricted,
++            client_never,
+         );
+         let image_capture_source_state =
+             smithay::wayland::image_capture_source::ImageCaptureSourceState::new();
+@@ -166,33 +166,36 @@
+             smithay::wayland::image_capture_source::OutputCaptureSourceState::new_with_filter::<
+                 Self,
+                 _,
+-            >(&dh, client_is_unrestricted);
++            >(&dh, client_never);
+         let toplevel_capture_source_state =
+             smithay::wayland::image_capture_source::ToplevelCaptureSourceState::new_with_filter::<
+                 Self,
+                 _,
+-            >(&dh, client_is_unrestricted);
++            >(&dh, client_never);
+         let image_copy_capture_state =
+             driftwm::protocols::image_copy_capture::ImageCopyCaptureState::new::<Self, _>(
+                 &dh,
+-                client_is_unrestricted,
++                client_never,
+             );
+         let output_management_state =
+             driftwm::protocols::output_management::OutputManagementState::new::<Self, _>(
+                 &dh,
+-                client_is_unrestricted,
++                client_never,
+             );
+         let output_power_state = driftwm::protocols::output_power::OutputPowerState::new::<Self, _>(
+             &dh,
+-            client_is_unrestricted,
++            client_never,
+         );
++        // HUB-OS PATCH D8: the protocols nothing on the hub uses are not shown to any client (see
++        // docs/proposals/driftwm-patches.md section 3.1 for the list and the evidence). To turn one back on, put
++        // `client_is_unrestricted` back in its line.
+         let session_lock_manager_state =
+-            SessionLockManagerState::new::<Self, _>(&dh, client_is_unrestricted);
++            SessionLockManagerState::new::<Self, _>(&dh, client_never);
+         let tablet_state = smithay::wayland::tablet_manager::TabletManagerState::new::<Self>(&dh);
+         let gamma_control_manager_state =
+             driftwm::protocols::gamma_control::GammaControlManagerState::new::<Self, _>(
+                 &dh,
+-                client_is_unrestricted,
++                client_never,
+             );
+         let xdg_foreign_state = XdgForeignState::new::<Self>(&dh);
+         smithay::wayland::content_type::ContentTypeState::new::<Self>(&dh);
+--- a/src/state/mod.rs
++++ b/src/state/mod.rs
+@@ -1098,6 +1098,14 @@
+     }
+ }
+ 
++/// HUB-OS PATCH D8: the filter of a protocol the hub does not offer: no client ever sees its global.
++///
++/// driftwm's own tests exercise these protocols (session lock, virtual keyboard, workspaces, ...) through a test client, so in a
++/// test build the filter is the ordinary one and the code stays covered; the hub's release build offers none of them.
++pub(crate) fn client_never(client: &smithay::reexports::wayland_server::Client) -> bool {
++    cfg!(test) && client_is_unrestricted(client)
++}
++
+ pub(crate) fn client_is_unrestricted(client: &smithay::reexports::wayland_server::Client) -> bool {
+     client
+         .get_data::<ClientState>()

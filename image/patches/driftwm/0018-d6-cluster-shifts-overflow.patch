@@ -1,0 +1,86 @@
+--- a/src/layout/cluster.rs
++++ b/src/layout/cluster.rs
+@@ -105,15 +105,17 @@
+     }
+ 
+     // Phase 1: static shifts from axis classifications.
++    // HUB-OS PATCH D6 (BC-11): the deltas come from pointer motion and can be any i32; `-i32::MIN` and the sums
++    // below overflowed (a panic in a debug build, silent wrap-around in a release build). Saturating arithmetic.
+     for (i, m) in members.iter().enumerate() {
+         let dx = match m.axis_x {
+             Some(Side::Right) => width_delta,
+-            Some(Side::Left) => -width_delta,
++            Some(Side::Left) => width_delta.saturating_neg(),
+             _ => 0,
+         };
+         let dy = match m.axis_y {
+             Some(Side::Bottom) => height_delta,
+-            Some(Side::Top) => -height_delta,
++            Some(Side::Top) => height_delta.saturating_neg(),
+             _ => 0,
+         };
+         if dx != 0 || dy != 0 {
+@@ -175,7 +177,7 @@
+                 let push =
+                     compute_push_from_primary(p_init, p_cur, &n_entry.initial_rect, &n_cur, gap);
+                 if push != (0, 0) {
+-                    let new = (jdx + push.0, jdy + push.1);
++                    let new = (jdx.saturating_add(push.0), jdy.saturating_add(push.1));
+                     if new != (jdx, jdy) {
+                         shifts.insert(j, new);
+                         changed = true;
+@@ -206,7 +208,7 @@
+                 if push == (0, 0) {
+                     continue;
+                 }
+-                let new = (jdx + push.0, jdy + push.1);
++                let new = (jdx.saturating_add(push.0), jdy.saturating_add(push.1));
+                 if new != (jdx, jdy) {
+                     shifts.insert(j, new);
+                     if new_bonds_set.insert((i, j)) {
+@@ -942,4 +944,45 @@
+         let (shifts2, _) = resolve_cluster_shifts(&members, -10, 0, 4.0, &bonds, None);
+         assert!(!shifts2.contains_key(&1), "N still at initial, no bond");
+     }
++
++    // HUB-OS PATCH D6 (BC-11): regression tests for the overflow in `resolve_cluster_shifts`. Without the patch the
++    // first two panic in a debug build ("attempt to negate with overflow") and give a wrapped value in a release
++    // build (`-i32::MIN == i32::MIN`), so they check the VALUES and work in both.
++    #[test]
++    fn bc11_extreme_width_delta_left_member_saturates() {
++        let members = vec![classify(Some(Side::Left), None, rect(0.0, 0.0, 100.0, 100.0))];
++        let (shifts, _) = resolve_cluster_shifts(&members, i32::MIN, 0, 4.0, &[], None);
++        assert_eq!(shifts[&0], (i32::MAX, 0), "-i32::MIN must saturate, not wrap");
++    }
++
++    #[test]
++    fn bc11_extreme_height_delta_top_member_saturates() {
++        let members = vec![classify(None, Some(Side::Top), rect(0.0, 0.0, 100.0, 100.0))];
++        let (shifts, _) = resolve_cluster_shifts(&members, 0, i32::MIN, 4.0, &[], None);
++        assert_eq!(shifts[&0], (0, i32::MAX));
++    }
++
++    #[test]
++    fn bc11_push_on_top_of_a_saturated_shift_does_not_overflow() {
++        // A moves right by i32::MAX; B sits right of A and is pushed on top of its own (also huge) shift.
++        let members = vec![
++            classify(Some(Side::Right), None, rect(0.0, 0.0, 100.0, 100.0)),
++            classify(Some(Side::Right), None, rect(104.0, 0.0, 100.0, 100.0)),
++            classify(None, None, rect(208.0, 0.0, 100.0, 100.0)),
++        ];
++        let (shifts, _) = resolve_cluster_shifts(&members, i32::MAX, 0, 4.0, &[], None);
++        assert_eq!(shifts[&0].0, i32::MAX);
++        assert!(shifts[&2].0 > 0, "the static member is pushed forward, never wrapped negative");
++    }
++
++    #[test]
++    fn bc11_primary_push_on_a_saturated_shift_does_not_overflow() {
++        let members = vec![classify(Some(Side::Right), None, rect(104.0, 0.0, 100.0, 100.0))];
++        // the member already moved 2e9; the primary's current rect is 3e9 away, so the push is about 1e9 more:
++        // 3e9 does not fit in an i32.
++        let p_init = rect(0.0, 0.0, 100.0, 100.0);
++        let p_cur = rect(3_000_000_000.0, 0.0, 100.0, 100.0);
++        let (shifts, _) = resolve_cluster_shifts(&members, 2_000_000_000, 0, 4.0, &[], Some((p_init, p_cur)));
++        assert_eq!(shifts[&0].0, i32::MAX);
++    }
+ }

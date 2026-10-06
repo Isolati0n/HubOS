@@ -1,0 +1,65 @@
+--- a/src/wayland/compositor/handlers.rs
++++ b/src/wayland/compositor/handlers.rs
+@@ -210,6 +210,11 @@
+                 });
+             }
+             wl_surface::Request::Damage { x, y, width, height } => {
++                // BULLETPROOF-COMPOSITOR PATCH P11: same rule as damage_buffer below; a negative size made debug
++                // builds panic in `Size::new` (geometry.rs `debug_assert!`) and is meaningless anyway.
++                if width < 0 || height < 0 {
++                    return;
++                }
+                 let client_scale = state.client_compositor_state(client).client_scale();
+                 PrivateSurfaceData::with_states(surface, |states| {
+                     states
+@@ -386,6 +391,13 @@
+         _dhandle: &DisplayHandle,
+         _init: &mut wayland_server::DataInit<'_, D>,
+     ) {
++        // BULLETPROOF-COMPOSITOR PATCH P11: a rectangle with a negative width or height is ignored (debug builds
++        // panicked in `Size::new`; release builds kept a rectangle with a negative size).
++        if let wl_region::Request::Add { width, height, .. } | wl_region::Request::Subtract { width, height, .. } = &request {
++            if *width < 0 || *height < 0 {
++                return;
++            }
++        }
+         let mut guard = self.inner.lock().unwrap();
+         let client_scale = state.client_compositor_state(client).client_scale();
+ 
+--- a/src/wayland/shell/xdg/handlers/surface/toplevel.rs
++++ b/src/wayland/shell/xdg/handlers/surface/toplevel.rs
+@@ -128,11 +128,21 @@
+                 }
+             }
+             xdg_toplevel::Request::SetMaxSize { width, height } => {
++                // BULLETPROOF-COMPOSITOR PATCH P11: the protocol says negative sizes are an invalid_size error
++                // (debug builds panicked in `Size::new` instead).
++                if width < 0 || height < 0 {
++                    toplevel.post_error(xdg_toplevel::Error::InvalidSize, "negative max size");
++                    return;
++                }
+                 with_toplevel_pending_state(self, |toplevel_data| {
+                     toplevel_data.max_size = (width, height).into();
+                 });
+             }
+             xdg_toplevel::Request::SetMinSize { width, height } => {
++                if width < 0 || height < 0 {
++                    toplevel.post_error(xdg_toplevel::Error::InvalidSize, "negative min size");
++                    return;
++                }
+                 with_toplevel_pending_state(self, |toplevel_data| {
+                     toplevel_data.min_size = (width, height).into();
+                 });
+--- a/src/wayland/shell/wlr_layer/handlers.rs
++++ b/src/wayland/shell/wlr_layer/handlers.rs
+@@ -187,7 +187,9 @@
+         match request {
+             zwlr_layer_surface_v1::Request::SetSize { width, height } => {
+                 let _ = with_surface_pending_state(layer_surface, |data| {
+-                    data.size = (width as i32, height as i32).into();
++                    // BULLETPROOF-COMPOSITOR PATCH P11: the protocol sizes are unsigned; `as i32` turned 0xffffffff into -1
++                    // (debug builds panicked in `Size::new`, release builds kept a negative size). Limit to 2^24.
++                    data.size = (width.min(1 << 24) as i32, height.min(1 << 24) as i32).into();
+                 });
+             }
+             zwlr_layer_surface_v1::Request::SetAnchor { anchor } => {

@@ -1,0 +1,20 @@
+--- a/src/handlers/compositor.rs
++++ b/src/handlers/compositor.rs
+@@ -259,11 +259,14 @@
+                     if bounds.size.w > 2 * r && bounds.size.h > 2 * r {
+                         let (x, y, w, h) =
+                             (bounds.loc.x, bounds.loc.y, bounds.size.w, bounds.size.h);
++                        // BULLETPROOF-COMPOSITOR PATCH D3: `bounds` comes from the client's opaque region, so it can be
++                        // as large as the 32-bit range; `x + w - r` overflowed (debug builds panic, release builds wrap).
++                        let (right, bottom) = (x.saturating_add(w).saturating_sub(r), y.saturating_add(h).saturating_sub(r));
+                         for corner in [
+                             Rectangle::new((x, y).into(), (r, r).into()),
+-                            Rectangle::new((x + w - r, y).into(), (r, r).into()),
+-                            Rectangle::new((x + w - r, y + h - r).into(), (r, r).into()),
+-                            Rectangle::new((x, y + h - r).into(), (r, r).into()),
++                            Rectangle::new((right, y).into(), (r, r).into()),
++                            Rectangle::new((right, bottom).into(), (r, r).into()),
++                            Rectangle::new((x, bottom).into(), (r, r).into()),
+                         ] {
+                             region.rects.push((RectangleKind::Subtract, corner));
+                         }

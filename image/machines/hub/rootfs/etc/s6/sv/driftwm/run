@@ -2,7 +2,7 @@
 # driftwm on the real display path (--backend udev) as the user hub (group seat). It waits for seatd and for udevd's first
 # trigger. s6 restarts it if it dies, except after 5 crashes within a minute (see ./finish); Waybar and hubd follow
 # (follow-driftwm). The compositor's settings are the read-only file /etc/hubos/driftwm.toml (shadows, rounded corners and
-# borders off). driftwm has no switch for hot reload (it watches its config file's folder); the file is part of the image,
+# borders off), checked at every start (see below). driftwm has no switch for hot reload (it watches its config file's folder); the file is part of the image,
 # so it only changes with a new image, and a new image means a restart of the compositor.
 exec 2>&1
 . /usr/lib/hubos/hub-env.sh
@@ -15,5 +15,8 @@ fi
 i=0; while [ ! -S /run/seatd.sock ] && [ $i -lt 150 ]; do sleep 0.2; i=$((i+1)); done
 i=0; while [ ! -f /run/udev/ready ] && [ $i -lt 300 ]; do sleep 0.2; i=$((i+1)); done
 rm -f /run/dw/wayland-1 /run/dw/wayland-1.lock
-echo "driftwm: starting as user hub $(date -u +%T)"
-exec s6-setuidgid hub env $HUBENV RUST_LOG=${DW_LOG:-info,smithay=info} RUST_BACKTRACE=1 /usr/local/bin/driftwm --backend udev --config /etc/hubos/driftwm.toml
+# The settings file: the image's /etc/hubos/driftwm.toml if driftwm accepts it, else the last good copy, else driftwm's defaults,
+# with an alert in the last two cases (usr/lib/hubos/driftwm-config; owner decision 5, 2026-10-06).
+CFG=$(/usr/lib/hubos/driftwm-config)
+echo "driftwm: starting as user hub $(date -u +%T), settings file: ${CFG:-none (built-in defaults)}"
+exec s6-setuidgid hub env $HUBENV RUST_LOG=${DW_LOG:-info,smithay=info} RUST_BACKTRACE=1 /usr/local/bin/driftwm --backend udev ${CFG:+--config "$CFG"}

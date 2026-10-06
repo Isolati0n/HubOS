@@ -1,0 +1,211 @@
+--- a/src/bgwrite.rs
++++ b/src/bgwrite.rs
+@@ -8,6 +8,10 @@
+ //! kept: if the worker is stuck, later submissions replace the waiting one, so
+ //! memory does not grow. Standard library only.
+ //!
++//! Hub OS patch D10 (owner decision 9, 2026-10-06): a write submitted with [`submit_durable`] (the session file) is
++//! `fsync`ed, the file before the rename and the folder after it, by the worker thread. The event loop never waits for it;
++//! if the disk stalls the worker waits, like for any other write. The state file in RAM is not synced.
++//!
+ //! [`set_inline`] makes [`submit`] write on the calling thread; the compositor's
+ //! own tests use it, so they can read the file right after a write.
+ 
+@@ -20,7 +24,8 @@
+ 
+ #[derive(Default)]
+ struct Inner {
+-    pending: HashMap<PathBuf, Vec<u8>>,
++    /// path -> (the newest bytes, whether to fsync them)
++    pending: HashMap<PathBuf, (Vec<u8>, bool)>,
+     busy: bool,
+ }
+ 
+@@ -37,8 +42,9 @@
+     failed: Arc<AtomicU64>,
+ }
+ 
+-/// Write `bytes` to `path` atomically: parent folder, `path.tmp`, rename.
+-pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
++/// Write `bytes` to `path` atomically: parent folder, `path.tmp`, rename. With `durable` the file is `fsync`ed before the
++/// rename and the folder after it, so after a power cut the file is the old version or the new one, never an empty file.
++pub fn write_atomic(path: &Path, bytes: &[u8], durable: bool) -> std::io::Result<()> {
+     if let Some(dir) = path.parent() {
+         std::fs::create_dir_all(dir)?;
+     }
+@@ -47,8 +53,19 @@
+     let tmp = PathBuf::from(tmp);
+     let mut file = std::fs::File::create(&tmp)?;
+     file.write_all(bytes)?;
++    if durable {
++        file.sync_all()?;
++    }
+     drop(file);
+-    std::fs::rename(&tmp, path)
++    std::fs::rename(&tmp, path)?;
++    if durable
++        && let Some(dir) = path.parent()
++        && let Ok(d) = std::fs::File::open(dir)
++    {
++        // best effort: the data is already safe in the file; this makes the rename itself durable
++        let _ = d.sync_all();
++    }
++    Ok(())
+ }
+ 
+ impl Writer {
+@@ -63,19 +80,19 @@
+         let _ = std::thread::Builder::new()
+             .name("driftwm-files".into())
+             .spawn(move || loop {
+-                let (path, bytes) = {
++                let (path, bytes, durable) = {
+                     let mut g = worker.inner.lock().unwrap_or_else(|e| e.into_inner());
+                     loop {
+                         if let Some(p) = g.pending.keys().next().cloned() {
+-                            let b = g.pending.remove(&p).unwrap_or_default();
++                            let (b, d) = g.pending.remove(&p).unwrap_or_default();
+                             g.busy = true;
+-                            break (p, b);
++                            break (p, b, d);
+                         }
+                         g = worker.cv.wait(g).unwrap_or_else(|e| e.into_inner());
+                     }
+                 };
+                 // May block for ever on a stalled disk: only this thread waits.
+-                if let Err(e) = write_atomic(&path, &bytes) {
++                if let Err(e) = write_atomic(&path, &bytes, durable) {
+                     worker_failed.fetch_add(1, Ordering::Relaxed);
+                     tracing::warn!("failed to write {}: {e}", path.display());
+                 }
+@@ -99,8 +116,19 @@
+ 
+     /// Queue `bytes` for `path`, replacing any older bytes still waiting for it.
+     pub fn submit(&self, path: PathBuf, bytes: Vec<u8>) {
++        self.submit_with(path, bytes, false);
++    }
++
++    /// Like [`Writer::submit`], and the worker `fsync`s the file and its folder.
++    pub fn submit_durable(&self, path: PathBuf, bytes: Vec<u8>) {
++        self.submit_with(path, bytes, true);
++    }
++
++    fn submit_with(&self, path: PathBuf, bytes: Vec<u8>, durable: bool) {
+         let mut g = self.shared.inner.lock().unwrap_or_else(|e| e.into_inner());
+-        g.pending.insert(path, bytes);
++        // a durable request is not lost when a newer plain one replaces it
++        let durable = durable || g.pending.get(&path).is_some_and(|(_, d)| *d);
++        g.pending.insert(path, (bytes, durable));
+         self.shared.cv.notify_all();
+     }
+ 
+@@ -142,13 +170,27 @@
+ 
+ /// Hand `bytes` for `path` to the worker thread. Never blocks.
+ pub fn submit(path: PathBuf, bytes: Vec<u8>) {
++    submit_with(path, bytes, false);
++}
++
++/// Like [`submit`], and the worker thread `fsync`s the file and its folder (the session file).
++pub fn submit_durable(path: PathBuf, bytes: Vec<u8>) {
++    submit_with(path, bytes, true);
++}
++
++fn submit_with(path: PathBuf, bytes: Vec<u8>, durable: bool) {
+     if INLINE.load(Ordering::Relaxed) {
+-        if write_atomic(&path, &bytes).is_err() {
++        if write_atomic(&path, &bytes, durable).is_err() {
+             INLINE_FAILED.fetch_add(1, Ordering::Relaxed);
+         }
+         return;
+     }
+-    GLOBAL.get_or_init(Writer::new).submit(path, bytes);
++    let w = GLOBAL.get_or_init(Writer::new);
++    if durable {
++        w.submit_durable(path, bytes);
++    } else {
++        w.submit(path, bytes);
++    }
+ }
+ 
+ /// Background writes that failed since the start (shown in the IPC `state` reply).
+@@ -190,6 +232,48 @@
+         let _ = std::fs::remove_dir_all(&d);
+     }
+ 
++    #[test]
++    fn a_durable_write_arrives_and_leaves_no_temporary_file() {
++        let d = tmpdir("durable");
++        let w = Writer::new();
++        w.submit_durable(d.join("sub/session.json"), b"v1".to_vec());
++        w.submit_durable(d.join("sub/session.json"), b"v2".to_vec());
++        w.flush_for(Duration::from_secs(5));
++        assert_eq!(std::fs::read(d.join("sub/session.json")).unwrap(), b"v2");
++        assert!(!d.join("sub/session.json.tmp").exists());
++        assert_eq!(w.failed(), 0);
++        // the helper itself, with and without the fsync
++        write_atomic(&d.join("a"), b"1", true).unwrap();
++        write_atomic(&d.join("b"), b"2", false).unwrap();
++        assert_eq!(std::fs::read(d.join("a")).unwrap(), b"1");
++        assert_eq!(std::fs::read(d.join("b")).unwrap(), b"2");
++        let _ = std::fs::remove_dir_all(&d);
++    }
++
++    #[test]
++    fn a_plain_write_does_not_cancel_a_waiting_durable_one() {
++        let d = tmpdir("keepdurable");
++        let w = Writer::new();
++        // block the worker on a FIFO so both requests wait in the mailbox
++        let mut tmp = d.join("blocker").into_os_string();
++        tmp.push(".tmp");
++        let tmp = PathBuf::from(tmp);
++        let c = std::ffi::CString::new(tmp.to_str().unwrap()).unwrap();
++        assert_eq!(unsafe { libc::mkfifo(c.as_ptr(), 0o600) }, 0);
++        w.submit(d.join("blocker"), b"x".to_vec());
++        std::thread::sleep(Duration::from_millis(200));
++        w.submit_durable(d.join("s"), b"1".to_vec());
++        w.submit(d.join("s"), b"2".to_vec());
++        {
++            let g = w.shared.inner.lock().unwrap();
++            assert_eq!(g.pending.get(&d.join("s")), Some(&(b"2".to_vec(), true)));
++        }
++        let _reader = std::fs::File::open(&tmp);
++        w.flush_for(Duration::from_secs(5));
++        assert_eq!(std::fs::read(d.join("s")).unwrap(), b"2");
++        let _ = std::fs::remove_dir_all(&d);
++    }
++
+     #[test]
+     fn a_failed_write_is_counted() {
+         let d = tmpdir("fail");
+--- a/src/session.rs
++++ b/src/session.rs
+@@ -182,10 +182,11 @@
+ 
+ /// Like [`write`], but the file is written by a worker thread (Hub OS patch P11):
+ /// the caller only serializes and returns at once, so a stalled disk cannot
+-/// freeze the event loop. Never fsync'd.
++/// freeze the event loop. The worker thread `fsync`s the file and its folder (Hub OS patch D10), so a power cut leaves the
++/// old session file or the new one.
+ pub fn write_async(path: &Path, envelope: &SessionEnvelope) -> std::io::Result<()> {
+     let json = serde_json::to_string_pretty(envelope)?;
+-    crate::bgwrite::submit(path.to_path_buf(), json.into_bytes());
++    crate::bgwrite::submit_durable(path.to_path_buf(), json.into_bytes());
+     Ok(())
+ }
+ 
+--- a/src/state/session_store.rs
++++ b/src/state/session_store.rs
+@@ -450,9 +450,9 @@
+             return;
+         };
+         let envelope = self.build_session_envelope(include_live);
+-        // Never fsync'd: it would block the main loop once a second through a
+-        // drag or a pan, and buys nothing against the crashes this file is for.
+-        // HUB-OS PATCH P11: written by a worker thread (a stalled disk must not freeze the loop).
++        // Upstream never fsync'd this file: it would block the main loop once a second through a drag or a pan.
++        // HUB-OS PATCHES P11 and D10: written by a worker thread (a stalled disk must not freeze the loop), and the
++        // worker fsyncs the file and its folder (a power cut leaves the old file or the new one).
+         if let Err(err) = session::write_async(&path, &envelope) {
+             tracing::warn!("failed to write durable session store: {err}");
+         }

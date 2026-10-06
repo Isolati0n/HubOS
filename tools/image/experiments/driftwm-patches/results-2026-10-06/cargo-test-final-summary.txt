@@ -1,0 +1,29 @@
+test bgwrite::tests::a_durable_write_arrives_and_leaves_no_temporary_file ... ok
+test canvas::tests::bc13_bounding_box_and_visibility_helpers_survive_extreme_windows ... ok
+test canvas::tests::bc13_closest_point_on_a_window_at_the_edge_of_i32 ... ok
+test layout::cluster::tests::bc11_extreme_height_delta_top_member_saturates ... ok
+test layout::cluster::tests::bc11_extreme_width_delta_left_member_saturates ... ok
+test layout::cluster::tests::bc11_primary_push_on_a_saturated_shift_does_not_overflow ... ok
+test layout::cluster::tests::bc11_push_on_top_of_a_saturated_shift_does_not_overflow ... ok
+test bgwrite::tests::a_plain_write_does_not_cancel_a_waiting_durable_one ... ok
+test result: ok. 339 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.20s
+test decorations::tests::bc12_huge_stand_in_title_bar_is_clamped_not_a_crash ... ok
+test state::session_store::tests::runtime_camera_wins_over_durable_seed ... ok
+test tests::cli_docs::docs_cli_md_is_up_to_date ... ok
+test tests::cli_docs::cli_doc_examples_still_parse ... ok
+test decorations::tests::bc12_huge_stand_in_body_fill_is_clamped_not_a_crash ... ok
+test tests::session_restore::durable_camera_seeds_fresh_boot ... ok
+test tests::session_restore::restore_windows_false_rule_excludes_matching_app_from_the_durable_save ... ok
+test result: ok. 1352 passed; 0 failed; 13 ignored; 0 measured; 0 filtered out; finished in 3.08s
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 24 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 78 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+test result: ok. 57 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 79 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

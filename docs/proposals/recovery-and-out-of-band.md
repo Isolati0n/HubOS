@@ -1,6 +1,8 @@
 # PROPOSAL: network recovery agent and out-of-band options
 
-**Status: PROPOSAL.** Nothing here is decided and nothing here is in the images. `HUB-OS.md` wins if this file disagrees with it. The only code is a small experiment in `tools/image/experiments/recoveryagent/` (loopback only, fake backend). Written 2026-10-04.
+Requests are not signed or encrypted (owner decision, 2026-10-06); only the image signature is checked.
+
+**Status: PROPOSAL.** Nothing here is decided and nothing here is in the images. `HUB-OS.md` wins if this file disagrees with it. The only code is a small experiment in `tools/image/experiments/recoveryagent/` (a fake backend, and a real backend that runs `hubos-ctl`, used only in a TEST recovery kernel). Written 2026-10-04; rewritten 2026-10-06 after the owner removed request signing (see the History at the end).
 
 **Labels used on every item:**
 - **TESTED**: I ran it in this build environment; the exact command and output are shown.
@@ -13,8 +15,8 @@
 ## Plain-words summary
 
 1. **The problem.** Today, if a rack machine cannot boot, the recovery kernel starts a bare shell and waits for a person at a keyboard. Rack machines have no keyboard or screen (the recovery shell on a screen is also untested; the tests use a serial line). So recovery as built needs the owner to carry a keyboard and monitor to the rack.
-2. **Layer 1, in software (cheap, no new hardware).** Put a small network program (the "recovery agent") in the recovery kernel. It answers "I am in recovery", and, only for requests signed by the hub, it can install a signed bundle into a named slot, clear the failure counter and hand over logs. The hub then shows "in recovery" in the panel and can offer "reinstall". This helps when the **firmware and the recovery kernel work**.
-3. **What I built to check the idea.** A tiny Go program that does the status call and the "signed request" check, tested against the real `signify-openbsd` program (the same tool the update keyring uses). It works on loopback. It is **not** in any image and its "install" is a fake. Whether it works inside the real recovery kernel is **not tested**.
+2. **Layer 1, in software (cheap, no new hardware).** Put a small network program (the "recovery agent") in the recovery kernel. It answers "I am in recovery", and it can install a bundle into a named slot, clear the failure counter and hand over logs. Requests are plain: nobody signs them. What protects the machine is the **image signature**: the install request runs `hubos-ctl update`, which refuses any bundle that is not correctly signed by the owner. The hub then shows "in recovery" in the panel and can offer "reinstall". This helps when the **firmware and the recovery kernel work**.
+3. **What I built to check the idea.** A tiny Go program with the four calls (status, install, clear failures, logs). Its unit tests pass (TESTED, section 2.6) and it runs on loopback. In a TEST recovery kernel under QEMU it ran earlier in a version that signed requests (`docs/image.md` test T18); the unsigned version of that QEMU test has **not been run yet** (PR #69 says so). It is **not** in any real image. Whether it works on real hardware is **not tested**.
 4. **Layer 2, out-of-band (hardware).** For a machine whose firmware or kernel is dead, software on that machine cannot help. The options are: do nothing and walk over (free, fits "the rack is next to the desk"); a relay or switched power strip (can power cycle, sees nothing); serial console servers (see boot text and the recovery shell, need a serial port on each board); PiKVM (sees the screen, types, powers, mounts a virtual disk; the most capable and most expensive, about two cables per machine plus a switch box per four machines). The owner decides in December.
 5. **Proprietary BMCs** (the management chips on server boards) run closed firmware. One of them (AMI MegaRAC) had a bug that let anyone on the network skip the login; it is in the US government's list of vulnerabilities attackers are using. OpenBMC, the open alternative, exists but only for server boards, and it is built on systemd, which this project bans.
 6. **Biggest honest limits.** None of these gives board sensors (temperatures, fans); those would have to come from the OS through the node helper. A PiKVM also holds full control of every machine it is wired to, so it needs its own isolated management network and secret handling that is not designed yet.
@@ -50,14 +52,14 @@ BusyBox v1.36.1 (Ubuntu 1:1.36.1-6ubuntu3.1) multi-call binary.
 
 ### 2.1 What it must do
 
-| Request | Needs a signature from the hub? | What it does | Label |
+| Request | What the hub sends | What it does | Label |
 |---|---|---|---|
-| Status | No (read-only, low value) | Says: machine name, state `recovery`, recovery kernel release, failure counter and limit. This is the "machine in recovery" signal. | prototype TESTED on loopback with a fake backend |
-| Install a signed bundle into slot a or b | Yes | Runs the existing `hubos-ctl update BASE SLOT`. The bundle's own manifest signature (update keyring) is checked by `hubos-ctl` as always. | request check TESTED; the real install through the agent is **not** built or tested |
-| Clear the failure counter | Yes | Runs `hubos-ctl clear-failures` | request check TESTED; backend fake |
-| Report logs | Yes | Returns recent log text (what `hubos-ctl` printed, kernel log) | request check TESTED; backend fake |
+| `GET /v1/status` | nothing | Says: machine id, state `recovery`, recovery kernel release, failure counter and limit, and the API fields `api` and `min_hub`. This is the "machine in recovery" signal. | prototype TESTED (unit tests; the earlier QEMU test T18 saw `state: recovery` through a forwarded port) |
+| `POST /v1/install` | `{"Slot":"a\|b","BaseURL":"http..."}` | Runs the existing `hubos-ctl update BASE SLOT`. The bundle's own manifest signature (update keyring), the floor rule and the hashes are checked by `hubos-ctl` as always; the agent adds nothing. A refusal is answered `500` with `hubos-ctl`'s `REFUSED` line. | unit test with a fake `hubos-ctl` TESTED; the real refusals are `hubos-ctl`'s (TESTED in `docs/image.md` tests 4 and R3); the QEMU test of the unsigned agent is **not yet run** |
+| `POST /v1/clear-failures` | nothing | Runs `hubos-ctl clear-failures` | unit test TESTED, backend fake |
+| `GET /v1/logs` | nothing | Returns the last 4096 bytes of the agent's own log (`/run/recovery-agent.log`) | unit test TESTED, backend fake |
 
-Why two layers of checking for install: the **hub signature** says "the owner's hub asked for this" (so a stranger on the network cannot make the machine download things or wear out its flash). The **bundle signature** says "this software is the owner's" (so the hub, or the server it points at, cannot install anything the owner did not sign). Both are needed; neither replaces the other. A hub that is hacked can ask for a reinstall of any signed release at or above the floor, but cannot make the machine run unsigned software (BELIEVED from reading `hubos-ctl`; the checks themselves were tested in R3).
+Why one check is enough for install: the **bundle signature** says "this software is the owner's", so whoever asks (the hub, or anything else that can reach the port) cannot make the machine run software the owner did not sign. Anyone who can reach the port can still ask for a reinstall of a signed release at or above the floor (see risk 5 in 2.5). (BELIEVED from reading `hubos-ctl`; the checks themselves were tested in R3.)
 
 **What the prototype does not do:** the install call is synchronous. The real one takes several seconds to minutes (8.9 s for a tiny image in QEMU, `docs/image.md` test 5; a 160 MB hub root would be longer), so the real agent should answer "accepted" at once and let the hub poll status. Not built.
 
@@ -65,8 +67,8 @@ Why two layers of checking for install: the **hub signature** says "the owner's 
 
 | Option | Fits the recovery kernel? | Auth | Cost / risk | Verdict |
 |---|---|---|---|---|
-| **A. Small Go program, HTTP + JSON** (what I prototyped) | Needs one more static binary. **TESTED:** `CGO_ENABLED=0 go build -trimpath -ldflags="-s -w"` gives 5,816,504 bytes (about 5.5 MiB). The recovery kernel is 6,333,440 bytes today (`docs/image.md` section 5), so this would roughly double it if stored uncompressed; the real effect on the kernel size is **UNKNOWN** (initramfs compression not checked). | Signed requests, see 2.3 | hubd is Go already, so the hub side reuses `net/http` and the same signing code. Size is the cost. | **Recommended as the first design**, because hubd's client side is trivial and the signing code is shared. |
-| **B. busybox `httpd` + CGI shell scripts + `signify-openbsd`** | No new binary: `httpd` is a busybox applet (TESTED list above), `signify-openbsd` and `sha256sum` are already inside. | Same signed-request scheme done in shell with `signify -V`. | Parsing HTTP and JSON in shell is easy to get wrong; I did **not** build or test this. Busybox `httpd` CGI behaviour (timeouts, concurrency) not checked. | Real alternative if 5.5 MiB is too much. UNKNOWN until built. |
+| **A. Small Go program, HTTP + JSON** (what I prototyped) | Needs one more static binary. **TESTED:** `CGO_ENABLED=0 go build -trimpath -ldflags="-s -w"` gave 5,816,504 bytes (about 5.5 MiB) for the first prototype (the agent is a 6.1 MB static Go program in the TEST kernel, `docs/image.md` T18 note). The recovery kernel is 6,333,440 bytes today and the TEST kernel with the agent 8,893,440 bytes (SOURCE, `docs/image.md` section 5 and T18; the kernel compresses its initramfs, so the file grows by less than the program). | None on requests; the bundle check, see 2.3 | hubd is Go already, so the hub side reuses `net/http`. Size is the cost. | **Recommended as the first design**, because hubd's client side is trivial. |
+| **B. busybox `httpd` + CGI shell scripts** | No new binary: `httpd` is a busybox applet (TESTED list above); `hubos-ctl` is already inside. | None on requests; the install check is `hubos-ctl`'s. | Parsing HTTP and JSON in shell is easy to get wrong; I did **not** build or test this. Busybox `httpd` CGI behaviour (timeouts, concurrency) not checked. | Real alternative if 5.5 MiB is too much. UNKNOWN until built. |
 | **C. SSH** (dropbear or openssh in the recovery kernel) | Needs a new daemon and host keys. The recovery kernel is on the open boot partition (`docs/image.md` 3.11), so a host key stored there is readable by anyone with the disk, and the image would need a per-machine private key: that is the secrets problem again. | Public-key login of the hub | Gives a full shell, which is more power than the four jobs need. Host-key handling is unsolved. | Rejected for now. A shell is more than needed and a per-machine secret in recovery is hard. |
 | **D. A tiny raw TCP "line" protocol on a port, with `nc`** | Fits (`nc` is in busybox). | Would have to be invented. | CLAUDE.md: "Do not invent protocols." | Rejected. |
 | **E. gRPC / protobuf** | Needs a big library. | TLS | Far bigger than A for four calls. | Rejected. |
@@ -74,37 +76,21 @@ Why two layers of checking for install: the **hub signature** says "the owner's 
 
 HTTP+JSON here is not a new streaming protocol or a web dashboard. It is a four-call control API that only `hubd` talks to; there is no web page.
 
-### 2.3 How it authenticates (and what the recovery kernel can afford)
+### 2.3 What is checked (the image signature only)
 
-**Constraints.**
-1. The recovery kernel is on the open boot partition, so it can hold **public keys only**, never a private key or a password (decided rule: secrets never in git, and `docs/image.md` 3.11 says the same for recovery).
-2. It has **no trusted clock** (BELIEVED: no battery-backed time is guaranteed on every board; recovery does not set the time; UNKNOWN on real boards). So signed timestamps are unusable.
-3. It cannot afford a large TLS library unless it is in the Go program (see below).
+**Requests are not signed and not encrypted** (owner decision, 2026-10-06). There is no management key, no challenge, no one-time number and no TLS. Anyone who can reach the agent's port can call any of the four calls. (An earlier version signed requests; see the History at the end.)
 
-**The scheme in the prototype (TESTED on loopback).**
-- The hub asks `GET /v1/challenge` and receives a random one-time number (a "nonce").
-- The hub signs this exact text with its **management private key**, using `signify-openbsd -S`:
-  six lines, one per line: `hubos-recovery-v1`, `machine=ID` (the target machine id; **new in round 3**), method, path and query, nonce, SHA-256 of the body. The agent builds the text with **its own** machine id (the `NAME=` in its node config; the hub signs for the id it means to talk to), so a request signed for another machine fails. UNKNOWN: whether `NAME=` is the same string as the inventory id; today nothing makes them equal.
-- The request carries `Authorization: HubOS-Sig nonce=HEX, sig=BASE64` (the second line of signify's `.sig` file); it may also carry `machine=ID`, and if that is not this machine's name the agent refuses at once with `403 this request is for another machine` (a clearer message than a failed signature; the nonce is still used up).
-- The agent checks the nonce was issued by it, is unused and is under 30 seconds old (it uses a clock that only needs to run forward, not be correct), then checks the signature against every public key in its **management keyring**. The nonce is used up whatever the outcome. At most 16 challenges are open at once.
-- The signature covers the machine id, method, path, body hash and nonce, so a captured request cannot be replayed, redirected to another path or **another machine**, or given a different body (each is a unit test, including "signed for another machine id is refused"). `GET /v1/status` also carries the add-only fields `api` (this API's version, 1) and `min_hub` (the lowest hub API version it works with, 1).
-- **Round 3 change** (the helper agent that wrote `docs/proposals/node-helper-api.md` noticed that the old text did not name the machine, so a challenge could be relayed from one node to another): TESTED in `tools/image/experiments/recoveryagent` (`go test`, including the real `signify-openbsd` interop test, run with the program unpacked into a temporary folder); the QEMU test T18 was changed to sign with the machine line and was **not re-run** (UNVERIFIED) unless the pull request says otherwise.
+**What is still checked: the image.** `POST /v1/install` runs `hubos-ctl update BASE SLOT`. `hubos-ctl` refuses a bundle that is not correctly signed by the owner's update key: the manifest signature is checked against the update keyring (`/etc/hubos/keys/*.pub`, public keys only), then the floor rule (a release not newer than the floor is refused), then the hashes. The agent runs one install at a time and adds no check of its own (SOURCE: `agent.go`, `backend_hubos.go` on the branch `recovery-agent-no-signing`, read 2026-10-06).
 
-**A separate management key, not the update key.** The update key signs releases and its private half is offline. The hub must sign requests at run time, so it would need its private key online. That key must not be the update key. So: **a second key pair, the management key**, whose public half goes into the recovery kernel (and a public keyring file like `/etc/hubos/keys`), and whose private half lives only on the hub (an input for the secrets design, section 5.3). Rotation could copy the update-key procedure (docs/image.md 3.12); not designed here.
+**Constraint that still holds.** The recovery kernel is on the open boot partition, so it can hold **public keys only**, never a private key or a password (decided rule: secrets never in git, and `docs/image.md` 3.11 says the same for recovery). The update keyring is such a public key list; its rotation is the update-key rotation of `docs/image.md` 3.12 (a release signed with the old key can carry the next key; the old key is dropped only in a later release).
 
-**TLS.** The signed requests give authenticity and replay protection but **not secrecy**: anyone on the wire can read status and logs. In the recovery kernel nothing secret should be in either (rule above), and the management network is meant to be isolated. A TLS server would need a certificate for each machine; the matching private key would have to live on the open boot partition, which is exactly what we cannot afford, and a certificate the hub cannot check proves nothing. So TLS adds cost and little in recovery. Whether the Go `crypto/tls` size matters was not measured (UNKNOWN). Also: **the agent cannot prove its own identity to the hub** (no secret to sign with). A fake agent on the management network could lie about status; it cannot make the hub install anything. This is a real weakness, stated plainly; the mitigation is network isolation (section 3) and the fact that actions are limited to what the hub asks and the bundle signature allows.
+**Evidence.**
+- TESTED (me, 2026-10-06, the branch `recovery-agent-no-signing` unpacked into a temporary folder, `go test -count=1 -v ./tools/image/experiments/recoveryagent/`): `TestStatusShowsRecovery`, `TestCallsNeedNoSignature`, `TestBadInstallRequestRefused`, `TestInstallRefusedByHubosCtlIsAnError`, `TestHubosBackend` all PASS (`ok hubos/tools/image/experiments/recoveryagent 0.034s`). The install-refusal test uses a fake `hubos-ctl` script that prints `REFUSED: bad signature` and exits with an error: the agent answers `500` with that text.
+- SOURCE (repo): the real refusals (no signature, another key, a changed manifest, below the floor) are `hubos-ctl`'s and were tested in `docs/image.md` tests 4 and R3. The branch's QEMU test T18 now checks the same four refusals through the agent and that the correctly signed bundle installs; **it has not been run yet** (PR #69), so through the agent in a real recovery kernel these are UNVERIFIED. The earlier signed-request version of T18 passed in two full runs (`docs/image.md`): `GET /v1/status` answered `recovery`, a correctly signed install put release 28 into slot b and the machine booted and confirmed it, and the agent came back 1.3 s after `kill -9` (the supervisor restart loop). Those parts do not depend on request signing, but they were run before the change.
 
-**Interop was checked against the real tool.** `signify` format: SOURCE: [signify.c, portable version](https://raw.githubusercontent.com/aperezdc/signify/master/signify.c), read 2026-10-04: a signature file is a comment line and the base64 of `"Ed"` + 8-byte key number + 64-byte Ed25519 signature; a public key is `"Ed"` + key number + 32-byte key. [OpenBSD man page](https://man.openbsd.org/signify.1), read 2026-10-04 (summarised): Ed25519.
+**What this does not protect.** The agent cannot prove its own identity to the hub, and nobody can prove theirs to the agent. A fake agent on the network could lie about status; it cannot make the hub install anything. Anyone who can reach the port can read the status and logs, clear the failure counter, or ask for an install of a signed bundle (a signed bundle at or above the floor is the only thing the machine will accept). The owner's rule is that the network is assumed perfect and security is not a design concern; I record the fact and add nothing. How often calls may be made is a question (13).
 
-```
-$ PATH=/tmp/p3-x/path:$PATH go test -count=1 -v -run Interop ./tools/image/experiments/recoveryagent/
-=== RUN   TestRealSignifyInterop
---- PASS: TestRealSignifyInterop (0.01s)
-PASS
-ok  	hubos/tools/image/experiments/recoveryagent	0.015s
-```
-
-(`/tmp/p3-x/path` held a link to `signify-openbsd` unpacked from the Ubuntu package `signify-openbsd 31-3` with `dpkg -x`; nothing was installed. Without that program on `PATH` the test is skipped and says so.)
+**No clock needed.** (BELIEVED: no battery-backed time is guaranteed on every board; recovery does not set the time; UNKNOWN on real boards.) Nothing in the unsigned design uses time.
 
 ### 2.4 How it announces itself ("machine in recovery" in the panel)
 
@@ -124,8 +110,8 @@ Risks (continuing `docs/image.md` 3.11):
 1. **An install overwrites a slot.** It is the one that failed, but the other slot may hold the only working release. Rule: install only into the slot that failed, never the other, unless both failed (then nothing is left to lose). Needs the agent to know which slot failed; the stage 0 counter does not record this today (SOURCE: repo; BELIEVED).
 2. **A bad release above the floor is installed without a human looking.** The floor stops old releases, not bad new ones.
 3. **Loop:** release fails the same way, recovery reinstalls it, forever. Needs an attempt limit that survives reboots. Where it lives is open (the data partition is read-write in recovery, BELIEVED usable; EFI variables are the other option).
-4. **The status answer is unauthenticated both ways** (section 2.3): a fake agent could receive an install request from the hub. It would only receive a URL for a bundle; the bundle is public anyway.
-5. **A network-triggered install from the hub's address** means whoever holds the hub's management key can reinstall every machine at once. Limit blast radius: one machine per request, rate limit in hubd.
+4. **Nothing in the requests or answers is authenticated** (section 2.3): a fake agent could receive an install request from the hub. It would only receive a URL for a bundle; the bundle is public anyway.
+5. **Anyone who can reach the port can start an install**, not only the hub, and every install writes a slot and costs a reboot. What can be installed is bounded by the image signature and the floor; the flash wear and the downtime are not bounded. Limit blast radius: one machine per request (the agent runs one install at a time), and a rate limit in hubd or in the agent (not designed: question 13).
 6. **The hub itself down:** nothing answers; machines wait in recovery. Accepted by the owner's own words (the rack is next to the desk), but it is a single point of failure.
 7. **Watchdog:** recovery does not arm one (section 1); a hung recovery would stay hung. Whether the agent should arm and feed the watchdog is **question 7**.
 
@@ -133,44 +119,47 @@ Risks (continuing `docs/image.md` 3.11):
 
 | Piece | State | Label |
 |---|---|---|
-| The request-check logic, status call, one-time nonces, keyring of two keys, replay, tampered body or path, wrong key, expiry, challenge flood limit | Done in `tools/image/experiments/recoveryagent/` (library tests with `httptest`) | **TESTED** (output in section 7) |
-| Interop with real `signify-openbsd` signatures | Done | **TESTED** (2.3) |
-| Live run on loopback with `curl` and `signify-openbsd` doing the hub's signing | Done, below | **TESTED** |
-| The agent as a static binary inside the real recovery kernel; reachable through QEMU's user networking with a host port forward; hubd or curl from the host sees `recovery` | **Not done.** Described in 2.7. Needs a change to `recovery-list.py`, i.e. the image, which this task does not touch. | UNKNOWN |
-| A real install through the agent (`hubos-ctl update` run by the agent) | Not done | UNKNOWN |
+| The calls and their answers: status shows recovery with `api` and `min_hub`; logs, clear-failures and install need no header; `/v1/challenge` is a 404; bad install requests (slot c, a non-http URL, nonsense) are refused with 400 and never reach the backend; a failing `hubos-ctl` is a 500 | Done in `tools/image/experiments/recoveryagent/` (branch `recovery-agent-no-signing`) | **TESTED** (2.3) |
+| The real backend (`HubosBackend`) with a fake `hubos-ctl` script: machine id from `NAME=`, release, failure counter, install into slot b only, one install at a time | Done (`TestHubosBackend`) | **TESTED** (2.3) |
+| Live run on loopback with `curl` | Done, below | **TESTED** |
+| The agent as a static binary inside a TEST recovery kernel under QEMU, reachable through a host port forward: status, restart loop (`kill -9`, back after 1.3 s, five quick kills make the loop give up), a real install through `hubos-ctl` into slot b, then boot and confirm | Done **in the signed-request version** (`docs/image.md` T18 and T19, SOURCE repo, PASS in two runs). The unsigned version of the same tests is changed on the branch and **not run yet** | TESTED (old version); UNVERIFIED (new version) |
+| The agent in the normal recovery kernel, in a real image | Not done: only the TEST kernel carries it | UNKNOWN |
 | A real board's network in recovery, real DHCP reservation, time to come up | Cannot be tested here | UNKNOWN |
 
-Live run (the agent built from the experiment, a throwaway management key made by `signify-openbsd -G -n`, all in `/tmp/p3-x`, deleted afterwards). Real commands and outputs (the signing helper is a shell function that fetches a nonce, builds the text above, signs it with `signify-openbsd -S`, and calls `curl`):
+Live run (the agent of the branch `recovery-agent-no-signing` built with `CGO_ENABLED=0 go build`, fake backend, listening on `127.0.0.1:18480`, run by me on 2026-10-06 in a scratch folder, stopped afterwards). Real commands and outputs:
 
 ```
-$ curl /v1/status
-{"machine":"fake-1","state":"recovery","recovery_release":"recovery-1","boot_failures":3,"failure_limit":3}
-$ curl -X POST /v1/clear-failures        (no signature)
-{"error":"signed request required (GET /v1/challenge first)"}
- [HTTP 401]
-$ signed clear-failures
-{"result":"cleared"}
+$ curl -X GET /v1/status
+{"api":1,"min_hub":1,"machine":"fake-1","state":"recovery","recovery_release":"recovery-1","boot_failures":3,"failure_limit":3}
  [HTTP 200]
-$ signed install   (body {"Slot":"a","BaseURL":"http://10.0.2.2:8000/bundle"})
-{"output":"FAKE: would run: hubos-ctl update http://10.0.2.2:8000/bundle a","result":"installed"}
- [HTTP 200]
-$ signed logs
+$ curl -X GET /v1/logs
 FAKE log line 1
 FAKE log line 2
  [HTTP 200]
-$ replay of the last nonce
-{"error":"unknown, used or expired nonce"}
- [HTTP 401]
-$ signed with a key the agent does not know
-{"error":"signature not accepted"}
- [HTTP 401]
+$ curl -X POST /v1/clear-failures
+{"result":"cleared"}
+ [HTTP 200]
+$ curl -X POST /v1/install   (body {"Slot":"a","BaseURL":"http://10.0.2.2:8000/bundle"})
+{"output":"FAKE: would run: hubos-ctl update http://10.0.2.2:8000/bundle a","result":"installed"}
+ [HTTP 200]
+$ curl -X POST /v1/install   (body {"Slot":"c","BaseURL":"http://x"})
+{"error":"need JSON {\"Slot\":\"a|b\",\"BaseURL\":\"http...\"}"}
+ [HTTP 400]
+$ curl -X GET /v1/challenge
+{"error":"no such endpoint"}
+ [HTTP 404]
+$ curl -X GET /v1/live
+{"error":"no such endpoint"}
+ [HTTP 404]
 ```
+
+(`GET /v1/live` is not in the prototype yet; `docs/proposals/node-helper-api.md` has it in the design. The fake backend's install changes nothing.)
 
 ### 2.7 How the next step would be tested (described, not run)
 
-1. Build the agent static (`CGO_ENABLED=0`), add it and the management public key to `recovery-list.py`'s file list, start it from `recovery-init` after DHCP.
+1. Build the agent static (`CGO_ENABLED=0`), add it to `recovery-list.py`'s file list, start it from `recovery-init` after DHCP. (Done for the TEST kernel: `docs/image.md` T18.)
 2. Boot QEMU into recovery with a host port forward (`-netdev user,hostfwd=tcp::18480-:8480`), as the runner already forwards nothing but serves bundles to the guest from the host (`docs/image.md` section 3).
-3. From the host: `curl` status; signed `install` with a bundle served by the runner's HTTP server (the guest sees the host as `10.0.2.2`); then the existing tests' check that the machine boots and confirms.
+3. From the host: `curl` status; an install request naming a bundle served by the runner's HTTP server (the guest sees the host as `10.0.2.2`); then the existing tests' check that the machine boots and confirms.
 4. Check the cost: kernel size, recovery boot time to "agent answering".
 
 ---
@@ -312,24 +301,22 @@ Extra cost: one more check, only for machines that already failed the normal che
 
 | Action | Available when | What happens | Label |
 |---|---|---|---|
-| **Reinstall** | state "in recovery" | hubd signs a request (2.3) and asks the agent to install a named signed bundle into a named slot, then watches the agent's status for progress, then waits for the machine to come up. The owner confirms, naming what will be overwritten, like the existing power actions (HUB-OS.md "Power actions"). | design |
+| **Reinstall** | state "in recovery" | hubd asks the agent (2.3) to install a named signed bundle into a named slot, then watches the agent's status for progress, then waits for the machine to come up. The owner confirms, naming what will be overwritten, like the existing power actions (HUB-OS.md "Power actions"). | design |
 | **Power cycle** | only if the machine has a device defined (a relay, a strip outlet or a PiKVM ATX board) | hubd calls that device's own interface. | design; the inventory field does not exist; the form is not decided (**question 3**) |
-| Clear failure counter | state "in recovery" | signed request | design |
-| Show logs | state "in recovery" | signed request | design |
+| Clear failure counter | state "in recovery" | plain request | design |
+| Show logs | state "in recovery" | plain request (`GET /v1/logs`) | design |
 
 With no device defined, a dead machine shows "down" and the owner walks over. That is the honest default.
 
 ### 5.3 Where addresses and credentials come from (an input for the secrets design)
 
-- **Addresses.** The inventory already holds each machine's address (no secrets in it, HUB-OS.md). The recovery agent is reached at the **same address** (needs a DHCP reservation, section 2.4) on a fixed port (the port is not chosen; not in `default_ports` yet). A power device or PiKVM needs its **own** address; where it lives in the inventory is open: probably a field on the machine naming the device and its address, **not decided** (question 3).
+- **Addresses.** The inventory already holds each machine's address (no secrets in it, HUB-OS.md). The recovery agent is reached at the **same address** (needs a DHCP reservation, section 2.4) on port **8480**, shared with the node helper (`node-helper-api.md` section 2; to be confirmed; not yet in `default_ports`). A power device or PiKVM needs its **own** address; where it lives in the inventory is open: probably a field on the machine naming the device and its address, **not decided** (question 3).
 - **Credentials the hub would hold (all secrets; none in the inventory or git):**
-  1. the **management private key** that signs recovery requests (new; the update private key stays offline);
-  2. a login for each power device (Tasmota password, if set);
-  3. a login for each PiKVM (its KVM user) and API;
-  4. the two-factor secret if used for PiKVM.
-  Where these live on the hub (a file readable only by the hub user, not on the NAS backup, not in the image) is for the secrets design. The compromise of the hub's disk then means: reinstall of any signed release, power cycling, and, with a PiKVM, full control of every machine. That is the cost of option D and should be weighed in December. **Not designed.**
-- **In the recovery kernel:** the management **public** key(s), in the same way as the update keyring. Rotation: not designed.
-- **Which bundle and where from:** the hub (or the NAS) serves it; the base URL goes into the signed request. Which release (newest, or the floor's own) is a question (question 8); the floor forbids older ones (SOURCE: repo).
+  1. a login for each power device (Tasmota password, if set);
+  2. a login for each PiKVM (its KVM user) and API;
+  3. the two-factor secret if used for PiKVM.
+  (The recovery agent needs none: requests are not signed. The update private key stays offline.) Where these live on the hub (a file readable only by the hub user, not on the NAS backup, not in the image) is for the secrets design. The compromise of the hub's disk then means: power cycling and, with a PiKVM, full control of every machine. That is the cost of option D and should be weighed in December. **Not designed.**
+- **Which bundle and where from:** the hub (or the NAS) serves it; the base URL goes into the install request. Which release (newest, or the floor's own) is a question (question 8); the floor forbids older ones (SOURCE: repo).
 
 ### 5.4 What stays a question
 
@@ -351,6 +338,7 @@ See section 6. In short: the device choice, whether an appliance with systemd or
 10. **Serial ports.** When you choose boards in December, should a serial header or console redirection be a requirement for the rack machines, so layer 2C is possible?
 11. **Recovery login.** The recovery shell has no login today. With a serial console server or PiKVM, anyone who can reach it has root on a machine in recovery. Add a password (a secret on the open boot partition, so only a weak deterrent) or accept the isolated network as the protection?
 12. **HUB-OS.md.** Per your instruction I did not edit it. If you accept any of this, the brief and its Change log need updating by you or by me when you ask.
+13. **Limits on calls to the agent.** Requests are plain and anyone who can reach the port can call it, so nothing but the agent's own rule (one install at a time) bounds how often installs, clear-failures or status calls are made. Do you want a rate limit (in the agent, or only in hubd), or none? What should the agent answer to a second install request while one runs (the prototype refuses it; the answer code is not written down)? I designed nothing.
 
 ---
 
@@ -358,6 +346,12 @@ See section 6. In short: the device choice, whether an appliance with systemd or
 
 - Worktree: `/home/user/wt-p3` (removed at the end), branch `recovery-oob-proposal`.
 - `gofmt -l .`, `go vet ./...`, `go test -count=1 ./...`: output is in the pull request and in the final report. The new package is `hubos/tools/image/experiments/recoveryagent` (standard library only, no new dependency).
-- The prototype's tests (names): status needs no signature and shows recovery; mutating calls need a signature; a signed install works once and is bound to method, path and body; a wrong key and a made-up nonce are refused; a second key in the keyring works; a nonce expires; challenges are limited; a bad install request is refused after authentication; garbage key files are rejected; real `signify-openbsd` interop (skipped when the program is not on `PATH`).
-- **Not tested:** anything on real hardware; the agent inside the recovery kernel; a real install through it; the busybox-only alternative; TLS; any layer-2 device; every claim marked BELIEVED or UNKNOWN above.
+- The prototype's tests (names): status shows recovery with `api` and `min_hub`; the calls need no signature and `/v1/challenge` is a 404; a bad install request is refused with 400 before the backend; an install refused by `hubos-ctl` is a 500 with its text; the real backend against a fake `hubos-ctl` script. I ran them on 2026-10-06 (2.3).
+- **Not tested:** anything on real hardware; the unsigned agent inside a recovery kernel under QEMU (not yet run); the agent in a real image; the busybox-only alternative; any layer-2 device; every claim marked BELIEVED or UNKNOWN above.
 - Pages read through the summarising fetch tool (wording not guaranteed): all `docs.pikvm.org` pages, `pikvm.org/buy`, the GitHub repo pages for PiKVM, OpenBMC and Tasmota, the Eclypsium article, the kernel serial-console and watchdog pages, the OpenBSD signify man page. Pages read as raw files with `curl`: the CISA feed, the NVD API, OpenBMC's README and supported-machines list, ser2net's README and COPYING, conserver's README and LICENSE, PiKVM's LICENSE and README, Tasmota's LICENSE and README, usbrelay's README, signify.c. Not reached: NVD's web page and CISA's catalogue web page (the tool could not show the entry; the feed and API were used instead), the PiKVM `serial_port` and `atx_control` docs pages (404; other pages used), AMI's PDF advisory (not tried).
+
+---
+
+## History
+
+An earlier version of this document (up to 2026-10-05) had every changing request to the recovery agent signed by the hub with a separate management key and a one-time number fetched from `GET /v1/challenge` (later with the machine id in the signed text), and discussed TLS and the key's custody. The owner decided on 2026-10-06 that requests are not signed and not encrypted and that only the image signature stays. That text and its live-run transcript were removed; they can be read in the git history of this file before the commit that made this change. The prototype was changed to match (PR #69).

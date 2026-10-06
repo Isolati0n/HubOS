@@ -1,0 +1,44 @@
+--- a/src/config/mod.rs
++++ b/src/config/mod.rs
+@@ -932,11 +932,24 @@
+ 
+         let keyboard_layout = {
+             let k = &raw.input.keyboard;
++            // BULLETPROOF-COMPOSITOR PATCH D2: the xkbcommon crate turns these strings into C strings with
++            // `CString::new(..).unwrap()`, which panics on a NUL character. A NUL in `layout` killed the
++            // compositor at start-up and on a hot reload. Use the default and say so.
++            let mut clean = |key: &str, v: Option<String>, default: &str| -> String {
++                match v {
++                    Some(v) if v.contains('\0') => {
++                        collect_warn(&mut errors, format!("input.keyboard.{key} contains a NUL character; using the default"));
++                        default.to_string()
++                    }
++                    Some(v) => v,
++                    None => default.to_string(),
++                }
++            };
+             KeyboardLayout {
+-                layout: k.layout.clone().unwrap_or_else(|| "us".into()),
+-                variant: k.variant.clone().unwrap_or_default(),
+-                options: k.options.clone().unwrap_or_default(),
+-                model: k.model.clone().unwrap_or_default(),
++                layout: clean("layout", k.layout.clone(), "us"),
++                variant: clean("variant", k.variant.clone(), ""),
++                options: clean("options", k.options.clone(), ""),
++                model: clean("model", k.model.clone(), ""),
+             }
+         };
+ 
+--- a/src/config/parse.rs
++++ b/src/config/parse.rs
+@@ -43,6 +43,10 @@
+ 
+ /// Parse a key combo string like "Mod+Shift+Up" into a KeyCombo.
+ pub fn parse_key_combo(s: &str, mod_key: ModKey) -> Result<KeyCombo, String> {
++    // BULLETPROOF-COMPOSITOR PATCH D2: `xkb::keysym_from_name` unwraps a `CString::new`, which panics on NUL.
++    if s.contains('\0') {
++        return Err("key combo contains a NUL character".to_string());
++    }
+     let parts: Vec<&str> = s.split('+').map(str::trim).collect();
+     if parts.is_empty() {
+         return Err("empty key combo".to_string());

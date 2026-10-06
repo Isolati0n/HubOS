@@ -1,5 +1,7 @@
 # PROPOSAL: how each node's display, sound and control reach the hub
 
+> **OWNER DECISION (2026-10-06): no passwords and no encryption on the display connections.** Every password, TLS, RSA-AES or VeNCrypt setup described below (sections 4.4, 5 and round 2 R2.3) is "none used": the hub's viewer will use RFB security type None, and every node's wayvnc listens on the cluster address only. The text below stays as the test record of what is possible. The hub's requests to nodes (the control API) are also not signed. The questions "Authentication on the display protocol" and "Control API" are answered: none, and unsigned and unencrypted.
+
 **Status: PROPOSAL. Nothing here is decided and nothing here is in the images.** `HUB-OS.md` wins if this file disagrees with it. Written 2026-10-04. The only code is experiment scripts in `tools/image/experiments/remote-display/` (loopback, fake nodes, no real machine).
 
 **Labels on every item:**
@@ -287,7 +289,7 @@ If the hub's own sound output is not used (for example the projector's HDMI soun
 
 - Calls (names are a sketch): `GET /v1/status`, `POST /v1/session/start`, `POST /v1/session/stop`, later `POST /v1/power/restart`, `POST /v1/power/shutdown`.
 - **Versioning rule (proposal):** the path starts with `/v1`. Within one major version, a change may only **add** fields or calls; nobody may remove or rename one or change its meaning. A reader **ignores fields it does not know**. `status` carries `api: 1` and `min_hub: 1`. The hub speaks to a node whose major version it knows and shows "needs newer hub" for one it does not; a node refuses nothing it knows. Two majors can be served by one node at the same time during an upgrade (`/v1` and `/v2`) so the hub and the nodes can be updated in any order, which is the opposite of the lock-step the owner wants to avoid. (This is a rule I propose; no implementation exists to test it.)
-- **Authentication (proposal): the same scheme as Part 3's recovery agent** ([docs/proposals/recovery-and-out-of-band.md](recovery-and-out-of-band.md) once merged; read on 2026-10-04 on the branch `recovery-oob-proposal`): the hub fetches a one-time number, signs the method, path, body hash and number with its **management private key** using `signify`, and sends the signature; the node checks it against a keyring of **public** keys. One cluster-wide key means **no per-node pairing**. The private half lives only on the hub. I did not build or test this; Part 3 tested the scheme on loopback.
+- **Authentication (REMOVED by the owner, 2026-10-06):** the control API is not signed and not encrypted; there is no management key, no one-time number and no TLS. The earlier proposal (the recovery agent's signed-request scheme) is history.
 - **Encryption:** signed requests give authenticity but not secrecy (Part 3 says the same). Nothing secret should travel in this API. Whether to add TLS: **question 6**.
 
 **Where credentials would live (input for the secrets design; nothing is designed):**
@@ -389,8 +391,8 @@ Today `examples/viewers.real.example.toml` has viewers `ssh`, `spice`, `vnc`, `m
 2. **Clipboard:** is text only enough (no images or files)? Is "hub to node" required, or is "node to hub" the important direction? (Only node to hub was seen to work.)
 3. **Viewer risk:** `remote-viewer` (last release 2021-11-18) is what the repo uses for VNC and SPICE. May I test the TigerVNC viewer as its replacement, as a separate task?
 4. **Audio location:** the hub plays the sound (as `HUB-OS.md` says), not a dedicated audio node. Confirm. And is raw audio on the wire acceptable (about 1.5 Mbit/s per node)?
-5. **Authentication on the display protocol:** none (network is the only gate), one cluster password, or TLS plus password with a private certificate authority? (Every node is always logged in.)
-6. **Control API:** is a signed, unencrypted JSON API on the private network acceptable (nothing secret in it), or must it be TLS?
+5. **Authentication on the display protocol:** ANSWERED (owner, 2026-10-06): none, no password and no encryption; wayvnc listens on the cluster address only.
+6. **Control API:** ANSWERED (owner, 2026-10-06): an unsigned, unencrypted JSON API on the private network; no TLS.
 7. **One API with Part 3's recovery agent** (same port, `state` field)? Please confirm with Part 3's author before names are fixed.
 8. **Name of the node helper's port** and whether it may run as a normal user (it must start the GUI and later restart the machine, so it may need more rights).
 9. **Where mixer settings live** on the hub (the record file is in memory and is lost at reboot): the config area, the data area, with or without the NAS backup copy?

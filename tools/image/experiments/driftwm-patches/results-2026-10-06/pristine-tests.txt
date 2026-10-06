@@ -1,0 +1,57 @@
+### PRISTINE tree (driftwm 352333a, Smithay 4cf0b62, no patch): cargo test --release docs_cli_md_is_up_to_date
+     Running unittests src/lib.rs (/target/release/deps/driftwm-f72a9e93505711f8)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 327 filtered out; finished in 0.00s
+     Running unittests src/main.rs (/target/release/deps/driftwm-376c28b371a413e5)
+running 1 test
+test tests::cli_docs::docs_cli_md_is_up_to_date ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1356 filtered out; finished in 0.00s
+     Running tests/canvas_navigation_test.rs (/target/release/deps/canvas_navigation_test-6ed11b1fe64c156b)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.00s
+     Running tests/canvas_transforms_test.rs (/target/release/deps/canvas_transforms_test-0a3b3a042b6f429f)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 30 filtered out; finished in 0.00s
+     Running tests/canvas_zoom_test.rs (/target/release/deps/canvas_zoom_test-6a984aa0f19e6db0)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.00s
+     Running tests/config_bindings_test.rs (/target/release/deps/config_bindings_test-4bbd4b3c49215e44)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 24 filtered out; finished in 0.00s
+     Running tests/config_docs_test.rs (/target/release/deps/config_docs_test-746346bedf5bd31f)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+     Running tests/config_parse_test.rs (/target/release/deps/config_parse_test-07ea130fbfea8474)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 78 filtered out; finished in 0.00s
+     Running tests/config_reference_test.rs (/target/release/deps/config_reference_test-18500ad9ebc4ca7f)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s
+     Running tests/config_robustness_test.rs (/target/release/deps/config_robustness_test-246d6b51dfb71d72)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+     Running tests/config_toml_test.rs (/target/release/deps/config_toml_test-c8909e0b7dc086c9)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 57 filtered out; finished in 0.00s
+     Running tests/snap_test.rs (/target/release/deps/snap_test-373f3a1e269b2ccb)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.00s
+     Running tests/window_rules_test.rs (/target/release/deps/window_rules_test-ca458c95798cf266)
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 79 filtered out; finished in 0.00s
+
+### PRISTINE tree plus ONLY the new regression tests of BC-11, BC-12, BC-13 (before the fixes): cargo test --release bc1
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 327 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1357 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 30 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 25 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 24 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 78 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 57 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 18 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 79 filtered out; finished in 0.00s
+ALLDONE
