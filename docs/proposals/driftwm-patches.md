@@ -162,6 +162,26 @@ H6 passed in all three runs (86.3 s, 85.4 s, 87.6 s). In run B: compositors 0 af
 
 Plain Go checks on the final tree (TESTED): `gofmt -l .` printed nothing; `go vet ./...` printed nothing; `go test -count=1 ./...` all `ok` (the full output is in the report). `go vet -tags qemu ./tools/image/` printed nothing.
 
+### 7.1 Second round (2026-10-06): the final head, with PR #63's tests
+
+Head `c9c3c96` (this branch on top of main with PR #64 and PR #63 merged; sub-tests H3d, H3e, H3f are PR #63's). Same command. Results:
+
+| Run | Result | Notes |
+|---|---|---|
+| `TestHubImage` N1 | **FAIL**, 11 of 12 sub-tests passed (2,032.56 s), 0 hangs, 0 crashes | **H4 failed**: `update rc=0; now slot b release 2, confirmed true, counter 0/3; driftwm's event loop started before the confirm line: false; bar pixels 27895, alert 2138`. The update, the trial boot and the confirm worked (slot b release 2, confirmed, counter 0/3, desktop and bar drawn); the failing check is that the line `Starting event loop` was **not in the serial log at all** when the confirm line (at byte 12,330 of the boot log) was already there. BELIEVED cause: since P7 the compositor's log lines are written by a thread and may reach the serial console later than other programs' lines, so the test's assumption (log order = real order) is no longer sure; this is a flaw of the check, not of the boot. NOT proven: I could not see the full boot log (it is deleted with the temporary folder), and the same check passed in three earlier runs (B, D, N2). Not changed: I did not edit the test. |
+| `TestHubImage` N2 | **PASS**, 12 of 12 (2,053.10 s), 0 hangs, 0 crashes | H3f 447.7 s, H4 81.2 s, H5 200.4 s, H6 85.2 s |
+| `TestImage` N3 | **PASS** (3,632.22 s), **1 QEMU hang** (retried) | hang in the step "rollback after 6c" (the qemu-test image: no text console, no patched compositor). All sub-tests PASS. |
+
+Kernel sizes printed by these runs: `kernels (a, b, recovery) built ...: 4473856 bytes, ... recovery 6689792 bytes` (N1 and N2).
+
+### 7.2 The hang of run A: what the evidence says
+
+- **The serial log of the hang is gone.** The runner saves it into the run's temporary folder (`.../hangs/hang-1.log`), which the test deletes at the end; I looked (`/tmp/hubos-hub-2671855772`, `find` for `hang-1.log`) and it does not exist. Its content is UNKNOWN beyond the last lines the test printed: `STAGE0: switching to slot b`, `HUBOS: stage1 start ...`, `HUBOS: booted entry 0008 label 'hubos-b'`, then nothing for 150 s.
+- **It is not the hang described in `docs/image.md` 3.3** (a start that stops silently after `BdsDxe: starting Boot0001`, i.e. in the firmware before stage 0). Run A's hang happened after stage 0 and stage 1 had printed, inside the first lines of PID 1's script. The two are different places.
+- **The same kind of "no known log line in time" stop happened in a run that has none of this change's parts:** `TestImage` N3 (qemu-test kernel fragment, no text console, no patched compositor) had a hang in the step "rollback after 6c" in the same round; its last printed lines were a complete boot up to `confirm: hubd did not become healthy in 30s; this boot FAILED; rebooting`, so there the runner's 150 s wait for the handover line expired although the guest was alive (a slow or stalled start under a busy host, BELIEVED). So the runner's hang detector fires without this PR.
+- **Counts with the new kernel (text console):** hub runs A, B, D, N1, N2 = 5 runs, each with 1 or 2 trial-boot reboots (H4, H5); one hang (A). Runs on the old kernel from the first round on 2026-10-05 (hubA to hubG, TestImage): 0 hangs. This is too little to say anything about a difference (5 runs vs 7), and there is **no direct comparison**: I did not run the old kernel and the new kernel one after the other for a few reboots each, because it needs a disk-image harness I did not build; I say so plainly.
+- **Conclusion (BELIEVED, not proven):** a stall of the QEMU guest or of the runner's timing, not caused by this PR, because (a) the same detector fired on an image without the PR's kernel option, (b) the stop point differs from the known firmware one but is in code this PR did not change (stage 1), (c) four later hub runs with the same kernel did the same two reboots without a hang. UNKNOWN: the real cause.
+
 ## 8. What was not verified
 
 - Anything on real hardware: a real GPU, a real screen (the crash message is shown on a virtual screen only), real input.
