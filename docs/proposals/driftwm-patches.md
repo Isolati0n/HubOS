@@ -422,7 +422,8 @@ New or changed in this round: **H1b** (the 14 hidden interfaces are not listed b
 - **Run 4: PASS, 13 of 13** (1,727.2 s), 0 hangs, 0 crashes. H3f: seed 1791300099491317465, 8 of 8 cycles, median 54 s, **stacking order equal after 8 of 8 restores**.
 - Run 2 (the failed one) had H3f seed 1791296192580371146, 8 of 8 cycles, 8 of 8 order checks equal.
 
-**`TestImage` (the qemu-test image): PENDING (the run is in progress).**
+**`TestImage` (the qemu-test image, which shares `confirm/run` and the kernel build with the hub; command `go test -tags qemu -count=1 -timeout 150m -v -run 'TestImage$' ./tools/image`, work folder kept in `HUBOS_IMAGE_WORK`): PASS**, all sub-tests, 3,031.73 s, 0 QEMU hangs, 0 QEMU crashes (one run, on commit `c7d2ce3`). Complete block in `results-2026-10-06/hub-image-runs.txt`.
+
 
 ### 11.11 The hang comparison, and why its test is gone
 
