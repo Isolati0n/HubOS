@@ -172,6 +172,9 @@ var roleLabel = map[string]string{
 //	"+ Label (...)"    a folded group heading; picking it opens the group
 //	" ● id  name  S"   a machine whose window is open (the marker is filled)
 //	" ○ id  name  S"   a machine whose window is not open (the marker is empty)
+//	"   id  name  S"   the hub's own line: no marker
+//	"- Layouts (...)"  the group of saved layouts; its lines are
+//	"   = apply NAME ..." and "   = clear the active layout"
 //
 // The marker sits inside the indent, so the id, name and status columns stay
 // where they were. The machine's first word after the marker is its id.
@@ -228,6 +231,7 @@ func (h *Hub) statusTextLocked(s *mstate) string {
 
 // markerLocked is the open marker of a machine: filled when hubd holds a window
 // for it (the same fact that makes a pick go to that window), empty otherwise.
+// The hub's own line has no marker at all (entryLocked).
 // A window that belongs to no machine (the menu, the bar) is never in the list.
 func markerLocked(s *mstate) string {
 	if s.win != nil {
@@ -239,7 +243,11 @@ func markerLocked(s *mstate) string {
 // entryLocked is one machine line: the marker takes the last two columns of the
 // indent (indent is at least 3), so the columns do not move.
 func (h *Hub) entryLocked(s *mstate, indent int) string {
-	return fmt.Sprintf("%s%s %-16s %-24s %s", strings.Repeat(" ", indent-2), markerLocked(s), s.m.ID, s.m.Name, h.statusTextLocked(s))
+	marker := markerLocked(s)
+	if s.m.Role == "hub" {
+		marker = " " // the hub's own line has no dot (owner decision): it is never "opened"
+	}
+	return fmt.Sprintf("%s%s %-16s %-24s %s", strings.Repeat(" ", indent-2), marker, s.m.ID, s.m.Name, h.statusTextLocked(s))
 }
 
 // rank puts down machines first, then those not checked, then up.
@@ -464,6 +472,7 @@ func (h *Hub) List(flat bool, filter string) []string {
 			}
 		}
 	}
+	lines = append(lines, h.layoutLinesLocked()...)
 	return lines
 }
 
@@ -506,6 +515,11 @@ func (h *Hub) Pick(line string) PickResult {
 		}
 		h.mu.Lock()
 		defer h.mu.Unlock()
+		if label == LayoutsLabel && len(h.layoutLinesLocked()) > 0 {
+			h.expanded["layouts"] = !h.isOpenLocked("layouts", len(h.layoutInfos))
+			h.notifyLocked()
+			return PickResult{Action: "toggle", Reopen: true}
+		}
 		if label == DownLabel && len(h.downGroupLocked()) > 0 {
 			open := true
 			if v, ok := h.expanded["down"]; ok {
@@ -529,6 +543,9 @@ func (h *Hub) Pick(line string) PickResult {
 		return PickResult{Action: "ignored"} // "! message" lines and anything unknown
 	}
 	fields := strings.Fields(trim)
+	if fields[0] == layoutMark {
+		return h.pickLayout(fields[1:])
+	}
 	if fields[0] == MarkerOpen || fields[0] == MarkerClosed {
 		fields = fields[1:] // the open marker is not part of the id
 		if len(fields) == 0 {
@@ -544,6 +561,28 @@ func (h *Hub) Pick(line string) PickResult {
 	}
 	r := h.Open(id)
 	return PickResult{Action: r.Action, Message: r.Message}
+}
+
+// pickLayout acts on a line of the Layouts group: "= apply NAME ..." or
+// "= clear the active layout". Anything else is ignored. The outcome is put on
+// the bar only when there is something to warn about (the line itself shows
+// which layout is active).
+func (h *Hub) pickLayout(f []string) PickResult {
+	var r LayoutResult
+	switch {
+	case len(f) >= 2 && f[0] == layoutApply:
+		r = h.Layout("apply", f[1], false)
+	case len(f) >= 1 && f[0] == "clear":
+		r = h.Layout("clear", "", false)
+	default:
+		return PickResult{Action: "ignored"}
+	}
+	if !r.OK || strings.Contains(r.Message, "WARNING") {
+		h.mu.Lock()
+		h.setMessageLocked(r.Message)
+		h.mu.Unlock()
+	}
+	return PickResult{Action: "layout", Message: r.Message}
 }
 
 func childGroups(g *group) []*group {

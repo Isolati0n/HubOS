@@ -35,10 +35,20 @@ func markerRig(t *testing.T) *rig {
 func TestMarkerOpenIsFilledClosedIsEmpty(t *testing.T) {
 	r := markerRig(t)
 	before := r.h.List(false, "")
-	for _, id := range []string{"a", "b", "c", "hub"} {
+	for _, id := range []string{"a", "b", "c"} {
 		if l := lineOf(before, id); !strings.HasPrefix(l, " "+MarkerClosed+" "+id) {
-			t.Errorf("%s before opening: %q", id, l) // the hub has nothing to open: always empty
+			t.Errorf("%s before opening: %q", id, l)
 		}
+	}
+	// The hub's own line has no dot at all (owner decision), and its columns stay where they were.
+	hubLine := ""
+	for _, l := range before {
+		if strings.HasPrefix(l, "   hub ") {
+			hubLine = l
+		}
+	}
+	if hubLine == "" || strings.ContainsAny(hubLine, MarkerOpen+MarkerClosed) {
+		t.Errorf("the hub line (three spaces, no dot) is missing or has a dot: %q\n%s", hubLine, strings.Join(before, "\n"))
 	}
 	r.h.Open("a")
 	r.h.Open("c")

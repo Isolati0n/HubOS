@@ -1,0 +1,7 @@
+# ILLUSTRATION ONLY. An invented example of a real AMD machine's hardware profile. The kernel option names are from my memory
+# (BELIEVED, not checked against the kernel's Kconfig) and no board has been chosen (HUB-OS.md: December). It exists to show what
+# the driver check prints when a needed driver is not in the kernel. '!' = boot-critical: must be built in.
+!nvme disk:             BLK_DEV_NVME NVME_CORE
+!network Realtek r8169: R8169
+!watchdog AMD FCH TCO:  SP5100_TCO WATCHDOG_NOWAYOUT
+gpu AMD amdgpu:         DRM_AMDGPU

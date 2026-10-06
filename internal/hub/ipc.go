@@ -39,11 +39,14 @@ func CheckSocketPath(p string) error {
 // line). A "feed" request is answered with an endless stream of status
 // lines, one JSON object per line, exactly what Waybar reads.
 type Request struct {
-	Cmd    string `json:"cmd"` // status, list, pick, open, end, feed
-	ID     string `json:"id,omitempty"`
-	Line   string `json:"line,omitempty"`
-	Flat   bool   `json:"flat,omitempty"`
-	Filter string `json:"filter,omitempty"`
+	Cmd     string `json:"cmd"` // status, list, pick, open, end, feed
+	ID      string `json:"id,omitempty"`
+	Line    string `json:"line,omitempty"`
+	Flat    bool   `json:"flat,omitempty"`
+	Filter  string `json:"filter,omitempty"`
+	Sub     string `json:"sub,omitempty"`     // layout: save, apply, list, delete, clear
+	Name    string `json:"name,omitempty"`    // layout: the layout's name
+	Replace bool   `json:"replace,omitempty"` // layout save: overwrite a layout of that name
 }
 
 type Response struct {
@@ -168,6 +171,12 @@ func (h *Hub) handle(c net.Conn) {
 	case "end":
 		r := h.End(req.ID)
 		reply(c, Response{OK: r.Action == "end", Action: r.Action, Message: r.Message})
+	case "layout":
+		r := h.Layout(req.Sub, req.Name, req.Replace)
+		reply(c, Response{OK: r.OK, Message: r.Message, Lines: r.Lines})
+	case "restart-desktop":
+		r := h.RestartDesktop()
+		reply(c, Response{OK: r.Action == "restart", Action: r.Action, Message: r.Message})
 	case "feed":
 		h.feed(c)
 	default:

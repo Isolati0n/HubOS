@@ -42,7 +42,7 @@ func TestListGroupsNestingFoldingAndDownFirst(t *testing.T) {
 	for _, want := range []string{
 		"? search by id or name...",
 		"- Hub (1 machine)",
-		" ○ hub              Hub                      THIS HUB",
+		"   hub              Hub                      THIS HUB",
 		"- AI (2 machines, 1 down)",
 		" ○ vmhost-1         VM Host                  UP",
 		"   + Guests of vmhost-1 (20 machines, 2 down)", // 20 > fold threshold 12: folded

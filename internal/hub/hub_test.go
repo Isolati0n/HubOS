@@ -17,18 +17,26 @@ import (
 
 // fakeComp is a pretend driftwm: a list of windows and what was asked of it.
 type fakeComp struct {
-	mu       sync.Mutex
-	next     int
-	windows  []driftwm.Window
-	moves    [][3]int
-	focused  []int
-	closed   []int
-	identity string
-	viewport [2]int
-	camera   [2]float64
-	stuck    map[int]bool // windows that ignore a close request
-	subs     []chan *driftwm.State
-	failSub  bool
+	mu           sync.Mutex
+	next         int
+	windows      []driftwm.Window
+	moves        [][3]int
+	focused      []int
+	closed       []int
+	identity     string
+	viewport     [2]int
+	camera       [2]float64
+	zoom         float64
+	pid          int          // what PeerPID answers (0 = driftwm not reachable)
+	resizeErrors int          // the next resizes are refused with driftwm's "still settling" answer
+	earlyMoves   int          // moves made while the window had not drawn yet (its frame was only a title bar)
+	stateErrors  int          // the next State calls fail with a timeout (driftwm is slow, not gone)
+	moveErrors   int          // the next Move calls fail with a timeout
+	failState    bool         // State answers with an error (driftwm gone)
+	cascade      map[int]int  // window id -> how many of its next moves the compositor ignores, putting the window at its own spot instead
+	stuck        map[int]bool // windows that ignore a close request
+	subs         []chan *driftwm.State
+	failSub      bool
 	// modelFocus makes Focus behave like driftwm's: the window gets the focus
 	// flag and is raised to the top of the list (last = on top), and the camera
 	// pans to it unless its centre is already in view.
@@ -36,7 +44,7 @@ type fakeComp struct {
 }
 
 func newFake() *fakeComp {
-	return &fakeComp{identity: "i1", viewport: [2]int{1280, 800}, stuck: map[int]bool{}}
+	return &fakeComp{identity: "i1", viewport: [2]int{1280, 800}, stuck: map[int]bool{}, zoom: 1, cascade: map[int]int{}}
 }
 
 func (f *fakeComp) add(appID, title string) int {
@@ -62,8 +70,16 @@ func (f *fakeComp) remove(id int) {
 func (f *fakeComp) State() (*driftwm.State, error) {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	if f.failState {
+		return nil, fmt.Errorf("driftwm is gone")
+	}
+	if f.stateErrors > 0 {
+		f.stateErrors--
+		return nil, fmt.Errorf("read unix @->/run/dw/driftwm/ipc-wayland-1.sock: i/o timeout")
+	}
 	return &driftwm.State{
 		Camera:  f.camera,
+		Zoom:    f.zoom,
 		Windows: append([]driftwm.Window(nil), f.windows...),
 		Outputs: []driftwm.Output{{Name: "o", Size: f.viewport, Active: true}},
 	}, nil
@@ -71,7 +87,20 @@ func (f *fakeComp) State() (*driftwm.State, error) {
 func (f *fakeComp) Move(id, x, y int) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	if f.moveErrors > 0 {
+		f.moveErrors--
+		return fmt.Errorf("read unix @->/run/dw/driftwm/ipc-wayland-1.sock: i/o timeout")
+	}
 	f.moves = append(f.moves, [3]int{id, x, y})
+	for _, w := range f.windows {
+		if w.ID == id && w.Size[0] < 64 && w.Size[1] < 64 {
+			f.earlyMoves++
+		}
+	}
+	if n := f.cascade[id]; n > 0 {
+		f.cascade[id] = n - 1
+		x, y = 25, -125 // the compositor's own cascade spot
+	}
 	for i := range f.windows {
 		if f.windows[i].ID == id {
 			f.windows[i].Position = [2]int{x, y}
@@ -82,6 +111,10 @@ func (f *fakeComp) Move(id, x, y int) error {
 func (f *fakeComp) Resize(id, w, h int) error {
 	f.mu.Lock()
 	defer f.mu.Unlock()
+	if f.resizeErrors > 0 {
+		f.resizeErrors--
+		return fmt.Errorf("driftwm: this window is under an interactive move or resize, or still settling one")
+	}
 	for i := range f.windows {
 		if f.windows[i].ID == id {
 			f.windows[i].Size = [2]int{w, h}
@@ -112,6 +145,26 @@ func (f *fakeComp) Focus(id int) error {
 	}
 	return nil
 }
+func (f *fakeComp) SetZoom(z float64) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.zoom = z
+	return nil
+}
+func (f *fakeComp) SetCamera(x, y float64) error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.camera = [2]float64{x, y}
+	return nil
+}
+func (f *fakeComp) PeerPID() (int, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	if f.pid == 0 {
+		return 0, fmt.Errorf("no driftwm")
+	}
+	return f.pid, nil
+}
 func (f *fakeComp) Close(id int) error {
 	f.mu.Lock()
 	f.closed = append(f.closed, id)
@@ -128,15 +181,52 @@ func (f *fakeComp) Identity() (string, error) {
 	return f.identity, nil
 }
 func (f *fakeComp) Subscribe(ctx context.Context) (<-chan *driftwm.State, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	if f.failSub {
 		return nil, fmt.Errorf("no driftwm")
 	}
 	ch := make(chan *driftwm.State, 4)
-	f.mu.Lock()
 	f.subs = append(f.subs, ch)
-	f.mu.Unlock()
 	return ch, nil
 }
+
+// emit sends the current state to every subscriber, as the compositor does on a change.
+func (f *fakeComp) emit() {
+	st, err := f.State()
+	if err != nil {
+		return
+	}
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	for _, c := range f.subs {
+		select {
+		case c <- st:
+		default:
+		}
+	}
+}
+
+// crash is a compositor that died: every window and every stream is gone and
+// nobody answers until restart.
+func (f *fakeComp) crash() {
+	f.mu.Lock()
+	f.failSub, f.failState = true, true
+	f.windows = nil
+	f.camera, f.zoom = [2]float64{}, 1
+	f.mu.Unlock()
+	f.endStreams()
+}
+
+// restart is the new compositor: empty, answering, with a new identity.
+func (f *fakeComp) restart() {
+	f.mu.Lock()
+	f.failSub, f.failState = false, false
+	f.identity += "n"
+	f.next = 0
+	f.mu.Unlock()
+}
+
 func (f *fakeComp) endStreams() {
 	f.mu.Lock()
 	defer f.mu.Unlock()
@@ -186,6 +276,16 @@ func (l *fakeLauncher) launch(id string, args []string) (*Proc, error) {
 
 // exit makes the i-th started viewer process exit (err nil = clean exit).
 func (l *fakeLauncher) exit(i int, err error) {
+	// the launch is counted before its process exists (a slow machine can be between the two)
+	for n := 0; n < 400; n++ {
+		l.mu.Lock()
+		have := i < len(l.exits)
+		l.mu.Unlock()
+		if have {
+			break
+		}
+		time.Sleep(5 * time.Millisecond)
+	}
 	l.mu.Lock()
 	ch := l.exits[i]
 	l.mu.Unlock()
@@ -235,6 +335,10 @@ func testSettings() Settings {
 	s.Settle = 20 * time.Millisecond
 	s.CloseWait = 300 * time.Millisecond
 	s.ProbeTimeout = 300 * time.Millisecond
+	s.SettleStep = time.Millisecond
+	s.SettleMax = 300 * time.Millisecond
+	s.SizedWait = 300 * time.Millisecond
+	s.FastReconnect = 5 * time.Millisecond
 	s.MessageTTL = time.Minute
 	return s
 }
@@ -611,10 +715,12 @@ func TestInventoryTextStaysOneArgument(t *testing.T) {
 	}
 }
 
+// Viewers that are matched by comparing the window list before and after
+// ("unnamed": sets_name false, no title_match) start one at a time.
 func TestSecondLaunchWaitsForTheFirst(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""),
-		machineDoc("b", "B", "ai", "moonlight", 1, 2, 2, ""))
+		machineDoc("a", "A", "ai", "files", 1, 1, 1, ""),
+		machineDoc("b", "B", "ai", "files", 1, 2, 2, ""))
 	r.setStatus("a", statusUp)
 	r.setStatus("b", statusUp)
 	r.l.gate = make(chan struct{})
@@ -631,6 +737,49 @@ func TestSecondLaunchWaitsForTheFirst(t *testing.T) {
 			t.Errorf("%+v", res)
 		}
 	}
+}
+
+// Viewers that set their own window name (every machine has its own name) are
+// told apart by that name, so they start at the same time: this is what lets
+// a restore after a compositor restart start all the viewers at once.
+func TestNamedViewersStartAtTheSameTime(t *testing.T) {
+	r := newRig(t,
+		machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""),
+		machineDoc("b", "B", "ai", "moonlight", 1, 2, 2, ""))
+	r.setStatus("a", statusUp)
+	r.setStatus("b", statusUp)
+	r.l.gate = make(chan struct{})
+	done := make(chan OpenResult, 2)
+	go func() { done <- r.h.Open("a") }()
+	go func() { done <- r.h.Open("b") }()
+	for i := 0; r.l.count() < 2 && i < 100; i++ {
+		time.Sleep(10 * time.Millisecond)
+	}
+	if r.l.count() != 2 {
+		t.Errorf("the two named viewers did not start together: %d", r.l.count())
+	}
+	close(r.l.gate)
+	for i := 0; i < 2; i++ {
+		if res := <-done; res.Action != "open" {
+			t.Errorf("%+v", res)
+		}
+	}
+	for id, pos := range map[string][2]int{"a": {1, 1}, "b": {2, 2}} {
+		w, _ := r.h.WindowOf(id)
+		cur, _ := mustState(t, r.f).Window(w)
+		if cur.Position != pos {
+			t.Errorf("%s stands at %v, not at its home %v", id, cur.Position, pos)
+		}
+	}
+}
+
+func mustState(t *testing.T, f *fakeComp) *driftwm.State {
+	t.Helper()
+	st, err := f.State()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return st
 }
 
 // (the orphan-viewer tests are in late_test.go)

@@ -14,6 +14,7 @@ import (
 type OpenResult struct {
 	Action  string `json:"action"` // "open", "went", "refused", "busy", "failed"
 	Message string `json:"message"`
+	Problem string `json:"-"` // set when the window is open but could not be put at its place (the restore says so)
 }
 
 func (h *Hub) done(action, format string, args ...any) OpenResult {
@@ -73,8 +74,10 @@ func (h *Hub) open(id string, mayRetry bool) OpenResult {
 	// 2. Already being opened: do nothing.
 	switch s.phase {
 	case phaseStarting:
-		h.mu.Unlock()
-		return h.done("busy", "%s is already opening; nothing done", name)
+		if s.ticket != nil && s.ticket.epoch == h.epoch { // an open that began under a compositor that is gone does not count
+			h.mu.Unlock()
+			return h.done("busy", "%s is already opening; nothing done", name)
+		}
 	case phaseLate:
 		h.mu.Unlock()
 		return h.done("busy", "the viewer for %s is still starting; waiting for its window", name)
@@ -123,13 +126,15 @@ func (h *Hub) open(id string, mayRetry bool) OpenResult {
 		return h.refuse("busy", "the viewer for %s is still starting and its window cannot be told apart from this one's; wait for it (or run: hubd forget), then open %s", other, name)
 	}
 	s.phase = phaseStarting
+	tk := &openTicket{epoch: h.epoch}
+	s.ticket = tk
 	h.notifyLocked()
 	h.mu.Unlock()
 
-	r := h.launchAndPlace(s, v, args)
+	r := h.launchAndPlace(s, v, args, tk)
 
 	h.mu.Lock()
-	if s.phase == phaseStarting {
+	if s.phase == phaseStarting && s.ticket == tk {
 		s.phase = phaseIdle
 	}
 	h.notifyLocked()
@@ -150,7 +155,7 @@ func (h *Hub) identityLocked() string {
 // goTo focuses the window if driftwm still has it. ok is false when the
 // window is gone; err is set when driftwm could not be asked at all.
 func (h *Hub) goTo(w winRec) (ok bool, err error) {
-	st, err := h.comp.State()
+	st, err := h.state()
 	if err != nil {
 		return false, err
 	}
@@ -168,19 +173,22 @@ func (h *Hub) goTo(w winRec) (ok bool, err error) {
 // machine's home, and records it. One launch at a time across the hub, so
 // "the window that is new" is never ambiguous because of another launch of
 // ours.
-func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenResult {
+func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string, tk *openTicket) OpenResult {
 	name := s.m.Name
 	appID := viewers.AppID(s.m.ID)
 	title, _, _ := v.MatchTitle(s.m)
-	if title == "" {
+	if title == "" && !v.SetsName {
 		// One launch at a time, so "the window that is new" is never
-		// ambiguous. A title-matched window is told apart by its title, so
-		// those launches do not wait for each other.
+		// ambiguous. A title-matched window is told apart by its title and
+		// a viewer that sets its name by that name (every machine has its
+		// own), so those launches do not wait for each other (this is what
+		// lets a restore start all the viewers at once, docs/hubd-slice2.md
+		// section 18).
 		h.launchMu.Lock()
 		defer h.launchMu.Unlock()
 	}
 
-	before, err := h.comp.State()
+	before, err := h.state()
 	if err != nil {
 		return h.done("failed", "cannot reach driftwm: %v", err)
 	}
@@ -212,12 +220,12 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 			cleanExit = true
 		default:
 		}
-		st, err := h.comp.State()
+		st, err := h.state()
 		if err == nil {
 			cands, others = h.candidates(st, known, v, appID, title)
 			if len(cands) > 0 {
 				time.Sleep(h.set.Settle)
-				if st, err = h.comp.State(); err == nil {
+				if st, err = h.state(); err == nil {
 					cands, others = h.candidates(st, known, v, appID, title)
 				}
 				break
@@ -237,7 +245,7 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 				// The viewer is still running (or exited cleanly): keep
 				// waiting for its window, and let nothing start a second
 				// viewer meanwhile.
-				h.beginLate(s, v, proc, cleanExit, grace, known, appID, title, args[0])
+				h.beginLate(s, v, proc, cleanExit, grace, known, appID, title, args[0], tk)
 				state := "the viewer is still running"
 				if cleanExit {
 					state = "the viewer process has exited cleanly (it may have handed over to a copy that is already running)"
@@ -249,7 +257,7 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 			}
 			return h.done("failed", "%s", msg)
 		}
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(h.pause(100 * time.Millisecond))
 	}
 	switch len(cands) {
 	case 0:
@@ -261,7 +269,7 @@ func (h *Hub) launchAndPlace(s *mstate, v *viewers.Viewer, args []string) OpenRe
 		h.mu.Unlock()
 		return h.done("failed", "%s", ambiguousMessage(name, cands, title))
 	}
-	return h.recordWindow(s, v, cands[0], "")
+	return h.recordWindow(s, v, cands[0], "", tk)
 }
 
 func ambiguousMessage(name string, cands []driftwm.Window, title string) string {
@@ -324,7 +332,7 @@ func (h *Hub) candidates(st *driftwm.State, known map[int]bool, v *viewers.Viewe
 
 // recordWindow places a found window at home and records it. late is "" for
 // a normal open, or a few words for a window that came late.
-func (h *Hub) recordWindow(s *mstate, v *viewers.Viewer, w driftwm.Window, late string) OpenResult {
+func (h *Hub) recordWindow(s *mstate, v *viewers.Viewer, w driftwm.Window, late string, tk *openTicket) OpenResult {
 	by := "comparison"
 	switch {
 	case v.SetsName:
@@ -332,23 +340,53 @@ func (h *Hub) recordWindow(s *mstate, v *viewers.Viewer, w driftwm.Window, late 
 	case v.TitleMatch != "":
 		by = "title"
 	}
-	note := h.place(s, w)
 	h.mu.Lock()
+	stale := tk.epoch != h.epoch || s.ticket != tk
+	h.mu.Unlock()
+	if stale {
+		// The compositor went away while this viewer was starting: the window is gone with it, and its
+		// number may belong to another machine's window in the new compositor. Nothing is moved or recorded.
+		return h.done("failed", "the desktop restarted while %s was opening, so its window was dropped", s.m.Name)
+	}
+	target, src := h.targetFor(s)
+	note, gone := h.place(s, w, target, src)
+	if gone {
+		return h.done("failed", "the window of %s closed (or the desktop went away) before it could be placed", s.m.Name)
+	}
+	h.mu.Lock()
+	if tk.epoch != h.epoch || s.ticket != tk {
+		h.mu.Unlock()
+		return h.done("failed", "the desktop restarted while %s was opening, so its window was dropped", s.m.Name)
+	}
+	s.restoreAt = nil
 	s.win = &winRec{Machine: s.m.ID, Window: w.ID, AppID: w.AppID, Title: w.Title, By: by}
+	h.places[s.m.ID] = target
 	h.saveLocked(h.identityLocked())
 	h.notifyLocked()
 	h.mu.Unlock()
-	msg := fmt.Sprintf("opened %s at home (%d, %d), matched by %s", s.m.Name, *s.m.Home.X, *s.m.Home.Y, by)
+	var msg string
+	switch {
+	case src == "home":
+		msg = fmt.Sprintf("opened %s at home (%d, %d), matched by %s", s.m.Name, target.X, target.Y, by)
+	case src == "saved":
+		msg = fmt.Sprintf("restored %s at its saved place (%d, %d), matched by %s", s.m.Name, target.X, target.Y, by)
+	default:
+		msg = fmt.Sprintf("opened %s at its place in %s (%d, %d), matched by %s", s.m.Name, src, target.X, target.Y, by)
+	}
 	if late != "" {
 		msg += " (" + late + ")"
 	}
 	if note != "" {
 		msg += "; " + note
 	}
-	if st, err := h.comp.State(); err == nil {
+	if st, err := h.state(); err == nil {
 		h.syncWindows(st) // also looks for windows with the same name
 	}
-	return h.done("open", "%s", msg)
+	r := h.done("open", "%s", msg)
+	if strings.Contains(note, "WARNING") || strings.Contains(note, "could not move") {
+		r.Problem = note
+	}
+	return r
 }
 
 // ---- the late-window state ----
@@ -362,7 +400,7 @@ func (h *Hub) graceFor(v *viewers.Viewer) time.Duration {
 }
 
 // beginLate puts the machine in the late-window state and starts watching.
-func (h *Hub) beginLate(s *mstate, v *viewers.Viewer, proc *Proc, cleanExit bool, grace time.Duration, known map[int]bool, appID, title, prog string) {
+func (h *Hub) beginLate(s *mstate, v *viewers.Viewer, proc *Proc, cleanExit bool, grace time.Duration, known map[int]bool, appID, title, prog string, tk *openTicket) {
 	cancel := make(chan struct{})
 	h.mu.Lock()
 	s.phase, s.lateCancel, s.lateCmp = phaseLate, cancel, !v.SetsName && v.TitleMatch == ""
@@ -376,7 +414,7 @@ func (h *Hub) beginLate(s *mstate, v *viewers.Viewer, proc *Proc, cleanExit bool
 	if cleanExit {
 		exitCh = nil // already gone; a nil channel never fires
 	}
-	go h.watchLate(s, v, exitCh, grace, known, appID, title, prog, cancel)
+	go h.watchLate(s, v, exitCh, grace, known, appID, title, prog, cancel, tk)
 }
 
 // leaveLateLocked ends the late-window state (caller holds h.mu).
@@ -386,6 +424,7 @@ func (h *Hub) leaveLateLocked(s *mstate, next phase) {
 	}
 	close(s.lateCancel)
 	s.lateCancel = nil
+	s.restoreAt = nil
 	if s.lateCmp {
 		h.lateComparison--
 	}
@@ -414,7 +453,7 @@ func (h *Hub) finishLate(s *mstate, cancel chan struct{}, next phase, message st
 // clean exit (status 0) does not end the wait. If the time
 // runs out with the process alive and no window, the machine becomes
 // "unidentified" (hubd forget is the way out). It never kills anything.
-func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, grace time.Duration, known map[int]bool, appID, title, prog string, cancel chan struct{}) {
+func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, grace time.Duration, known map[int]bool, appID, title, prog string, cancel chan struct{}, tk *openTicket) {
 	name := s.m.Name
 	end := time.Now().Add(grace)
 	for {
@@ -431,16 +470,16 @@ func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, gra
 			}
 			h.finishLate(s, cancel, phaseIdle, h.exitMessage(s, prog, err))
 			return
-		case <-time.After(100 * time.Millisecond):
+		case <-time.After(h.pause(100 * time.Millisecond)):
 		}
-		if st, err := h.comp.State(); err == nil {
+		if st, err := h.state(); err == nil {
 			if cands, _ := h.candidates(st, known, v, appID, title); len(cands) > 0 {
 				select {
 				case <-cancel:
 					return
 				case <-time.After(h.set.Settle):
 				}
-				st, err = h.comp.State()
+				st, err = h.state()
 				if err != nil {
 					continue
 				}
@@ -457,7 +496,7 @@ func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, gra
 					if !current {
 						return
 					}
-					r := h.recordWindow(s, v, cands[0], "its window came late")
+					r := h.recordWindow(s, v, cands[0], "its window came late", tk)
 					h.finishLate(s, cancel, phaseIdle, r.Message)
 					return
 				default:
@@ -473,42 +512,84 @@ func (h *Hub) watchLate(s *mstate, v *viewers.Viewer, exitedCh <-chan error, gra
 	}
 }
 
-// place moves the window to the machine's home (window centre, Y up),
-// shrinks it if it could not fit below the bar, and brings the view to it.
-// The returned note is empty when all went as expected.
-func (h *Hub) place(s *mstate, w driftwm.Window) string {
-	var notes []string
-	x, y := *s.m.Home.X, *s.m.Home.Y
-	if err := h.comp.Move(w.ID, x, y); err != nil {
-		return fmt.Sprintf("could not move it to its home: %v", err)
+// targetFor says where a machine's new window goes and why: "saved" (it is
+// being restored after a compositor restart), "layout NAME" (a layout is
+// active and has the machine), or "home".
+func (h *Hub) targetFor(s *mstate) (Place, string) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+	if s.restoreAt != nil && s.restoreAt.W > 0 && s.restoreAt.H > 0 {
+		return *s.restoreAt, "saved"
 	}
-	st, err := h.comp.State()
-	if err == nil {
-		vw, vh := st.Viewport()
-		if cur, ok := st.Window(w.ID); ok && vw > 0 {
-			usableH := vh - h.set.BarHeight
-			nw, nh := cur.Size[0], cur.Size[1]
-			if nh > usableH {
-				nh = usableH
-			}
-			if nw > vw {
-				nw = vw
-			}
-			if nw != cur.Size[0] || nh != cur.Size[1] {
-				if err := h.comp.Resize(w.ID, nw, nh); err != nil {
-					notes = append(notes, fmt.Sprintf("it is taller than the space below the bar and could not be shrunk: %v", err))
-				} else {
+	if h.active != nil {
+		if w, ok := h.active.byMachine(s.m.ID); ok {
+			return Place{w.X, w.Y, w.W, w.H}, "layout " + h.active.Name
+		}
+	}
+	return Place{X: *s.m.Home.X, Y: *s.m.Home.Y}, "home"
+}
+
+// place moves the window to its target (window centre, Y up), checks that it
+// stays there (and asks again if it does not, also when driftwm is slow to
+// answer), shrinks it if it could not fit below the bar (a home target only:
+// a saved or layout size is used as it is), and brings the view to it (not
+// when the window is being restored: the view is put back after all the
+// windows). The returned note is empty when all went as expected; gone says
+// the window (or driftwm) went away first.
+func (h *Hub) place(s *mstate, w driftwm.Window, p Place, src string) (note string, gone bool) {
+	var notes []string
+	x, y := p.X, p.Y
+	// The compositor lists a window as soon as its toplevel exists, but it
+	// places it only when the first picture arrives (its first commit with a
+	// size); a move made before that is overwritten by its own placement
+	// (the home-position race, docs/hubd-slice2.md section 18.5). So wait for
+	// the first picture before moving.
+	switch drawn, gone := h.waitFirstPicture(w.ID, w.AppID); {
+	case gone:
+		return "", true
+	case !drawn:
+		notes = append(notes, fmt.Sprintf("WARNING: the window had drawn nothing after %s, so it was moved before the compositor placed it and may stand at the compositor's own spot", h.sizedWait()))
+	}
+	want := p
+	if !(p.W > 0 && p.H > 0) {
+		// A home place has no size: keep the window clear of the bar, so shrink it if it is taller than
+		// the space below the bar (or wider than the screen).
+		if st, err := h.state(); err == nil {
+			vw, vh := st.Viewport()
+			if cur, ok := st.Window(w.ID); ok && vw > 0 {
+				usableH := vh - h.set.BarHeight
+				nw, nh := cur.Size[0], cur.Size[1]
+				if nh > usableH {
+					nh = usableH
+				}
+				if nw > vw {
+					nw = vw
+				}
+				if nw != cur.Size[0] || nh != cur.Size[1] {
+					want.W, want.H = nw, nh
 					notes = append(notes, fmt.Sprintf("shrunk from %dx%d to %dx%d to stay clear of the bar", cur.Size[0], cur.Size[1], nw, nh))
-					// Resizing keeps the top left fixed or the centre fixed;
-					// move again so the centre is at home.
-					h.comp.Move(w.ID, x, y)
 				}
 			}
 		}
 	}
+	// Put it there and look until it stays: a window that has only just appeared can be put somewhere else
+	// by the compositor after the first move, and an answer "refused" or "too slow" from driftwm is not the end.
+	ok, err := h.settleWindow(w.ID, w.AppID, want)
+	switch {
+	case err != nil && goneErr(err):
+		return "", true
+	case err != nil:
+		notes = append(notes, fmt.Sprintf("could not move it to its place: %v", err))
+		return strings.Join(notes, "; "), false
+	case !ok:
+		notes = append(notes, fmt.Sprintf("WARNING: it did not stay at (%d, %d)", x, y))
+	}
+	if src == "saved" {
+		return strings.Join(notes, "; "), false
+	}
 	camBefore := [2]float64{}
-	if err == nil {
-		camBefore = st.Camera
+	if st2, err2 := h.state(); err2 == nil {
+		camBefore = st2.Camera
 	}
 	if err := h.comp.Focus(w.ID); err != nil {
 		notes = append(notes, fmt.Sprintf("could not bring the view to it: %v", err))
@@ -524,7 +605,46 @@ func (h *Hub) place(s *mstate, w driftwm.Window) string {
 			}
 		}
 	}
-	return strings.Join(notes, "; ")
+	return strings.Join(notes, "; "), false
+}
+
+// minRealFrame: a window whose visible frame is smaller than this in both
+// directions has drawn nothing yet (its frame is only the title bar and
+// border). No real viewer window is that small.
+const minRealFrame = 64
+
+func (h *Hub) sizedWait() time.Duration {
+	if h.set.SizedWait > 0 {
+		return h.set.SizedWait
+	}
+	return 60 * time.Second
+}
+
+// waitFirstPicture waits until the window has drawn its first picture (its
+// frame has a real size), or is gone, or SizedWait has passed. drawn says the
+// picture is there; gone says the window (or driftwm) is gone. An answer of
+// driftwm that is only slow or refused is asked for again.
+func (h *Hub) waitFirstPicture(id int, appID string) (drawn, gone bool) {
+	deadline := time.Now().Add(h.sizedWait())
+	for {
+		st, err := h.state()
+		switch {
+		case err != nil && goneErr(err):
+			return false, true
+		case err == nil:
+			cur, found := st.Window(id)
+			if !found || (appID != "" && cur.AppID != appID) {
+				return false, true
+			}
+			if cur.Size[0] >= minRealFrame || cur.Size[1] >= minRealFrame {
+				return true, false
+			}
+		}
+		if time.Now().After(deadline) {
+			return false, false
+		}
+		time.Sleep(h.pause(h.step()))
+	}
 }
 
 // settledCamera reads the camera until two reads in a row agree, for at
@@ -535,7 +655,7 @@ func (h *Hub) settledCamera(start [2]float64) ([2]float64, bool) {
 	same := 0
 	for time.Now().Before(deadline) {
 		time.Sleep(60 * time.Millisecond)
-		st, err := h.comp.State()
+		st, err := h.state()
 		if err != nil {
 			return prev, false
 		}
@@ -585,7 +705,7 @@ func (h *Hub) End(id string) OpenResult {
 	}
 	deadline := time.Now().Add(h.set.CloseWait)
 	for time.Now().Before(deadline) {
-		st, err := h.comp.State()
+		st, err := h.state()
 		if err == nil {
 			if _, still := st.Window(w.Window); !still {
 				h.mu.Lock()
