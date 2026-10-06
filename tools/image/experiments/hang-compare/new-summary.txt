@@ -1,0 +1,11 @@
+HANG-COMPARE kernel=new cycles=10 trial-boot ok=10 hang=0 crash=0 (first-boot trouble 0, trial boots not confirmed on slot b 0); kernel-a.efi=4473856 bytes kernel-b.efi=4473856 bytes kernel-recovery.efi=6689792 bytes
+cycle 1: trial boot OK after 67 s (slot b release 2, confirmed true)
+cycle 2: trial boot OK after 87 s (slot b release 2, confirmed true)
+cycle 3: trial boot OK after 63 s (slot b release 2, confirmed true)
+cycle 4: trial boot OK after 47 s (slot b release 2, confirmed true)
+cycle 5: trial boot OK after 63 s (slot b release 2, confirmed true)
+cycle 6: trial boot OK after 63 s (slot b release 2, confirmed true)
+cycle 7: trial boot OK after 61 s (slot b release 2, confirmed true)
+cycle 8: trial boot OK after 49 s (slot b release 2, confirmed true)
+cycle 9: trial boot OK after 72 s (slot b release 2, confirmed true)
+cycle 10: trial boot OK after 56 s (slot b release 2, confirmed true)

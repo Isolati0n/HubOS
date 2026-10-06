@@ -1,0 +1,9 @@
+#!/bin/sh
+# Called by the confirm step just before it confirms a boot (image/rootfs/etc/s6/sv/confirm/run). Records, in RAM, what the compositor
+# answered to `driftwm msg state` at that moment: /run/hubos/confirm-evidence (time and result) and /run/hubos/confirm-state.txt (the
+# answer). Used by the hub image test H4; it never fails the boot and never changes whether the boot is confirmed.
+. /usr/lib/hubos/hub-env.sh
+mkdir -p /run/hubos
+if timeout 10 s6-setuidgid hub env $HUBENV driftwm msg state > /run/hubos/confirm-state.txt 2>&1; then r=answered; else r=failed; fi
+printf 'time=%s\ndriftwm-state=%s\n' "$(date +%s)" "$r" > /run/hubos/confirm-evidence
+exit 0

@@ -3,5 +3,8 @@
 # (the build checks that the two still agree and fails if not).
 # The patches in this folder (0*.patch, applied in name order) are against DRIFTWM_COMMIT; the ones in smithay/ are
 # against SMITHAY_REV. not-applied/ holds patches that are never put in the image (test hooks).
+# Patch list: P1 socket handover, (P2 test hooks, not applied), P3 panic catch (off), P4 config parser, P5 poisoned lock, (P6 Smithay shm fix),
+# P7 non-blocking log, P8 start-up helper calls removed, P9 flat background, P10 exit on failed frames, P11 files on a worker thread,
+# P12 no config hot reload. Details: docs/proposals/driftwm-patches.md
 DRIFTWM_COMMIT=352333a8fa1b22171492d4b71a54102045c9a19d
 SMITHAY_REV=4cf0b62028039661477d482ec4758b687d8f4392

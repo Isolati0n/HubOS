@@ -1,4 +1,5 @@
-Hub OS P8: start-up shell-outs are time-boxed (3 s, then killed) instead of waited for for ever; the environment
+Hub OS P8: the start-up helper calls (`systemctl --user import-environment`, `dbus-update-activation-environment`, in main.rs and for DISPLAY
+in xwayland.rs) are REMOVED (the hub has no systemd); the xwayland-satellite probe is time-boxed (3 s, then killed); the environment
 variables whose values are known at start are set before the first thread starts.
 
 diff -ruN a/src/bounded.rs b/src/bounded.rs
@@ -110,21 +111,62 @@ diff -ruN a/src/main.rs b/src/main.rs
  
      // Add WAYLAND_DISPLAY to child_env for autostart commands
      data.config
-@@ -310,8 +317,9 @@
-             .spawn()
-         {
-             Ok(mut child) => {
+@@ -284,39 +291,10 @@
+         Err(e) => tracing::warn!("IPC server failed to start: {e}"),
+     }
+ 
+-    // Export only session-level vars to systemd and D-Bus. Pass them through
+-    // Command::env() rather than relying on process env — the policy is "don't
+-    // touch process env at runtime", so the shell-out gets only what we hand it.
+-    {
+-        let session_vars = [
+-            ("WAYLAND_DISPLAY", socket_name.as_str()),
+-            ("XDG_CURRENT_DESKTOP", "driftwm"),
+-            ("XDG_SESSION_TYPE", "wayland"),
+-            ("XDG_SESSION_DESKTOP", "driftwm"),
+-        ];
+-        let names = session_vars
+-            .iter()
+-            .map(|(k, _)| *k)
+-            .collect::<Vec<_>>()
+-            .join(" ");
+-        let cmd = format!(
+-            "systemctl --user import-environment {names}; \
+-             hash dbus-update-activation-environment 2>/dev/null && \
+-             dbus-update-activation-environment {names}"
+-        );
+-        match std::process::Command::new("/bin/sh")
+-            .args(["-c", &cmd])
+-            .envs(session_vars.iter().copied())
+-            .spawn()
+-        {
+-            Ok(mut child) => {
 -                if let Err(e) = child.wait() {
 -                    tracing::warn!("Error waiting for environment import: {e}");
-+                // HUB-OS PATCH P8: bounded wait; a hanging helper is killed.
-+                if bounded::wait_bounded(&mut child, bounded::STARTUP_SHELLOUT_LIMIT).is_none() {
-+                    tracing::warn!("Environment import took longer than 3 s; killed it");
-                 }
-             }
-             Err(e) => tracing::warn!("Failed to import environment: {e}"),
+-                }
+-            }
+-            Err(e) => tracing::warn!("Failed to import environment: {e}"),
+-        }
+-    }
++    // HUB-OS PATCH P8: driftwm used to run `systemctl --user import-environment` and
++    // `dbus-update-activation-environment` here and wait for them. The hub has no
++    // systemd and starts its own D-Bus with the right environment, so the calls
++    // are removed (a hanging helper could stop the start-up).
+ 
+     // READY=1 lets graphical-session.target units (e.g. foot-server.socket
+     // gated on ConditionEnvironment=WAYLAND_DISPLAY) evaluate post-export.
 diff -ruN a/src/xwayland.rs b/src/xwayland.rs
 --- a/src/xwayland.rs
 +++ b/src/xwayland.rs
+@@ -97,7 +97,7 @@
+         .child_env
+         .insert("DISPLAY".into(), display_name.clone());
+ 
+-    export_display(&display_name);
++    // HUB-OS PATCH P8: no DISPLAY import into systemd / D-Bus (see main.rs).
+ 
+     state.satellite = Some(Satellite { child });
+ }
 @@ -127,16 +127,19 @@
              return false;
          }
@@ -151,17 +193,29 @@ diff -ruN a/src/xwayland.rs b/src/xwayland.rs
              false
          }
      }
-@@ -176,8 +179,11 @@
-             // autostart, and whatever it starts through the user manager, must
-             // find DISPLAY already exported. Startup-only, and bounded by
-             // systemctl's own bus timeout.
+@@ -161,25 +164,3 @@
+         Err(_) => true,
+     }
+ }
+-
+-fn export_display(display_name: &str) {
+-    let cmd = "systemctl --user import-environment DISPLAY; \
+-               hash dbus-update-activation-environment 2>/dev/null && \
+-               dbus-update-activation-environment DISPLAY";
+-    match Command::new("/bin/sh")
+-        .args(["-c", cmd])
+-        .env("DISPLAY", display_name)
+-        .spawn()
+-    {
+-        Ok(mut child) => {
+-            // Deliberately synchronous, like the session import in `main`:
+-            // autostart, and whatever it starts through the user manager, must
+-            // find DISPLAY already exported. Startup-only, and bounded by
+-            // systemctl's own bus timeout.
 -            if let Err(e) = child.wait() {
 -                tracing::warn!("Error waiting for DISPLAY import: {e}");
-+            // HUB-OS PATCH P8: bounded (3 s); a hanging helper is killed.
-+            if crate::bounded::wait_bounded(&mut child, crate::bounded::STARTUP_SHELLOUT_LIMIT)
-+                .is_none()
-+            {
-+                tracing::warn!("DISPLAY import took longer than 3 s; killed it");
-             }
-         }
-         Err(e) => tracing::warn!("Failed to import DISPLAY: {e}"),
+-            }
+-        }
+-        Err(e) => tracing::warn!("Failed to import DISPLAY: {e}"),
+-    }
+-}

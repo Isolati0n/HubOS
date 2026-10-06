@@ -8,8 +8,10 @@ usage: repros.py CASE BIN LABEL
          pipe     the log pipe nobody reads, so a write to it would block   (patch P7)
          pipepanic  the same, then a panic (needs a build with the test hook patch 0002; see run-all.sh)
          badshader  the built-in default shader does not compile (patch P9; needs a test build with a broken shader)
-         startup  a start-up helper program that hangs (patch P8)
-         session  the session file's temporary name is a FIFO nobody reads, a stand-in for a hung disk (T12)
+         startup  a start-up helper program that hangs; patched driftwm must not even run it (patch P8)
+         reload   the config file is edited in the running compositor, and `reload-config` is sent (patch P12)
+         session  the session file's temporary name is a FIFO nobody reads, a stand-in for a hung disk (T12); prints the P11 counters
+         sessionfail  the temporary name is a directory: every background write fails, the counter of failed writes goes up (patch P11)
   BIN    the driftwm binary
   LABEL  printed in the verdict line (for example "unpatched" or "patched")
 Prints one line per check and a final line  VERDICT <case> <label>: ...
@@ -92,6 +94,15 @@ def state(p):
         return st, wch
     except Exception:
         return '?', '?'
+
+
+def write_counters():
+    try:
+        r = json.loads(ipc('State', 3).decode())
+        st = r['Ok']['State']
+        return {k: st[k] for k in ('failed_writes', 'pending_writes') if k in st}
+    except Exception as e:
+        return {'error': str(e)[:60]}
 
 
 def finish(verdict):
@@ -241,10 +252,11 @@ elif case == 'badshader':
            'DIED (exit status %s)' % rc)
 
 elif case == 'startup':
-    # patch P8: a start-up helper that hangs (here a fake dbus-update-activation-environment that sleeps 60 s)
+    # patch P8: the start-up helper calls (a fake dbus-update-activation-environment that records that it ran and sleeps 60 s)
     fake = RT + '/fakebin'
     os.makedirs(fake)
-    open(fake + '/dbus-update-activation-environment', 'w').write('#!/bin/sh\nexec sleep 60\n')
+    ran = RT + '/helper-was-run'
+    open(fake + '/dbus-update-activation-environment', 'w').write('#!/bin/sh\ntouch %s\nexec sleep 60\n' % ran)
     os.chmod(fake + '/dbus-update-activation-environment', 0o755)
     env = dict(ENV)
     env['PATH'] = fake + ':' + ENV['PATH']
@@ -257,10 +269,36 @@ elif case == 'startup':
         up = wait_ipc(5)
     took = time.time() - t0
     print('IPC answered: %s after %.1f s (the helper sleeps 60 s)' % (up, took))
-    for l in log_lines(log, ['took longer', 'Environment import']):
-        print('log:', l)
-    finish('started in %.1f s despite the hanging helper' % took if up else
-           'BLOCKED: no IPC after 20 s (the main thread waits for the helper)')
+    time.sleep(1)
+    tried = os.path.exists(ran)
+    print('the helper program was started by driftwm:', tried)
+    finish('started in %.1f s and did not even try the helper (patch P8 removed the call)' % took if up and not tried else
+           ('started in %.1f s but tried the helper' % took if up else
+            'BLOCKED: no IPC after 20 s (the main thread waits for the helper, which was started: %s)' % tried))
+
+elif case == 'reload':
+    cfg = RT + '/c.toml'
+    open(cfg, 'w').write('[navigation]\ndrift = 0.5\n')
+    log = RT + '/dw.log'
+    lf = open(log, 'wb')
+    dw = start(['--backend', 'winit', '--config', cfg], lf, lf)
+    print('IPC up at start:', wait_ipc())
+    tmp = cfg + '.new'
+    open(tmp, 'w').write('[navigation]\ndrift = 0.75\n')
+    os.replace(tmp, cfg)          # an editor's atomic save
+    time.sleep(3)
+    reloaded = len(log_lines(log, ['Config reloaded'], 5))
+    print('"Config reloaded" lines in the log after the file was edited:', reloaded)
+    try:
+        r = ipc({'Action': 'reload-config'}, 3).decode().strip()[:160]
+    except Exception as e:
+        r = 'no answer (%s)' % e
+    print('IPC action reload-config answer:', r)
+    reloaded2 = len(log_lines(log, ['Config reloaded'], 5))
+    ok, ms = answers()
+    refused = '"Err"' in r or 'Err' in r
+    finish('NO hot reload: the edit changed nothing, reload-config refused (%s), compositor alive' % r[:60] if reloaded == 0 and reloaded2 == 0 and refused and dw.poll() is None and ok else
+           'HOT RELOAD works: edit reloaded %d time(s), reload-config answer: %s' % (reloaded, r[:60]))
 
 elif case == 'session':
     D = RT + '/state'
@@ -281,8 +319,29 @@ elif case == 'session':
         time.sleep(1)
     st, wch = state(dw)
     print('process state: %s, wchan: %s' % (st, wch.strip()))
-    finish('NOT frozen (%d of 4 answered)' % good if good == 4 else
+    cnt = write_counters()
+    print('IPC state counters (patch P11): %s' % cnt)
+    finish('NOT frozen (%d of 4 answered); %s' % (good, cnt) if good == 4 else
            'FROZEN (%d of 4 answered; wchan %s)' % (good, wch.strip()))
+
+elif case == 'sessionfail':
+    # patch P11: the session file's temporary name is a DIRECTORY, so every background write fails at once
+    D = RT + '/state'
+    os.makedirs(D + '/session.json.tmp')
+    open(D + '/c.toml', 'w').write('[session]\nrestore_windows = true\n')
+    log = RT + '/dw.log'
+    lf = open(log, 'wb')
+    dw = start(['--backend', 'winit', '--config', D + '/c.toml', '--session-file', D + '/session.json'], lf, lf)
+    print('IPC up at start:', wait_ipc())
+    foot(0)
+    time.sleep(3)
+    ok, ms = answers(2)
+    cnt = write_counters()
+    print('IPC answers: %s; IPC state counters (patch P11): %s' % (ok, cnt))
+    for l in log_lines(log, ['failed to write']):
+        print('log:', l)
+    finish('IPC keeps answering and the failed writes are counted: %s' % cnt if ok and 'failed_writes' in cnt and cnt['failed_writes'] > 0 else
+           'no counter or no answer: answers=%s %s' % (ok, cnt))
 else:
     print('unknown case')
     sys.exit(2)

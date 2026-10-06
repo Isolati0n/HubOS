@@ -14,7 +14,7 @@ bash "$HERE/xvfb-run-ns.sh" :81 1280x800x24 > /tmp/dpr-xvfb.log 2>&1 &
 XPID=$!
 for i in $(seq 1 50); do [ -S /tmp/.X11-unix/X81 ] && break; sleep 0.2; done
 run() { timeout 240 python3 "$HERE/repros.py" "$@" 2>&1 | sed 's/^/    /'; }
-for c in shm config pipe startup session; do
+for c in shm config pipe startup reload session sessionfail; do
   for pair in "unpatched:$U" "patched:$P"; do
     label=${pair%%:*}; bin=${pair#*:}
     echo "== $c / $label"
