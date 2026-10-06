@@ -225,7 +225,6 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - The hub desktop is meant to run as a normal user in the seat group, not as root (untested).
 - Hub desktop: window layouts (positions, sizes and the view) are saved by name and restored (how is being researched, see docs/proposals/driftwm-layouts.md); they live on the config partition. Windows never reopen by themselves after a reboot: the owner starts them and they take their saved places. Waybar, hubd, driftwm and dbus-daemon are s6 services run as the normal user hub; seatd and udevd run as root (they open the GPU, input devices and netlink). Waybar and hubd wait for driftwm's socket and restart when it returns. No terminal starts by itself.
 - If the compositor crashes and restarts, the windows reappear at their saved places with their sessions intact (the owner wants this; design and options in docs/proposals/hub-stability.md); after a reboot windows still do not reopen by themselves. The compositor is hardened so that it does not crash (see the same document); changes to driftwm stay under its GPL-3.0-or-later licence. The owner does not care about any visual effects (blur, shader backgrounds, animations): they may be turned off or removed from the hub's compositor to make it smaller, lighter and safer.
-- The hub's own viewer may be built on Qt6, because only Qt6 clients survive a compositor restart (Plan C), if the socket-handover patch to driftwm is small; otherwise Plan A (owner decision).
 - Layouts (owner decisions, 2026-10-05; docs/proposals/driftwm-layouts.md): a layout holds positions, sizes and the view (camera and zoom).
 - Applying a layout also governs machines opened later, until another layout is applied or it is cleared.
 - The active layout is remembered in a file on the config partition; windows still start manually after a reboot.
@@ -234,7 +233,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - Layouts are driven by the command line first, plus a Layouts group in the menu.
 - Overlapping windows in a layout give a warning.
 - driftwm's restore_* switches and suspend_on_close stay off; only release builds of driftwm are used, never a debug build; nothing is reported to the driftwm author for now.
-- hubd restores windows itself for all machines after a compositor restart (owner decision, 2026-10-05); Plan B (a session daemon) waits for the December measurement.
+- hubd restores windows itself for all machines after a compositor restart (owner decision, 2026-10-05); the session layer (see The session layer) replaces the earlier Plan B and Plan C.
 - `hubd end` waits up to 30 s for a window to close; the home-position race (a window sometimes standing at driftwm's cascade spot) is to be investigated.
 - hubd keeps windows it places clear of the bar, and expects the camera to be offset by half the bar height.
 - hubd controls driftwm through its local socket (list windows, place a window, move the view, focus, resize, fit). The socket is only for the same user. See docs/driftwm-findings.md.
@@ -516,7 +515,6 @@ HubOS/
 - Language of the session layer's native core (workers and presenter): Rust with Kani, Ada with SPARK or Zig; a bake-off with the gates listed under The session layer decides (not started)
 - From-scratch hub: which components stay upstream and which are ours (see docs/proposals/from-scratch-hub.md)
 - Moonlight and Sunshine are not planned for use; hubd's Moonlight support (title matching, the session field, the default port) stays in the code and is not removed until the display protocol is final, and is then deleted.
-- Plan C (a Qt6 viewer with a socket handover from driftwm) stays optional; the base is hubd restoring windows itself (decided 2026-10-05); Plan B waits for the December measurement; see docs/proposals/hub-stability.md
 
 ---
 
@@ -571,8 +569,8 @@ HubOS/
 - **2026-10-04:** Phase B images: recovery kernel arms the watchdog; recovery agent tested inside a test recovery kernel.
 - **2026-10-04:** Scale reference 20 machines; hub stays a thin client; extra nodes suggested; recovery and display protocol decisions recorded; CLAUDE.md rules for packages and helper agents.
 - **2026-10-04:** Phase B images: test recovery agent supervised by a restart loop.
-- **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials, management key on the hub, recovery agent supervision, Go stays (Erlang parked).
-- **2026-10-04:** Round 3 decisions recorded: signed text names the machine, shared port, signing key custody, per-node credential files, user split, clipboard push rules.
+- **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials and management key on the hub (both REMOVED 2026-10-06), recovery agent supervision, Go stays (Erlang parked).
+- **2026-10-04:** Round 3 decisions recorded: signed text names the machine (request signing REMOVED 2026-10-06), shared port, signing key custody, per-node credential files and user split (both REMOVED 2026-10-06), clipboard push rules.
 - **2026-10-05:** Each machine runs its own distro (Hub OS = contracts plus shared tools; A/B and recovery plumbing required on every machine); one list for machines and windows; saved layouts; no internet for the NAS; file clipboard planned; the gaming box has no game window on the hub; the AI box is for generative media; phone access straight to the hub with no VPN, with shared sessions; security out of scope; unlicensed; the no-systemd rule is for the hub only; the hub is eventually built from scratch.
 - **2026-10-05 (later):** Hub stability and maintenance decisions recorded: the hub never reboots itself for a service failure, uptime first, priority order, perfect-network design assumption, no level-of-detail work, windows survive a compositor crash, hub defaults (Qt6 viewer if the handover patch is small, lossless sessions, system in RAM, ECC, updates pulled from the NAS, reserved CPU, list dots, unmuted first volume, phone web page), black box recorder decisions, glibc rule narrowed.
 - **2026-10-05:** hubd list marks every machine whose window is open with a filled dot (an empty dot when closed); a pick of an open machine goes to its window; see docs/hubd-slice2.md section 17.

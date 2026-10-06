@@ -9,6 +9,7 @@ If it is missing, stop and tell the owner. Do not guess its contents.
 - Every machine runs its own distro. Hub OS is the hub, the contracts between hub and nodes, and the shared tools. On the hub, a thin broker opens each machine as a native window.
 - It checks that other machines are reachable and opens, for each one, the correct native program: an existing viewer (a VNC viewer, virt-viewer/Remmina, a terminal) or one built for Hub OS (such as the planned file manager), as a normal window.
 - The hub is only a client. It never renders workloads and never proxies or re-encodes video.
+- The hub's core is a session layer apart from the screen (the hub's own viewer: one worker per machine, a presenter, a conductor; see HUB-OS.md, "The session layer"); it is a direction, not built yet.
 
 ## Hard rules
 
