@@ -55,6 +55,27 @@ func (s *State) Window(id int) (Window, bool) {
 	return Window{}, false
 }
 
+// StackOrder returns the ids of the windows from the bottom of the stack to the top.
+//
+// driftwm lists its windows in stacking order, bottom to top, but moves the focused window to the front of the
+// list (SOURCE: window_inventory in driftwm's src/state/persistence.rs: "Focused window first, so consumers can read
+// windows[0] as the focused one"). The stack position of the focused window is therefore not in the answer. This
+// takes it to be the TOP of the stack, because every way of focusing a window in driftwm raises it as well (the
+// Focus request: raise_and_focus / navigate_to_window; BELIEVED the same for a click; not proven for every path).
+func (s *State) StackOrder() []int {
+	ids := make([]int, 0, len(s.Windows))
+	for i, w := range s.Windows {
+		if i == 0 && w.Focused {
+			continue
+		}
+		ids = append(ids, w.ID)
+	}
+	if len(s.Windows) > 0 && s.Windows[0].Focused {
+		ids = append(ids, s.Windows[0].ID)
+	}
+	return ids
+}
+
 // Viewport is the size of the active output, or 0, 0 if none is listed.
 func (s *State) Viewport() (w, h int) {
 	for _, o := range s.Outputs {

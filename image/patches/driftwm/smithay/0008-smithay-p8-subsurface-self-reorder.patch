@@ -1,0 +1,15 @@
+--- a/src/wayland/compositor/tree.rs
++++ b/src/wayland/compositor/tree.rs
+@@ -419,6 +419,12 @@
+     pub fn reorder(surface: &WlSurface, to: Location, relative_to: &WlSurface) -> Result<(), ()> {
+         let parent = Self::get_parent(surface).ok_or(())?;
+ 
++        // BULLETPROOF-COMPOSITOR PATCH P8: a subsurface placed relative to itself made `insert` run past the
++        // end of the child list (panic "insertion index should be <= len"); the protocol says bad_surface.
++        if surface.id() == relative_to.id() {
++            return Err(());
++        }
++
+         fn index_of(surface: &WlSurface, slice: &[WlSurface]) -> Option<usize> {
+             for (i, s) in slice.iter().enumerate() {
+                 if s.id() == surface.id() {

@@ -1,0 +1,76 @@
+--- a/src/decorations.rs
++++ b/src/decorations.rs
+@@ -784,4 +784,37 @@
+     fn resize_edge_bottom_right_corner_returns_bottom_right() {
+         assert_eq!(edge_at(403.0, 603.0), Some(ResizeEdge::BottomRight));
+     }
++
++    // HUB-OS PATCH D7: regression tests for BC-12 (an IPC `Resize` of a stand-in to 32768 x 32768 or more made
++    // `render_body_fill` compute `(w * h * 4) as usize` in 32 bits; it wrapped and the compositor died with
++    // "capacity overflow"). The live-compositor reproduction is `repro_ipc.py ... standin_resize_32768`
++    // (tools/image/experiments/driftwm-patches/).
++    fn buffer_bytes(buf: &mut MemoryRenderBuffer) -> usize {
++        let mut n = 0;
++        buf.render()
++            .draw(|pixels| {
++                n = pixels.len();
++                Ok::<_, std::convert::Infallible>(Vec::new())
++            })
++            .unwrap();
++        n
++    }
++
++    #[test]
++    fn bc12_huge_stand_in_body_fill_is_clamped_not_a_crash() {
++        let config = DecorationConfig::default();
++        for (w, h) in [(32768, 32768), (65535, 65535), (i32::MAX, i32::MAX), (1, i32::MAX)] {
++            let mut buf = render_body_fill(w, h, 1, &config);
++            assert!(buffer_bytes(&mut buf) <= 8192 * 8192 * 4, "{w}x{h}: the fill must stay at or below 256 MB");
++        }
++    }
++
++    #[test]
++    fn bc12_huge_stand_in_title_bar_is_clamped_not_a_crash() {
++        let config = DecorationConfig::default();
++        for w in [32768, 65535, 2_000_000_000, i32::MAX] {
++            let mut buf = render_title_bar(w, true, false, 1, "x", false, 0, &config);
++            assert!(buffer_bytes(&mut buf) <= 16384 * 4 * 1024, "width {w}: the bar must stay at or below 16384 pixels wide");
++        }
++    }
+ }
+--- a/src/canvas.rs
++++ b/src/canvas.rs
+@@ -1354,4 +1354,33 @@
+             Coverage::None
+         );
+     }
++
++    // HUB-OS PATCH D7: regression tests for BC-13 (an IPC `Move` of a window to y = 2147483647, then any navigation
++    // action such as `center-nearest left`: `closest_point_on_rect` added `loc + size` in 32 bits, the sum wrapped
++    // negative and `f64::clamp` panicked with "min > max", which is checked in release builds too). The live
++    // reproduction is `repro_ipc.py ... nav_far` (tools/image/experiments/driftwm-patches/).
++    #[test]
++    fn bc13_closest_point_on_a_window_at_the_edge_of_i32() {
++        let origin = cam(0.0, 0.0);
++        let p = closest_point_on_rect(origin, Point::from((65535, i32::MAX)), vp(800, 600));
++        assert_eq!(p.x, 65535.0);
++        assert_eq!(p.y, i32::MAX as f64);
++        let p = closest_point_on_rect(origin, Point::from((i32::MAX, i32::MAX)), vp(i32::MAX, i32::MAX));
++        assert_eq!((p.x, p.y), (i32::MAX as f64, i32::MAX as f64));
++        let p = closest_point_on_rect(cam(1e12, -1e12), Point::from((i32::MIN, i32::MIN)), vp(i32::MAX, i32::MAX));
++        assert!(p.x.is_finite() && p.y.is_finite());
++    }
++
++    #[test]
++    fn bc13_bounding_box_and_visibility_helpers_survive_extreme_windows() {
++        let windows = [
++            (Point::<i32, Logical>::from((i32::MAX, i32::MAX)), vp(800, 600)),
++            (Point::<i32, Logical>::from((i32::MIN, i32::MIN)), vp(i32::MAX, i32::MAX)),
++        ];
++        let bbox = all_windows_bbox(windows.iter().copied()).unwrap();
++        assert!(bbox.size.w >= 0 && bbox.size.h >= 0);
++        assert!(dynamic_min_zoom(windows.iter().copied(), vp(1920, 1080), 100.0).is_finite());
++        let f = visible_fraction(Point::from((i32::MAX, i32::MAX)), vp(800, 600), cam(0.0, 0.0), vp(1920, 1080), 1.0);
++        assert!((0.0..=1.0).contains(&f));
++    }
+ }

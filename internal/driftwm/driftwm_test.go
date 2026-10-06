@@ -130,3 +130,35 @@ func TestRealDriftwm(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// driftwm lists windows bottom to top but puts the focused one first; StackOrder puts it back on top.
+func TestStackOrderPutsTheFocusedWindowOnTop(t *testing.T) {
+	st := State{Windows: []Window{{ID: 5, Focused: true}, {ID: 2}, {ID: 9}, {ID: 4}}}
+	want := []int{2, 9, 4, 5}
+	if got := st.StackOrder(); !equalInts(got, want) {
+		t.Errorf("focused first: got %v, want %v", got, want)
+	}
+	st = State{Windows: []Window{{ID: 2}, {ID: 9}, {ID: 4}}} // nothing focused: the order as listed
+	if got := st.StackOrder(); !equalInts(got, []int{2, 9, 4}) {
+		t.Errorf("nothing focused: got %v", got)
+	}
+	if got := (&State{}).StackOrder(); len(got) != 0 {
+		t.Errorf("empty: got %v", got)
+	}
+	st = State{Windows: []Window{{ID: 1, Focused: true}}}
+	if got := st.StackOrder(); !equalInts(got, []int{1}) {
+		t.Errorf("one window: got %v", got)
+	}
+}
+
+func equalInts(a, b []int) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}

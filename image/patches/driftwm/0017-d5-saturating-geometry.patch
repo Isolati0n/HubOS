@@ -1,0 +1,99 @@
+--- a/src/canvas.rs
++++ b/src/canvas.rs
+@@ -79,14 +79,16 @@
+ /// [`content_to_rule`], which inflates to the visual frame first.
+ #[inline]
+ pub fn internal_to_rule(loc: Point<i32, Logical>, size: Size<i32, Logical>) -> (i32, i32) {
+-    (loc.x + size.w / 2, -(loc.y + size.h / 2))
++    // BULLETPROOF-COMPOSITOR PATCH D5 (here and below): saturating arithmetic. A window moved by IPC to a
++    // coordinate near the 32-bit limit made these sums wrap (release) or panic (debug).
++    (loc.x.saturating_add(size.w / 2), loc.y.saturating_add(size.h / 2).saturating_neg())
+ }
+ 
+ /// Inverse of [`internal_to_rule`], and chrome-blind in the same way.
+ /// [`rule_to_content`] is the window-shaped form.
+ #[inline]
+ pub fn rule_to_internal(x: i32, y: i32, size: Size<i32, Logical>) -> Point<i32, Logical> {
+-    Point::from((x - size.w / 2, -y - size.h / 2))
++    Point::from((x.saturating_sub(size.w / 2), y.saturating_neg().saturating_sub(size.h / 2)))
+ }
+ 
+ /// The compositor-drawn chrome around a window's content: the SSD title-bar
+@@ -299,9 +301,9 @@
+     let vh = viewport_size.h as f64 / zoom;
+ 
+     let ix_min = (rect_loc.x as f64).max(camera.x);
+-    let ix_max = ((rect_loc.x + rect_size.w) as f64).min(camera.x + vw);
++    let ix_max = (rect_loc.x as f64 + rect_size.w as f64).min(camera.x + vw);
+     let iy_min = (rect_loc.y as f64).max(camera.y);
+-    let iy_max = ((rect_loc.y + rect_size.h) as f64).min(camera.y + vh);
++    let iy_max = (rect_loc.y as f64 + rect_size.h as f64).min(camera.y + vh);
+ 
+     let iw = (ix_max - ix_min).max(0.0);
+     let ih = (iy_max - iy_min).max(0.0);
+@@ -403,8 +405,8 @@
+     viewport_size: Size<i32, Logical>,
+     zoom: f64,
+ ) -> Rectangle<i32, Logical> {
+-    let w = (viewport_size.w as f64 / zoom).ceil() as i32 + 2;
+-    let h = (viewport_size.h as f64 / zoom).ceil() as i32 + 2;
++    let w = ((viewport_size.w as f64 / zoom).ceil() as i32).saturating_add(2).max(0);
++    let h = ((viewport_size.h as f64 / zoom).ceil() as i32).saturating_add(2).max(0);
+     Rectangle::new(camera_i32, (w, h).into())
+ }
+ 
+@@ -422,14 +424,14 @@
+         any = true;
+         min_x = min_x.min(loc.x);
+         min_y = min_y.min(loc.y);
+-        max_x = max_x.max(loc.x + size.w);
+-        max_y = max_y.max(loc.y + size.h);
++        max_x = max_x.max(loc.x.saturating_add(size.w));
++        max_y = max_y.max(loc.y.saturating_add(size.h));
+     }
+ 
+     if any {
+         Some(Rectangle::new(
+             (min_x, min_y).into(),
+-            (max_x - min_x, max_y - min_y).into(),
++            (max_x.saturating_sub(min_x), max_y.saturating_sub(min_y)).into(),
+         ))
+     } else {
+         None
+@@ -493,8 +495,8 @@
+     size: Size<i32, Logical>,
+ ) -> Point<f64, Logical> {
+     Point::from((
+-        origin.x.clamp(loc.x as f64, (loc.x + size.w) as f64),
+-        origin.y.clamp(loc.y as f64, (loc.y + size.h) as f64),
++        origin.x.clamp(loc.x as f64, (loc.x as f64 + size.w as f64).max(loc.x as f64)),
++        origin.y.clamp(loc.y as f64, (loc.y as f64 + size.h as f64).max(loc.y as f64)),
+     ))
+ }
+ 
+--- a/src/region.rs
++++ b/src/region.rs
+@@ -16,7 +16,7 @@
+         region
+             .rects
+             .iter()
+-            .flat_map(|(_, r)| [r.loc.y, r.loc.y + r.size.h]),
++            .flat_map(|(_, r)| [r.loc.y, r.loc.y.saturating_add(r.size.h)]),
+     );
+ 
+     let mut ys = ys.into_iter();
+@@ -30,12 +30,12 @@
+         spans.clear();
+ 
+         'region: for (kind, r) in &region.rects {
+-            if hi <= r.loc.y || r.loc.y + r.size.h <= lo {
++            if hi <= r.loc.y || r.loc.y.saturating_add(r.size.h) <= lo {
+                 continue;
+             }
+ 
+             let mut x1 = r.loc.x;
+-            let mut x2 = r.loc.x + r.size.w;
++            let mut x2 = r.loc.x.saturating_add(r.size.w);
+             if x1 == x2 {
+                 continue;
+             }

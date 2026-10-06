@@ -41,6 +41,9 @@ type fakeComp struct {
 	// flag and is raised to the top of the list (last = on top), and the camera
 	// pans to it unless its centre is already in view.
 	modelFocus bool
+	// focusFirst makes State list the windows the way driftwm does: bottom to top, but with the focused window moved
+	// to the front of the list (window_inventory in driftwm's src/state/persistence.rs).
+	focusFirst bool
 }
 
 func newFake() *fakeComp {
@@ -77,10 +80,19 @@ func (f *fakeComp) State() (*driftwm.State, error) {
 		f.stateErrors--
 		return nil, fmt.Errorf("read unix @->/run/dw/driftwm/ipc-wayland-1.sock: i/o timeout")
 	}
+	wins := append([]driftwm.Window(nil), f.windows...)
+	if f.focusFirst {
+		for i, w := range wins {
+			if w.Focused {
+				wins = append([]driftwm.Window{w}, append(wins[:i:i], wins[i+1:]...)...)
+				break
+			}
+		}
+	}
 	return &driftwm.State{
 		Camera:  f.camera,
 		Zoom:    f.zoom,
-		Windows: append([]driftwm.Window(nil), f.windows...),
+		Windows: wins,
 		Outputs: []driftwm.Output{{Name: "o", Size: f.viewport, Active: true}},
 	}, nil
 }

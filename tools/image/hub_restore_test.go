@@ -176,3 +176,69 @@ func firstLine(s string) string {
 	}
 	return s
 }
+
+// stackAppsOf returns the app-ids of the machine windows (those starting with prefix) from the bottom of the stack to the
+// top. driftwm lists windows bottom to top but puts the focused window FIRST (window_inventory, src/state/persistence.rs),
+// so a focused first entry is taken to be the top one: every way of focusing a window in driftwm raises it (BELIEVED for a
+// click; TESTED here for `driftwm msg focus` and for hubd's restore, which only uses Focus). Same rule as
+// driftwm.State.StackOrder in internal/driftwm.
+func stackAppsOf(ws []hubWin, prefix string) []string {
+	var out []string
+	for i, w := range ws {
+		if i == 0 && w.Focused {
+			continue
+		}
+		if strings.HasPrefix(w.App, prefix) {
+			out = append(out, w.App)
+		}
+	}
+	if len(ws) > 0 && ws[0].Focused && strings.HasPrefix(ws[0].App, prefix) {
+		out = append(out, ws[0].App)
+	}
+	return out
+}
+
+func sameStrings(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// hiddenProtocols are the Wayland interfaces that the hub's compositor does not advertise (patch 0020-d8-hide-unused-protocols;
+// the list and the evidence are in docs/proposals/driftwm-patches.md section 3.1).
+var hiddenProtocols = []string{
+	"ext_session_lock_manager_v1",
+	"zwlr_screencopy_manager_v1",
+	"ext_image_copy_capture_manager_v1",
+	"ext_output_image_capture_source_manager_v1",
+	"ext_foreign_toplevel_image_capture_source_manager_v1",
+	"zwlr_output_manager_v1",
+	"zwlr_output_power_manager_v1",
+	"zwlr_gamma_control_manager_v1",
+	"zwp_virtual_keyboard_manager_v1",
+	"zwp_input_method_manager_v2",
+	"wp_security_context_manager_v1",
+	"zwlr_foreign_toplevel_manager_v1",
+	"ext_foreign_toplevel_list_v1",
+	"ext_workspace_manager_v1",
+}
+
+// withoutApp returns the list without the one app (the list itself if app is "").
+func withoutApp(list []string, app string) []string {
+	if app == "" {
+		return list
+	}
+	var out []string
+	for _, a := range list {
+		if a != app {
+			out = append(out, a)
+		}
+	}
+	return out
+}

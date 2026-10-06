@@ -3,8 +3,13 @@
 # (the build checks that the two still agree and fails if not).
 # The patches in this folder (0*.patch, applied in name order) are against DRIFTWM_COMMIT; the ones in smithay/ are
 # against SMITHAY_REV. not-applied/ holds patches that are never put in the image (test hooks).
-# Patch list: P1 socket handover, (P2 test hooks, not applied), P3 panic catch (off), P4 config parser, P5 poisoned lock, (P6 Smithay shm fix),
-# P7 non-blocking log, P8 start-up helper calls removed, P9 flat background, P10 exit on failed frames, P11 files on a worker thread,
-# P12 no config hot reload. Details: docs/proposals/driftwm-patches.md
+# Patch list (every patch, what it fixes, the owner decision: README.md in this folder; details: docs/proposals/driftwm-patches.md):
+#   driftwm  0001 P1 socket handover, (0002 P2 test hooks, not applied), 0003 P3 panic catch (OFF), 0004 P4 config parser,
+#            0005 P5 poisoned lock, 0007 P7 non-blocking log, 0008 P8 start-up helper calls removed, 0009 P9 flat background,
+#            0010 P10 exit on failed frames, 0011 P11 files on a worker thread, 0012 P12 no config hot reload,
+#            0013 D1 session entry cap, 0014 D2 NUL in config, 0015 D3 region overflow, 0016 D4 stand-in buffer size (BC-12),
+#            0017 D5 saturating geometry (BC-13, BC-11), 0018 D6 cluster shifts (BC-11), 0019 D7 BC-12/13 tests,
+#            0020 D8 protocols the hub does not use are hidden, 0021 D9 docs without reload-config, 0022 D10 fsync of the session file
+#   Smithay  smithay/0006 P6 shm pool resize(0), smithay/0007 to 0011 = the research's Smithay P7 to P11 (BC-1 to BC-4)
 DRIFTWM_COMMIT=352333a8fa1b22171492d4b71a54102045c9a19d
 SMITHAY_REV=4cf0b62028039661477d482ec4758b687d8f4392
