@@ -202,7 +202,7 @@ func TestHubImage(t *testing.T) {
 	// hubd is built from the source tree every run (build-root-image.sh keeps a built copy in the work folder between runs)
 	os.Remove(filepath.Join(work, "out", "hubd"))
 	// files for the layout and restore tests (H3d to H3f), served to the guest over HTTP
-	for name, content := range map[string]string{"h1b.sh": h1bScript(), "h6lib.sh": h6lib(), "h6kill.sh": h6kill, "inventory-20.toml": h20Inventory(), "viewers-20.toml": h20Viewers} {
+	for name, content := range map[string]string{"h6lib.sh": h6lib(), "h6kill.sh": h6kill, "inventory-20.toml": h20Inventory(), "viewers-20.toml": h20Viewers} {
 		if err := os.WriteFile(filepath.Join(bdir, name), []byte(content), 0o644); err != nil {
 			t.Fatal(err)
 		}
@@ -301,18 +301,13 @@ func TestHubImage(t *testing.T) {
 	t.Run("H1b_hidden_protocols_and_the_settings_file", func(t *testing.T) {
 		r.t = t
 		start := time.Now()
-		// 1. what the compositor advertises, and what the hub's own clients (foot, Waybar, wofi) bind (patch D8, owner decision 7)
-		r.sh(`wget -q -O /tmp/h1b.sh ` + r.base + `/h1b.sh && echo h1b-ok`)
-		_, out := r.vm.sh(asHub("sh /tmp/h1b.sh 2>&1"), 120*time.Second)
-		t.Logf("clients and globals:\n%s", out)
-		field := func(name string) []string {
-			m := regexp.MustCompile(`(?m)^` + name + `: (.*)$`).FindStringSubmatch(out)
-			if m == nil {
-				return nil
-			}
-			return strings.Fields(m[1])
+		// 1. what the compositor advertises (patch D8, owner decision 7): `wayland-info` lists every global
+		_, out := r.vm.sh(asHub("timeout 30 wayland-info 2>&1"), 60*time.Second)
+		t.Logf("wayland-info:\n%s", out)
+		var advertised []string
+		for _, m := range regexp.MustCompile(`interface: '([a-z_0-9]+)'`).FindAllStringSubmatch(out, -1) {
+			advertised = append(advertised, m[1])
 		}
-		advertised, foot, waybar, wofi := field("INFO"), field("FOOT"), field("WAYBAR"), field("WOFI")
 		has := func(list []string, w string) bool {
 			for _, x := range list {
 				if x == w {
@@ -321,15 +316,10 @@ func TestHubImage(t *testing.T) {
 			}
 			return false
 		}
-		var leaked, boundHidden []string
+		var leaked []string
 		for _, h := range hiddenProtocols {
 			if has(advertised, h) {
 				leaked = append(leaked, h)
-			}
-			for _, c := range [][]string{foot, waybar, wofi} {
-				if has(c, h) {
-					boundHidden = append(boundHidden, h)
-				}
 			}
 		}
 		core := true
@@ -343,11 +333,11 @@ func TestHubImage(t *testing.T) {
 		// exists on the config partition; no alert marker
 		_, cmd := r.sh(`for p in $(pidof driftwm); do tr '\000' ' ' < /proc/$p/cmdline 2>/dev/null | grep -- '--backend'; done; ls -l /config/hubos/driftwm.last-good.toml; cmp /config/hubos/driftwm.last-good.toml /etc/hubos/driftwm.toml && echo SAME-AS-IMAGE; ls /run/hub/driftwm-config-fallback 2>&1; grep -n restore_windows /etc/hubos/driftwm.toml`)
 		cfgOK := strings.Contains(cmd, "--config /etc/hubos/driftwm.toml") && strings.Contains(cmd, "SAME-AS-IMAGE") && strings.Contains(cmd, "No such file") && regexp.MustCompile(`(?m)^\d+:restore_windows = false`).MatchString(cmd)
-		ok := core && len(leaked) == 0 && len(boundHidden) == 0 && len(advertised) > 10 && cfgOK
-		record("H1b the protocols nothing on the hub uses are not advertised (patch D8: "+strconv.Itoa(len(hiddenProtocols))+" interfaces, none shown by wayland-info, none bound by foot, Waybar or wofi), the core ones still are; the compositor runs with the image's settings file, a last good copy was kept, no alert", ok, time.Since(start),
-			fmt.Sprintf("advertised %d interfaces; leaked: %v; bound by foot: %v; Waybar: %v; wofi: %v; settings: %s", len(advertised), leaked, foot, waybar, wofi, firstLine(cmd)))
+		ok := core && len(leaked) == 0 && len(advertised) > 10 && cfgOK
+		record("H1b the protocols nothing on the hub uses are not advertised (patch D8: "+strconv.Itoa(len(hiddenProtocols))+" interfaces, none shown by wayland-info), the core ones still are; the compositor runs with the image's settings file, a last good copy was kept, no alert", ok, time.Since(start),
+			fmt.Sprintf("advertised %d interfaces; leaked: %v; settings: %s", len(advertised), leaked, firstLine(cmd)))
 		if !ok {
-			t.Errorf("core=%v leaked=%v boundHidden=%v advertised=%d cfgOK=%v\n%s", core, leaked, boundHidden, len(advertised), cfgOK, cmd)
+			t.Errorf("core=%v leaked=%v advertised=%d cfgOK=%v\n%s", core, leaked, len(advertised), cfgOK, cmd)
 			t.Fail()
 		}
 	})

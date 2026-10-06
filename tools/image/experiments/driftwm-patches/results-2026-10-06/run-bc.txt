@@ -1,0 +1,58 @@
+######## unpatched
+### NUL in config
+== config with a NUL character in the key string: --check-config
+thread 'main' (2462) panicked at /host/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/xkbcommon-0.9.0/src/xkb/mod.rs:334:62:
+   exit status 101
+== config with a NUL character in the layout string: --check-config
+   exit status 0
+== config with a NUL character in the options string: --check-config
+   exit status 0
+start-up with NUL in layout: compositor DEAD, status 101
+start-up with NUL in options: compositor alive
+start-up with NUL in rules: compositor alive
+hot reload to a config with a NUL in layout: compositor DEAD, status 101
+hot reload to a config with a NUL in a key binding: compositor alive
+### popup parent cycles
+RESULT[v-unpatched-self]: compositor ALIVE BUT HUNG (state: State: R (running), cpu ticks 1051)
+RESULT[v-unpatched-pair]: compositor ALIVE BUT HUNG (state: State: R (running), cpu ticks 1054)
+RESULT[v-unpatched-nullparent]: compositor ALIVE and answering
+### subsurface place_above(self)
+RESULT[vsub-unpatched]: compositor DEAD, exit status 1
+### absurd geometry
+RESULT[vvp-unpatched]: compositor DEAD, exit status 134
+RESULT[vsp-unpatched]: compositor DEAD, exit status 134
+RESULT[vsp2-unpatched]: compositor DEAD, exit status 134
+### IPC: Move near the 32-bit limit, then a navigation action (BC-13)
+RESULT[vn-unpatched-nav]: compositor DEAD, exit status 101
+thread 'main' (2999) panicked at /rustc/2d8144b7880597b6e6d3dfd63a9a9efae3f533d3/library/core/src/num/f64.rs:1545:9:
+### IPC: Resize of a stand-in to 32768 x 32768 (BC-12)
+RESULT[vsi-unpatched]: compositor DEAD, exit status 101
+thread 'main' (3058) panicked at /rustc/2d8144b7880597b6e6d3dfd63a9a9efae3f533d3/library/alloc/src/raw_vec/mod.rs:28:5:
+######## patched
+### NUL in config
+== config with a NUL character in the key string: --check-config
+   exit status 0
+== config with a NUL character in the layout string: --check-config
+   exit status 0
+== config with a NUL character in the options string: --check-config
+   exit status 0
+start-up with NUL in layout: compositor alive
+start-up with NUL in options: compositor alive
+start-up with NUL in rules: compositor alive
+hot reload to a config with a NUL in layout: compositor alive
+hot reload to a config with a NUL in a key binding: compositor alive
+### popup parent cycles
+RESULT[v-patched-self]: compositor ALIVE and answering
+RESULT[v-patched-pair]: compositor ALIVE and answering
+RESULT[v-patched-nullparent]: compositor ALIVE and answering
+### subsurface place_above(self)
+answer from compositor: 68 bytes; error event
+RESULT[vsub-patched]: compositor ALIVE and answering
+### absurd geometry
+RESULT[vvp-patched]: compositor ALIVE and answering
+RESULT[vsp-patched]: compositor ALIVE and answering
+RESULT[vsp2-patched]: compositor ALIVE and answering
+### IPC: Move near the 32-bit limit, then a navigation action (BC-13)
+RESULT[vn-patched-nav]: compositor ALIVE and answering
+### IPC: Resize of a stand-in to 32768 x 32768 (BC-12)
+RESULT[vsi-patched]: compositor ALIVE and answering

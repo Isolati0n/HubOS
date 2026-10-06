@@ -1,6 +1,6 @@
 # The driftwm patch set in the hub image (what was built, how it is applied, how it was tested)
 
-**Written:** 2026-10-05. **Status:** built and tested in virtual machines and on a nested compositor; nothing here was run on real hardware. **Updated 2026-10-06** after the owner's answers (section 10): P8 now removes the helper calls, and P11 and P12 are new. This document says what was *done*; the reasons for the patches are in `docs/proposals/hub-stability.md` (section 5, "Patch set"). Every open choice is in section 10.
+**Written:** 2026-10-05. **Status:** built and tested in virtual machines and on a nested compositor; nothing here was run on real hardware. **Updated 2026-10-06** after the owner's answers (section 10): P8 now removes the helper calls, and P11 and P12 are new. **Updated again 2026-10-06 (section 11):** the research patches (Smithay P7 to P11, driftwm D1 to D5) are in the image, with the fixes for BC-11 to BC-13, config checks, hidden protocols and the stacking-order restore; see section 11 first for what is current. This document says what was *done*; the reasons for the patches are in `docs/proposals/hub-stability.md` (section 5, "Patch set"). Every open choice is in section 10.
 
 Labels, as everywhere: **TESTED** (I ran it, command and output given), **SOURCE** (I read it in a file; path given; read 2026-10-05), **BELIEVED** (my reasoning, not tested), **UNKNOWN**. No helper agents were used. Everything below I ran or read myself.
 
@@ -239,3 +239,204 @@ To try the desktop again by hand: s6-svc -u /run/service/driftwm
 A. P11 means the state-file content caches are updated before the write is known to have succeeded (section 3). A write that fails is logged and repaired by the next change, not retried at once. Acceptable?
 B. P12 leaves the dead `Action::ReloadConfig` code in place to keep the patch small. Remove it as well?
 C. The `pipepanic` and `badshader` tests were not rerun on the P11/P12 build (their patches did not change). Rerun on request.
+
+## 11. Adoption of the research patches (round 4, 2026-10-06; PR #71)
+
+**What this section is.** The owner decided to adopt the patches of the bulletproof-compositor research (`docs/proposals/bulletproof-compositor.md`) into the hub image, together with a set of owner decisions numbered 3 to 14 in that task. This section says what was built, the decisions as applied, the protocols that are now hidden and the evidence, the tests, and every question that is still open. Everything is labelled TESTED, SOURCE, BELIEVED or UNKNOWN as above. **Written by a helper agent of the lead.** No sub-helpers were used; everything here I ran or read myself (2026-10-06).
+
+### 11.1 The patches, and what is new
+
+The complete list, one line per patch with the BC finding it fixes and the owner decision, is `image/patches/driftwm/README.md` (SOURCE: that file). In short:
+
+| Group | Files | Status |
+|---|---|---|
+| driftwm P1 to P12 | `0001` to `0012` | as before (sections 3 to 10) |
+| Smithay P6 | `smithay/0006` | as before |
+| **Smithay P7 to P11** (the research's names; BC-1 to BC-4) | `smithay/0007` to `0011`, named `smithay-pN` in the file name because driftwm already has a P7 to P11 | adopted unchanged from `docs/proposals/bulletproof-compositor/patches/` (the research folder is kept as the record) |
+| **driftwm D1 to D5** (BC-4, BC-5, BC-6, BC-11 part, BC-12, BC-13) | `0013` to `0017` | adopted unchanged |
+| **D6** (BC-11, the part D5 left) | `0018` | new: `resolve_cluster_shifts` uses saturating arithmetic (`saturating_neg`, `saturating_add`), plus four unit tests |
+| **D7** (repro tests of BC-12 and BC-13) | `0019` | new: tests only |
+| **D8** (hidden protocols, owner decision 7) | `0020` | new, see 11.3 |
+| **D9** (docs without `reload-config`) | `0021` | new, see 11.7 |
+| **D10** (fsync of the session file, owner decision 9) | `0022` | new, see 11.5 |
+
+**Applying and failing.** `tools/image/build-hub-parts.sh` already applied every `0*.patch` and every `smithay/0*.patch` with `git apply` (no fuzz) and stopped the build with the name of the patch if one did not apply; that code did not need a change, the new files are found by the same globs and are part of the stamp that decides whether driftwm is rebuilt. TESTED: all 22 driftwm patches (without the not-applied `0002`) and 6 Smithay patches apply in order to the pins `352333a8...` and `4cf0b620...` (the log of the image build prints `applied driftwm patch ...` for each). The earlier test of the failing case (section 4: three broken-patch cases, exit 1) still describes the script; I did not repeat it because the script's patch loop is unchanged.
+
+**Overlaps (checked, nothing dropped).** Written out in `image/patches/driftwm/README.md`. The ones that matter: `src/session.rs` is touched by P11 (writes) and D1 (the cap on reading), and after this round by D10 (fsync); `src/config/*` by P4 (non-ASCII colour), D2 (NUL) and P12 (no hot reload). They fix different inputs, so **all are kept**. Nothing fixes the same thing in two ways. One thing that looks like a collision is not one: the research's "Smithay P10" (positioner clamp) and this set's driftwm P10 (exit on failed frames) are different patches; the names differ in the file names (`smithay-p10-...` against `p10-exit-on-failed-frames`). The research built on `hub-stability`'s P1 to P6 only, so the order "P1 to P12, then D1 to D5" was never built before this round: TESTED here (all apply, `cargo test --release` passes, 11.8).
+
+### 11.2 Owner decisions applied, and what each one meant in the code
+
+| # | Decision (owner, as given in the task) | What was done | Label |
+|---|---|---|---|
+| 3 | Keep the helper's limits: 2^24 for sizes and offsets, 512 session entries, 256 MB per stand-in | The patches carry exactly those numbers (smithay-p9/p10/p11: 2^24; D1: 512; D4: 8192 x 8192 x 4 = 256 MB). Not changed. | SOURCE (the patch files) |
+| 4 | A protocol error disconnects the client for client mistakes; an error REPLY for hubd's requests; never a crash | Smithay P7 (`invalid_popup_parent`), P8 (`bad_surface`), P9 (`bad_value`), P11 (`invalid_size`) are protocol errors, so only that client is disconnected (TESTED: 11.9, the popup, subsurface and geometry reproductions leave the compositor answering). For the IPC: BC-12 and BC-13 now answer (the stand-in is clamped, the navigation action works) instead of crashing; BC-11 cannot panic. The IPC fuzzer on the final build: 55,046 requests in two runs, 0 crashes (11.9). **Not claimed:** that every IPC request returns an error reply; the IPC fuzzer shows no crash, not that every reply is an error. BC-14 and BC-9 (memory) are not patched. | TESTED |
+| 5 | The compositor config is baked into the image: an unknown field fails the IMAGE BUILD; at run time an unknown field falls back to the last good config with an alert; `restore_windows` explicitly OFF, checked at build time | 11.4 | TESTED |
+| 7 | Hide the protocols nothing on the hub uses, starting with session lock | 11.3 | TESTED (hub image) |
+| 8 | A GPU reset or lost device exits and restarts the compositor; the hang rule stays | 11.6 | SOURCE / UNKNOWN |
+| 9 | fsync the session files from the worker thread (P11's writer) | D10, 11.5 | TESTED (unit tests); power cut UNKNOWN |
+| 10 | Restart on any panic, never carry on | 11.6 | SOURCE |
+| 14 | The window stacking order is part of "restore exact" | hubd, 11.7 | TESTED (unit tests, H3f) |
+
+### 11.3 Protocols the hub does not offer (patch D8), who would use each, and the evidence
+
+**How it is done (SOURCE: `0020-d8-hide-unused-protocols.patch`).** Smithay's constructors for these protocols take a filter function that decides which clients may see the global. driftwm passes `client_is_unrestricted` (everybody, unless the client came through a security context). D8 passes a new `client_never` for the protocols below, so **no client sees the global and cannot bind it**; the compositor code behind them stays in the binary. Turning one back on is one word in `src/state/init.rs` (and a new image). In a **test build** of driftwm (`cfg!(test)`) `client_never` is the ordinary filter: driftwm's own 88 tests of session lock, virtual keyboard, workspaces, layer-frame gating and tablet bind these protocols through a test client, and with the globals hidden they failed (TESTED: first run of the patched tree, 88 failed, 1,264 passed). With the test exception all pass (11.8), and the hub test H1b checks the **shipped** behaviour in the virtual machine (below). So the unit tests keep the hidden code covered but do not themselves prove the hiding; the image test does.
+
+| Interface (protocol) | Who would use it | Why the hub does not need it | Evidence |
+|---|---|---|---|
+| `ext_session_lock_manager_v1` (session lock) | a screen locker (swaylock) | no locker is in the image or planned (HUB-OS.md: no lock); **BC-10**: if the locking client dies the outputs stay blank "with no way back short of a VT switch" (the author's own comment, SOURCE research 4) | STATIC (list below), H1b |
+| `zwlr_screencopy_manager_v1` (screen copy), `ext_image_copy_capture_manager_v1`, `ext_output_image_capture_source_manager_v1`, `ext_foreign_toplevel_image_capture_source_manager_v1` (the newer capture API) | screenshot and recording tools (grim, wf-recorder), screen-sharing | the hub runs viewers only; the screen servers (wayvnc) run on the NODES; driftwm has its own `driftwm msg screenshot` on the IPC | STATIC, H1b |
+| `zwlr_output_manager_v1` | output configuration tools (wlr-randr, kanshi) | one fixed output, set by driftwm's own config | STATIC, H1b |
+| `zwlr_output_power_manager_v1` | screen blanking tools (wlopm), idle daemons | the hub never blanks (projector; no idle daemon in the image) | STATIC, H1b |
+| `zwlr_gamma_control_manager_v1` | colour temperature tools (gammastep) | none installed | STATIC, H1b |
+| `zwp_virtual_keyboard_manager_v1` | on-screen keyboards, `wtype` | none installed. **Note:** the planned input forwarder is described as reading raw input devices and creating virtual ones (HUB-OS.md, "Unverified"), which is `/dev/uinput`, not this protocol. If the forwarder's design ever uses this protocol it has to be turned back on. | STATIC, H1b |
+| `zwp_input_method_manager_v2` | input method editors (fcitx5, ibus) | no text entry program runs on the hub | STATIC, H1b |
+| `wp_security_context_manager_v1` | sandbox launchers (Flatpak) | "No Flatpak" (HUB-OS.md) | STATIC, H1b |
+| `zwlr_foreign_toplevel_manager_v1`, `ext_foreign_toplevel_list_v1` | taskbars | Waybar's bar has only the `custom/hub` and `clock` modules (`etc/hubos/waybar.json`); hubd reads the windows over driftwm's own socket | STATIC, H1b |
+| `ext_workspace_manager_v1` | workspace switchers | no workspace module in the bar | STATIC, H1b |
+
+**Evidence in two parts.** STATIC (TESTED, `tools/image/experiments/driftwm-patches/protocol-users.sh` over the unpacked root of the hub image, files under `usr/bin`, `usr/sbin`, `usr/local/bin`, `usr/lib`, driftwm itself excluded; output in `tools/image/experiments/driftwm-patches/results-2026-10-06/protocol-users.txt`): **13 of the 14 interface names are in no file of the image**, so nothing on the image can ask for them. The 14th, `zwlr_foreign_toplevel_manager_v1`, is in `/usr/bin/waybar` only (its optional taskbar module; the hub's `waybar.json` does not load it). RUN-TIME: the hub image test **H1b** runs `wayland-info` against the running compositor and requires that none of the 14 is listed and that the core ones (`wl_compositor`, `wl_shm`, `wl_seat`, `xdg_wm_base`, `zwlr_layer_shell_v1`, `zxdg_decoration_manager_v1`, `wp_viewporter`) are; and every other hub test (bar drawn by Waybar, the wofi menu and its clicks, foot windows, 20 windows, restores) passes with the globals hidden (11.10). A try to record what foot, Waybar and wofi actually bind (a second Waybar and wofi started by hand with `WAYLAND_DEBUG=1`) made the test machine stop answering on its console; I removed that part and did not find out why (UNKNOWN), so there is **no run-time bind trace**; the static scan and the working bar and menu are the evidence.
+
+**Not hidden, on purpose.** `zwlr_data_control` and `ext_data_control` (the planned clipboard bridge uses `wl-copy` and `wl-paste`), `zwp_keyboard_shortcuts_inhibit` (VNC and SPICE viewers ask to keep the keys), pointer constraints and relative pointer (viewers), idle inhibit, fractional scale, viewporter, cursor shape, xdg-activation, xdg-decoration, layer shell (Waybar, wofi), and the core ones. Some protocols cannot be hidden this way because Smithay's constructor has no filter (tablet, xdg-foreign, text-input, content-type, background-effect, pointer gestures, idle notify): they stay on, and I judged none of them worth removing code for. That is a choice of mine, not an owner decision; it is question 9.
+
+### 11.4 The settings file: build check, run-time fallback, `restore_windows` off (decision 5)
+
+**Does driftwm reject unknown fields?** Yes, and no new code was needed for the check: every table of the config has `#[serde(default, deny_unknown_fields)]` (SOURCE `src/config/toml.rs`), and `driftwm --check-config --config FILE` prints the parse error and exits 1 (SOURCE `src/main.rs`; TESTED earlier in the research, `results/config-tests.txt`, `[effects] blur = false`). A bad VALUE (out of range) is not an error but a warning: `Config OK, N warning(s)` and exit 0.
+
+**Build check (SOURCE `tools/image/check-driftwm-config.sh`, called from `tools/image/build-root-image.sh` for the hub).** It runs the finished binary inside the finished image root (`chroot`; the root has every library) on `/etc/hubos/driftwm.toml` and **fails the build** (exit 1, nothing is built) if: (1) the output is anything but exactly `Config OK` (so an unknown field, a bad TOML **and a warning** all fail; strict for a baked file), or (2) the `[session]` table does not contain `restore_windows = false`. The settings file in the image now says so explicitly (`image/machines/hub/rootfs/etc/hubos/driftwm.toml`). TESTED: `go test ./tools/image/ -run BuildCheck` (a fake driftwm that rejects the word `bogus`): good file accepted; an unknown field, a warning, a missing line, `restore_windows = true` and the line in the wrong table are all refused with a clear message; the hub's real file is accepted; a missing file is refused. TESTED with the **real** driftwm: see the first lines of 11.10 (the hub image build ran the check as part of every image).
+
+**Why `restore_windows = false` and what BC-8 means now.** BC-8 (a config without `restore_windows = true` erases the saved windows from `session.json` at the next window change) is about driftwm's own window restore, which the hub does not use: hubd restores the windows (owner decision, HUB-OS.md), `session.json` lives in RAM (`XDG_STATE_HOME=/run/hub/state`), and the compositor starts with an empty session after a reboot by design. So BC-8 cannot harm the hub; the explicit `false` makes the file say what the hub relies on instead of relying on the default, and the build refuses a file that turns it on. BC-7 (one unknown field makes the whole file ignored at start) is closed for the baked file by the build check and for run time by the next paragraph.
+
+**Run-time fallback (SOURCE `image/machines/hub/rootfs/usr/lib/hubos/driftwm-config`, used by `etc/s6/sv/driftwm/run`).** At every start of the compositor the service runs `driftwm --check-config` on the image's file. Good: it is used, and a copy is kept on the config partition as **`/config/hubos/driftwm.last-good.toml`**. Not good (an unknown field or a broken TOML): the last good copy is used if it passes; if there is none, the compositor starts **with its built-in defaults** (driftwm's own behaviour today, but now with an alert). The alert is: the fixed line `HUB OS ALERT: the desktop settings file ... is not valid ...; the desktop starts with ...` on the serial console and in the service log, and the file `/run/hub/driftwm-config-fallback` (in RAM) with the same line; the file is removed at the next start with a good file. TESTED: `go test ./tools/image/ -run RuntimeConfig` (fake driftwm): bad file and no copy gives defaults and an alert; good file is used and copied, alert removed; bad file with a copy uses the copy and does not overwrite it; a file with only a warning is used. TESTED in the hub image: H1b checks that the compositor was started with `--config /etc/hubos/driftwm.toml`, that the last good copy exists and is identical, and that no alert file exists. **Not tested in the image: the bad-file path** (the image file is read-only and the build refuses a bad one, so the path cannot be reached without a hand-made image; the script itself is tested on the host).
+
+**Choices I made (simplest and reversible; all are questions 1 and 2):** the last good copy lives on the config partition and not in `/run` (a copy in RAM would never exist after a boot, and the image's file can only be bad after a boot); with no last good copy the compositor starts with defaults and does not refuse to start; **the alert is NOT on the bar**: the existing gave-up message (section 5.2) also goes to the screen and the serial console only, the bar alert is hubd's status line and hubd does not read any alert file. Putting it on the bar is a small change in hubd; I did not make it because it needs your decision.
+
+### 11.5 `fsync` of the session file from the worker thread (decision 9, patch D10)
+
+SOURCE `0022-d10-fsync-session-file.patch`. `session::write_async` now hands the bytes to the worker thread of P11 with a "durable" mark; the worker writes `session.json.tmp`, **`fsync`s the file, renames it, then `fsync`s the folder** (the folder sync is best effort). The event loop never waits. A newer plain write for the same path does not remove the durable mark of a waiting one (unit test). The state file in RAM is not synced. If the disk stalls the worker waits like for any other write, and the P11 counters (`pending_writes`) show it. TESTED: unit tests `a_durable_write_arrives_and_leaves_no_temporary_file` and `a_plain_write_does_not_cancel_a_waiting_durable_one`, and the P11 reproductions again (11.9: a blocked write still does not freeze the compositor). **UNKNOWN: the cost on a real disk and what a real power cut leaves** (needs hardware; research 7.5 and 10 of the bulletproof document). On the hub `session.json` is in RAM, so on the hub itself the `fsync` has nothing to protect; it matters only if `XDG_STATE_HOME` is ever put on a disk.
+
+### 11.6 GPU reset, the hang rule, panics (decisions 8 and 10)
+
+- **GPU reset or lost device (decision 8). What P10 does (SOURCE `src/backend/frame_health.rs`, `udev.rs`):** if every frame of an output fails for 2 seconds in a row (at least two failures), it logs once and exits with status 70, and the service restarts the compositor; hubd then restores the windows (section 5.2, hubd). That is the decision "exit and restart". **What is not there:** driftwm has no code that recognises a DRM or EGL "device lost" event as such (SOURCE: `grep` for lost, reset and robust in `udev.rs` finds nothing relevant); the exit happens only if the frames fail. A reset that makes `render_frame` hang instead of fail, or draw garbage without an error, is not caught by P10. UNKNOWN on a real GPU (no GPU here; December).
+- **The hang rule ("kill after 4 failed rounds and 30 s with both probes failing, at most 3 kills in 10 minutes"). Does it exist in code today? No.** SOURCE: `grep -rn` over `internal/`, `cmd/`, `image/` (rootfs, machines, stage0) and `tools/` finds the rule only in `HUB-OS.md` (the hub stability decisions) and in the research documents (`docs/proposals/hub-stability.md` and the bulletproof document, where the soak driver and `hangdrill.py` contain a probe loop that is test code, not part of the image). Nothing in hubd or in an s6 service probes the compositor for a hang or kills it. **I did not build it** (instruction: only if it already exists). Consequence TESTED in the research (BC-1): an unpatched hang ignores SIGTERM and needs `kill -9`; with Smithay P7 the known permanent hang is gone, but a hang from another cause would stay until someone kills the compositor. It is question 4.
+- **Panics (decision 10).** P3 stays off (the service does not set `HS_CATCH_PANICS`). No `panic = "abort"` was set: the release profile is Cargo's default, so a panic **unwinds**. How a panic ends: a panic on the **main thread** (the event loop, IPC handling, all Wayland handlers) ends the process with status 101 after the panic hook (P7: logs the message through the non-blocking writer and waits up to 0.5 s for it) ; s6 restarts the service; `finish` counts it as a crash (5 in 60 s: stop, section 5.2); hubd restores the windows. TESTED (`pipepanic` reproduction: "panic ended the process, exit status 101 after 0.6 s"). **A panic in a helper thread does not end the process**: it only ends that thread. Threads in the compositor are the log writer (P7), the file writer (P11, new `driftwm-files`), the font scan, the desktop-entry scan and the render tile workers (SOURCE: `grep` for `thread::Builder` in `src/text.rs`, `src/bgwrite.rs`, `src/logwriter.rs`, `src/state/suspended.rs`, `src/render/tile_worker.rs`). A dead file writer would stop session and state writes without restarting the compositor, and `pending_writes` would grow; a dead log writer would stop the log. That is "carry on" for those threads. `panic = "abort"` would end the process on every panic in every thread, which is what "restart on any panic, never carry on" says, but it also removes unwinding for driftwm's own `catch_unwind` (one driftwm test relies on `catch_unwind`; whether Smithay or Mesa callbacks depend on unwinding is UNKNOWN). I did not change the profile because the decision does not say whether helper threads count; **question 5**.
+
+### 11.7 hubd: the stacking order is restored (decision 14), and the generated docs
+
+**What was found about driftwm.** `driftwm msg state` and the IPC `State` list the windows in z-order, bottom to top, **but move the focused window to the front of the list** ("Focused window first, so consumers can read windows[0] as the focused one", SOURCE `src/state/persistence.rs`, `window_inventory`). So the position of the focused window is not in the answer. The only request that raises a window is `Focus` (it focuses and raises, `raise_and_focus`, and pans the view unless the window is fully in view; SOURCE `src/ipc/mod.rs`, `cmd_focus`); there is no separate raise. `Move` does not raise (SOURCE: the code comment "without the re-raise `map_window` would carry").
+
+**What hubd does now (SOURCE `internal/driftwm/driftwm.go` `StackOrder`, `internal/hub/restore.go`).** (1) `State.StackOrder()` reads the list and **takes the focused window to be on top** (every way of focusing a window raises it: TESTED for `Focus`; BELIEVED for a click). (2) Every snapshot hubd sees updates `lastOrder`, the machine ids bottom to top (windows that are not a machine's, such as a terminal, are left out; the order is not updated while a restore is running, like the view). (3) When the compositor goes away the order is copied to the restore list. (4) After every window of a restore is back and before the view is put back, hubd calls `Focus` for each machine window from the bottom up, so the last one ends on top and has the keyboard focus; the view is set afterwards because focusing pans it. A failure is part of the message "the desktop restarted: ...". TESTED: four unit tests (`TestRestoreBringsTheStackingOrderBack`, `...KeepsTheOrderAcrossTwoCrashes`, `...OrderSkipsAWindowClosedOnPurpose`, `...SetsTheViewAfterTheStackingOrder`), written against a fake compositor that lists windows the way driftwm does (focused first); with the apply step stubbed out all four fail. The hub image test H3f now sets a random stacking order of the 20 windows (focus in random order, then the view back) and checks, after every kill cycle, that the order read from `driftwm msg state` is equal (same rule for the focused window) (11.10).
+
+**Limits (said plainly).** The assumption "the focused window is on top" can be wrong if the window with the keyboard focus is below another machine window (BELIEVED not to happen through hubd, a click or `Focus`; not proven for every path). A driftwm change that reports the true order (an extra field in `WindowInfo`) would remove the assumption; I did not make it (it changes the IPC; question 6). **Saved layouts do not store the stacking order** (the layout file format has no field for it and this task named the restore); question 7.
+
+**Generated docs (SOURCE `0021-d9-docs-without-reload-config.patch`).** driftwm's own test regenerates only `docs/cli.md` (`UPDATE_CLI_DOCS=1 cargo test docs_cli_md_is_up_to_date`; the source of the text is the doc comments of the clap definitions, so the comment in `src/ipc/client.rs` was edited and the file regenerated). `docs/ipc.md` and `docs/shaders.md` are **not generated**; they are hand-written, so I edited the sentences by hand (`reload-config` in the warning box of `ipc.md`; the "Reloading after edits" paragraph of `shaders.md`). After this, `grep reload-config docs README.md` finds nothing (the words remain in two source comments and in P12's error message, which says why the action is refused).
+
+**Does `cli_docs::docs_cli_md_is_up_to_date` fail on the pristine tree?** The bulletproof research saw it fail on its patched tree and did not know about the pristine one. TESTED here, pristine tree (driftwm `352333a`, Smithay `4cf0b62`, no patch), same build root as the image build:
+
+```
+cargo test --release docs_cli_md_is_up_to_date
+     Running unittests src/main.rs (/target/release/deps/driftwm-376c28b371a413e5)
+running 1 test
+test tests::cli_docs::docs_cli_md_is_up_to_date ... ok
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1356 filtered out; finished in 0.00s
+```
+
+**It passes on the pristine tree and on the final patched tree** (11.8). So the failure the research saw was caused by its own tree or environment, not by driftwm itself (BELIEVED: its working tree had `docs/cli.md` from another state; not investigated, since it does not reproduce). The earlier failure in this document (section 3, P1 adds two options) was real and is fixed in P1 itself.
+
+### 11.8 driftwm's own tests
+
+TESTED, `cargo test --release --no-fail-fast` in the image build root (private mount namespace, shared target folder), on the tree made by applying all patches to the pins exactly as the image build does (`/tmp` copy, identical to the build's tree):
+
+```
+lib      test result: ok. 339 passed; 0 failed; 0 ignored
+bin      test result: ok. 1352 passed; 0 failed; 13 ignored
+integration tests (canvas_navigation 25, canvas_transforms 30, canvas_zoom 25, config_bindings 24, config_docs 1, config_parse 78,
+  config_reference 10, config_robustness 3, config_toml 57, snap 18, window_rules 79): all ok, 0 failed
+doc tests: ok
+```
+
+(The pristine tree had 327 library and 1,356 binary tests; the difference is the tests of the patches.) New tests that pass: `layout::cluster::tests::bc11_*` (4), `canvas::tests::bc13_*` (2), `decorations::tests::bc12_*` (2), `bgwrite::tests::a_durable_write_...` and `a_plain_write_does_not_cancel_...` (2). **Before the fixes:** the same eight tests (BC-11, BC-12, BC-13) added to the **pristine tree** (no other change): `cargo test --release bc1`: **6 of 8 fail** (`bc13_closest_point...`: `f64::clamp` panic; `bc11_extreme_height_delta...` left `(0, -2147483648)` right `(0, 2147483647)`; `bc11_extreme_width_delta...` the same on x; `bc11_primary_push...` left 852516351 right 2147483647; `bc12_...body_fill` panics at `decorations.rs:380` and `...title_bar` with `capacity overflow`), 2 pass (the push test and the bounding-box test do not detect the old code in a release build; they are kept as extra cover; they panic only in a debug build with overflow checks). With the fixes: all 8 pass.
+
+### 11.9 Reproductions before and after, and the short fuzz runs (all TESTED, 2026-10-06)
+
+**Method.** The nested compositor (winit backend on Xvfb, software OpenGL, `foot` windows) as in section 6, with a runtime folder made from the image's build root plus Xvfb, xkbcomp, foot, `libxkbcommon-x11` and the Mesa software drivers unpacked with `dpkg -x` (nothing installed; deleted afterwards). **Unpatched** = driftwm `352333a` + Smithay `4cf0b62`, release build in the same build root. **Patched** = `$WORK/out/driftwm` of the hub image build (all patches, the very file that goes into the image, before `strip`). Commands: `tools/image/experiments/driftwm-patches/run-bc.sh UNPATCHED PATCHED` (the research's minimal reproductions: `docs/proposals/bulletproof-compositor/scripts/verify.sh`) and `run-all.sh UNPATCHED PATCHED UNPATCHED+HOOKS PATCHED+HOOKS UNPATCHED+BADSHADER PATCHED+BADSHADER` (the `hub-stability` reproductions, section 6). One environment problem on the way: the first try had no `libxkbcommon-x11`, so every compositor died at start with a panic in `xkbcommon-dl`; the numbers below are from the second try.
+
+| Finding | Reproduction | Unpatched | Patched |
+|---|---|---|---|
+| BC-1 popup that is its own parent / two popups naming each other | `repro_popup.py self`, `pair` | **HUNG** at 100 % CPU (both) | alive and answering |
+| BC-2 `place_above` itself | `repro_subsurface.py` | **DEAD** (exit status 1 in this run; the research saw 101) | alive, the client got an error event |
+| BC-3 viewport destination 16384 x 2^31-1; subsurface offset 2^31-1, 2^30 | `repro_damage.py` (3 variants) | **DEAD**, exit 134 (all 3) | alive (all 3) |
+| BC-6 NUL in a key binding (`--check-config`) | `nulcfg.sh` | **panic**, exit 101 | exit 0 |
+| BC-6 NUL in the keyboard layout, at start / at reload | `nulstart.sh` | **DEAD** (start: status 101; reload: status 101) | alive (at reload: there is no reload, P12) |
+| BC-12 IPC `Resize` of a stand-in to 32768 x 32768 | `repro_ipc.py standin_resize_32768` | **DEAD**, exit 101 (`capacity overflow`) | alive and answering |
+| BC-13 IPC `Move` to (65535, 2147483647), then `center-nearest left` | `repro_ipc.py nav_far` | **DEAD**, exit 101 (`f64::clamp`: min > max) | alive and answering |
+| BC-11 overflow in `resolve_cluster_shifts` | unit tests `bc11_*` (pure logic: no live reproduction) | 3 of 4 tests fail (11.8) | all 4 pass |
+| BC-5 (30,000 session entries), BC-4 (debug-build overflows), BC-9, BC-10, BC-14 | not re-run here (BC-5 and BC-4 are covered by the research; BC-9, BC-10, BC-14 have no patch or are hidden) | | |
+| F1 `wl_shm_pool.resize(0)` (`shm`) | `repros.py shm` | **DIED**, exit 101 | **survived**, IPC answers |
+| F3 non-ASCII colour (`config`) | `repros.py config` | **KILLED** (check-config exit 101, running compositor exit 101) | **survived** (check-config exit 0) |
+| F4 log pipe full (`pipe`) | `repros.py pipe` | **FROZEN** (0 of 5 IPC requests answered; sleeping in `anon_pipe_write`) | **not frozen** (5 of 5) |
+| F4 + a panic (`pipepanic`, test hook build) | `repros.py pipepanic` | already frozen by the pipe (0 of 5), so no panic could be sent | the panic **ended the process**, exit 101 after 0.6 s |
+| F6 start-up helper that hangs (`startup`) | `repros.py startup` | **BLOCKED**, no IPC after 20 s, the helper was started | started in 0.2 s, the helper was not even tried |
+| default shader does not compile (`badshader`, test build) | `repros.py badshader` | **DIED**, exit 101 | **survived**, flat background, IPC answers |
+| hot reload (`reload`) | `repros.py reload` | works, `reload-config` answers `Ok` | no hot reload; `reload-config` refused; compositor alive |
+| blocked session write (`session`) | `repros.py session` | **FROZEN** (0 of 4 answered) | **not frozen** (4 of 4); `pending_writes: 1` (this is the build with D10: the worker is stuck in `open` on the FIFO, as before) |
+| failing session write (`sessionfail`) | `repros.py sessionfail` | no counter | IPC answers; `failed_writes: 1, pending_writes: 0` |
+
+The two reproductions the owner asked to be rerun, **`pipepanic` and `badshader`**, ran on the final patched build (the hooks build and the broken-shader build are the final patch set plus `not-applied/0002-p2-test-hooks.patch`, and plus a deliberately broken `src/shaders/dot_grid.glsl`): rows above, same verdicts as in section 6.2. The raw outputs are the output of the two commands; the full text of both is in the PR description.
+
+**Short fuzz runs, final patched build** (the research's `fuzz2.py` and `ipcfuzz.py`, 68 protocol XML files: wayland, wayland-protocols from the Ubuntu package, the wlroots protocols from the wlroots repository master, unpinned; the globals that D8 hides cannot be bound, so the fuzzer cannot exercise those protocols on this build):
+
+| Run | Result |
+|---|---|
+| Wayland fuzzer, **unpatched**, 1 seed, 100 s | **HUNG** after 13 connections (the loop did not answer for 10 s; SIGTERM ignored) |
+| Wayland fuzzer, **patched**, 2 seeds x 120 s | seed 1101: 1,279 connections, 75,984 requests, alive, IPC answers, SIGTERM exits in 0.2 s; seed 1102: 1,731 connections, 101,569 requests, same. **0 crashes, 0 hangs** |
+| IPC fuzzer, **unpatched**, seed 11, 120 s | **DEAD**, exit 101, after 600 requests |
+| IPC fuzzer, **patched**, seeds 11 and 12, 120 s each | 41,884 and 13,162 requests, alive at the end, memory 169 MB and 135 MB. **0 crashes** |
+
+Total fuzzing time on the final build: 8 minutes. This is a smoke test, **not** the 24 hours the research proposes (criterion A2).
+
+### 11.10 Tests in the hub image (virtual machines)
+
+**PENDING**: the runs are in progress; this section is filled in when they finish.
+
+### 11.11 The hang comparison, and why its test is gone
+
+The throwaway test `tools/image/hangcompare_test.go` and its two summary files (`tools/image/experiments/hang-compare/`) were **removed in this round** (owner instruction, after the result was copied here). Result (TESTED, 2026-10-06, written down in section 7.3 in words; the numbers are copied here from the summary files before they were deleted): each cycle was a fresh disk, first boot, `hubos-ctl update` of the bundle h2-good into slot b, `reboot -f`, one wait of 150 s for the handover line of the trial boot (no retry), then the confirm; the only difference between the two runs was the kernel.
+
+| Cycle | New kernel (`hub.frag` with the text console: slot kernels 4,473,856 bytes, recovery 6,689,792) | Old kernel (without `CONFIG_VT`, `CONFIG_FB`, `CONFIG_DRM_FBDEV_EMULATION`, `CONFIG_FRAMEBUFFER_CONSOLE`, `CONFIG_FONTS`, `CONFIG_FONT_8x16`: 4,445,184 and 6,661,120) |
+|---|---|---|
+| 1 | trial boot ok after 67 s | 72 s |
+| 2 | 87 s | 57 s |
+| 3 | 63 s | 70 s |
+| 4 | 47 s | 45 s |
+| 5 | 63 s | 59 s |
+| 6 | 63 s | 46 s |
+| 7 | 61 s | 77 s |
+| 8 | 49 s | 42 s |
+| 9 | 72 s | 46 s |
+| 10 | 56 s | 62 s |
+| result | **10 trial boots, 10 ok, 0 hangs, 0 crashes**; every one confirmed on slot b release 2 | **10 ok, 0 hangs, 0 crashes**; every one confirmed on slot b release 2 |
+
+The 20 serial logs were kept in the scratchpad folder `hangcmp/` of that session (1.2 MB); they were **not committed** and are not available to this round (the folder belonged to the earlier helper). The comparison did not reproduce the hang of run A on either kernel and gives no sign that the text console causes it; 20 boots cannot prove the stall cannot happen (the run-A stall was 1 in about 10 trial boots of that session; UNKNOWN whether the rate is the same).
+
+### 11.12 Questions for the owner (nothing here is decided; I picked the simplest reversible default where the text leaves it open)
+
+1. **Bar alert for a settings-file fallback.** Today the alert is a line on the serial console, in the service log and the file `/run/hub/driftwm-config-fallback`; nothing shows on the bar, like the gave-up message. Do you want hubd to read that file and turn the bar item red with the line in its tooltip (a small hubd change)? (11.4)
+2. **Last good settings copy:** `/config/hubos/driftwm.last-good.toml` on the config partition, updated at every start with a good file; with no copy the compositor starts with driftwm's built-in defaults (it does not refuse to start). Acceptable, or should it refuse / use another place? It is one more small file on the config partition that the NAS backup list does not know about. (11.4)
+3. **Hidden protocols (11.3).** Is the list right? Especially: `zwp_virtual_keyboard` (hidden; if the input forwarder will use this protocol instead of `/dev/uinput`, it must stay on), and the ones I did not hide because Smithay gives no filter for them (tablet, xdg-foreign, text-input, content-type, background-effect, pointer gestures, idle notify). Hiding those would mean deleting code; do you want that?
+4. **The hang rule is not in the code (11.6).** `HUB-OS.md` and the research describe "kill after 4 failed rounds and 30 s with both probes failing, at most 3 kills in 10 minutes", and the research soak driver has a probe loop, but **nothing in hubd or the image does it**. I did not build it. Should it be built, and where: in hubd (it already talks to the socket and the service state) or as a separate small s6 service?
+5. **Panics in helper threads (11.6).** The compositor's main thread panic ends the process (status 101, restart, crash counter). A panic in a helper thread (log writer, file writer, font scan, desktop-entry scan, render tile workers) only ends that thread and the compositor carries on. Do you want `panic = "abort"` in the release profile so that **every** panic ends the process? (A small build change; it turns off unwinding for the whole binary and its libraries.)
+6. **Stacking order assumption (11.7).** hubd takes the focused window to be on top because driftwm lists it first. A tiny driftwm patch (an extra field with the real position, additive in the IPC `State`) would remove the assumption. Do you want it?
+7. **Saved layouts do not store the stacking order** (file format unchanged; overlapping windows are only a warning). Add it (an optional field, old files stay valid)?
+8. **GPU reset (11.6).** P10 exits after 2 s of failed frames. It does not detect a reset that makes frames hang or draw garbage without an error. Accept until December, or add a probe (needs the hang rule, question 4)?
+9. **`fsync` cost and meaning.** On the hub `session.json` is in RAM, so D10 protects nothing there; it matters only if `XDG_STATE_HOME` moves to a disk. Keep it anyway? (11.5)
+10. **Still unpatched findings of the research:** BC-9 (a client's buffers cost about 8 times their size, no per-client limit), BC-14 (a failed allocation aborts the compositor under a memory ceiling), BC-10 is closed by hiding the protocol, the audit of Smithay's roughly 1,400 `unwrap` sites, and the 24-hour fuzz and 72-hour soak gates. None was in this task. Which of them, and when?
+
+### 11.13 What was not verified
+
+- Anything on real hardware (GPU, a real screen, a real disk, a power cut, real input).
+- That `driftwm-config`'s fallback path works inside the image (it is tested on the host with a fake driftwm; the image's own file is good and the build refuses a bad one).
+- The stacking order in a real session with a mouse: the unit tests use a fake compositor; H3f uses `driftwm msg focus` to set the order.
+- The full 24-hour fuzz, a soak, miri and the sanitizers on the final patch set (the research ran them on its own set; this round ran 8 minutes of fuzzing on the final build).
+- Upstream: nothing was reported to the driftwm or Smithay authors (owner decision).
+- BC-5 and BC-4 reproductions were not rerun on the final build.
+- That the hidden protocols are not used by the viewers that are not yet in the image (virt-viewer, a VNC viewer): the evidence is for foot, Waybar, wofi and the image's other programs; a viewer that needs one of them would show up as a failure and the fix is one word in `init.rs`.

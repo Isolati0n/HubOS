@@ -1,0 +1,22 @@
+### protocol fuzzer on the UNPATCHED build: 1 seed x 100 s
+seed=201 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 13 mode=normal last=ext_session_lock_manager_v1.destroy; logs of last 4 connections saved COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=13 sent=1138 killed_by_compositor=12 alive=True | POST-FUZZ IPC FAILED TimeoutError timed out SIGTERM IGNORED for 10 s: State:	R (running) wchan=0 cpu_ticks=571
+FINISHED
+### protocol fuzzer on the PATCHED build (the one in the image): 2 seeds x 120 s
+seed=1101 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1279 sent=75984 killed_by_compositor=1277 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1102 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1731 sent=101569 killed_by_compositor=1729 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+FINISHED
+### IPC fuzzer (the socket hubd uses) on the UNPATCHED build: 1 seed x 120 s
+requests=600 ok_replies=236 error_replies=353 result=DEAD rc=101
+top request kinds: {'Action': 88, 'Move': 77, 'Resize': 58, 'str': 44, 'Bookmark': 35, 'raw': 29, 'Zoom': 28, 'Camera': 26}
+top error texts: {'conn:FileNotFoundError': 39, '{"Err":"invalid request: expected value at line 1 column 1"}': 30, '{"Err":"no suspended window matching selector"}\n': 15, '{"Err":"invalid request: data did not match any variant of u': 14, '{"Err":"size must be positive"}\n': 13, '{"Err":"no window
+last requests saved to /tmp/adopt-w/hs/bc/fz/ipc-unp-11/ipc-crash-seed11.json
+### IPC fuzzer on the PATCHED build: 2 seeds x 120 s
+requests=41884 ok_replies=19399 error_replies=22066 result=ALIVE rc=None
+top request kinds: {'Move': 5607, 'Action': 5474, 'str': 3900, 'Resize': 3670, 'raw': 2460, 'Zoom': 2075, 'Camera': 2030, 'Screenshot': 1812}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 1930, '{"Err":"no suspended window matching selector"}\n': 1350, '{"Err":"size must be positive"}\n': 881, '{"Err":"invalid request: data did not match any variant of u': 748, '{"Err":"zoom must be a positive number"}\
+RSS KB: ['169068']
+requests=13162 ok_replies=5899 error_replies=7119 result=ALIVE rc=None
+top request kinds: {'Move': 1773, 'Action': 1730, 'Resize': 1222, 'str': 1141, 'raw': 814, 'Zoom': 644, 'Camera': 641, 'Relaunch': 590}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 625, '{"Err":"no suspended window matching selector"}\n': 435, '{"Err":"size must be positive"}\n': 280, '{"Err":"invalid request: data did not match any variant of u': 233, '{"Err":"zoom must be a positive number"}\n'
+RSS KB: ['134772']
+ALLDONE

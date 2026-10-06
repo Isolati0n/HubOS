@@ -228,15 +228,3 @@ var hiddenProtocols = []string{
 	"ext_foreign_toplevel_list_v1",
 	"ext_workspace_manager_v1",
 }
-
-// h1bScript runs, as the user hub, the hub's own Wayland clients for a few seconds each with WAYLAND_DEBUG=1 and prints the
-// interfaces each one binds (one line per client), and the interfaces the compositor advertises (wayland-info).
-func h1bScript() string {
-	return `HE="` + hubEnv + `"
-bound() { sed -n 's/.*bind([0-9]*, "\([a-z_0-9]*\)".*/\1/p' | sort -u | tr '\n' ' '; }
-echo "FOOT: $(env $HE WAYLAND_DEBUG=1 timeout 5 foot --app-id=h1b-probe -e sleep 3 2>&1 | bound)"
-echo "WAYBAR: $(env $HE WAYLAND_DEBUG=1 timeout 6 waybar -c /etc/hubos/waybar.json -s /etc/hubos/waybar.css 2>&1 | bound)"
-echo "WOFI: $(echo one | env $HE WAYLAND_DEBUG=1 timeout 5 wofi --dmenu 2>&1 | bound)"
-echo "INFO: $(env $HE wayland-info 2>&1 | sed -n "s/.*interface: '\([a-z_0-9]*\)'.*/\1/p" | sort -u | tr '\n' ' ')"
-`
-}
