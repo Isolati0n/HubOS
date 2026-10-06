@@ -43,6 +43,8 @@ All decisions are in `HUB-OS.md`. Where to look:
 
 ## 3. PARKED (not started; each waits for the owner's go-ahead)
 
+**FIRST JOB ON RESUME: run TestHubImage twice and TestImage once on main, by themselves on an idle machine, before Part 6, because the merged combination has never run in QEMU.**
+
 ### 3.1 Part 6: the init comparison
 - **What:** compare s6 with s6-rc, runit, dinit, OpenRC, the Go and Elixir "policy brains" and the custom PID 1 designs against the scorecard (reliability and integration high; boot speed and code size low; the hub never reboots for a service failure).
 - **Plan decided by the owner:** an ELIMINATION ROUND by fault injection first, then a soak of at least 4 hours of ONLY the finalists. One long job at a time.
