@@ -472,7 +472,7 @@ HubOS/
 - The real clipboard echo path (the node helper's wl-copy, wayvnc, the viewer, the hub clipboard) behaves like the stand-in used in tests
 - wl-paste (one-shot and --watch) under driftwm
 - hubd clipboard push, the focused-window-to-machine lookup and the bar button (not built)
-- Signed PUT and GET for the node helper, the full signed round trip, and a node helper binary run as an s6 or dinit service (not built)
+- The node helper's PUT and GET calls (plain requests), the full round trip, and a node helper binary run as an s6 or dinit service (not built)
 - The init collects the orphaned wl-copy holder processes (believed for s6, unknown for dinit)
 - A thin init-neutral "service up/down" command (does not exist)
 - Node helper session start and stop order, the sound retry, and wayvnc -R keeping the screen size fixed (design only)
@@ -501,7 +501,7 @@ HubOS/
 - Clipboard push: a bar button and a key chord (the chord chosen after checking driftwm's bindings); the target is the focused window's machine, with a pick from the list; a pull button as fallback; no automatic push; size limit 1 MiB; hubd ignores a differing echo of the text it just pushed
 - Which viewer the hub uses (remote-viewer, TigerVNC, wlvncc or one we write; see docs/proposals/remote-display-benchmarks.md)
 - The clipboard bridge and the node helper API (see docs/proposals/node-helper-api.md)
-- The network recovery agent in the recovery kernel: protocol, authentication, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
+- The network recovery agent in the recovery kernel: protocol, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
 - AI box: NVIDIA with CUDA, or AMD with ROCm, decided in December from the generative-media software the owner will run (images, video, music, language models); VRAM matters most
 - Forwarder design: always grab and re-inject, or grab only while forwarding (decided after December measurements)
