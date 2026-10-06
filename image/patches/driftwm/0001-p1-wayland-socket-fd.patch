@@ -1,0 +1,128 @@
+Hub OS P1: adopt a Wayland socket passed with --socket NAME --wayland-fd FD (the wl-restart contract).
+Without --wayland-fd driftwm behaves as upstream. Source: docs/proposals/hub-stability.md section 5.9.
+
+diff -ruN a/docs/cli.md b/docs/cli.md
+--- a/docs/cli.md
++++ b/docs/cli.md
+@@ -21,6 +21,8 @@
+ - `--config <PATH>` — Use an alternate config file
+ - `--check-config` — Validate the config and exit
+ - `--session-file <PATH>` — Durable session file path. Overrides the default; lets a nested winit dev session opt into session restore (it skips it otherwise)
++- `--socket <NAME>` — Name the Wayland socket (HUB-STABILITY PATCH, wl-restart contract)
++- `--wayland-fd <FD>` — Adopt an already-listening Wayland socket inherited as this fd (HUB-STABILITY PATCH, wl-restart contract: used with --socket)
+ - `-V, --version` — Print version
+ 
+ ```bash
+diff -ruN a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -42,6 +42,13 @@
+     /// dev session opt into session restore (it skips it otherwise).
+     #[arg(long, value_name = "PATH")]
+     session_file: Option<std::path::PathBuf>,
++    /// Name the Wayland socket (HUB-STABILITY PATCH, wl-restart contract)
++    #[arg(long, value_name = "NAME")]
++    socket: Option<String>,
++    /// Adopt an already-listening Wayland socket inherited as this fd
++    /// (HUB-STABILITY PATCH, wl-restart contract: used with --socket)
++    #[arg(long, value_name = "FD")]
++    wayland_fd: Option<i32>,
+     #[command(subcommand)]
+     command: Option<Sub>,
+ }
+@@ -213,11 +220,30 @@
+             Ok(smithay::reexports::calloop::PostAction::Continue)
+         })?;
+ 
+-    let listening_socket = smithay::wayland::socket::ListeningSocketSource::new_auto()?;
+-    let socket_name = listening_socket
+-        .socket_name()
+-        .to_string_lossy()
+-        .into_owned();
++    // HUB-STABILITY PATCH: with --wayland-fd the socket was bound by a parent
++    // (wl-restart style) and stays open across compositor restarts; we only
++    // accept on it. Without it, behave exactly as upstream.
++    enum Listener {
++        Own(smithay::wayland::socket::ListeningSocketSource),
++        Inherited(std::os::unix::net::UnixListener),
++    }
++    let (listening_socket, socket_name) = if let Some(fd) = cli.wayland_fd {
++        use std::os::fd::FromRawFd;
++        let name = cli
++            .socket
++            .clone()
++            .ok_or("--wayland-fd needs --socket NAME")?;
++        // SAFETY: the parent passed a listening unix socket as this fd.
++        let l = unsafe { std::os::unix::net::UnixListener::from_raw_fd(fd) };
++        l.set_nonblocking(true)?;
++        // Do not leak the listening socket into apps we spawn.
++        unsafe { libc::fcntl(fd, libc::F_SETFD, libc::FD_CLOEXEC) };
++        (Listener::Inherited(l), name)
++    } else {
++        let s = smithay::wayland::socket::ListeningSocketSource::new_auto()?;
++        let n = s.socket_name().to_string_lossy().into_owned();
++        (Listener::Own(s), n)
++    };
+     tracing::info!("Listening on WAYLAND_DISPLAY={socket_name}");
+     unsafe { std::env::set_var("WAYLAND_DISPLAY", &socket_name) };
+     unsafe { std::env::set_var("XDG_SESSION_TYPE", "wayland") };
+@@ -280,17 +306,48 @@
+         tracing::warn!("Failed to send READY=1 to systemd: {e}");
+     }
+ 
+-    event_loop
+-        .handle()
+-        .insert_source(listening_socket, |stream, _, data: &mut DriftWm| {
+-            tracing::info!("New client connected");
+-            if let Err(e) = data
+-                .display_handle
+-                .insert_client(stream, Arc::new(ClientState::default()))
+-            {
+-                tracing::warn!("Failed to insert client: {e}");
+-            }
+-        })?;
++    match listening_socket {
++        Listener::Own(listening_socket) => {
++            event_loop
++                .handle()
++                .insert_source(listening_socket, |stream, _, data: &mut DriftWm| {
++                    tracing::info!("New client connected");
++                    if let Err(e) = data
++                        .display_handle
++                        .insert_client(stream, Arc::new(ClientState::default()))
++                    {
++                        tracing::warn!("Failed to insert client: {e}");
++                    }
++                })?;
++        }
++        Listener::Inherited(listener) => {
++            use smithay::reexports::calloop::{Interest, Mode, PostAction, generic::Generic};
++            event_loop.handle().insert_source(
++                Generic::new(listener, Interest::READ, Mode::Level),
++                |_, listener, data: &mut DriftWm| {
++                    loop {
++                        match listener.accept() {
++                            Ok((stream, _)) => {
++                                tracing::info!("New client connected (inherited socket)");
++                                if let Err(e) = data
++                                    .display_handle
++                                    .insert_client(stream, Arc::new(ClientState::default()))
++                                {
++                                    tracing::warn!("Failed to insert client: {e}");
++                                }
++                            }
++                            Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => break,
++                            Err(e) => {
++                                tracing::warn!("accept on inherited socket: {e}");
++                                break;
++                            }
++                        }
++                    }
++                    Ok(PostAction::Continue)
++                },
++            )?;
++        }
++    }
+ 
+     // inotify watch instead of an mtime poll, so an idle session never wakes
+     // the CPU. Watch the directory, not the file: editor atomic-saves replace

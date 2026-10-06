@@ -1,0 +1,7 @@
+# The two source versions the hub's compositor is built from (read by tools/image/build-hub-parts.sh with `.`).
+# HUB-OS.md pins driftwm; Smithay is the revision that driftwm's own Cargo.lock pins at DRIFTWM_COMMIT
+# (the build checks that the two still agree and fails if not).
+# The patches in this folder (0*.patch, applied in name order) are against DRIFTWM_COMMIT; the ones in smithay/ are
+# against SMITHAY_REV. not-applied/ holds patches that are never put in the image (test hooks).
+DRIFTWM_COMMIT=352333a8fa1b22171492d4b71a54102045c9a19d
+SMITHAY_REV=4cf0b62028039661477d482ec4758b687d8f4392

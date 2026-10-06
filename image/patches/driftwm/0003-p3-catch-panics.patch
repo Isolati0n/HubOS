@@ -1,0 +1,55 @@
+Hub OS P3: catch_unwind around the Wayland dispatch and each IPC connection, ONLY when the environment variable
+HS_CATCH_PANICS is set (the hub's service does not set it). A caught panic can leave poisoned locks; see the proposal.
+
+diff -ruN a/src/ipc/mod.rs b/src/ipc/mod.rs
+--- a/src/ipc/mod.rs
++++ b/src/ipc/mod.rs
+@@ -102,7 +102,20 @@
+     let registered = state
+         .loop_handle
+         .insert_source(source, move |_, stream, state| {
+-            Ok(serve_connection(stream, &mut buffer, state))
++            // HUB-STABILITY EXPERIMENT: catch panics in IPC handling when HS_CATCH_PANICS is set.
++            if std::env::var_os("HS_CATCH_PANICS").is_some() {
++                match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++                    serve_connection(stream, &mut buffer, state)
++                })) {
++                    Ok(a) => Ok(a),
++                    Err(_) => {
++                        tracing::error!("PANIC CAUGHT in IPC handler; dropping that IPC connection");
++                        Ok(PostAction::Remove)
++                    }
++                }
++            } else {
++                Ok(serve_connection(stream, &mut buffer, state))
++            }
+         });
+     if let Err(e) = registered {
+         tracing::warn!("IPC: failed to register client connection: {e}");
+diff -ruN a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -215,8 +215,21 @@
+     event_loop
+         .handle()
+         .insert_source(display_source, |_, display, data: &mut DriftWm| {
+-            // SAFETY: Display is never dropped while the Generic source is alive.
+-            unsafe { display.get_mut() }.dispatch_clients(data).ok();
++            // HUB-STABILITY EXPERIMENT (catch panics in client dispatch): if
++            // HS_CATCH_PANICS is set, a panic in a request handler is logged
++            // and the loop continues. State may be half-updated: see the proposal.
++            if std::env::var_os("HS_CATCH_PANICS").is_some() {
++                let r = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
++                    // SAFETY: Display is never dropped while the Generic source is alive.
++                    unsafe { display.get_mut() }.dispatch_clients(data).ok();
++                }));
++                if r.is_err() {
++                    tracing::error!("PANIC CAUGHT in Wayland client dispatch; continuing");
++                }
++            } else {
++                // SAFETY: Display is never dropped while the Generic source is alive.
++                unsafe { display.get_mut() }.dispatch_clients(data).ok();
++            }
+             Ok(smithay::reexports::calloop::PostAction::Continue)
+         })?;
+ 

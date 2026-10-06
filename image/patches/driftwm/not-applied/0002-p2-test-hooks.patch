@@ -1,0 +1,30 @@
+Hub OS P2: TEST HOOKS (hs-test-busyloop, hs-test-deadlock, hs-test-panic) on the IPC Action request.
+NEVER for production. This file is NOT applied by the hub image build; it is only for test builds.
+
+diff -ruN a/src/ipc/mod.rs b/src/ipc/mod.rs
+--- a/src/ipc/mod.rs
++++ b/src/ipc/mod.rs
+@@ -205,6 +205,23 @@
+         Request::Close(sel) => cmd_close(sel, state),
+         Request::Suspend(sel) => cmd_suspend(sel, state),
+         Request::Relaunch(sel) => cmd_relaunch(sel, state),
++        // HUB-STABILITY TEST HOOKS (never for production): reproduce the three
++        // ways the event loop can stop answering, to test hang detection.
++        Request::Action(spec) if spec == "hs-test-busyloop" => loop {
++            std::hint::spin_loop();
++        },
++        Request::Action(spec) if spec == "hs-test-deadlock" => {
++            // Same shape as the caveats.md freeze: re-lock a non-reentrant Mutex.
++            let m = std::sync::Mutex::new(0);
++            let _a = m.lock().unwrap();
++            let _b = m.lock().unwrap();
++            Ok(Response::Ok)
++        }
++        Request::Action(spec) if spec == "hs-test-panic" => {
++            let v: Vec<u8> = Vec::new();
++            let i = std::hint::black_box(3usize);
++            Ok(if v[i] == 0 { Response::Ok } else { Response::Ok })
++        }
+         Request::Action(spec) => cmd_action(&spec, state),
+         Request::Bookmark { name, to, delete } => cmd_bookmark(name, to, delete, state),
+         Request::Screenshot {

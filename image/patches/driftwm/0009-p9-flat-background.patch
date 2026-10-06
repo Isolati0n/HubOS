@@ -1,0 +1,50 @@
+Hub OS P9: if the built-in default background shader does not compile, use a flat background instead of panicking.
+
+diff -ruN a/src/render/background.rs b/src/render/background.rs
+--- a/src/render/background.rs
++++ b/src/render/background.rs
+@@ -743,9 +743,21 @@
+             Err(e) => {
+                 tracing::error!("Failed to compile shader: {e}, using default");
+                 err.get_or_insert_with(|| format!("background shader: compile error: {e}"));
+-                renderer
++                match renderer
+                     .compile_custom_pixel_shader(driftwm::config::DEFAULT_SHADER, BG_UNIFORMS)
+-                    .expect("Default shader must compile")
++                {
++                    Ok(default) => default,
++                    Err(e2) => {
++                        // HUB-OS PATCH P9: the built-in shader does not compile
++                        // either (GPU or driver problem): flat background, not a panic.
++                        tracing::error!(
++                            "Default background shader failed to compile: {e2}; using a flat background"
++                        );
++                        init_none_bg(state, output_name);
++                        let msg = err.unwrap_or_default();
++                        return Some(Err(msg));
++                    }
++                }
+             }
+         };
+ 
+@@ -827,9 +839,17 @@
+         cached.clone()
+     } else {
+         let src = driftwm::config::DEFAULT_SHADER;
+-        let compiled = renderer
+-            .compile_custom_pixel_shader(src, BG_UNIFORMS)
+-            .expect("Default shader must compile");
++        let compiled = match renderer.compile_custom_pixel_shader(src, BG_UNIFORMS) {
++            Ok(compiled) => compiled,
++            Err(e) => {
++                // HUB-OS PATCH P9: flat background instead of a panic.
++                tracing::error!(
++                    "Default background shader failed to compile: {e}; using a flat background"
++                );
++                init_none_bg(state, output_name);
++                return;
++            }
++        };
+         state.render.background_is_animated = references_uniform(src, "float", "u_time");
+         state.render.background_uses_camera = references_uniform(src, "vec2", "u_camera");
+         state.render.background_uses_zoom = references_uniform(src, "float", "u_zoom");

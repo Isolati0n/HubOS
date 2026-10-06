@@ -1,0 +1,167 @@
+Hub OS P8: start-up shell-outs are time-boxed (3 s, then killed) instead of waited for for ever; the environment
+variables whose values are known at start are set before the first thread starts.
+
+diff -ruN a/src/bounded.rs b/src/bounded.rs
+--- /dev/null
++++ b/src/bounded.rs
+@@ -0,0 +1,55 @@
++//! Bounded waiting for a child process (Hub OS patch P8).
++//!
++//! The start-up shell-outs (`systemctl --user import-environment`,
++//! `dbus-update-activation-environment`, the xwayland-satellite probe) were
++//! waited for with `Child::wait()` on the main thread before the event loop
++//! runs: if the program hangs, the compositor never starts. These helpers wait
++//! for a limited time and then kill the child.
++
++use std::process::Child;
++use std::time::{Duration, Instant};
++
++/// How long a start-up shell-out may take before it is killed.
++pub const STARTUP_SHELLOUT_LIMIT: Duration = Duration::from_secs(3);
++
++/// Wait for `child` for at most `limit`. Returns `Some(success)` when it
++/// finished (a wait error counts as finished, unsuccessful), `None` when the
++/// limit passed; then the child is killed and reaped.
++pub fn wait_bounded(child: &mut Child, limit: Duration) -> Option<bool> {
++    let end = Instant::now() + limit;
++    loop {
++        match child.try_wait() {
++            Ok(Some(status)) => return Some(status.success()),
++            Ok(None) => {}
++            Err(_) => return Some(false),
++        }
++        if Instant::now() >= end {
++            let _ = child.kill();
++            let _ = child.wait();
++            return None;
++        }
++        std::thread::sleep(Duration::from_millis(10));
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use std::process::Command;
++
++    #[test]
++    fn a_quick_child_finishes() {
++        let mut c = Command::new("/bin/sh").args(["-c", "exit 0"]).spawn().unwrap();
++        assert_eq!(wait_bounded(&mut c, Duration::from_secs(5)), Some(true));
++        let mut c = Command::new("/bin/sh").args(["-c", "exit 3"]).spawn().unwrap();
++        assert_eq!(wait_bounded(&mut c, Duration::from_secs(5)), Some(false));
++    }
++
++    #[test]
++    fn a_hanging_child_is_killed_at_the_limit() {
++        let mut c = Command::new("/bin/sh").args(["-c", "sleep 30"]).spawn().unwrap();
++        let t = Instant::now();
++        assert_eq!(wait_bounded(&mut c, Duration::from_millis(200)), None);
++        assert!(t.elapsed() < Duration::from_secs(5));
++    }
++}
+diff -ruN a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -1,4 +1,5 @@
+ mod backend;
++mod bounded;
+ mod decorations;
+ mod grabs;
+ mod handlers;
+@@ -109,6 +110,17 @@
+     #[cfg(feature = "profile-with-tracy")]
+     tracy_client::Client::start();
+ 
++    // HUB-OS PATCH P8: set_var is not thread-safe in C (setenv), so every
++    // variable whose value is known now is set here, before the first thread
++    // (the log writer) starts. WAYLAND_DISPLAY needs the socket name and the
++    // backend must not see it, so it stays where it was.
++    if let Some(path) = &cli.config {
++        unsafe { std::env::set_var("DRIFTWM_CONFIG", path) };
++    }
++    unsafe { std::env::set_var("XDG_SESSION_TYPE", "wayland") };
++    unsafe { std::env::set_var("XDG_CURRENT_DESKTOP", "driftwm") };
++    unsafe { std::env::set_var("XDG_SESSION_CLASS", "user") };
++    unsafe { std::env::set_var("XDG_SESSION_DESKTOP", "driftwm") };
+     if std::env::var("RUST_LOG").is_err() {
+         unsafe { std::env::set_var("RUST_LOG", "info") };
+     }
+@@ -123,8 +135,7 @@
+ 
+     // --config <path>: override config file (useful for nested/test sessions).
+     // Set before --check-config so validation targets the requested file.
+-    if let Some(path) = &cli.config {
+-        unsafe { std::env::set_var("DRIFTWM_CONFIG", path) };
++    if cli.config.is_some() {
+         let resolved = driftwm::config::config_path();
+         // Only directories are rejected outright — `--config <(gen-config)` is
+         // a pipe, and read_to_string is happy with it.
+@@ -265,12 +276,8 @@
+     };
+     tracing::info!("Listening on WAYLAND_DISPLAY={socket_name}");
+     unsafe { std::env::set_var("WAYLAND_DISPLAY", &socket_name) };
+-    unsafe { std::env::set_var("XDG_SESSION_TYPE", "wayland") };
+-    unsafe { std::env::set_var("XDG_CURRENT_DESKTOP", "driftwm") };
+     // Toolkit env vars (MOZ_ENABLE_WAYLAND, QT_QPA_PLATFORM, ...) live in
+     // Config::load() with user [env] overrides taking precedence.
+-    unsafe { std::env::set_var("XDG_SESSION_CLASS", "user") };
+-    unsafe { std::env::set_var("XDG_SESSION_DESKTOP", "driftwm") };
+ 
+     // Add WAYLAND_DISPLAY to child_env for autostart commands
+     data.config
+@@ -310,8 +317,9 @@
+             .spawn()
+         {
+             Ok(mut child) => {
+-                if let Err(e) = child.wait() {
+-                    tracing::warn!("Error waiting for environment import: {e}");
++                // HUB-OS PATCH P8: bounded wait; a hanging helper is killed.
++                if bounded::wait_bounded(&mut child, bounded::STARTUP_SHELLOUT_LIMIT).is_none() {
++                    tracing::warn!("Environment import took longer than 3 s; killed it");
+                 }
+             }
+             Err(e) => tracing::warn!("Failed to import environment: {e}"),
+diff -ruN a/src/xwayland.rs b/src/xwayland.rs
+--- a/src/xwayland.rs
++++ b/src/xwayland.rs
+@@ -127,16 +127,19 @@
+             return false;
+         }
+     };
+-    match child.wait() {
+-        Ok(s) if s.success() => true,
+-        Ok(_) => {
++    // HUB-OS PATCH P8: bounded wait; a probe that hangs is killed.
++    match crate::bounded::wait_bounded(&mut child, crate::bounded::STARTUP_SHELLOUT_LIMIT) {
++        Some(true) => true,
++        Some(false) => {
+             tracing::warn!(
+-                "xwayland-satellite at {path:?} is too old (need >= 0.7) — X11 apps disabled"
++                "xwayland-satellite at {path:?} is too old (need >= 0.7) or failed — X11 apps disabled"
+             );
+             false
+         }
+-        Err(err) => {
+-            tracing::warn!("error waiting for xwayland-satellite probe: {err}");
++        None => {
++            tracing::warn!(
++                "xwayland-satellite probe took longer than 3 s; killed it — X11 apps disabled"
++            );
+             false
+         }
+     }
+@@ -176,8 +179,11 @@
+             // autostart, and whatever it starts through the user manager, must
+             // find DISPLAY already exported. Startup-only, and bounded by
+             // systemctl's own bus timeout.
+-            if let Err(e) = child.wait() {
+-                tracing::warn!("Error waiting for DISPLAY import: {e}");
++            // HUB-OS PATCH P8: bounded (3 s); a hanging helper is killed.
++            if crate::bounded::wait_bounded(&mut child, crate::bounded::STARTUP_SHELLOUT_LIMIT)
++                .is_none()
++            {
++                tracing::warn!("DISPLAY import took longer than 3 s; killed it");
+             }
+         }
+         Err(e) => tracing::warn!("Failed to import DISPLAY: {e}"),

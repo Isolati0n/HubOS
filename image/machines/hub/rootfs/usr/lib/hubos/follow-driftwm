@@ -4,9 +4,18 @@
 # new process, taking the child with it. The s6 service then starts this script again, which waits for driftwm's return.
 # With --once it only WAITS for the first start of driftwm and then becomes COMMAND (exec): hubd uses this, because hubd
 # survives a restart of the compositor and brings the windows back itself (docs/hubd-slice2.md section 18).
+#
+# Exception for hubd (FOLLOW_GAVEUP=run in its run script): when the driftwm service has stopped for good after 5 crashes
+# in a minute (the marker /run/hub/driftwm-gave-up, written by the driftwm service's finish script) and hubd is started
+# WHILE the compositor is gone, COMMAND is started WITHOUT the compositor and keeps running, so hubd stays up. If the
+# compositor is started by hand later (the marker is removed), COMMAND is stopped and this script exits, so s6 starts it
+# again in the normal way (it then waits for the compositor and, with --once, becomes COMMAND). A hubd that is already
+# running through --once is not touched by a compositor that stops: it keeps running by itself.
 ONCE=
 [ "$1" = "--once" ] && { ONCE=1; shift; }
 SOCK=/run/dw/wayland-1
+GAVEUP=/run/hub/driftwm-gave-up
+given_up() { [ "$FOLLOW_GAVEUP" = run ] && [ -e "$GAVEUP" ]; }
 # The compositor itself: the driftwm process started with --backend. (pidof alone also lists a short-lived `driftwm msg ...`
 # command, which made this script think the compositor had been replaced and restart Waybar and hubd.)
 drift_pid() {
@@ -18,8 +27,26 @@ pid=
 while :; do
   pid=$(drift_pid)
   [ -n "$pid" ] && [ -S "$SOCK" ] && break
+  if given_up; then pid=; break; fi
   sleep 0.5
 done
+if [ -z "$pid" ]; then
+  echo "follow-driftwm: the compositor was stopped for good (5 crashes in a minute); running $1 without it"
+  "$@" &
+  child=$!
+  trap 'kill $child 2>/dev/null; wait $child 2>/dev/null; exit 0' TERM INT
+  while kill -0 $child 2>/dev/null; do
+    if [ ! -e "$GAVEUP" ]; then
+      echo "follow-driftwm: the compositor is being started again; stopping $1 to follow it"
+      kill $child 2>/dev/null; wait $child 2>/dev/null
+      exit 0
+    fi
+    sleep 1
+  done
+  wait $child
+  echo "follow-driftwm: $1 ended"
+  exit 0
+fi
 sleep 1
 [ -n "$ONCE" ] && exec "$@"
 "$@" &

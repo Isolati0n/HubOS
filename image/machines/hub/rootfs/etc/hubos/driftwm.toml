@@ -1,0 +1,12 @@
+# The hub compositor's settings (driftwm), read at start from this read-only file in the image (--config in the driftwm service).
+# Everything not listed here is driftwm's default.
+#
+# Hot reload is OFF as far as driftwm allows: it has NO config key for it (it always watches the config file's folder and has
+# a reload-config action). This file is in the read-only image, so nothing edits it while the hub runs; a change to it comes
+# with a new image, which restarts the compositor. (docs/proposals/driftwm-patches.md)
+#
+# Window decorations: no shadows, no rounded corners, no borders (keys from driftwm's config.reference.toml, [decorations]).
+[decorations]
+shadow = false
+corner_radius = 0
+border_width = 0
