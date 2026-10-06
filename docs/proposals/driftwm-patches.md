@@ -394,9 +394,35 @@ The two reproductions the owner asked to be rerun, **`pipepanic` and `badshader`
 
 Total fuzzing time on the final build: 8 minutes. This is a smoke test, **not** the 24 hours the research proposes (criterion A2).
 
-### 11.10 Tests in the hub image (virtual machines)
+### 11.10 Tests in the hub image (virtual machines; all TESTED, 2026-10-06)
 
-**PENDING**: the runs are in progress; this section is filled in when they finish.
+Command (repository root, as in `docs/image.md`; `HUBOS_HUB_WORK` keeps the build between runs; one run at a time, nothing else long ran on the machine): `go test -tags qemu -count=1 -timeout 150m -v -run 'TestHubImage$' ./tools/image`. Every run boots the hub image in QEMU (TCG, no KVM, virtio GPU, software OpenGL). The image was built from the final patch set; the build ran `tools/image/check-driftwm-config.sh` on the hub's settings file with the real driftwm inside the image root (a failure would have stopped the build; there was none). Runs 2 to 4 are on commit `c7d2ce3` (the code of the PR; later commits changed documents only). The complete RESULTS blocks of every run are in `tools/image/experiments/driftwm-patches/results-2026-10-06/hub-image-runs.txt`.
+
+New or changed in this round: **H1b** (the 14 hidden interfaces are not listed by `wayland-info`, the core ones are, the compositor runs with `--config /etc/hubos/driftwm.toml`, a last good copy is on the config partition and is identical, no alert file); **H3f** now also sets a random stacking order of the 20 windows (focus in random order, then the view back) and requires after every kill cycle that the order read from `driftwm msg state` is the same (the moved window of a "move" cycle is left out, see below); **H5** unchanged.
+
+| Sub-test | run 1 | run 2 | run 3 | run 4 |
+|---|---|---|---|---|
+| H0 | PASS 10 s | PASS 10 s | PASS 10 s | PASS 9 s |
+| H1 | PASS 66 s | PASS 61 s | PASS 58 s | PASS 64 s |
+| H1b | PASS 1 s | PASS 1 s | PASS 1 s | PASS 1 s |
+| H2 | PASS 21 s | PASS 22 s | PASS 22 s | PASS 23 s |
+| H3 | PASS 30 s | PASS 30 s | PASS 30 s | PASS 30 s |
+| H3b | PASS 34 s | PASS 34 s | PASS 33 s | PASS 33 s |
+| H3c | PASS 95 s | PASS 96 s | PASS 96 s | PASS 96 s |
+| H3d | PASS 66 s | PASS 73 s | PASS 73 s | PASS 66 s |
+| H3e | PASS 69 s | PASS 71 s | PASS 63 s | PASS 64 s |
+| H3f | FAIL 788 s | PASS 629 s | PASS 634 s | PASS 620 s |
+| H4 | PASS 116 s | PASS 83 s | PASS 113 s | PASS 216 s |
+| H5 | PASS 208 s | FAIL 971 s | PASS 217 s | PASS 282 s |
+| H6 | PASS 89 s | PASS 100 s | PASS 87 s | PASS 89 s |
+
+- **Run 1 (head `84980d9`): FAIL, 12 of 13.** H3f failed in cycle 6 of 8 ("move"): after the restore the order differed in ONE window, the one that the test had moved a quarter of a second before the kill. This is **my test's mistake, and it found a fact about driftwm**: `Move` of a live window raises it (11.7), so the moved window was above the focused one before the kill, and hubd's list-based order (focused window = top) restored it just below. The earlier five cycles had passed (5 of 6 order checks equal). Fixed in the test (the moved window is left out of that comparison; each cycle starts from the order restored by the previous one); the limit itself is in 11.7.
+- **Run 2: FAIL, 12 of 13** (2,320 s), 1 QEMU hang: H5 ("a bad second release is rolled back") failed after the runner's hang rule fired in the step "rollback after the bad hub release": the serial log of the hang ends with `update: installed version 3 in slot a; BootNext set; reboot to try it`, `reboot: Restarting system`, and then no boot line for 150 s, i.e. the stall is in the firmware before the kernel (the class described in `docs/image.md` 3.3). The retry did not recover the sequence: `failure after 427 s; slot b release 2, confirmed true, counter 2/3, bar pixels 0`. The log (437 KB) is in the work folder of the run and is not committed. This is the same kind of QEMU stall that earlier runs and the research recorded (7.2 above); nothing in this round's code is involved at that point (BELIEVED; not proven).
+- **Run 3: PASS, 13 of 13** (1,572.9 s), 0 hangs, 0 crashes. H3f: seed 1791298517965424764, 20 windows opened at once in 21 s, 8 of 8 cycles, median 54 s to be back, **stacking order equal after 8 of 8 restores**.
+- **Run 4: PASS, 13 of 13** (1,727.2 s), 0 hangs, 0 crashes. H3f: seed 1791300099491317465, 8 of 8 cycles, median 54 s, **stacking order equal after 8 of 8 restores**.
+- Run 2 (the failed one) had H3f seed 1791296192580371146, 8 of 8 cycles, 8 of 8 order checks equal.
+
+**`TestImage` (the qemu-test image): PENDING (the run is in progress).**
 
 ### 11.11 The hang comparison, and why its test is gone
 
