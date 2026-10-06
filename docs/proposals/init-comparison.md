@@ -104,7 +104,7 @@ s6 plain (what the image has today, with `follow-driftwm`), s6 with s6-rc, runit
 
 ### 1.7 Candidate features (10 points, rated 0 to 3 the same way, each equal weight)
 
-Boot progress screen with plain-words status and errors; boot timeline history with regressions flagged; boot self-tests (disk, GPU, network, time) into the crash record; safe boot of the last good config when a new one fails validation; config validated at build time and at boot; credentials handed to services without command lines; built-in timers for housekeeping (state backup to the NAS, log capping, time sync); per-service resource limits and priorities; structured, capped log queryable by hubd; a diagnose command; a live service-graph view through the status socket; an orderly stop sequence for restarts the owner chooses. For each: value, cost, risk, and whether s6 plus a layer can do it.
+Boot progress screen with plain-words status and errors; boot timeline history with regressions flagged; boot self-tests (disk, GPU, network, time) into the crash record; safe boot of the last good config when a new one fails validation; config validated at build time and at boot; built-in timers for housekeeping (state backup to the NAS, log capping, time sync); per-service resource limits and priorities; structured, capped log queryable by hubd; a diagnose command; a live service-graph view through the status socket; an orderly stop sequence for restarts the owner chooses. For each: value, cost, risk, and whether s6 plus a layer can do it.
 
 ### 1.8 Low-weight criteria (5 points in all)
 

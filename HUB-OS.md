@@ -97,12 +97,11 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - Recovery is a separate kernel (kernel-recovery.efi) that needs neither slot's root; its shell can install a signed bundle into a slot the owner names (manually; automatic repair for machines without a keyboard is a proposal only).
 - A boot-loop breaker counts failed boots in an EFI variable: stage 0 increments it at every boot, the confirm step clears it, and after N failures (default 3, per-machine setting) stage 0 starts the recovery shell instead of booting.
 - The recovery kernel arms the hardware watchdog and the network recovery agent feeds it.
-- The network recovery agent gets its address from a DHCP reservation per machine; its API is signed requests with one-time nonces, one API with the node helper (a state field says recovery or running). Reinstall is a button only, never automatic; the default release is the last one that machine confirmed, into the slot that failed.
-- wayvnc and neatvnc are built from source at pinned tags (wayvnc v0.10.2 with neatvnc v1.0.3 or newer; Ubuntu 24.04's 0.7.2 garbles non-ASCII clipboard text); every node's wayvnc is started with --name <machine id>; sessions are shared (a second viewer, such as the phone, may join); the screen size is fixed per node in v1.
-- Display credentials are per node (the secrets design decides how they are made and stored); the management key's private half lives on the hub's config partition, readable only by root and hubd, never on a node; nodes hold only public keys.
+- The network recovery agent gets its address from a DHCP reservation per machine; its API is plain requests (no signing, no nonces; owner decision, 2026-10-06), one API with the node helper (a state field says recovery or running); the install request still refuses anything that is not a correctly signed image bundle. Reinstall is a button only, never automatic; the default release is the last one that machine confirmed, into the slot that failed.
+- wayvnc and neatvnc are built from source at pinned tags (wayvnc v0.10.2 with neatvnc v1.0.3 or newer; Ubuntu 24.04's 0.7.2 garbles non-ASCII clipboard text); every node's wayvnc is started with --name <machine id> and listens on the cluster address only, with no password and no encryption (owner decision, 2026-10-06); sessions are shared (a second viewer, such as the phone, may join); the screen size is fixed per node in v1.
 - The recovery agent is supervised by a plain shell restart loop in the recovery kernel. The boot partition of real machines is 512 MiB.
-- Requests to nodes and to the recovery agent name the target machine id in the signed text. The node helper and the recovery agent share one port (8480, to be checked against the IANA registry) and one API. The control link is signed but not encrypted on the isolated wired network for v1; TLS is revisited when the secrets tool exists.
-- The update signing key's private half lives only on a device that is never connected to a network, protected by a passphrase, with an encrypted second copy elsewhere; until December only throwaway test keys exist. One offline key plus a rehearsed two-release rotation is enough for v1. Display credentials are one file per node on the hub; rotation is always the owner's explicit action. The config partition is not encrypted (physical access is full access). Game account logins are not managed by Hub OS and are excluded from the NAS save copy. The hub user is split: hubd (holds the management key and display credentials) and a desktop user (viewers), with a launcher handing credentials to viewers (design in docs/proposals/hub-user-split.md).
+- The node helper and the recovery agent share one port (8480, to be checked against the IANA registry) and one API. The hub's requests to nodes and to the recovery agent are not signed and not encrypted (owner decision, 2026-10-06); only the image signature stays: a machine refuses an image that is not signed by the owner.
+- The update signing key's private half lives only on a device that is never connected to a network, protected by a passphrase, with an encrypted second copy elsewhere; until December only throwaway test keys exist. One offline key plus a rehearsed two-release rotation is enough for v1. The config partition is not encrypted (physical access is full access). Game account logins are not managed by Hub OS and are excluded from the NAS save copy.
 - The recovery kernel is carried inside every slot's root, listed by hash in the manifest, and installed at the confirm step after a healthy boot, never during the update.
 - The confirm timeout and the watchdog timeout are per-machine settings (real defaults 120 s and 180 s; the test image uses 30 s and 60 s); a check refuses a configuration where the watchdog does not exceed the confirm timeout plus a margin.
 - Update keys: the update tool and the recovery kernel accept any key in a keyring (/etc/hubos/keys/*.pub). A release signed with the old key can carry the next key; the old key is dropped only in a later release.
@@ -155,6 +154,40 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - Conformance is checked both by a parametrised Go test and by a command that prints a checklist; a test-only stand-in node helper is fine.
 - A node's whole OS is declared in one file, and whether it will boot is checked before deployment (a preflight; docs/proposals/distro-workshop.md).
 
+### The session layer (owner direction, 2026-10-06; nothing built yet)
+
+- The hub's core is a session layer apart from the screen: the hub's own viewer.
+- One worker process per machine: connection, frame in shared memory, sound stream, clipboard, volume.
+- A presenter draws the frames and sends input back.
+- A conductor in Elixir/OTP supervises the workers (restart limits, escalation to a bar alert, stale state); hubd stays in Go.
+- A local interface lets other displays attach.
+- An unreachable machine keeps its last frame, marked stale.
+- Frames use uncompressed Raw rectangles, security type None, RFB Extended Clipboard (UTF-8), no ContinuousUpdates and no Fence, key events by keysym, and a reconnect with backoff when a node's server disappears.
+- The language of the native core (workers and presenter) is NOT decided: a bake-off comparing Rust with Kani, Ada with SPARK (if the tools install without root) and Zig will decide, with gates: zero crashes and hangs over at least ten million fuzz cases per parser, a proof of no panics for the parser and the frame copy, worst-case frame handoff stalls under a 20-session load, recovery times when any layer is killed or hung, and a 24-hour soak.
+
+### Compositor decisions (owner, 2026-10-06; docs/proposals/bulletproof-compositor.md)
+
+- Nothing is reported upstream for now.
+- Every patch that fixes a tested bug is adopted (Smithay P7 to P11, driftwm D1 to D5, and the BC-11, BC-12 and BC-13 fixes).
+- The limits stay as chosen: 2^24 for sizes and offsets, 512 session entries, 256 MB per stand-in.
+- A protocol error disconnects the client for client mistakes; an error reply answers requests from hubd; the compositor never crashes on either.
+- The config is baked into the image: an unknown field fails the image build check and falls back to the last good config at runtime with an alert; the hub build sets restore_windows explicitly off, checked at build time.
+- Viewers are limited by the memory limit, with no per-client limit in the compositor.
+- Protocols nothing on the hub uses are disabled, starting with session lock (each disabled protocol is listed with who would use it).
+- A GPU reset exits and restarts the compositor (hubd restores the windows); the hang rule stays (kill after 4 failed rounds and 30 s).
+- Session files are fsynced from the worker thread.
+- On any panic the compositor restarts and never carries on (P3 stays off).
+- A nightly fuzz job and extra test machines are set up before December, as their own scheduled run.
+- Only the Smithay sites reachable from client input are classified; the rest are fuzzed.
+- The compositor does not try to survive running out of memory: a generous ceiling is set and it restarts on abort.
+- Window stacking order is part of "restore exact".
+
+### Run schedule (owner, 2026-10-06)
+
+- Long runs are sequenced and never overlap.
+- The init comparison (docs/proposals/init-comparison.md) starts with an elimination round by fault injection and soaks only the finalists.
+- The session-layer prototype is a stage 1 (bake-off, conductor, integration) and a separate 24-hour soak run later.
+
 ### Parts we write ourselves
 
 - The image build and update tool
@@ -178,7 +211,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - **Closing a window leaves the machine's session alive.** Clicking again returns to it.
 - Clicking a machine that is already open **goes to its existing window**. Never open duplicates.
 - **Every machine stays logged in**, so clicking lands straight on its desktop.
-- Clipboard: text only, both directions wanted. Node to hub works through the display protocol; hub to node goes through a clipboard bridge via the node helper's API (design discussion first). The hub does not run an X11 compatibility stack for a viewer.
+- Clipboard: see the Clipboard section below (history, rich items, targeted paste; owner decisions, 2026-10-06). Node to hub works through the display protocol (RFB Extended Clipboard, UTF-8); hub to node goes through the node helper's API.
 - **No auto-reopen of windows after a hub restart.** The panel returns; windows do not.
 - Windows can stay open 24/7. The hub is designed for up to 20 always-open windows (the real-world reference); the owner can open and close them at will.
 - VM guests are opened with remote-viewer (virt-viewer), not Remmina.
@@ -192,7 +225,6 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - The hub desktop is meant to run as a normal user in the seat group, not as root (untested).
 - Hub desktop: window layouts (positions, sizes and the view) are saved by name and restored (how is being researched, see docs/proposals/driftwm-layouts.md); they live on the config partition. Windows never reopen by themselves after a reboot: the owner starts them and they take their saved places. Waybar, hubd, driftwm and dbus-daemon are s6 services run as the normal user hub; seatd and udevd run as root (they open the GPU, input devices and netlink). Waybar and hubd wait for driftwm's socket and restart when it returns. No terminal starts by itself.
 - If the compositor crashes and restarts, the windows reappear at their saved places with their sessions intact (the owner wants this; design and options in docs/proposals/hub-stability.md); after a reboot windows still do not reopen by themselves. The compositor is hardened so that it does not crash (see the same document); changes to driftwm stay under its GPL-3.0-or-later licence. The owner does not care about any visual effects (blur, shader backgrounds, animations): they may be turned off or removed from the hub's compositor to make it smaller, lighter and safer.
-- The hub's own viewer may be built on Qt6, because only Qt6 clients survive a compositor restart (Plan C), if the socket-handover patch to driftwm is small; otherwise Plan A (owner decision).
 - Layouts (owner decisions, 2026-10-05; docs/proposals/driftwm-layouts.md): a layout holds positions, sizes and the view (camera and zoom).
 - Applying a layout also governs machines opened later, until another layout is applied or it is cleared.
 - The active layout is remembered in a file on the config partition; windows still start manually after a reboot.
@@ -201,7 +233,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - Layouts are driven by the command line first, plus a Layouts group in the menu.
 - Overlapping windows in a layout give a warning.
 - driftwm's restore_* switches and suspend_on_close stay off; only release builds of driftwm are used, never a debug build; nothing is reported to the driftwm author for now.
-- hubd restores windows itself for all machines after a compositor restart (owner decision, 2026-10-05); Plan B (a session daemon) waits for the December measurement.
+- hubd restores windows itself for all machines after a compositor restart (owner decision, 2026-10-05); the session layer (see The session layer) replaces the earlier Plan B and Plan C.
 - `hubd end` waits up to 30 s for a window to close; the home-position race (a window sometimes standing at driftwm's cascade spot) is to be investigated.
 - hubd keeps windows it places clear of the bar, and expects the camera to be offset by half the bar height.
 - hubd controls driftwm through its local socket (list windows, place a window, move the view, focus, resize, fit). The socket is only for the same user. See docs/driftwm-findings.md.
@@ -220,6 +252,34 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - No alerts are sent to the owner's phone.
 - Panel states: up, down (that machine does not answer), in recovery, unreachable (the hub suspects its own network, for example many machines failing at once).
 - A master volume button on the bar opens a mixer that lists every node's sound with its own volume slider and mute button, plus a master volume and a mute-all control. Each node's volume and mute are remembered and restored when its window opens; a node with no saved state starts unmuted at the normal level the first time its window opens (owner decision).
+
+### Screen and bar (owner decisions, 2026-10-06)
+
+- Every node's screen is the projector's native 4K at 60 frames per second, uncompressed, with a fixed size per node.
+- The presenter may scale a picture by whole numbers; maximize uses whole-number scaling when it fits, otherwise a centered 1:1 picture.
+- While a node window has focus, only the keyboard-flip chord and one menu key go to the hub.
+- There is one display only.
+- The bar has a clock, the clipboard, the notification daemon, and more later.
+- The hub's sound goes through an ultra-high-quality DAC (research in December).
+- The bare recovery console is the one exception to "no terminals".
+- The spare keyboard and mouse stay in the drawer.
+- Music plays on the general desktop node, with its files read from the NAS or piped into the player.
+
+### Clipboard (a bar item; owner decisions, 2026-10-06; docs/proposals/clipboard.md)
+
+- A history of every copy on any node and on the hub, with source machine and time, searchable.
+- Targeted paste to one or several nodes.
+- Rich items: UTF-8 text, images with preview, and files as references that move node to node only on paste (the hub never carries the bytes).
+- A quick picker chord, and paste as plain text; no echo loops.
+- The history is in RAM, with pins saved to disk; about 500 text items plus about 100 MB for images and file references.
+- Node copies are always captured into the history and never pushed to another node without the owner's action.
+
+### Notifications (owner decisions, 2026-10-06; docs/proposals/notifications.md)
+
+- A daemon handles the hub's own alerts and notifications from nodes through the node helper API.
+- Small toasts appear at the top right for about 5 seconds; a bar badge and a list hold older ones.
+- Each carries a title, body, severity, source machine and an optional progress value.
+- Serious ones (node down, compositor gave up) stay until dismissed.
 
 ### Leaving a window
 - Windows have a free pointer; leave a window by clicking outside it.
@@ -412,12 +472,12 @@ HubOS/
 - The real clipboard echo path (the node helper's wl-copy, wayvnc, the viewer, the hub clipboard) behaves like the stand-in used in tests
 - wl-paste (one-shot and --watch) under driftwm
 - hubd clipboard push, the focused-window-to-machine lookup and the bar button (not built)
-- Signed PUT and GET for the node helper, the full signed round trip, and a node helper binary run as an s6 or dinit service (not built)
+- The node helper's PUT and GET calls (plain requests), the full round trip, and a node helper binary run as an s6 or dinit service (not built)
 - The init collects the orphaned wl-copy holder processes (believed for s6, unknown for dinit)
 - A thin init-neutral "service up/down" command (does not exist)
 - Node helper session start and stop order, the sound retry, and wayvnc -R keeping the screen size fixed (design only)
 - Compositors that offer ext_data_control but not zwlr_data_control (wl-clipboard 2.2.1 would fall back to its window hack)
-- Node helper behaviour with many nodes at once, in a long run, on a real network, with TLS
+- Node helper behaviour with many nodes at once, in a long run, on a real network
 - Hub-to-node clipboard echo through remote-viewer overwrites the hub clipboard with a garbled copy (believed, not tested)
 - Per-node audio control: matching a PipeWire stream to a node (by process id or by stream name)
 - How many simultaneous hardware decodes the hub's GPU sustains with 20 open windows
@@ -434,15 +494,14 @@ HubOS/
 - Soul Calibur II netplay: Dolphin (GameCube, delay-based) or Ring Out (a recompiled port, delay-based, five weeks old); decide in December
 - What the phone runs (a viewer app or a view of the hub canvas)
 - Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
-- Display protocol for non-gaming nodes: the plan is VNC with wayvnc on the nodes, PipeWire RTP for sound (raw), and one signed control API; the AI box uses VNC; RDP is out of scope for now (docs/proposals/remote-display.md)
+- Display protocol for non-gaming nodes: the plan is VNC with wayvnc on the nodes, PipeWire RTP for sound (raw), and one unsigned control API; the AI box uses VNC; RDP is out of scope for now (docs/proposals/remote-display.md)
 - Clipboard: text only, both directions wanted; node to hub works in tests, hub to node is unresolved
 - Where the mixer settings live: the hub's config partition, included in the NAS backup
 - Whether the no-systemd rule covers appliances that are not Hub OS machines (for example a PiKVM, which runs its own Linux); a December decision
-- Where each key and credential lives and how it rotates (see docs/proposals/secrets.md)
 - Clipboard push: a bar button and a key chord (the chord chosen after checking driftwm's bindings); the target is the focused window's machine, with a pick from the list; a pull button as fallback; no automatic push; size limit 1 MiB; hubd ignores a differing echo of the text it just pushed
 - Which viewer the hub uses (remote-viewer, TigerVNC, wlvncc or one we write; see docs/proposals/remote-display-benchmarks.md)
 - The clipboard bridge and the node helper API (see docs/proposals/node-helper-api.md)
-- The network recovery agent in the recovery kernel: protocol, authentication, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
+- The network recovery agent in the recovery kernel: protocol, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
 - AI box: NVIDIA with CUDA, or AMD with ROCm, decided in December from the generative-media software the owner will run (images, video, music, language models); VRAM matters most
 - Forwarder design: always grab and re-inject, or grab only while forwarding (decided after December measurements)
@@ -453,10 +512,9 @@ HubOS/
 - Unattended recovery for machines without a keyboard: after December, when the boards' serial and BMC options are known
 - File transfer questions (docs/proposals/file-transfer.md section 8) and from-scratch hub questions (docs/proposals/from-scratch-hub.md): the owner will answer later.
 - Which distro each node gets (undecided); node GUIs are designed after that
+- Language of the session layer's native core (workers and presenter): Rust with Kani, Ada with SPARK or Zig; a bake-off with the gates listed under The session layer decides (not started)
 - From-scratch hub: which components stay upstream and which are ours (see docs/proposals/from-scratch-hub.md)
 - Moonlight and Sunshine are not planned for use; hubd's Moonlight support (title matching, the session field, the default port) stays in the code and is not removed until the display protocol is final, and is then deleted.
-- Display sessions use uncompressed (lossless) pixels, since bandwidth is assumed unlimited: sharpest possible text and no decode limit on the hub (owner to confirm)
-- Plan C (a Qt6 viewer with a socket handover from driftwm) stays optional; the base is hubd restoring windows itself (decided 2026-10-05); Plan B waits for the December measurement; see docs/proposals/hub-stability.md
 
 ---
 
@@ -511,12 +569,13 @@ HubOS/
 - **2026-10-04:** Phase B images: recovery kernel arms the watchdog; recovery agent tested inside a test recovery kernel.
 - **2026-10-04:** Scale reference 20 machines; hub stays a thin client; extra nodes suggested; recovery and display protocol decisions recorded; CLAUDE.md rules for packages and helper agents.
 - **2026-10-04:** Phase B images: test recovery agent supervised by a restart loop.
-- **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials, management key on the hub, recovery agent supervision, Go stays (Erlang parked).
-- **2026-10-04:** Round 3 decisions recorded: signed text names the machine, shared port, signing key custody, per-node credential files, user split, clipboard push rules.
+- **2026-10-04:** Round 2 decisions recorded: clipboard bridge for hub to node, wayvnc built from source, per-node display credentials and management key on the hub (both REMOVED 2026-10-06), recovery agent supervision, Go stays (Erlang parked).
+- **2026-10-04:** Round 3 decisions recorded: signed text names the machine (request signing REMOVED 2026-10-06), shared port, signing key custody, per-node credential files and user split (both REMOVED 2026-10-06), clipboard push rules.
 - **2026-10-05:** Each machine runs its own distro (Hub OS = contracts plus shared tools; A/B and recovery plumbing required on every machine); one list for machines and windows; saved layouts; no internet for the NAS; file clipboard planned; the gaming box has no game window on the hub; the AI box is for generative media; phone access straight to the hub with no VPN, with shared sessions; security out of scope; unlicensed; the no-systemd rule is for the hub only; the hub is eventually built from scratch.
 - **2026-10-05 (later):** Hub stability and maintenance decisions recorded: the hub never reboots itself for a service failure, uptime first, priority order, perfect-network design assumption, no level-of-detail work, windows survive a compositor crash, hub defaults (Qt6 viewer if the handover patch is small, lossless sessions, system in RAM, ECC, updates pulled from the NAS, reserved CPU, list dots, unmuted first volume, phone web page), black box recorder decisions, glibc rule narrowed.
 - **2026-10-05:** hubd list marks every machine whose window is open with a filled dot (an empty dot when closed); a pick of an open machine goes to its window; see docs/hubd-slice2.md section 17.
 - **2026-10-05:** The hub image builds driftwm at the pinned commit with a patch set (docs/proposals/driftwm-patches.md, `image/patches/driftwm/`: socket handover, panic catch switched off, config parser fix, poisoned-lock fix, a log writer that cannot block, time-boxed start-up helpers, flat background if the default shader fails, exit after 2 s of failed frames, plus one Smithay fix for `wl_shm_pool.resize(0)`); the build fails if a patch does not apply; the test-hook patch is never put in an image. The hub compositor runs without shadows, rounded corners and borders (driftwm has no setting for hot reload; its config file is read-only in the image). Compositor restart policy (owner decision): after 5 crashes within one minute the service stops restarting it, a fixed message shows on the screen, hubd and the recovery terminal stay up, and the machine never reboots for it.
 - **2026-10-05:** hubd built (docs/hubd-slice2.md section 18): saved layouts (`hubd layout save|apply|list|delete|clear`, active layout remembered in a checksummed file under /config/hubos/layouts, a "Layouts" group in the menu), hubd puts every open window back at its place after a compositor restart, `hubd restart-desktop`, the bar and menu keep the last known state marked STALE while hubd is down, the hub's own list line has no dot, `hubd end` waits up to 30 s, and the home-position race is explained and fixed.
 - **2026-10-05:** Systemd corrected (no machine runs it; dev-node experiments only); hub stability, layout, init and distro-contract decisions recorded.
+- **2026-10-06:** No display passwords and no request signing; session layer as the hub's core; 4K nodes; clipboard and notification designs; compositor answers; run schedule.
 - **2026-10-06:** driftwm patch set adopted: Smithay P7 to P11, driftwm D1 to D5, BC-11 to BC-13 fixes, config checks, protocol list; window stacking order restored.
