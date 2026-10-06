@@ -1,0 +1,10 @@
+TEST BUILD exit=0 after 445s
+TESTS after 13s
+running 327 tests
+test result: ok. 327 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.22s
+running 1356 tests
+test tests::cli_docs::docs_cli_md_is_up_to_date ... FAILED
+thread 'tests::cli_docs::docs_cli_md_is_up_to_date' (24920) panicked at src/tests/cli_docs.rs:144:5:
+test result: FAILED. 1355 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 10.40s
+error: test failed, to rerun pass `--bin driftwm`
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1356 filtered out; finished in 1.06s

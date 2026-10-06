@@ -1,0 +1,15 @@
+### ipcfuzz seed 11
+requests=1700 ok_replies=748 error_replies=928 result=DEAD rc=-6
+top request kinds: {'Move': 216, 'Action': 211, 'Resize': 168, 'str': 160, 'Zoom': 95, 'raw': 93, 'Bookmark': 80, 'Focus': 77}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 86, '{"Err":"no suspended window matching selector"}\n': 51, '{"Err":"invalid request: data did not match any variant of u': 42, '{"Err":"size must be positive"}\n': 37, '{"Err":"no window matching \'term\'"}\n': 26, '{"Err":"no window matching \'zzz\'"}\n': 24}
+last requests saved to /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/ipcf11/ipc-crash-seed11.json
+### ipcfuzz seed 12
+requests=9200 ok_replies=4147 error_replies=4948 result=DEAD rc=-6
+top request kinds: {'Move': 1256, 'Action': 1168, 'Resize': 841, 'str': 808, 'raw': 552, 'Camera': 481, 'Zoom': 440, 'Relaunch': 413}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 443, '{"Err":"no suspended window matching selector"}\n': 331, '{"Err":"size must be positive"}\n': 176, '{"Err":"invalid request: data did not match any variant of u': 163, '{"Err":"no window matching \'term\'"}\n': 139, '{"Err":"zoom must be a positive number"}\n': 139}
+last requests saved to /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/ipcf12/ipc-crash-seed12.json
+### ipcfuzz seed 13
+requests=20600 ok_replies=9428 error_replies=10935 result=DEAD rc=-6
+top request kinds: {'Move': 2850, 'Action': 2785, 'str': 1869, 'Resize': 1682, 'raw': 1172, 'Zoom': 1022, 'Camera': 969, 'Layout': 906}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 990, '{"Err":"no suspended window matching selector"}\n': 684, '{"Err":"size must be positive"}\n': 383, '{"Err":"invalid request: data did not match any variant of u': 354, '{"Err":"zoom must be a positive number"}\n': 324, '{"Err":"no window matching \'term\'"}\n': 296}
+last requests saved to /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/ipcf13/ipc-crash-seed13.json

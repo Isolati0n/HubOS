@@ -1,0 +1,71 @@
+ok	desktop_entry::tests::cache_goes_stale_when_missing_directory_appears
+ok	desktop_entry::tests::cache_is_fresh_after_build
+unsupported	desktop_entry::tests::cache_refreshes_when_directory_changes	test desktop_entry::tests::cache_refreshes_when_directory_changes ... error: unsupported operation: open: opening direct
+ok	desktop_entry::tests::data_home_wins_over_data_dirs
+ok	desktop_entry::tests::display_name_falls_back_to_desktop_id
+ok	desktop_entry::tests::does_not_match_by_substring
+ok	desktop_entry::tests::earlier_data_dir_wins_over_later
+ok	desktop_entry::tests::entry_without_exec_is_not_resolvable
+ok	desktop_entry::tests::exec_converts_double_percent_to_literal
+ok	desktop_entry::tests::exec_empty_yields_no_args
+ok	desktop_entry::tests::exec_honors_double_quoted_arguments
+ok	desktop_entry::tests::exec_strips_application_field_codes
+ok	desktop_entry::tests::exec_substitutes_embedded_field_codes_as_empty
+ok	desktop_entry::tests::foot_family_resolves_from_real_world_shapes
+ok	desktop_entry::tests::hidden_entries_are_not_resolvable
+ok	desktop_entry::tests::hidden_high_precedence_shadows_lower_copy
+ok	desktop_entry::tests::launch_command_returns_stripped_argv
+ok	desktop_entry::tests::no_display_entries_are_resolvable
+ok	desktop_entry::tests::resolves_by_case_insensitive_stem
+ok	desktop_entry::tests::resolves_by_exact_filename_stem
+ok	desktop_entry::tests::resolves_by_startup_wm_class
+ok	desktop_entry::tests::terminal_entries_are_not_resolvable
+ok	desktop_entry::tests::unmatched_exec_quote_makes_entry_unlaunchable
+ok	desktop_entry::tests::unresolvable_app_id_returns_none
+ok	protocols::image_copy_capture::tests::at_or_past_interval_is_not_too_soon
+ok	protocols::image_copy_capture::tests::first_frame_is_never_too_soon
+ok	protocols::image_copy_capture::tests::uncapped_is_never_too_soon
+ok	protocols::image_copy_capture::tests::within_interval_is_too_soon
+ok	stage::tests::adoption_compound_keeps_slot_and_discards_fresh_id
+ok	stage::tests::cycle_all_fullscreen_yields_none
+ok	stage::tests::cycle_backward_wraps_to_oldest
+ok	stage::tests::cycle_first_step_goes_to_previous_window
+ok	stage::tests::cycle_from_a_window_at_the_history_head_steps_past_it
+ok	stage::tests::cycle_from_a_window_outside_the_history_starts_at_its_head
+ok	stage::tests::cycle_skips_fullscreen_windows
+ok	stage::tests::drop_from_focus_history_clamps_cycle_index
+ok	stage::tests::end_cycle_commits_selection_to_front
+ok	stage::tests::end_cycle_without_active_cycle_is_noop
+ok	stage::tests::enforce_stacking_pushes_widgets_down_and_fullscreen_up
+ok	stage::tests::entries_mirror_windows_with_position_and_pin
+ok	stage::tests::fit_round_trip_restores_saved_size
+ok	stage::tests::fullscreen_round_trip
+FAIL	stage::tests::harness::fit_fullscreen_round_trips_restore_saved_sizes	
+FAIL	stage::tests::harness::random_op_sequences_preserve_invariants	
+ok	stage::tests::harness::reconnect_rebinds_orphaned_pins_and_clears_placeholder_fullscreen
+ok	stage::tests::harness::removing_last_output_keeps_pins_on_placeholder
+ok	stage::tests::harness::removing_non_last_output_rebinds_pin_and_exits_fullscreen
+ok	stage::tests::map_assigns_stable_unique_ids
+ok	stage::tests::map_inserts_on_top_and_remap_raises
+ok	stage::tests::push_focus_moves_to_front_without_duplicates
+ok	stage::tests::raise_follows_nested_modal_chain
+ok	stage::tests::raise_lifts_only_own_children
+ok	stage::tests::raise_moves_to_top_and_ignores_unknown
+ok	stage::tests::raise_terminates_on_cyclic_parents
+ok	stage::tests::raise_with_children_leaves_unrelated_windows_alone
+ok	stage::tests::raise_with_children_stacks_child_directly_above_parent
+ok	stage::tests::remove_from_history_matching_clamps_cycle
+ok	stage::tests::remove_last_history_entry_cancels_cycle
+ok	stage::tests::remove_purges_everywhere_and_clamps_cycle
+ok	stage::tests::replace_ignores_unknown_window
+ok	stage::tests::replace_preserves_index_id_and_entry_state
+ok	stage::tests::restore_size_if_missing_never_overwrites
+ok	stage::tests::retain_alive_drops_dead_windows_but_keeps_history
+ok	stage::tests::suspended_element_survives_retain_alive
+ok	stage::tests::window_by_id_looks_up_by_stable_id
+unsupported	text::tests::fit_text_ellipsizes_when_too_wide	test text::tests::fit_text_ellipsizes_when_too_wide ... error: unsupported operation: Miri does not support file-backed 
+unsupported	text::tests::fit_text_empty_when_ellipsis_does_not_fit	test text::tests::fit_text_empty_when_ellipsis_does_not_fit ... error: unsupported operation: Miri does not support file
+unsupported	text::tests::fit_text_returns_full_when_it_fits	test text::tests::fit_text_returns_full_when_it_fits ... error: unsupported operation: Miri does not support file-backed
+ok	text::tests::measure_empty_is_zero
+unsupported	text::tests::measure_nonempty_is_positive	test text::tests::measure_nonempty_is_positive ... error: unsupported operation: Miri does not support file-backed memor
+b2: total=70 ok=63 unsupported=5 fail=2

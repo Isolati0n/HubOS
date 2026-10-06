@@ -1,0 +1,27 @@
+### NUL in config
+== config with a NUL character in the key string: --check-config
+   exit status 0
+== config with a NUL character in the layout string: --check-config
+   exit status 0
+== config with a NUL character in the options string: --check-config
+   exit status 0
+start-up with NUL in layout: compositor alive
+start-up with NUL in options: compositor alive
+start-up with NUL in rules: compositor alive
+hot reload to a config with a NUL in layout: compositor alive
+hot reload to a config with a NUL in a key binding: compositor alive
+### popup parent cycles
+RESULT[v-driftwm-p25-self]: compositor ALIVE and answering
+RESULT[v-driftwm-p25-pair]: compositor ALIVE and answering
+RESULT[v-driftwm-p25-nullparent]: compositor ALIVE and answering
+### subsurface place_above(self)
+answer from compositor: 68 bytes; error event
+RESULT[vsub-driftwm-p25]: compositor ALIVE and answering
+### absurd geometry
+RESULT[vvp-driftwm-p25]: compositor ALIVE and answering
+RESULT[vsp-driftwm-p25]: compositor ALIVE and answering
+RESULT[vsp2-driftwm-p25]: compositor ALIVE and answering
+### IPC: Move near the 32-bit limit, then a navigation action (BC-13)
+RESULT[vn-driftwm-p25-nav]: compositor ALIVE and answering
+### IPC: Resize of a stand-in to 32768 x 32768 (BC-12)
+RESULT[vsi-driftwm-p25]: compositor ALIVE and answering

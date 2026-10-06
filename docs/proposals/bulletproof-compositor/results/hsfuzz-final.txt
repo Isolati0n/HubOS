@@ -1,0 +1,6 @@
+target=toml seed=7 iterations=127600 seconds=300 distinct_panics=0
+target=parse seed=7 iterations=131472200 seconds=300 distinct_panics=0
+target=json seed=7 iterations=106480000 seconds=300 distinct_panics=0
+target=geom seed=7 iterations=63948200 seconds=300 distinct_panics=2
+   2786445x  resolve_cluster_shifts: attempt to add with overflow
+   1628262x  resolve_cluster_shifts: attempt to negate with overflow

@@ -1,0 +1,34 @@
+
+=== Phase R: CLOCK_REALTIME jumps only (monotonic clock real) ===
+started; restored stand-ins: 5
+{"jump": "+1 h", "ipc_ms": 0.5, "save_latency_s": 1.02, "saved_at": 1791235466, "camera_reached_s": 0.87}
+{"jump": "-1 h", "ipc_ms": 0.5, "save_latency_s": 1.02, "saved_at": 1791228268, "camera_reached_s": 0.16}
+{"jump": "+10 years", "ipc_ms": 0.5, "save_latency_s": 1.01, "saved_at": 2106591870, "camera_reached_s": 0.1}
+{"jump": "-30 years (to 1996)", "ipc_ms": 4.7, "save_latency_s": 1.02, "saved_at": 845151871, "camera_reached_s": 0.08}
+{"jump": "to 1970-01-01 00:00:10", "ipc_ms": 0.5, "save_latency_s": 1.02, "saved_at": 9, "camera_reached_s": 0.09}
+{"jump": "to 2038-01-19 03:14:00 (just before 2^31)", "ipc_ms": 14.6, "save_latency_s": 1.02, "saved_at": 2147483639, "camera_reached_s": 0.06}
+{"jump": "to 2106-02-07 06:28:00 (just before 2^32)", "ipc_ms": 1.1, "save_latency_s": 1.01, "saved_at": 4294967279, "camera_reached_s": 0.0}
+{"jump": "to year 2300", "ipc_ms": 5.2, "save_latency_s": 1.01, "saved_at": 10413791999, "camera_reached_s": 0.0}
+{"jump": "+1 s", "ipc_ms": 12.1, "save_latency_s": 1.02, "saved_at": 1791231880, "camera_reached_s": 0.0}
+{"jump": "-1 s", "ipc_ms": 6.1, "save_latency_s": 1.01, "saved_at": 1791231879, "camera_reached_s": 0.0}
+{"jump": "back to real time", "ipc_ms": 0.6, "save_latency_s": 1.02, "saved_at": 1791231882, "camera_reached_s": 0.0}
+flapping +-1..3 s x40: compositor alive, IPC answers
+kill -9 with the clock in year 2300, restart under real time: started=True, stand-ins restored=5
+
+=== Phase M: CLOCK_MONOTONIC faked as well (out of spec, stress test) ===
+started; restored stand-ins: 5
+{"jump": "+1 h", "ipc_ms": 0.5, "save_latency_s": 1.02, "saved_at": 1791235489, "camera_reached_s": 0.85}
+{"jump": "-1 h", "ipc_ms": 0.6, "save_latency_s": 1.01, "saved_at": 1791228291, "camera_reached_s": "NOT within 8 s"}
+{"jump": "+10 years", "ipc_ms": 8.6, "save_latency_s": 1.01, "saved_at": 2106591901, "camera_reached_s": 0.32}
+{"jump": "-30 years (to 1996)", "ipc_ms": 0.7, "save_latency_s": 1.02, "saved_at": 845151902, "camera_reached_s": "NOT within 8 s"}
+{"jump": "to 1970-01-01 00:00:10", "ipc_ms": 0.7, "save_latency_s": 1.02, "saved_at": 11, "camera_reached_s": "NOT within 8 s"}
+{"jump": "to 2038-01-19 03:14:00 (just before 2^31)", "ipc_ms": 0.6, "save_latency_s": 1.01, "saved_at": 2147483641, "camera_reached_s": 0.37}
+{"jump": "to 2106-02-07 06:28:00 (just before 2^32)", "ipc_ms": 0.5, "save_latency_s": 1.01, "saved_at": 4294967281, "camera_reached_s": 0.13}
+{"jump": "to year 2300", "ipc_ms": 0.7, "save_latency_s": 1.02, "saved_at": 10413792001, "camera_reached_s": 0.07}
+{"jump": "+1 s", "ipc_ms": 0.5, "save_latency_s": 1.01, "saved_at": 1791231927, "camera_reached_s": "NOT within 8 s"}
+{"jump": "-1 s", "ipc_ms": 0.7, "save_latency_s": 1.02, "saved_at": 1791231934, "camera_reached_s": "NOT within 8 s"}
+{"jump": "back to real time", "ipc_ms": 0.6, "save_latency_s": 1.01, "saved_at": 1791231945, "camera_reached_s": "NOT within 8 s"}
+flapping +-1..3 s x40: compositor alive, IPC answers
+kill -9 with the clock in year 2300, restart under real time: started=True, stand-ins restored=5
+
+log lines with panic: 0

@@ -1,0 +1,138 @@
+### summary-asan.txt
+seed=401 | COMPOSITOR DIED  | done conns=22 sent=2383 killed_by_compositor=22 alive=False |  | thread 'main' (32638) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/sm/src/wayland/shell/xdg/mod.rs:675:13: attempt to subtract with overflow 
+seed=402 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 173 mode=noread last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=173 sent=17134 killed_by_compositor=173 alive=False |  | thread 'main' (409) panicked at /tmp/claude-0/
+seed=403 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 26 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=26 sent=2282 killed_by_compositor=26 alive=False |  | thread 'main' (1073) panicked at /tmp/claude-0/-ho
+seed=404 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 50 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=50 sent=4671 killed_by_compositor=50 alive=True | POST-FUZZ IPC FAILED IndexErro
+seed=405 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 23 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=23 sent=2593 killed_by_compositor=22 alive=False |  | thread 'main' (1270) panicked at /tmp/claude-0/-ho
+seed=406 | COMPOSITOR DIED  | done conns=37 sent=3283 killed_by_compositor=37 alive=False |  | thread 'main' (1322) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/sm/src/wayland/shell/xdg/mod.rs:583:9: attempt to add with overflow 
+FINISHED
+### summary-asan20.txt
+seed=601 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 29 mode=noread last=wl_shm_pool.destroy; logs of last 4 connections saved COMPOSITOR DIED  | done conns=29 sent=3338 killed_by_compositor=28 alive=False |  | thread 'main' (12073) panicked at /tmp/claude-
+seed=602 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 181 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=181 sent=18155 killed_by_compositor=180 alive=True | POST-FUZZ IPC FAILED Index
+seed=603 | COMPOSITOR DIED  | done conns=4 sent=308 killed_by_compositor=4 alive=False |  | thread 'main' (13794) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/sm/src/utils/geometry.rs:779:9: Attempting to create a `Size` of negative size: (-214748364
+seed=604 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 40 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=40 sent=3807 killed_by_compositor=40 alive=True | POST-FUZZ IPC FAILED IndexErro
+seed=605 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 348 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=348 sent=34311 killed_by_compositor=347 alive=True | POST-FUZZ IPC FAILED Index
+seed=606 | COMPOSITOR DIED  | done conns=392 sent=39688 killed_by_compositor=390 alive=False |  | thread 'main' (28793) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/sm/src/utils/geometry.rs:779:9: Attempting to create a `Size` of negative size: (6553
+seed=607 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 26 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=26 sent=2274 killed_by_compositor=26 alive=True | POST-FUZZ IPC FAILED IndexErro
+seed=608 | COMPOSITOR DIED  | done conns=48 sent=4194 killed_by_compositor=48 alive=False |  | thread 'main' (31998) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/sm/src/utils/geometry.rs:779:9: Attempting to create a `Size` of negative size: (4, -1) 
+FINISHED
+### summary-asan22.txt
+seed=701 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1364 sent=135478 killed_by_compositor=1361 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 11 x 0.1s  | 
+seed=702 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=927 sent=91421 killed_by_compositor=926 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 23 x 0.1s  | 
+seed=703 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1036 sent=100463 killed_by_compositor=1033 alive=True | POST-FUZZ IPC State ok in 0.005s, windows=0 SIGTERM: exited after 18 x 0.1s  | 
+seed=704 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1052 sent=103359 killed_by_compositor=1049 alive=True | POST-FUZZ IPC State ok in 0.078s, windows=0 SIGTERM: exited after 23 x 0.1s  | 
+seed=705 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 398 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=398 sent=39158 killed_by_compositor=398 alive=True | POST-FUZZ IPC FAILED Index
+seed=706 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1228 sent=118867 killed_by_compositor=1224 alive=True | POST-FUZZ IPC State ok in 0.005s, windows=0 SIGTERM: exited after 18 x 0.1s  | 
+seed=707 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1130 sent=109202 killed_by_compositor=1126 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 25 x 0.1s  | 
+seed=708 | COMPOSITOR DIED  | done conns=644 sent=63524 killed_by_compositor=643 alive=False |  | thread 'main' (17642) panicked at src/handlers/compositor.rs:265:56: attempt to add with overflow 
+FINISHED
+### summary-asan23.txt
+seed=801 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1164 sent=114300 killed_by_compositor=1157 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 22 x 0.1s  | 
+seed=802 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1115 sent=111573 killed_by_compositor=1113 alive=True | POST-FUZZ IPC State ok in 0.050s, windows=0 SIGTERM: exited after 59 x 0.1s  | 
+seed=803 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1298 sent=126865 killed_by_compositor=1294 alive=True | POST-FUZZ IPC State ok in 0.021s, windows=0 SIGTERM: exited after 15 x 0.1s  | 
+seed=804 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1101 sent=105850 killed_by_compositor=1095 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 11 x 0.1s  | 
+seed=805 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1042 sent=102428 killed_by_compositor=1038 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 12 x 0.1s  | 
+seed=806 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1421 sent=139229 killed_by_compositor=1419 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 4 x 0.1s  | 
+seed=807 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1197 sent=115521 killed_by_compositor=1195 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=808 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1222 sent=118067 killed_by_compositor=1221 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 12 x 0.1s  | 
+FINISHED
+### summary-asan25.txt
+seed=1201 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1241 sent=121025 killed_by_compositor=1237 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 27 x 0.1s  | 
+seed=1202 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1180 sent=115389 killed_by_compositor=1177 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 15 x 0.1s  | 
+seed=1203 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=861 sent=84526 killed_by_compositor=859 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=1204 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1429 sent=136376 killed_by_compositor=1425 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 12 x 0.1s  | 
+seed=1205 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1905 sent=184514 killed_by_compositor=1901 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 11 x 0.1s  | 
+seed=1206 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1039 sent=101759 killed_by_compositor=1034 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 12 x 0.1s  | 
+seed=1207 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1419 sent=138522 killed_by_compositor=1415 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 12 x 0.1s  | 
+seed=1208 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1574 sent=154958 killed_by_compositor=1569 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 11 x 0.1s  | 
+FINISHED
+### summary-p18.txt
+seed=301 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 230 mode=normal last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=230 sent=19088 killed_by_compositor=230 alive=False |  | 
+seed=302 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 1223 mode=normal last=xdg_surface.ack_configure; logs of last 4 connections saved COMPOSITOR DIED  | done conns=1223 sent=102891 killed_by_compositor=1223 alive=False |  | 
+seed=303 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 193 mode=flip last=ext_idle_notifier_v1.destroy; logs of last 4 connections saved COMPOSITOR DIED  | done conns=193 sent=15728 killed_by_compositor=193 alive=False |  | 
+seed=304 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 123 mode=normal last=xdg_surface.ack_configure; logs of last 4 connections saved COMPOSITOR DIED  | done conns=123 sent=10014 killed_by_compositor=123 alive=False |  | 
+seed=305 | COMPOSITOR DIED  | done conns=69 sent=5816 killed_by_compositor=69 alive=False |  | 
+seed=306 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 58 mode=normal last=xdg_surface.ack_configure; logs of last 4 connections saved COMPOSITOR DIED  | done conns=58 sent=5222 killed_by_compositor=58 alive=False |  | 
+seed=307 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 21 mode=normal last=xdg_surface.ack_configure; logs of last 4 connections saved COMPOSITOR DIED  | done conns=21 sent=1604 killed_by_compositor=21 alive=False |  | 
+seed=308 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 346 mode=normal last=xdg_surface.ack_configure; logs of last 4 connections saved COMPOSITOR DIED  | done conns=346 sent=28544 killed_by_compositor=345 alive=False |  | 
+seed=309 | COMPOSITOR DIED  | done conns=29 sent=2450 killed_by_compositor=29 alive=False |  | 
+seed=310 | COMPOSITOR DIED  | done conns=377 sent=31219 killed_by_compositor=377 alive=False |  | 
+FINISHED
+### summary-p19.txt
+seed=501 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1785 sent=145182 killed_by_compositor=1784 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=502 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=968 sent=84909 killed_by_compositor=966 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=503 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1133 sent=96835 killed_by_compositor=1129 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=504 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1011 sent=83068 killed_by_compositor=1008 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=505 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1472 sent=119482 killed_by_compositor=1470 alive=True | POST-FUZZ IPC State ok in 0.005s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=506 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1213 sent=106460 killed_by_compositor=1210 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=507 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1551 sent=126452 killed_by_compositor=1551 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=508 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1587 sent=134810 killed_by_compositor=1584 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+FINISHED
+### summary-pr.txt
+seed=201 | COMPOSITOR DIED  | done conns=166 sent=12785 killed_by_compositor=166 alive=False |  | 
+seed=202 | COMPOSITOR DIED  | done conns=76 sent=6190 killed_by_compositor=76 alive=False |  | thread 'main' (28699) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/wayland/compositor/tree.rs:445:
+seed=203 | COMPOSITOR DIED  | done conns=133 sent=12110 killed_by_compositor=133 alive=False |  | thread 'main' (28978) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/wayland/compositor/tree.rs:4
+seed=204 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 57 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=57 sent=4901 killed_by_compositor=57 alive=False |  | thread 'main' (29194) panicked at /tmp/claude-0/-h
+seed=205 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 261 mode=normal last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=261 sent=19852 killed_by_compositor=261 alive=False |  | 
+seed=206 | COMPOSITOR DIED  | done conns=16 sent=1636 killed_by_compositor=16 alive=False |  | thread 'main' (29708) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/wayland/compositor/tree.rs:445:
+seed=207 | COMPOSITOR DIED  | done conns=4 sent=543 killed_by_compositor=4 alive=False |  | 
+seed=208 | COMPOSITOR DIED  | done conns=60 sent=4701 killed_by_compositor=60 alive=False |  | thread 'main' (29891) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/cargo/git/checkouts/smithay-312425d48e59d8c8/4cf0b62/src/wayland/compositor/tree.rs:445:
+seed=209 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 6 mode=normal last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=6 sent=580 killed_by_compositor=6 alive=False |  | 
+seed=210 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 35 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=35 sent=3328 killed_by_compositor=35 alive=False |  | thread 'main' (30045) panicked at /tmp/claude-0/-h
+seed=211 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 26 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=26 sent=2352 killed_by_compositor=26 alive=False |  | thread 'main' (30284) panicked at /tmp/claude-0/-h
+seed=212 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 9 mode=normal last=xdg_surface.ack_configure; logs of last 4 connections saved COMPOSITOR DIED  | done conns=9 sent=1095 killed_by_compositor=9 alive=False |  | 
+FINISHED
+### summary-prg.txt
+seed=201 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 186 mode=normal last=xdg_surface.ack_configure; logs of last 4 connections saved COMPOSITOR DIED  | done conns=186 sent=15292 killed_by_compositor=186 alive=False |  | 
+seed=202 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 178 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=178 sent=15666 killed_by_compositor=178 alive=False |  | thread 'main' (9304) panicked at /tmp/claude-0
+seed=203 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 3 mode=flip last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=3 sent=241 killed_by_compositor=3 alive=False |  | thread 'main' (12860) panicked at /tmp/claude-0/-home-us
+seed=204 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 251 mode=normal last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=251 sent=20037 killed_by_compositor=251 alive=False |  | 
+seed=205 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 153 mode=flip last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=153 sent=11734 killed_by_compositor=153 alive=False |  | thread 'main' (13317) panicked at /tmp/claude-0/
+seed=206 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 15 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=15 sent=1557 killed_by_compositor=15 alive=False |  | thread 'main' (13442) panicked at /tmp/claude-0/-h
+seed=207 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 207 mode=normal last=wl_display.sync; logs of last 4 connections saved COMPOSITOR DIED  | done conns=207 sent=16063 killed_by_compositor=207 alive=False |  | thread 'main' (13559) panicked at /tmp/claude-
+seed=208 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 365 mode=flip last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=365 sent=28674 killed_by_compositor=365 alive=False |  | 
+seed=209 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 240 mode=normal last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=240 sent=23179 killed_by_compositor=240 alive=False |  | 
+seed=210 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 104 mode=flip last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=104 sent=8891 killed_by_compositor=104 alive=False |  | 
+FINISHED
+### summary-rel23.txt
+seed=901 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1953 sent=157346 killed_by_compositor=1949 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=902 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1747 sent=142493 killed_by_compositor=1747 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=903 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1468 sent=119282 killed_by_compositor=1467 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=904 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1613 sent=134277 killed_by_compositor=1611 alive=True | POST-FUZZ IPC State ok in 0.003s, windows=0 SIGTERM: exited after 4 x 0.1s  | 
+seed=905 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=2118 sent=166576 killed_by_compositor=2115 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=906 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1823 sent=150052 killed_by_compositor=1819 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 4 x 0.1s  | 
+seed=907 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1382 sent=114393 killed_by_compositor=1379 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=908 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=2466 sent=199419 killed_by_compositor=2463 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=909 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1565 sent=124736 killed_by_compositor=1564 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=910 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1871 sent=152219 killed_by_compositor=1869 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=911 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1850 sent=155769 killed_by_compositor=1848 alive=True | POST-FUZZ IPC State ok in 0.002s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=912 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1922 sent=159480 killed_by_compositor=1920 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=913 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1269 sent=106499 killed_by_compositor=1266 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=914 | COMPOSITOR HUNG (event loop not answering wl_display.sync for 10 s) after connection 1473 mode=normal last=wl_surface.commit; logs of last 4 connections saved COMPOSITOR DIED  | done conns=1473 sent=118664 killed_by_compositor=1472 alive=False |  | 
+seed=915 | COMPOSITOR DIED  | done conns=0 sent=0 killed_by_compositor=0 alive=False |  | 
+seed=916 | COMPOSITOR DIED  | done conns=0 sent=0 killed_by_compositor=0 alive=False |  | 
+FINISHED
+### summary-rel25.txt
+seed=1101 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1885 sent=159135 killed_by_compositor=1885 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=1102 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1463 sent=120852 killed_by_compositor=1462 alive=True | POST-FUZZ IPC State ok in 0.001s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1103 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1735 sent=146440 killed_by_compositor=1731 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1104 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1722 sent=143279 killed_by_compositor=1718 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=1105 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1700 sent=142257 killed_by_compositor=1699 alive=True | POST-FUZZ IPC State ok in 0.010s, windows=0 SIGTERM: exited after 3 x 0.1s  | 
+seed=1106 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1533 sent=130575 killed_by_compositor=1531 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 4 x 0.1s  | 
+seed=1107 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1789 sent=149009 killed_by_compositor=1788 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1108 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1540 sent=131253 killed_by_compositor=1539 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1109 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1924 sent=157922 killed_by_compositor=1922 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1110 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1838 sent=148210 killed_by_compositor=1837 alive=True | POST-FUZZ IPC State ok in 0.003s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1111 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=2043 sent=161967 killed_by_compositor=2043 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1112 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1212 sent=99388 killed_by_compositor=1211 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1113 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=2068 sent=160643 killed_by_compositor=2064 alive=True | POST-FUZZ IPC State ok in 0.003s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1114 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1551 sent=129125 killed_by_compositor=1551 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1115 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1506 sent=120772 killed_by_compositor=1503 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+seed=1116 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=1580 sent=130966 killed_by_compositor=1578 alive=True | POST-FUZZ IPC State ok in 0.000s, windows=0 SIGTERM: exited after 2 x 0.1s  | 
+FINISHED
+### summary-tsan.txt
+seed=1001 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=724 sent=73107 killed_by_compositor=720 alive=True | POST-FUZZ IPC State ok in 0.035s, windows=0 SIGTERM: exited after 13 x 0.1s  | 
+seed=1002 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=777 sent=79603 killed_by_compositor=774 alive=True | POST-FUZZ IPC State ok in 0.013s, windows=0 SIGTERM: exited after 18 x 0.1s  | 
+seed=1003 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=570 sent=57551 killed_by_compositor=566 alive=True | POST-FUZZ IPC State ok in 0.024s, windows=0 SIGTERM: exited after 15 x 0.1s  | 
+seed=1004 | COMPOSITOR ALIVE after fuzz; VmHWM/RSS:  | done conns=626 sent=60785 killed_by_compositor=621 alive=True | POST-FUZZ IPC State ok in 0.034s, windows=0 SIGTERM: exited after 14 x 0.1s  | 
+FINISHED

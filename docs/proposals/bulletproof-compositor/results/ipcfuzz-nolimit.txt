@@ -1,0 +1,15 @@
+### ipcfuzz NO memory limit, seed 11
+requests=58574 ok_replies=27149 error_replies=30857 result=ALIVE rc=None
+top request kinds: {'Move': 7857, 'Action': 7720, 'str': 5301, 'Resize': 5100, 'raw': 3474, 'Zoom': 2855, 'Camera': 2832, 'Screenshot': 2545}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 2784, '{"Err":"no suspended window matching selector"}\n': 1995, '{"Err":"size must be positive"}\n': 1253, '{"Err":"invalid request: data did not match any variant of u': 987, '{"Err":"zoom must be a positive number"}\n': 850, '{"Err":"no window matching \'term\'"}\n': 835}
+RSS KB: ['161192']
+### ipcfuzz NO memory limit, seed 12
+requests=23048 ok_replies=10528 error_replies=12262 result=ALIVE rc=None
+top request kinds: {'Move': 3133, 'Action': 3015, 'Resize': 2033, 'str': 2021, 'raw': 1356, 'Camera': 1179, 'Zoom': 1149, 'Opacity': 1003}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 1067, '{"Err":"no suspended window matching selector"}\n': 795, '{"Err":"size must be positive"}\n': 481, '{"Err":"invalid request: data did not match any variant of u': 414, '{"Err":"zoom must be a positive number"}\n': 359, '{"Err":"no window matching \'term\'"}\n': 336}
+RSS KB: ['191660']
+### ipcfuzz NO memory limit, seed 13
+requests=21434 ok_replies=10021 error_replies=11186 result=ALIVE rc=None
+top request kinds: {'Move': 2965, 'Action': 2920, 'str': 1968, 'Resize': 1755, 'raw': 1212, 'Zoom': 1050, 'Camera': 1003, 'Layout': 960}
+top error texts: {'{"Err":"invalid request: expected value at line 1 column 1"}': 1024, '{"Err":"no suspended window matching selector"}\n': 737, '{"Err":"size must be positive"}\n': 415, '{"Err":"invalid request: data did not match any variant of u': 360, '{"Err":"zoom must be a positive number"}\n': 331, '{"Err":"no window matching \'term\'"}\n': 310}
+RSS KB: ['196228']

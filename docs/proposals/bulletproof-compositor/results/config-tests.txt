@@ -1,0 +1,25 @@
+## configwipe.py on driftwm-p25: 8 live windows, restore_windows=true; an odd config while a window changes
+live windows open: 8; session.json entries: 8
+config -> empty file: session.json entries before=8 while-odd-config-active=0 after-good-config-restored=0
+config -> invalid TOML: session.json entries before=8 while-odd-config-active=8 after-good-config-restored=8
+config -> unknown key only: session.json entries before=8 while-odd-config-active=8 after-good-config-restored=8
+config -> valid file without [session]: session.json entries before=8 while-odd-config-active=0 after-good-config-restored=0
+
+## cfgstart.sh (unknown field in [effects] at start-up and at hot reload), driftwm-p20
+--- start-up with an unknown field in [effects]: log lines mentioning config:
+2026-10-05T23:21:49.828465Z  INFO driftwm::config: Loaded config from c.toml
+2026-10-05T23:21:49.831337Z ERROR driftwm::config: config error: TOML parse error at line 5, column 1
+unknown field `blur`, expected one of `blur_radius`, `blur_strength`, `animate_blur`, `animate_blur_fps`, `animation_speed`, `animation_scale`
+2026-10-05T23:21:49.841712Z  INFO input_seat{name="seat-0"}:add_keyboard_with_context_flags{xkb_config=XkbConfig { rules: "", model: "", layout: "us", variant: "", options: None } repeat_delay=200 repeat_rate=25 context_flags=0}:i
+2026-10-05T23:21:49.849383Z  INFO input_seat{name="seat-0"}:add_keyboard_with_context_flags{xkb_config=XkbConfig { rules: "", model: "", layout: "us", variant: "", options: None } repeat_delay=200 repeat_rate=25 context_flags=0}:i
+2026-10-05T23:21:49.972343Z  INFO backend_winit{window=4194306}: smithay::backend::egl::display: Supported EGL display extensions: EGLExtensions { extensions: ["EGL_ANDROID_blob_cache", "EGL_ANGLE_sync_control_rate", "EGL_EXT_buff
+--- hot reload to a good config:
+2026-10-05T23:21:49.868439Z  WARN backend_winit: winit_x11::xdisplay: error setting XSETTINGS; Xft options won't reload automatically
+2026-10-05T23:21:49.972343Z  INFO backend_winit{window=4194306}: smithay::backend::egl::display: Supported EGL display extensions: EGLExtensions { extensions: ["EGL_ANDROID_blob_cache", "EGL_ANGLE_sync_control_rate", "EGL_EXT_buff
+2026-10-05T23:21:52.811652Z  INFO driftwm::state::reload: Config reloaded
+--- hot reload back to the config with the unknown field:
+2026-10-05T23:21:49.972343Z  INFO backend_winit{window=4194306}: smithay::backend::egl::display: Supported EGL display extensions: EGLExtensions { extensions: ["EGL_ANDROID_blob_cache", "EGL_ANGLE_sync_control_rate", "EGL_EXT_buff
+2026-10-05T23:21:52.811652Z  INFO driftwm::state::reload: Config reloaded
+2026-10-05T23:21:54.970275Z ERROR driftwm::state::reload: Config reload: parse error: TOML parse error at line 5, column 1
+
+## nulcfg.sh / nulstart.sh on the pristine build and on p25 are in verify-pristine.txt and verify-p25.txt

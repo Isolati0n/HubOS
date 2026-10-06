@@ -1,0 +1,13 @@
+  21.05s 20 live windows up; triggering the hang with the 5-line popup client (repro_popup.py self)
+  28.09s probe round failed (1): ipc=False wl_sync=False
+  35.12s probe round failed (2): ipc=False wl_sync=False
+  42.14s probe round failed (3): ipc=False wl_sync=False
+  49.17s probe round failed (4): ipc=False wl_sync=False
+  56.19s probe round failed (5): ipc=False wl_sync=False
+  63.23s probe round failed (6): ipc=False wl_sync=False
+  63.23s HUNG for 35.1s: State:	R (running); kill -9
+  64.61s restarted: IPC back 1.35s after the kill (incl. the 1.0 s restart delay); stand-ins restored: 20; geometry equal to before: 16/20
+  64.61s stand-in vs before differences: {"hubos-s08": [[[-1500, 200], [500, 300]], [[-1400, 88], [700, 525]]], "hubos-s15": [[[-900, 200], [500, 300]], [[-800, 88], [700, 525]]], "hubos-s19": [[[-900, 600], [500, 300]], [[-800, 488], [700, 525]]], "hubos-s17": [[[-300, 600], [500, 300]], [[-200, 488], [700, 525]]]}
+  66.38s all windows live again 3.13s after the kill; live geometry equal to before: 12/20
+  66.38s live vs before differences: {"hubos-s10": [[[900, -200], [500, 300]], [[1000, -312], [700, 525]]], "hubos-s08": [[[-1500, 200], [500, 300]], [[-1400, 88], [700, 525]]], "hubos-s15": [[[-900, 200], [500, 300]], [[-800, 88], [700, 525]]], "hubos-s13": [[[900, 200], [500, 300]], [[1000, 88], [700, 525]]], "hubos-s19": [[[-900, 600], [500, 300]], [[-800, 488], [700, 525]]], "hubos-s17": [[[-300, 600], [500, 300]], [[-200, 488], [700, 525]]], "hubos-s20": [[[300, 600], [500, 300]], [[400, 488], [700, 525]]], "hubos-s12": [[[900, 600], [500, 300]], [[0, 0], [0, 0]]]}
+  66.38s total time from the hang trigger to everything back: 45.3s (of which 42.2s detection window)

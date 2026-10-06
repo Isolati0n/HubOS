@@ -1,0 +1,97 @@
+10-05 21:17:40 seeded 8 stand-ins
+10-05 21:17:42 cycle 0 stats {'kills_rand': 1, 'restore_ok_new': 1} elapsed 12s
+10-05 21:20:30 cycle 50 stats {'kills_rand': 32, 'restore_ok_new': 40, 'kills_strace': 5, 'strace_tmp_seen': 5, 'strace_tmp_partial': 5, 'restore_ok_old': 11, 'kills_edge': 14} elapsed 179s
+10-05 21:23:08 cycle 100 stats {'kills_rand': 60, 'restore_ok_new': 77, 'kills_strace': 12, 'strace_tmp_seen': 12, 'strace_tmp_partial': 12, 'restore_ok_old': 24, 'kills_edge': 29} elapsed 337s
+10-05 21:25:39 cycle 150 stats {'kills_rand': 87, 'restore_ok_new': 114, 'kills_strace': 16, 'strace_tmp_seen': 16, 'strace_tmp_partial': 16, 'restore_ok_old': 37, 'kills_edge': 48} elapsed 488s
+10-05 21:28:16 cycle 200 stats {'kills_rand': 114, 'restore_ok_new': 152, 'kills_strace': 23, 'strace_tmp_seen': 23, 'strace_tmp_partial': 23, 'restore_ok_old': 49, 'kills_edge': 64} elapsed 645s
+10-05 21:30:59 cycle 250 stats {'kills_rand': 144, 'restore_ok_new': 186, 'kills_strace': 29, 'strace_tmp_seen': 29, 'strace_tmp_partial': 29, 'restore_ok_old': 65, 'kills_edge': 78} elapsed 808s
+10-05 21:33:41 cycle 300 stats {'kills_rand': 173, 'restore_ok_new': 227, 'kills_strace': 32, 'strace_tmp_seen': 32, 'strace_tmp_partial': 32, 'restore_ok_old': 74, 'kills_edge': 96} elapsed 971s
+10-05 21:36:22 cycle 350 stats {'kills_rand': 204, 'restore_ok_new': 268, 'kills_strace': 35, 'strace_tmp_seen': 35, 'strace_tmp_partial': 35, 'restore_ok_old': 83, 'kills_edge': 112} elapsed 1131s
+10-05 21:39:01 cycle 400 stats {'kills_rand': 229, 'restore_ok_new': 312, 'kills_strace': 39, 'strace_tmp_seen': 39, 'strace_tmp_partial': 39, 'restore_ok_old': 89, 'kills_edge': 133} elapsed 1290s
+10-05 21:41:34 cycle 450 stats {'kills_rand': 257, 'restore_ok_new': 353, 'kills_strace': 42, 'strace_tmp_seen': 42, 'strace_tmp_partial': 42, 'restore_ok_old': 98, 'kills_edge': 152} elapsed 1443s
+10-05 21:44:07 cycle 500 stats {'kills_rand': 282, 'restore_ok_new': 389, 'kills_strace': 49, 'strace_tmp_seen': 49, 'strace_tmp_partial': 49, 'restore_ok_old': 112, 'kills_edge': 170} elapsed 1596s
+10-05 21:46:46 cycle 550 stats {'kills_rand': 315, 'restore_ok_new': 430, 'kills_strace': 51, 'strace_tmp_seen': 51, 'strace_tmp_partial': 51, 'restore_ok_old': 121, 'kills_edge': 185} elapsed 1755s
+10-05 21:49:19 cycle 600 stats {'kills_rand': 343, 'restore_ok_new': 465, 'kills_strace': 56, 'strace_tmp_seen': 56, 'strace_tmp_partial': 56, 'restore_ok_old': 136, 'kills_edge': 202} elapsed 1908s
+10-05 21:51:43 cycle 650 stats {'kills_rand': 369, 'restore_ok_new': 499, 'kills_strace': 62, 'strace_tmp_seen': 62, 'strace_tmp_partial': 62, 'restore_ok_old': 152, 'kills_edge': 220} elapsed 2053s
+10-05 21:54:17 cycle 700 stats {'kills_rand': 393, 'restore_ok_new': 538, 'kills_strace': 67, 'strace_tmp_seen': 67, 'strace_tmp_partial': 67, 'restore_ok_old': 163, 'kills_edge': 241} elapsed 2206s
+10-05 21:56:56 cycle 750 stats {'kills_rand': 416, 'restore_ok_new': 577, 'kills_strace': 71, 'strace_tmp_seen': 71, 'strace_tmp_partial': 71, 'restore_ok_old': 174, 'kills_edge': 264} elapsed 2365s
+10-05 21:59:28 cycle 800 stats {'kills_rand': 446, 'restore_ok_new': 613, 'kills_strace': 76, 'strace_tmp_seen': 76, 'strace_tmp_partial': 76, 'restore_ok_old': 188, 'kills_edge': 279} elapsed 2518s
+10-05 22:02:02 cycle 850 stats {'kills_rand': 474, 'restore_ok_new': 656, 'kills_strace': 76, 'strace_tmp_seen': 76, 'strace_tmp_partial': 76, 'restore_ok_old': 195, 'kills_edge': 301} elapsed 2671s
+10-05 22:04:41 cycle 900 stats {'kills_rand': 497, 'restore_ok_new': 698, 'kills_strace': 82, 'strace_tmp_seen': 82, 'strace_tmp_partial': 82, 'restore_ok_old': 203, 'kills_edge': 322} elapsed 2830s
+10-05 22:07:35 cycle 950 stats {'kills_rand': 525, 'restore_ok_new': 736, 'kills_strace': 91, 'strace_tmp_seen': 90, 'strace_tmp_partial': 90, 'restore_ok_old': 215, 'kills_edge': 335} elapsed 3004s
+10-05 22:10:13 cycle 1000 stats {'kills_rand': 550, 'restore_ok_new': 777, 'kills_strace': 94, 'strace_tmp_seen': 93, 'strace_tmp_partial': 93, 'restore_ok_old': 224, 'kills_edge': 357} elapsed 3162s
+10-05 22:13:01 cycle 1050 stats {'kills_rand': 569, 'restore_ok_new': 817, 'kills_strace': 101, 'strace_tmp_seen': 100, 'strace_tmp_partial': 100, 'restore_ok_old': 234, 'kills_edge': 381} elapsed 3330s
+10-05 22:15:42 cycle 1100 stats {'kills_rand': 595, 'restore_ok_new': 853, 'kills_strace': 106, 'strace_tmp_seen': 105, 'strace_tmp_partial': 105, 'restore_ok_old': 248, 'kills_edge': 400} elapsed 3491s
+10-05 22:18:22 cycle 1150 stats {'kills_rand': 621, 'restore_ok_new': 893, 'kills_strace': 115, 'strace_tmp_seen': 113, 'strace_tmp_partial': 113, 'restore_ok_old': 258, 'kills_edge': 415} elapsed 3652s
+10-05 22:20:46 cycle 1200 stats {'kills_rand': 645, 'restore_ok_new': 932, 'kills_strace': 122, 'strace_tmp_seen': 120, 'strace_tmp_partial': 120, 'restore_ok_old': 269, 'kills_edge': 434} elapsed 3795s
+10-05 22:23:16 cycle 1250 stats {'kills_rand': 672, 'restore_ok_new': 969, 'kills_strace': 128, 'strace_tmp_seen': 126, 'strace_tmp_partial': 126, 'restore_ok_old': 282, 'kills_edge': 451} elapsed 3945s
+10-05 22:25:48 cycle 1300 stats {'kills_rand': 694, 'restore_ok_new': 1009, 'kills_strace': 131, 'strace_tmp_seen': 129, 'strace_tmp_partial': 129, 'restore_ok_old': 292, 'kills_edge': 476} elapsed 4097s
+10-05 22:28:31 cycle 1350 stats {'kills_rand': 722, 'restore_ok_new': 1050, 'kills_strace': 136, 'strace_tmp_seen': 133, 'strace_tmp_partial': 133, 'restore_ok_old': 301, 'kills_edge': 493} elapsed 4260s
+10-05 22:31:22 cycle 1400 stats {'kills_rand': 753, 'restore_ok_new': 1090, 'kills_strace': 137, 'strace_tmp_seen': 134, 'strace_tmp_partial': 134, 'restore_ok_old': 311, 'kills_edge': 511} elapsed 4431s
+10-05 22:33:57 cycle 1450 stats {'kills_rand': 776, 'restore_ok_new': 1133, 'kills_strace': 143, 'strace_tmp_seen': 140, 'strace_tmp_partial': 140, 'restore_ok_old': 318, 'kills_edge': 532} elapsed 4586s
+10-05 22:36:35 cycle 1500 stats {'kills_rand': 808, 'restore_ok_new': 1172, 'kills_strace': 149, 'strace_tmp_seen': 146, 'strace_tmp_partial': 146, 'restore_ok_old': 329, 'kills_edge': 544} elapsed 4744s
+10-05 22:39:14 cycle 1550 stats {'kills_rand': 834, 'restore_ok_new': 1205, 'kills_strace': 156, 'strace_tmp_seen': 153, 'strace_tmp_partial': 153, 'restore_ok_old': 346, 'kills_edge': 561} elapsed 4903s
+10-05 22:42:02 cycle 1600 stats {'kills_rand': 863, 'restore_ok_new': 1247, 'kills_strace': 159, 'strace_tmp_seen': 156, 'strace_tmp_partial': 156, 'restore_ok_old': 354, 'kills_edge': 579} elapsed 5071s
+10-05 22:44:54 cycle 1650 stats {'kills_rand': 886, 'restore_ok_new': 1284, 'kills_strace': 166, 'strace_tmp_seen': 163, 'strace_tmp_partial': 163, 'restore_ok_old': 367, 'kills_edge': 599} elapsed 5243s
+10-05 22:47:36 cycle 1700 stats {'kills_rand': 912, 'restore_ok_new': 1321, 'kills_strace': 172, 'strace_tmp_seen': 169, 'strace_tmp_partial': 169, 'restore_ok_old': 380, 'kills_edge': 617} elapsed 5405s
+10-05 22:49:15 cycle 1733 mode=rand: RESTART FAILED rc=1
+10-05 22:49:15 cycle 1734: START FAILED rc=1
+10-05 22:49:16 cycle 1735: START FAILED rc=1
+10-05 22:49:17 cycle 1736: START FAILED rc=1
+10-05 22:49:18 cycle 1737: START FAILED rc=1
+10-05 22:49:19 cycle 1738: START FAILED rc=1
+10-05 22:49:20 cycle 1739: START FAILED rc=1
+10-05 22:49:21 cycle 1740: START FAILED rc=1
+10-05 22:49:22 cycle 1741: START FAILED rc=1
+10-05 22:49:23 cycle 1742: START FAILED rc=1
+10-05 22:49:24 cycle 1743: START FAILED rc=1
+10-05 22:49:25 cycle 1744: START FAILED rc=1
+10-05 22:49:26 cycle 1745: START FAILED rc=1
+10-05 22:49:27 cycle 1746: START FAILED rc=1
+10-05 22:49:29 cycle 1747: START FAILED rc=1
+10-05 22:49:30 cycle 1748: START FAILED rc=1
+10-05 22:49:31 cycle 1749: START FAILED rc=1
+10-05 22:49:32 cycle 1750: START FAILED rc=1
+10-05 22:49:33 cycle 1751: START FAILED rc=1
+10-05 22:49:34 cycle 1752: START FAILED rc=1
+10-05 22:49:35 cycle 1753: START FAILED rc=1
+10-05 22:49:36 cycle 1754: START FAILED rc=1
+10-05 22:49:37 cycle 1755: START FAILED rc=1
+10-05 22:49:38 cycle 1756: START FAILED rc=1
+10-05 22:49:39 cycle 1757: START FAILED rc=1
+10-05 22:49:40 cycle 1758: START FAILED rc=1
+10-05 22:49:41 cycle 1759: START FAILED rc=1
+10-05 22:49:42 cycle 1760: START FAILED rc=1
+10-05 22:49:43 cycle 1761: START FAILED rc=1
+10-05 22:49:44 cycle 1762: START FAILED rc=1
+10-05 22:49:45 cycle 1763: START FAILED rc=1
+10-05 22:49:46 cycle 1764: START FAILED rc=1
+10-05 22:49:48 cycle 1765: START FAILED rc=1
+10-05 22:49:49 cycle 1766: START FAILED rc=1
+10-05 22:49:50 cycle 1767: START FAILED rc=1
+10-05 22:49:51 cycle 1768: START FAILED rc=1
+10-05 22:49:52 cycle 1769: START FAILED rc=1
+10-05 22:49:53 cycle 1770: START FAILED rc=1
+10-05 22:49:54 cycle 1771: START FAILED rc=1
+10-05 22:49:55 cycle 1772: START FAILED rc=1
+10-05 22:49:56 cycle 1773: START FAILED rc=1
+10-05 22:49:57 cycle 1774: START FAILED rc=1
+10-05 22:49:58 cycle 1775: START FAILED rc=1
+10-05 22:49:59 cycle 1776: START FAILED rc=1
+10-05 22:50:00 cycle 1777: START FAILED rc=1
+10-05 22:50:01 cycle 1778: START FAILED rc=1
+10-05 22:50:02 cycle 1779: START FAILED rc=1
+10-05 22:50:03 cycle 1780: START FAILED rc=1
+10-05 22:50:04 cycle 1781: START FAILED rc=1
+10-05 22:50:05 cycle 1782: START FAILED rc=1
+10-05 22:50:07 cycle 1783: START FAILED rc=1
+10-05 22:50:08 cycle 1784: START FAILED rc=1
+10-05 22:50:09 cycle 1785: START FAILED rc=1
+10-05 22:50:10 cycle 1786: START FAILED rc=1
+10-05 22:50:11 cycle 1787: START FAILED rc=1
+10-05 22:50:12 cycle 1788: START FAILED rc=1
+10-05 22:50:13 cycle 1789: START FAILED rc=1
+10-05 22:50:14 cycle 1790: START FAILED rc=1
+10-05 22:50:15 cycle 1791: START FAILED rc=1
+10-05 22:50:16 cycle 1792: START FAILED rc=1
+10-05 22:50:17 cycle 1793: START FAILED rc=1
