@@ -252,6 +252,11 @@ def op_kill(quiescent):
         if not m: return 'kill(skip: no windows)'
     else:
         m, o = {}, []
+        # (added after soak chunk 1) the ring is filled at the START of each operation, so the state after the last operation was never in it:
+        # record the state just before the kill, which the saved file can legitimately hold
+        try:
+            sm_, so_ = snap(state()); ring.append((now(), sm_, so_))
+        except Exception: pass
     tk = now()
     kill_dw('quiescent' if quiescent else 'random moment')
     restart_and_verify(m, o, quiescent, tk, 'quiescent' if quiescent else 'random')
