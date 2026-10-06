@@ -173,20 +173,22 @@ type Hub struct {
 	titleIDs       map[string][]string // the same, the other way round
 
 	// layouts (layoutops.go) and direct restore (restore.go)
-	lay         *layoutStore
-	layMu       sync.Mutex // one layout command at a time
-	active      *Layout    // the active layout (nil = none); guarded by h.mu
-	layoutInfos []LayoutInfo
-	warnings    []string         // problems found while loading layouts, for the log
-	places      map[string]Place // the latest place of every machine window hubd knows (from driftwm's events)
-	lastView    viewSnap         // the latest view
-	restoreSet  map[string]Place // machines whose windows must come back after the compositor restarted
-	restoreView viewSnap         // the view to put back with them
-	stateNanos  atomic.Int64     // how long the latest answers of driftwm's "state" took (smoothed); hubd's loops wait longer when driftwm is slow
-	epoch       int              // counts the compositors that went away; an open that started under an earlier one is dropped
-	restoring   int              // windows still being brought back
-	restoreRun  bool             // a restore is running
-	restoreOf   int              // how many windows the running restore started with
+	lay          *layoutStore
+	layMu        sync.Mutex // one layout command at a time
+	active       *Layout    // the active layout (nil = none); guarded by h.mu
+	layoutInfos  []LayoutInfo
+	warnings     []string         // problems found while loading layouts, for the log
+	places       map[string]Place // the latest place of every machine window hubd knows (from driftwm's events)
+	lastView     viewSnap         // the latest view
+	restoreSet   map[string]Place // machines whose windows must come back after the compositor restarted
+	restoreView  viewSnap         // the view to put back with them
+	lastOrder    []string         // machine ids with a window, bottom to top, from the latest snapshot (the stacking order)
+	restoreOrder []string         // the stacking order to put back with them
+	stateNanos   atomic.Int64     // how long the latest answers of driftwm's "state" took (smoothed); hubd's loops wait longer when driftwm is slow
+	epoch        int              // counts the compositors that went away; an open that started under an earlier one is dropped
+	restoring    int              // windows still being brought back
+	restoreRun   bool             // a restore is running
+	restoreOf    int              // how many windows the running restore started with
 }
 
 // New builds a Hub. recPath is where the record file goes ("" = none).

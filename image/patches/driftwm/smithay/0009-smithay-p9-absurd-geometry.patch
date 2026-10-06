@@ -1,0 +1,33 @@
+--- a/src/wayland/compositor/handlers.rs
++++ b/src/wayland/compositor/handlers.rs
+@@ -568,6 +568,11 @@
+     ) {
+         match request {
+             wl_subsurface::Request::SetPosition { x, y } => {
++                // BULLETPROOF-COMPOSITOR PATCH P9: a subsurface offset near the 32-bit limit made the software GL
++                // renderer (llvmpipe) abort with "stack smashing detected"; no real window is 16 million pixels
++                // away from its parent, so clamp (the protocol has no error for this).
++                const LIMIT: i32 = 1 << 24;
++                let (x, y) = (x.clamp(-LIMIT, LIMIT), y.clamp(-LIMIT, LIMIT));
+                 let client_scale = state.client_compositor_state(client).client_scale();
+                 PrivateSurfaceData::with_states(&self.surface, |state| {
+                     state
+--- a/src/wayland/viewporter/mod.rs
++++ b/src/wayland/viewporter/mod.rs
+@@ -266,6 +266,16 @@
+                     return;
+                 }
+ 
++                // BULLETPROOF-COMPOSITOR PATCH P9: an absurd destination (2^31-1 pixels) made the software GL renderer
++                // (llvmpipe) abort with "stack smashing detected". The protocol has no upper limit; refuse above 2^24.
++                if !is_unset && (width > (1 << 24) || height > (1 << 24)) {
++                    resource.post_error(
++                        wp_viewport::Error::BadValue,
++                        "destination size larger than 16777216 is not supported".to_string(),
++                    );
++                    return;
++                }
++
+                 // If the wl_surface associated with the wp_viewport is destroyed,
+                 // all wp_viewport requests except 'destroy' raise the protocol error no_surface.
+                 let Ok(surface) = self.surface.upgrade() else {

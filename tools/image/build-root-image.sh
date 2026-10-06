@@ -37,6 +37,9 @@ if [ "$EXTRA_PARTS" = hub ]; then
   rm -f "$S"/usr/lib/libudev.so* "$S"/usr/lib/libudev.la; rm -rf "$S/usr/include/libudev.h" "$S/usr/lib/pkgconfig"
   echo 'seat:x:1001:hub' >> "$S/etc/group"
   for g in input video render; do grep -q "^$g:" "$S/etc/group" || echo "$g:x:$((1100 + $(echo $g | cksum | cut -c1-2))):" >> "$S/etc/group"; done
+  # The compositor's settings are baked into the image, so a mistake in them stops the BUILD here (an unknown field,
+  # a bad value, restore_windows not written as false): see check-driftwm-config.sh.
+  "$(dirname "$0")/check-driftwm-config.sh" "$S" /etc/hubos/driftwm.toml >&2 || { echo "the hub's driftwm settings file is not acceptable; no image was built" >&2; exit 1; }
 fi
 mkdir -p "$S/etc/hubos" "$S/usr/local/bin" "$S/config" "$S/data" "$S/boot/efi" "$S/run" "$S/tmp" "$S/var"
 # The update keyring: every *.pub in /etc/hubos/keys is accepted by the update tool and by the recovery kernel (a release

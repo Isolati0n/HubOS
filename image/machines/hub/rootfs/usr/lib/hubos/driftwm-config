@@ -1,0 +1,39 @@
+#!/bin/sh
+# driftwm-config: chooses the settings file the compositor starts with, and prints its path on standard output ("" = none, so
+# driftwm uses its built-in defaults). Used by the driftwm service (etc/s6/sv/driftwm/run). Owner decision 5 (2026-10-06):
+# the settings are baked into the image and the IMAGE BUILD refuses a bad file (tools/image/check-driftwm-config.sh); this is
+# the second line of defence at run time, the smallest one:
+#   - the image's file passes driftwm's own `--check-config` (an unknown field or a bad TOML makes it fail): it is used, and
+#     a copy is kept as the LAST GOOD file on the config partition (/config/hubos/driftwm.last-good.toml);
+#   - it does not pass: the last good copy is used if it passes; if there is none, driftwm's built-in defaults are used.
+#     Either way the ALERT is written: the fixed message below on the serial console and in the service log, and the marker
+#     file /run/hub/driftwm-config-fallback (in RAM; removed again by the next start with a good file).
+# Why the config partition and not /run: /run is empty after every boot, a last good copy there would never exist when the
+# image's file is the bad one. Everything can be moved with DW_* variables (the test of this script does).
+IMG=${DW_IMAGE_CFG:-/etc/hubos/driftwm.toml}
+GOOD=${DW_LAST_GOOD:-/config/hubos/driftwm.last-good.toml}
+BIN=${DW_BIN:-/usr/local/bin/driftwm}
+MARK=${DW_FALLBACK_MARK:-/run/hub/driftwm-config-fallback}
+CONSOLE=${DW_CONSOLE:-/dev/console}
+ok() { RUST_LOG=error "$BIN" --check-config --config "$1" >/dev/null 2>&1; }
+if ok "$IMG"; then
+  rm -f "$MARK"
+  if ! cmp -s "$IMG" "$GOOD" 2>/dev/null; then
+    mkdir -p "$(dirname "$GOOD")" 2>/dev/null
+    cp "$IMG" "$GOOD.new" 2>/dev/null && mv -f "$GOOD.new" "$GOOD" 2>/dev/null || echo "driftwm-config: could not keep a last good copy at $GOOD" >&2
+  fi
+  echo "$IMG"
+  exit 0
+fi
+if [ -f "$GOOD" ] && ok "$GOOD"; then
+  use=$GOOD; what="the last good settings file ($GOOD)"
+else
+  use=; what="driftwm's built-in defaults (there is no usable last good file)"
+fi
+MSG="HUB OS ALERT: the desktop settings file $IMG is not valid (driftwm --check-config failed); the desktop starts with $what."
+mkdir -p "$(dirname "$MARK")" 2>/dev/null
+printf '%s\n' "$MSG" > "$MARK" 2>/dev/null
+printf '%s\n' "$MSG" > "$CONSOLE" 2>/dev/null
+printf '%s\n' "$MSG" >&2
+echo "$use"
+exit 0

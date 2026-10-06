@@ -43,8 +43,8 @@ func (h *Hub) RunWatch(ctx context.Context) {
 		// (we just subscribed and read its state). runRestore also waits for
 		// the Wayland socket.
 		rctx, stopRestore := context.WithCancel(ctx)
-		if set, view := h.takeRestore(); len(set) > 0 {
-			go h.runRestore(rctx, set, view)
+		if set, view, order := h.takeRestore(); len(set) > 0 {
+			go h.runRestore(rctx, set, view, order)
 		}
 		for st := range ch {
 			h.syncWindows(st)

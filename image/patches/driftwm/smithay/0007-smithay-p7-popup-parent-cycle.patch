@@ -1,0 +1,97 @@
+--- a/src/wayland/shell/xdg/handlers/surface.rs
++++ b/src/wayland/shell/xdg/handlers/surface.rs
+@@ -171,6 +171,39 @@
+                 let surface = &self.wl_surface;
+                 let shell = &self.wm_base;
+ 
++                // BULLETPROOF-COMPOSITOR PATCH P7: a popup must not be its own ancestor. Without this check
++                // a client can make `find_popup_root_surface` loop for ever (the compositor's thread spins).
++                if let Some(p) = parent_surface.as_ref() {
++                    let mut cur = p.clone();
++                    let mut cycle = false;
++                    for _ in 0..256 {
++                        if cur == *surface {
++                            cycle = true;
++                            break;
++                        }
++                        if compositor::get_role(&cur) != Some(XDG_POPUP_ROLE) {
++                            break;
++                        }
++                        let next = compositor::with_states(&cur, |states| {
++                            states
++                                .data_map
++                                .get::<XdgPopupSurfaceData>()
++                                .and_then(|d| d.lock().unwrap().parent.clone())
++                        });
++                        match next {
++                            Some(n) => cur = n,
++                            None => break,
++                        }
++                    }
++                    if cycle {
++                        shell.post_error(
++                            xdg_wm_base::Error::InvalidPopupParent,
++                            "an xdg_popup cannot be its own ancestor",
++                        );
++                        return;
++                    }
++                }
++
+                 let attributes = XdgPopupSurfaceRoleAttributes {
+                     parent: parent_surface,
+                     server_pending: Some(PopupState {
+--- a/src/desktop/wayland/popup/manager.rs
++++ b/src/desktop/wayland/popup/manager.rs
+@@ -218,7 +218,13 @@
+ /// or because its parent popup belongs (indirectly) to said toplevel.
+ pub fn find_popup_root_surface(popup: &PopupKind) -> Result<WlSurface, DeadResource> {
+     let mut parent = popup.parent().ok_or(DeadResource)?;
++    // BULLETPROOF-COMPOSITOR PATCH P7: bounded walk; a parent cycle must never hang the compositor.
++    let mut depth = 0u32;
+     while get_role(&parent) == Some(XDG_POPUP_ROLE) {
++        depth += 1;
++        if depth > 256 {
++            return Err(DeadResource);
++        }
+         parent = with_states(&parent, |states| {
+             states
+                 .data_map
+@@ -246,7 +252,13 @@
+     };
+ 
+     let mut offset = (0, 0).into();
++    // BULLETPROOF-COMPOSITOR PATCH P7: bounded walk, and a popup without a parent ends the walk instead of panicking.
++    let mut depth = 0u32;
+     while get_role(&parent) == Some(XDG_POPUP_ROLE) {
++        depth += 1;
++        if depth > 256 {
++            break;
++        }
+         offset += with_states(&parent, |states| {
+             states
+                 .cached_state
+@@ -256,18 +268,16 @@
+                 .map(|c| c.state.geometry.loc)
+                 .unwrap_or_default()
+         });
+-        parent = with_states(&parent, |states| {
++        let next = with_states(&parent, |states| {
+             states
+                 .data_map
+                 .get::<Mutex<XdgPopupSurfaceRoleAttributes>>()
+-                .unwrap()
+-                .lock()
+-                .unwrap()
+-                .parent
+-                .as_ref()
+-                .cloned()
+-                .unwrap()
++                .and_then(|d| d.lock().unwrap().parent.as_ref().cloned())
+         });
++        match next {
++            Some(n) => parent = n,
++            None => break,
++        }
+     }
+ 
+     offset

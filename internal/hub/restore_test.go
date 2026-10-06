@@ -615,3 +615,149 @@ func TestEndWaitsForASlowWindowUpToThirtySecondsByDefault(t *testing.T) {
 		t.Errorf("%+v", res)
 	}
 }
+
+// ---- the stacking order (owner decision 14: it is part of "restore exact") ----
+
+// stackOf reads the machines' windows from the fake bottom to top, the way driftwm's list means it.
+func (r *rig) stackOf(t *testing.T) []string {
+	t.Helper()
+	st, err := r.f.State()
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.h.mu.Lock()
+	defer r.h.mu.Unlock()
+	return r.h.machineOrderLocked(st)
+}
+
+// raise focuses a window the way the owner's click does (driftwm raises what it focuses) and lets hubd see it.
+func (r *rig) raise(t *testing.T, id string) {
+	t.Helper()
+	win, ok := r.h.WindowOf(id)
+	if !ok {
+		t.Fatalf("%s has no window", id)
+	}
+	r.f.Focus(win)
+	r.f.emit()
+}
+
+func (r *rig) waitOrder(t *testing.T, want ...string) {
+	t.Helper()
+	waitFor(t, "hubd to see the stacking order "+strings.Join(want, ","), 2*time.Second, func() bool {
+		r.h.mu.Lock()
+		defer r.h.mu.Unlock()
+		return strings.Join(r.h.lastOrder, ",") == strings.Join(want, ",")
+	})
+}
+
+func stackRig(t *testing.T) *rig {
+	t.Helper()
+	r := watchRig(t)
+	r.f.modelFocus, r.f.focusFirst = true, true
+	return r
+}
+
+func TestRestoreBringsTheStackingOrderBack(t *testing.T) {
+	r := stackRig(t)
+	for _, id := range []string{"a", "b", "c"} {
+		if res := r.h.Open(id); res.Action != "open" {
+			t.Fatal(res.Message)
+		}
+	}
+	// the owner clicks b, then c, then a: bottom to top that is b, c, a (a has the focus, so driftwm lists it FIRST)
+	r.raise(t, "b")
+	r.raise(t, "c")
+	r.raise(t, "a")
+	r.waitOrder(t, "b", "c", "a")
+	st, _ := r.f.State()
+	if !st.Windows[0].Focused {
+		t.Fatal("the fake does not list the focused window first")
+	}
+
+	r.f.crash()
+	waitFor(t, "hubd to notice the crash", 2*time.Second, func() bool { return !r.h.driftwmUpNow() })
+	r.f.restart()
+	r.restored(t)
+
+	if got := strings.Join(r.stackOf(t), ","); got != "b,c,a" {
+		t.Errorf("stacking order after the restore (bottom to top) %s, want b,c,a", got)
+	}
+	if !strings.Contains(r.h.Status().Tooltip, "3 of 3 windows are back at their places") {
+		t.Errorf("tooltip: %q", r.h.Status().Tooltip)
+	}
+}
+
+// The order is remembered again after a restore, so a second crash restores it too, and a crash in the middle of
+// a restore keeps the order from before the first crash.
+func TestRestoreKeepsTheOrderAcrossTwoCrashes(t *testing.T) {
+	r := stackRig(t)
+	for _, id := range []string{"a", "b", "c"} {
+		r.h.Open(id)
+	}
+	r.raise(t, "c")
+	r.raise(t, "a")
+	r.raise(t, "b")
+	r.waitOrder(t, "c", "a", "b")
+	for round := 0; round < 2; round++ {
+		r.f.crash()
+		waitFor(t, "hubd to notice the crash", 2*time.Second, func() bool { return !r.h.driftwmUpNow() })
+		r.f.restart()
+		r.restored(t)
+		if got := strings.Join(r.stackOf(t), ","); got != "c,a,b" {
+			t.Fatalf("round %d: stacking order %s, want c,a,b", round, got)
+		}
+		r.f.emit()
+		r.waitOrder(t, "c", "a", "b")
+	}
+}
+
+// A window closed on purpose is not part of the order that comes back, and the others keep theirs.
+func TestRestoreOrderSkipsAWindowClosedOnPurpose(t *testing.T) {
+	r := stackRig(t)
+	for _, id := range []string{"a", "b", "c"} {
+		r.h.Open(id)
+	}
+	r.raise(t, "b")
+	r.raise(t, "a")
+	r.raise(t, "c")
+	r.waitOrder(t, "b", "a", "c")
+	r.h.End("a")
+	r.f.emit()
+	r.waitOrder(t, "b", "c")
+	r.f.crash()
+	waitFor(t, "hubd to notice the crash", 2*time.Second, func() bool { return !r.h.driftwmUpNow() })
+	r.f.restart()
+	r.restored(t)
+	if got := strings.Join(r.stackOf(t), ","); got != "b,c" {
+		t.Errorf("stacking order %s, want b,c", got)
+	}
+}
+
+// The order is put back BEFORE the view, because focusing a window can pan the view.
+func TestRestoreSetsTheViewAfterTheStackingOrder(t *testing.T) {
+	r := stackRig(t)
+	for _, id := range []string{"a", "b"} {
+		r.h.Open(id)
+	}
+	r.moveAndTell(t, "a", -4000, 0, 800, 600) // far outside the view: focusing it pans the camera
+	r.moveAndTell(t, "b", 4000, 0, 800, 600)
+	r.raise(t, "a")
+	r.raise(t, "b")
+	r.f.camera, r.f.zoom = [2]float64{12, -7}, 0.5
+	r.f.emit()
+	waitFor(t, "hubd to see the view", 2*time.Second, func() bool {
+		r.h.mu.Lock()
+		defer r.h.mu.Unlock()
+		return r.h.lastView.zoom == 0.5
+	})
+	r.f.crash()
+	waitFor(t, "hubd to notice the crash", 2*time.Second, func() bool { return !r.h.driftwmUpNow() })
+	r.f.restart()
+	r.restored(t)
+	if got := strings.Join(r.stackOf(t), ","); got != "a,b" {
+		t.Errorf("stacking order %s, want a,b", got)
+	}
+	if r.f.camera != [2]float64{12, -7} || r.f.zoom != 0.5 {
+		t.Errorf("the view is %v %v, want the saved one (the focus calls moved it and it was not put back)", r.f.camera, r.f.zoom)
+	}
+}
