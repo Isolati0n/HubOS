@@ -1173,17 +1173,19 @@ func TestHubImage(t *testing.T) {
 		st, up := waitDesktop(300 * time.Second)
 		confirmed := r.waitConfirmed()
 		slot, rel, conf, stt := r.status()
-		l := r.vm.text(r.bootPos)
-		iEvent := strings.Index(l, "Starting event loop")
-		iConf := strings.Index(l, "confirm: boot of slot")
+		// The compositor answered its IPC BEFORE the confirm: the confirm step itself records, right before it confirms, what
+		// `driftwm msg state` answered (usr/lib/hubos/confirm-evidence, a file in /run/hubos), so this does not depend on the order of
+		// lines in the serial log (the compositor's log writer is a thread and its lines may arrive late).
+		_, ev := r.sh(`cat /run/hubos/confirm-evidence 2>&1; echo ---; head -n 3 /run/hubos/confirm-state.txt 2>&1`)
+		answeredBefore := strings.Contains(ev, "driftwm-state=answered") && strings.Contains(ev, "camera ") && strings.Contains(ev, "time=")
 		time.Sleep(10 * time.Second)
 		img := loadPNG(t, r.shot("hub-4-release-2"))
 		bg, alert := barDrawn(img)
-		ok := rc == 0 && up && confirmed && slot == "b" && rel == "2" && conf && iEvent >= 0 && iConf > iEvent && failures(stt) == "0/3" && bg > 20000
-		record("H4 an A/B update to a second hub release (signed, trial boot of slot b, confirm): the desktop and bar come up in the trial boot and the confirm step only confirmed after hubd answered (which waits for driftwm)", ok, time.Since(start),
-			fmt.Sprintf("update rc=%d; now slot %s release %s, confirmed %v, counter %s; driftwm's event loop started before the confirm line: %v; bar pixels %d, alert %d", rc, slot, rel, conf, failures(stt), iEvent >= 0 && iConf > iEvent, bg, alert))
+		ok := rc == 0 && up && confirmed && slot == "b" && rel == "2" && conf && answeredBefore && failures(stt) == "0/3" && bg > 20000
+		record("H4 an A/B update to a second hub release (signed, trial boot of slot b, confirm): the desktop and bar come up in the trial boot, the confirm step only confirmed after hubd answered, and the compositor answered its IPC (driftwm msg state) before the confirm, as recorded by the confirm step itself", ok, time.Since(start),
+			fmt.Sprintf("update rc=%d; now slot %s release %s, confirmed %v, counter %s; compositor answered before the confirm (evidence file of the confirm step): %v; bar pixels %d, alert %d", rc, slot, rel, conf, failures(stt), answeredBefore, bg, alert))
 		if !ok {
-			t.Errorf("rc=%d up=%v confirmed=%v slot=%s rel=%s iEvent=%d iConf=%d\n%s\n%s", rc, up, confirmed, slot, rel, iEvent, iConf, out, st)
+			t.Errorf("rc=%d up=%v confirmed=%v slot=%s rel=%s answeredBefore=%v\n%s\n%s\n%s", rc, up, confirmed, slot, rel, answeredBefore, ev, out, st)
 			t.Fail()
 		}
 	})

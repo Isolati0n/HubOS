@@ -10,7 +10,8 @@ usage: repros.py CASE BIN LABEL
          badshader  the built-in default shader does not compile (patch P9; needs a test build with a broken shader)
          startup  a start-up helper program that hangs; patched driftwm must not even run it (patch P8)
          reload   the config file is edited in the running compositor, and `reload-config` is sent (patch P12)
-         session  the session file's temporary name is a FIFO nobody reads, a stand-in for a hung disk (T12)
+         session  the session file's temporary name is a FIFO nobody reads, a stand-in for a hung disk (T12); prints the P11 counters
+         sessionfail  the temporary name is a directory: every background write fails, the counter of failed writes goes up (patch P11)
   BIN    the driftwm binary
   LABEL  printed in the verdict line (for example "unpatched" or "patched")
 Prints one line per check and a final line  VERDICT <case> <label>: ...
@@ -93,6 +94,15 @@ def state(p):
         return st, wch
     except Exception:
         return '?', '?'
+
+
+def write_counters():
+    try:
+        r = json.loads(ipc('State', 3).decode())
+        st = r['Ok']['State']
+        return {k: st[k] for k in ('failed_writes', 'pending_writes') if k in st}
+    except Exception as e:
+        return {'error': str(e)[:60]}
 
 
 def finish(verdict):
@@ -309,8 +319,29 @@ elif case == 'session':
         time.sleep(1)
     st, wch = state(dw)
     print('process state: %s, wchan: %s' % (st, wch.strip()))
-    finish('NOT frozen (%d of 4 answered)' % good if good == 4 else
+    cnt = write_counters()
+    print('IPC state counters (patch P11): %s' % cnt)
+    finish('NOT frozen (%d of 4 answered); %s' % (good, cnt) if good == 4 else
            'FROZEN (%d of 4 answered; wchan %s)' % (good, wch.strip()))
+
+elif case == 'sessionfail':
+    # patch P11: the session file's temporary name is a DIRECTORY, so every background write fails at once
+    D = RT + '/state'
+    os.makedirs(D + '/session.json.tmp')
+    open(D + '/c.toml', 'w').write('[session]\nrestore_windows = true\n')
+    log = RT + '/dw.log'
+    lf = open(log, 'wb')
+    dw = start(['--backend', 'winit', '--config', D + '/c.toml', '--session-file', D + '/session.json'], lf, lf)
+    print('IPC up at start:', wait_ipc())
+    foot(0)
+    time.sleep(3)
+    ok, ms = answers(2)
+    cnt = write_counters()
+    print('IPC answers: %s; IPC state counters (patch P11): %s' % (ok, cnt))
+    for l in log_lines(log, ['failed to write']):
+        print('log:', l)
+    finish('IPC keeps answering and the failed writes are counted: %s' % cnt if ok and 'failed_writes' in cnt and cnt['failed_writes'] > 0 else
+           'no counter or no answer: answers=%s %s' % (ok, cnt))
 else:
     print('unknown case')
     sys.exit(2)

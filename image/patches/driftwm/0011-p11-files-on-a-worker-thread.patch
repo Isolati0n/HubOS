@@ -1,10 +1,12 @@
 Hub OS P11: the session file and the runtime state file are written by a worker thread (never on the event loop), so a stalled disk
-cannot freeze the compositor. Only the newest bytes per file are kept while the worker is stuck.
+cannot freeze the compositor. Only the newest bytes per file are kept while the worker is stuck. The IPC `state` reply (and `driftwm msg state`)
+gains two numbers: failed_writes (writes that ended with an error) and pending_writes (waiting or in progress; a number that never goes down
+means a stuck disk). JSON: two new keys with serde defaults; text output: two new last lines `failed-writes N` and `pending-writes N`.
 
 diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 --- /dev/null
 +++ b/src/bgwrite.rs
-@@ -0,0 +1,187 @@
+@@ -0,0 +1,249 @@
 +//! Files written by a worker thread (Hub OS patch P11).
 +//!
 +//! driftwm wrote its session file and its runtime state file on the event-loop
@@ -21,7 +23,7 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +use std::collections::HashMap;
 +use std::io::Write as _;
 +use std::path::{Path, PathBuf};
-+use std::sync::atomic::{AtomicBool, Ordering};
++use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
 +use std::sync::{Arc, Condvar, Mutex, OnceLock};
 +use std::time::{Duration, Instant};
 +
@@ -40,6 +42,8 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +#[derive(Clone)]
 +pub struct Writer {
 +    shared: Arc<Shared>,
++    /// Writes that ended with an error (counted by the worker).
++    failed: Arc<AtomicU64>,
 +}
 +
 +/// Write `bytes` to `path` atomically: parent folder, `path.tmp`, rename.
@@ -63,6 +67,8 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +            cv: Condvar::new(),
 +        });
 +        let worker = shared.clone();
++        let failed = Arc::new(AtomicU64::new(0));
++        let worker_failed = failed.clone();
 +        let _ = std::thread::Builder::new()
 +            .name("driftwm-files".into())
 +            .spawn(move || loop {
@@ -79,13 +85,25 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +                };
 +                // May block for ever on a stalled disk: only this thread waits.
 +                if let Err(e) = write_atomic(&path, &bytes) {
++                    worker_failed.fetch_add(1, Ordering::Relaxed);
 +                    tracing::warn!("failed to write {}: {e}", path.display());
 +                }
 +                let mut g = worker.inner.lock().unwrap_or_else(|e| e.into_inner());
 +                g.busy = false;
 +                worker.cv.notify_all();
 +            });
-+        Writer { shared }
++        Writer { shared, failed }
++    }
++
++    /// How many writes ended with an error since the start.
++    pub fn failed(&self) -> u64 {
++        self.failed.load(Ordering::Relaxed)
++    }
++
++    /// Writes waiting plus the one in progress (a stuck disk shows as a number that does not go down).
++    pub fn pending(&self) -> u64 {
++        let g = self.shared.inner.lock().unwrap_or_else(|e| e.into_inner());
++        g.pending.len() as u64 + u64::from(g.busy)
 +    }
 +
 +    /// Queue `bytes` for `path`, replacing any older bytes still waiting for it.
@@ -123,6 +141,7 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +static GLOBAL: OnceLock<Writer> = OnceLock::new();
 +
 +static INLINE: AtomicBool = AtomicBool::new(false);
++static INLINE_FAILED: AtomicU64 = AtomicU64::new(0);
 +
 +/// Make [`submit`] write on the calling thread (used by the compositor's own
 +/// tests, which read the file right after a write). Never set in the compositor.
@@ -133,10 +152,22 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +/// Hand `bytes` for `path` to the worker thread. Never blocks.
 +pub fn submit(path: PathBuf, bytes: Vec<u8>) {
 +    if INLINE.load(Ordering::Relaxed) {
-+        let _ = write_atomic(&path, &bytes);
++        if write_atomic(&path, &bytes).is_err() {
++            INLINE_FAILED.fetch_add(1, Ordering::Relaxed);
++        }
 +        return;
 +    }
 +    GLOBAL.get_or_init(Writer::new).submit(path, bytes);
++}
++
++/// Background writes that failed since the start (shown in the IPC `state` reply).
++pub fn failed_writes() -> u64 {
++    INLINE_FAILED.load(Ordering::Relaxed) + GLOBAL.get().map_or(0, Writer::failed)
++}
++
++/// Background writes waiting or in progress (shown in the IPC `state` reply).
++pub fn pending_writes() -> u64 {
++    GLOBAL.get().map_or(0, Writer::pending)
 +}
 +
 +/// Give the worker up to `timeout` to finish what is queued (call before exit).
@@ -169,6 +200,39 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +    }
 +
 +    #[test]
++    fn a_failed_write_is_counted() {
++        let d = tmpdir("fail");
++        // the temporary name is a directory: File::create fails at once
++        std::fs::create_dir_all(d.join("session.json.tmp")).unwrap();
++        let w = Writer::new();
++        assert_eq!(w.failed(), 0);
++        w.submit(d.join("session.json"), b"x".to_vec());
++        w.flush_for(Duration::from_secs(5));
++        assert_eq!(w.failed(), 1);
++        assert_eq!(w.pending(), 0);
++        let _ = std::fs::remove_dir_all(&d);
++    }
++
++    #[test]
++    fn a_stuck_write_shows_as_pending() {
++        let d = tmpdir("stuck");
++        let mut tmp = d.join("s.json").into_os_string();
++        tmp.push(".tmp");
++        let tmp = PathBuf::from(tmp);
++        let c = std::ffi::CString::new(tmp.to_str().unwrap()).unwrap();
++        assert_eq!(unsafe { libc::mkfifo(c.as_ptr(), 0o600) }, 0);
++        let w = Writer::new();
++        w.submit(d.join("s.json"), b"x".to_vec());
++        std::thread::sleep(Duration::from_millis(200));
++        assert_eq!(w.pending(), 1); // the worker is blocked in open(2) on the FIFO
++        assert_eq!(w.failed(), 0);
++        let _reader = std::fs::File::open(&tmp);
++        w.flush_for(Duration::from_secs(5));
++        assert_eq!(w.pending(), 0);
++        let _ = std::fs::remove_dir_all(&d);
++    }
++
++    #[test]
 +    fn a_blocked_write_never_blocks_the_caller_and_the_newest_bytes_win() {
 +        let d = tmpdir("fifo");
 +        // the temporary name is a FIFO nobody reads: open(2) for writing blocks
@@ -192,6 +256,64 @@ diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
 +        let _ = std::fs::remove_dir_all(&d);
 +    }
 +}
+diff -ruN a/src/ipc/client.rs b/src/ipc/client.rs
+--- a/src/ipc/client.rs
++++ b/src/ipc/client.rs
+@@ -647,6 +647,8 @@
+             o.name, o.camera.0, o.camera.1, o.zoom, o.size[0], o.size[1]
+         );
+     }
++    println!("failed-writes {}", info.failed_writes);
++    println!("pending-writes {}", info.pending_writes);
+ }
+ 
+ #[cfg(test)]
+diff -ruN a/src/ipc/mod.rs b/src/ipc/mod.rs
+--- a/src/ipc/mod.rs
++++ b/src/ipc/mod.rs
+@@ -388,6 +388,8 @@
+         canvas_layers,
+         outputs,
+         active_bookmark,
++        failed_writes: driftwm::bgwrite::failed_writes(),
++        pending_writes: driftwm::bgwrite::pending_writes(),
+     }
+ }
+ 
+diff -ruN a/src/ipc/protocol.rs b/src/ipc/protocol.rs
+--- a/src/ipc/protocol.rs
++++ b/src/ipc/protocol.rs
+@@ -233,6 +233,12 @@
+     /// same value the ext-workspace-v1 protocol marks `active`.
+     #[serde(default)]
+     pub active_bookmark: Option<String>,
++    /// Hub OS patch P11: background file writes (session and state files) that ended with an error since the start.
++    #[serde(default)]
++    pub failed_writes: u64,
++    /// Hub OS patch P11: background file writes waiting or in progress; a number that never goes down means the disk is stuck.
++    #[serde(default)]
++    pub pending_writes: u64,
+ }
+ 
+ /// One output's viewport in the `state` reply. `camera` is the viewport
+@@ -607,6 +613,8 @@
+                 active_bookmark: Some("home".into()),
+             }],
+             active_bookmark: Some("home".into()),
++            failed_writes: 2,
++            pending_writes: 1,
+         }
+     }
+ 
+@@ -672,6 +680,8 @@
+             "layers",
+             "canvas_layers",
+             "outputs",
++            "failed_writes",
++            "pending_writes",
+         ] {
+             assert!(obj.get(key).is_some(), "missing key {key}");
+         }
 diff -ruN a/src/lib.rs b/src/lib.rs
 --- a/src/lib.rs
 +++ b/src/lib.rs

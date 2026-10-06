@@ -16,6 +16,9 @@ while [ "$(date +%s)" -lt "$end" ]; do
   [ $ok -ge 5 ] && break
   sleep 1
 done
-if [ $ok -ge 5 ]; then hubos-ctl confirm; s6-svc -u /run/service/wd; s6-svc -O . ; exit 0; fi
+if [ $ok -ge 5 ]; then
+  # Optional hook (the hub image has one): records what the compositor answered right before the confirm; never fails the boot.
+  [ -x /usr/lib/hubos/confirm-evidence ] && /usr/lib/hubos/confirm-evidence
+  hubos-ctl confirm; s6-svc -u /run/service/wd; s6-svc -O . ; exit 0; fi
 echo "confirm: hubd did not become healthy in ${T}s; this boot FAILED; rebooting into the other slot"
 sync; reboot -f

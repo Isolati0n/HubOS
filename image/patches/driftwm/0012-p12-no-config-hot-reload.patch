@@ -1,5 +1,6 @@
-Hub OS P12: no config hot reload: the inotify watch on the config file's folder is removed and the `reload-config` action is refused
-(unknown to the parser, so a key binding or `driftwm msg action reload-config` is rejected).
+Hub OS P12: no config hot reload: the inotify watch on the config file's folder is removed, the `reload-config` action is refused by the
+parser, and the dead code behind it (the Action::ReloadConfig variant and its uses, the file-reading reload_config function) is removed.
+The test-only function reload_config_from_contents stays.
 
 diff -ruN a/config.reference.toml b/config.reference.toml
 --- a/config.reference.toml
@@ -43,6 +44,54 @@ diff -ruN a/src/config/parse.rs b/src/config/parse.rs
      ("send-cursor-to-output", "send-cursor-to-output up"),
      ("send-to-output", "send-to-output up"),
      ("set-bookmark", "set-bookmark 1"),
+@@ -631,7 +630,6 @@
+             Action::FocusCenter => "focus-center",
+             Action::TogglePinToScreen => "toggle-pin-to-screen",
+             Action::SwitchLayout(_) => "switch-layout",
+-            Action::ReloadConfig => "reload-config",
+             Action::ToggleCursorPan => "toggle-cursor-pan",
+             Action::SetTrackpad(_) => "set-trackpad",
+             Action::Quit => "quit",
+diff -ruN a/src/config/types.rs b/src/config/types.rs
+--- a/src/config/types.rs
++++ b/src/config/types.rs
+@@ -79,7 +79,6 @@
+     FocusCenter,
+     TogglePinToScreen,
+     SwitchLayout(LayoutSwitch),
+-    ReloadConfig,
+     ToggleCursorPan,
+     SetTrackpad(TrackpadState),
+     Quit,
+@@ -119,7 +118,6 @@
+             self,
+             Action::ToggleFullscreen
+                 | Action::Spawn(_)
+-                | Action::ReloadConfig
+                 | Action::SwitchLayout(_)
+                 | Action::ToggleCursorPan
+                 | Action::SetTrackpad(_)
+@@ -1410,7 +1408,6 @@
+     fn runs_during_fullscreen_allowlist() {
+         assert!(Action::ToggleFullscreen.runs_during_fullscreen());
+         assert!(Action::Spawn("foo".into()).runs_during_fullscreen());
+-        assert!(Action::ReloadConfig.runs_during_fullscreen());
+         assert!(Action::SwitchLayout(LayoutSwitch::Next).runs_during_fullscreen());
+         assert!(Action::ToggleCursorPan.runs_during_fullscreen());
+         assert!(Action::SetTrackpad(TrackpadState::Toggle).runs_during_fullscreen());
+diff -ruN a/src/input/actions.rs b/src/input/actions.rs
+--- a/src/input/actions.rs
++++ b/src/input/actions.rs
+@@ -677,9 +677,6 @@
+             Action::TogglePinToScreen => {
+                 self.toggle_pin_to_screen();
+             }
+-            Action::ReloadConfig => {
+-                self.reload_config();
+-            }
+             Action::ToggleCursorPan => {
+                 self.cursor_edge_pan = !self.cursor_edge_pan;
+                 if !self.cursor_edge_pan {
 diff -ruN a/src/main.rs b/src/main.rs
 --- a/src/main.rs
 +++ b/src/main.rs
@@ -140,3 +189,35 @@ diff -ruN a/src/main.rs b/src/main.rs
  
      // Drives the off-screen frame-callback heartbeat when no rendering is
      // happening (#141); see send_frame_callbacks_fallback. Must stay strictly
+diff -ruN a/src/state/reload.rs b/src/state/reload.rs
+--- a/src/state/reload.rs
++++ b/src/state/reload.rs
+@@ -6,27 +6,9 @@
+ use super::{DriftWm, ErrorSource, output_state};
+ 
+ impl DriftWm {
+-    pub fn reload_config(&mut self) {
+-        let config_path = driftwm::config::config_path();
+-        let contents = match std::fs::read_to_string(&config_path) {
+-            Ok(c) => c,
+-            Err(e) => {
+-                tracing::error!(
+-                    "Config reload: failed to read {}: {e}",
+-                    config_path.display()
+-                );
+-                self.set_error(
+-                    ErrorSource::Config,
+-                    format!("config: failed to read {}: {e}", config_path.display()),
+-                );
+-                return;
+-            }
+-        };
+-        self.reload_config_from_contents(&contents);
+-    }
+-
+     /// Apply a config from raw TOML text, bypassing disk I/O so tests can
+     /// drive reload without a config file.
++    #[cfg_attr(not(test), allow(dead_code))]
+     pub fn reload_config_from_contents(&mut self, contents: &str) {
+         let (mut new_config, config_errors) =
+             match driftwm::config::Config::from_toml_collect(contents) {
