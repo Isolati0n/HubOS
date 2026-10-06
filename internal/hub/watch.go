@@ -19,13 +19,18 @@ func (h *Hub) RunWatch(ctx context.Context) {
 		ch, err := h.comp.Subscribe(ctx)
 		if err != nil {
 			h.setDriftwmUp(false)
+			wait := backoff
+			if h.RestartPending() {
+				// Windows are waiting to come back: look often, so the
+				// restore starts the moment the new compositor answers.
+				wait = h.fast()
+			} else if backoff < 4*time.Second {
+				backoff *= 2
+			}
 			select {
 			case <-ctx.Done():
 				return
-			case <-time.After(backoff):
-			}
-			if backoff < 4*time.Second {
-				backoff *= 2
+			case <-time.After(wait):
 			}
 			continue
 		}
@@ -34,11 +39,24 @@ func (h *Hub) RunWatch(ctx context.Context) {
 			h.adopt(st)
 		}
 		h.setDriftwmUp(true)
+		// The signal that the compositor is ready: its control socket answers
+		// (we just subscribed and read its state). runRestore also waits for
+		// the Wayland socket.
+		rctx, stopRestore := context.WithCancel(ctx)
+		if set, view := h.takeRestore(); len(set) > 0 {
+			go h.runRestore(rctx, set, view)
+		}
 		for st := range ch {
 			h.syncWindows(st)
 		}
 		// The stream ended: driftwm quit or restarted.
+		stopRestore()
 		h.setDriftwmUp(false)
+		h.mu.Lock()
+		if ctx.Err() == nil {
+			h.noteGoneLocked()
+		}
+		h.mu.Unlock()
 		h.clearAll()
 	}
 }
@@ -55,6 +73,7 @@ func (h *Hub) setDriftwmUp(up bool) {
 // clearAll forgets every window. Used when driftwm has gone away.
 func (h *Hub) clearAll() {
 	h.mu.Lock()
+	h.epoch++
 	for _, s := range h.ms {
 		s.win = nil
 		h.leaveLateLocked(s, phaseIdle)
@@ -74,6 +93,7 @@ func (h *Hub) clearAll() {
 func (h *Hub) syncWindows(st *driftwm.State) {
 	h.mu.Lock()
 	defer h.mu.Unlock()
+	h.rememberLocked(st)
 	changed := false
 	for _, s := range h.ms {
 		if s.win == nil {
@@ -203,6 +223,7 @@ func (h *Hub) adopt(st *driftwm.State) {
 			s.win = &winRec{Machine: id, Window: ws[0].ID, AppID: ws[0].AppID, Title: ws[0].Title, By: "title"}
 		}
 	}
+	h.rememberLocked(st)
 	h.saveLocked(identity)
 	h.notifyLocked()
 }

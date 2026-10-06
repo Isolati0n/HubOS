@@ -11,8 +11,7 @@ These answer the questions at the end of section 17. They are the owner's decisi
 - The home-position race (a window sometimes standing at driftwm's cascade spot) is to be investigated.
 - The hub-image test inventory may contain desk-1 and desk-2.
 
-
-**Section 11 (second review) supersedes earlier statements about STALE, the check cap and single click.** **Built and measured: 2026-10-01 — build environment; will change. Includes the follow-ups the owner decided after the first review (section 10).** `HUB-OS.md` wins if anything here disagrees with it. This file describes what the second slice of `hubd` does, how it was tested, what was measured at 100 and at 5000 machines, and what is still unverified. It builds on `docs/inventory-format.md`, `docs/driftwm-findings.md` and `docs/bar-findings.md`.
+**Section 11 (second review) supersedes earlier statements about STALE, the check cap and single click. Section 18 supersedes the driftwm row of "After restarts" in section 3 (hubd now brings the windows back), the 3 s wait of `end`, and the hub line with a dot in section 17.** **Built and measured: 2026-10-01 — build environment; will change. Includes the follow-ups the owner decided after the first review (section 10).** `HUB-OS.md` wins if anything here disagrees with it. This file describes what the second slice of `hubd` does, how it was tested, what was measured at 100 and at 5000 machines, and what is still unverified. It builds on `docs/inventory-format.md`, `docs/driftwm-findings.md` and `docs/bar-findings.md`.
 
 Everything here ran in the cloud build environment (`docs/environment.md`): a nested driftwm (software rendering, on a virtual X display), Waybar 0.9.24, wofi 1.4.1, `foot` as the **fake viewer**, and fake machines made of tiny listeners on this computer's own addresses. **No real Moonlight, virt-viewer or Remmina was run, no real screen, no real network, no real hardware.**
 
@@ -918,3 +917,165 @@ Hub image test H3c (`tools/image/hub_test.go`, build tag `qemu`): two fake viewe
 - Under load a machine shows `UP [opening]` with the empty dot for a few seconds after the pick, until hubd has placed and recorded the window; H3c waits up to a minute for the filled dot.
 - One run (H3 itself, an existing test) had no window within the 10 s window wait because the computer was overloaded (the machine went to the late-window state); that run's later tests failed with it. Not caused by this change.
 - Once, a window opened by a pick stood at driftwm's own cascade spot `[25, -125]` instead of its home `[3000, 1000]` (hubd's message still said it was placed at home). **Cause UNKNOWN** (believed: the move came before the window was mapped, on a slow machine); seen once in 9 runs, not investigated, not related to the marker.
+
+
+---
+
+## 18. Layouts, putting windows back after a compositor restart, the last known state, and small list changes (2026-10-05)
+
+Built in branch `hubd-layouts-restore`. The design comes from `docs/proposals/driftwm-layouts.md` (layouts) and `docs/proposals/hub-stability.md` section 9.6 ("direct restore", run A6). The owner decisions listed in 18.1 were given and are not re-decided here. Labels: **TESTED** (a command or test was run; the name is given), **SOURCE** (read in a file, named), **BELIEVED** (reasoned, not run), **UNKNOWN**.
+
+### 18.1 Owner decisions that were built
+
+| Decision | Where it is in the code |
+|---|---|
+| A layout holds positions, sizes and the view (camera and zoom). | `Layout` in `internal/hub/layout.go`; `hubd layout save` always stores the view. |
+| Applying a layout also governs machines opened later, until another layout is applied or it is cleared. | `targetFor` in `internal/hub/open.go`. |
+| The active layout is remembered in a file on the config partition; windows still start by hand after a reboot. | `_active.json` next to the layouts. Nothing reads it to open a window. |
+| Names are free text under the machine-id rule, at most 100. | `ValidLayoutName`; at most 100 layouts (`MaxLayouts`). The name length limit of 64 is my own pick (question 1). |
+| `/config/hubos/layouts` is owned by the user hubd runs as. | The hubd service script creates it and runs `chown hub:hub` (`image/machines/hub/rootfs/etc/s6/sv/hubd/run`). |
+| Command line first, plus a "Layouts" group in the menu. | `hubd layout ...`; `layoutLinesLocked` in `internal/hub/layoutops.go`. |
+| Overlap is a warning, not an error. | `overlapPairs`. |
+| driftwm's own `restore_*` and `suspend_on_close` stay OFF. | The hub has no driftwm config file; nothing was added. |
+| hubd restores the windows itself, for all machines, after a compositor restart (not after a reboot). | `internal/hub/restore.go`. |
+| Release driftwm only. | The image already builds the release build (unchanged). |
+| The hub's own line has no dot. | `entryLocked` in `internal/hub/view.go`. |
+| `hubd end` waits up to 30 s. | `DefaultSettings().CloseWait`. |
+
+### 18.2 Commands
+
+| Command | What it does |
+|---|---|
+| `hubd layout save NAME [--replace]` | Writes the places (centre and size) of every machine window hubd knows, and the view. An existing name needs `--replace`. Windows hubd did not open are not saved. |
+| `hubd layout apply NAME` | Makes the layout active. Moves and resizes the machine windows that are open, then sets the zoom, waits for the camera to stop, and sets the camera. A machine with no open window is not touched and **nothing is opened**. Entries for machines that are not in the inventory are skipped and named. |
+| `hubd layout list` | Lists the layouts (`*` marks the active one) and warns about files that were damaged. |
+| `hubd layout delete NAME` | Deletes it. If it was the active one, none is active afterwards. |
+| `hubd layout clear` | No layout is active; machines opened later go to their `home`. Open windows are not moved. |
+| `hubd restart-desktop` | Restarts the compositor and nothing else (18.6). |
+
+The flags of `hubd layout` come first: `hubd layout --socket PATH save NAME --replace`. The menu has a **Layouts** group at the bottom of the list (shown only when there is a layout or one is active): `   = apply NAME   3 windows  ACTIVE` and, when one is active, `   = clear the active layout`. A layout named like a machine does not open that machine (the line starts with `=`). TESTED: `TestMenuLayoutsGroupApplyClearAndFold`, `TestMenuLayoutNamedLikeAMachineAppliesTheLayoutOnly`.
+
+### 18.3 The files
+
+- Folder `/config/hubos/layouts` (`hubd serve --layouts DIR`). One file `NAME.layout.json` per layout, and `_active.json` (the remembered active layout; a name cannot start with `_`, so they never meet).
+- Content: JSON with `format` 1, `name`, `saved` (for people), `view` (`zoom`, `camera`), `windows` (`machine`, `x`, `y`, `w`, `h`: centre and visible-frame size, Y up, the same numbers as `driftwm msg state` and the inventory's `home`), and `sha256`, the SHA-256 of the compact JSON of everything else. About 100 bytes per machine. Limit 64 KiB per file.
+- **Written only when the owner asks** (save, apply, clear, delete). **Atomic write:** temporary file in the same folder, `fsync` of the file, rename over the target, `fsync` of the folder (`atomicWrite`). A failed write leaves the old file and removes the temporary file. TESTED: `TestAtomicWriteFailureChangesNothingAndLeavesNoTemp`, `TestLayoutSaveWithoutDriftwmChangesNothing`. Not TESTED: a real power cut on the real config partition (UNKNOWN).
+- **A damaged file** (cut in the middle, empty, garbage, one number changed, checksum removed or wrong, unknown field, two documents, the file holds another name, over 64 KiB) is moved aside as `FILE.corrupt.<unix time>`, ignored, and reported as a warning: in `hubd layout list`, in the log of `hubd serve`, and for 15 s on the bar. It never stops hubd. At most 5 quarantined files are kept. TESTED: `TestLayoutCorruptFileIsQuarantinedAndIgnored` (8 kinds of damage), `TestLayoutOversizeFileIsQuarantined`, `TestDamagedActiveFileIsIgnoredWithAWarningAndHubdStarts`.
+- A file that says it is a **newer format** is not damaged (it can come from a newer image after a rollback): it is left where it is and ignored with a warning. TESTED: `TestLayoutNewerFormatIsLeftInPlace`.
+- Temporary files that a crash left are removed when hubd starts. TESTED: `TestLayoutTempFilesFromACrashAreRemovedAtStart`.
+
+### 18.4 Direct restore after a compositor restart
+
+**What hubd remembers (in memory only):** for every machine whose window it knows, the last place (centre and size) driftwm reported, and the last view. driftwm streams a snapshot at every change, so the place is the one of the last event hubd saw (driftwm's own session file is written on a timer of 1 s, 5 s after panning: SOURCE `docs/proposals/driftwm-layouts.md` section 1.3). Nothing is written to disk and nothing is read at start, so **a reboot restores nothing**.
+
+**When the stream from driftwm ends while hubd keeps running** (a crash, `kill -9`, `hubd restart-desktop`), hubd puts every machine that had a window on a restore list and then:
+
+1. **The signal it waits for:** the new compositor is ready when (a) driftwm's control socket answers (hubd subscribes again and reads `state`; it looks every 100 ms instead of backing off to 4 s while windows wait), **and** (b) driftwm's Wayland socket accepts a connection (`$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY`; the viewers need it; waiting up to 30 s).
+2. It starts the viewer of **every machine on the list, all at once** (up to 10 at the same time, `RestoreParallel`: with 20 at once the compositor of the test machine answered so slowly that hubd's requests timed out). `hubd layout apply` also puts its windows at their places at the same time (up to 8). The machine's normal rules apply: a machine that is down now is not restored and is named in the message. A viewer that sets its own window name (`sets_name`) no longer waits for the other launches (the one-at-a-time lock stays for viewers matched by comparing the window list): TESTED `TestNamedViewersStartAtTheSameTime`, `TestSecondLaunchWaitsForTheFirst`.
+3. As each window appears it is put at its saved **place and size**. It does not pan the view. A viewer that is slow (late-window state) is still placed at the saved place when the window comes. TESTED: `TestRestoreOfASlowViewerPlacesItsLateWindowAtTheSavedPlace`.
+4. When all are done, the view (zoom, wait until the camera stops, camera) is put back, and the bar shows for 15 s `the desktop restarted: N of M windows are back at their places in X s` (and which machines were not restored and why). The same line, and one line per machine (`hubd: restore w04: open: ...`), go to the log of `hubd serve`.
+
+**A slow driftwm.** With 20 viewers starting at once on the test machine (QEMU without KVM, 2 virtual CPUs, software drawing, a computer shared with other jobs) driftwm's answers took seconds and hubd's own requests ran into their 5 s limit ("i/o timeout"). A timeout is not "the window is gone". Everything that puts a window at its place (`waitFirstPicture`, `settleWindow`) asks again until its time is up (`SettleMax` 30 s), every loop that polls driftwm waits at least twice as long as driftwm needed for its last answer (at most 2 s), and a window that is open but could not be put at its place is not counted as restored (the bar says `open, but not at its place`). TESTED: `TestSlowAnswersFromDriftwmAreAskedAgainWhilePlacing`, `TestRestoreDoesNotCountAWindowThatCouldNotBePutAtItsPlace`; found by the hub image test (second and third run of cycle 2).
+
+**Two safeguards found by the tests:**
+- **A second crash during a restore.** While windows are being brought back, every new window pans the view, so the view hubd sees then is not the owner's. hubd does not remember the view while a restore is pending or running, and keeps the one from before the first crash. TESTED: `TestSecondCrashDuringARestoreStillRestoresTheViewFromBeforeTheFirst`; found by the hub image test (first run of cycle 4: zoom 0.951 instead of 0.800 after a kill during a restore).
+- **An open that was under way when the compositor died** (a viewer that was starting) must not record or move anything afterwards: its window is gone, and in the new compositor the same window number can belong to another machine's window (numbers start again from 0). Each open carries a ticket with the number of compositors that had gone away when it began; a stale open is dropped, and a new open of the same machine is no longer refused as "already opening". TESTED: `TestAnOpenUnderWayWhenTheCompositorRestartedRecordsAndMovesNothing`, `TestWindowThatClosedBeforeItWasPlacedIsNotRecorded`.
+
+**Seen in the hub image test, not changed:** driftwm itself puts the camera and zoom back after its own restart (log line `output Virtual-1: restored camera (...) zoom 0.80`): it reads its runtime state file in `/run/dw`, which is memory and survives a compositor restart, and that part is not controlled by `restore_camera` (SOURCE `src/state/session_store.rs` `saved_camera_state`, lines 261 to 277: "The runtime state file is unconditional"). So hubd's view restore is mostly a second safety; it does not conflict with the owner decision (the `restore_*` switches are off and windows are not restored by driftwm). Under the slow QEMU machine all 20 viewers took longer than the 10 s window wait to show their windows, so every machine went through the late-window state (`late_grace` of the test viewers is 120 s) and was still placed at its saved place.
+
+**Not restored:** the stacking order, which window had the focus, fit/fullscreen mode, anything inside the viewers (they start fresh and reconnect to the sessions that are still on the nodes). A machine whose window the owner closed on purpose (`hubd end`, or the close button) before the crash is **not** on the list and stays closed. If the compositor crashes again during a restore, the machines that were not finished stay on the list and are tried again.
+
+**The service change this needed:** `follow-driftwm` used to stop hubd whenever driftwm went away, and s6 started it again, so hubd forgot everything at every compositor restart. hubd's service now uses `follow-driftwm --once`: it waits for the first start of driftwm and then becomes hubd (`exec`) and keeps running when the compositor goes away. Waybar still follows driftwm and restarts with it. TESTED in the hub image (test H2: the hubd process id is the same before and after `kill -9` of driftwm).
+
+**Where it was tested:**
+- Unit (fake driftwm): `TestDirectRestoreBringsEveryOpenWindowBackToItsPlaceAfterACompositorRestart`, `TestRestoreUsesTheLastMoveSeenRightBeforeTheCrash`, `TestRestoreWaitsForTheWaylandSocket`, `TestRestoreSaysWhichMachineWasNotRestored`, `TestNothingIsRestoredWhenHubdStartsAfterTheCrash`.
+- Hub image under QEMU, real driftwm, foot as the fake viewer: test H3f (18.9).
+
+### 18.5 The home-position race: cause found, fixed
+
+**What was seen (section 17.6):** once in 9 runs a window opened by a pick stood at driftwm's own spot `[25, -125]` instead of its home `[3000, 1000]`, and hubd's message still said "placed at home".
+
+**Cause (SOURCE: driftwm at the pinned commit, read 2026-10-05 from the clone the image build makes):** driftwm lists a window as soon as its toplevel exists, not when it has drawn. `src/handlers/xdg_shell.rs` `new_toplevel` (lines 38 to 84) maps the window into the canvas at once (screen centre, size unknown) and sets `pending_center`. The real placement (rules, auto/cursor/centre placement and `cascade_position`, which shifts a new window by +25,-25 from a window already standing at that spot) is done at the **first commit that has a size**: `src/handlers/compositor.rs`, `has_size = geo.size.w > 0 && geo.size.h > 0` (line 356) and the branch `else if has_size && ...` (line 616) ending in `map_window(window, pos)`. `msg state` (`src/state/persistence.rs`, `window_inventory`, line 146) lists every window with an app-id, drawn or not, with a frame of only title bar and border (smaller than 64 by 64). `msg move` (`src/ipc/mod.rs`, `cmd_move`, line 596) works on such a window and answers "ok". So a `move` made between the moment the window is listed and its first picture is **overwritten by the compositor's own placement**. hubd moved the window 500 ms after it saw it; on a busy machine (load average 8 to 12 on 4 CPUs under software emulation) the viewer's first picture can take longer. `[25, -125]` is `[0, -100]` (the home of `ai-1`, whose window was open) plus the cascade shift of `+25, -25`: that fits (BELIEVED, an inference from the numbers; the race was not reproduced in QEMU because it is rare).
+
+**Fix (small):** `place` now waits until the window has drawn its first picture (its frame is at least 64 in one direction), up to 60 s (`SizedWait`), then moves it, then reads the position back and asks again until two looks in a row agree (`settleWindow`, up to 30 s, `SettleMax`). A size is asked for at most 3 times, 400 ms apart, because a program may refuse a size and needs time to draw a new one; driftwm's answer "this window is under an interactive move or resize, or still settling one" is not taken as final, it is tried again until the time is up (TESTED with a fake compositor that refuses: `TestResizeRefusedWhileTheCompositorIsSettlingIsAskedAgain`. SOURCE: `src/ipc/mod.rs` lines 710 to 714 show that driftwm can answer that way. The first 20-window run had one restored window that kept the viewer's first size; the log of that run did not say why, so that this refusal was the cause is BELIEVED, not seen). If no picture comes within 60 s the window is moved anyway and the message says `WARNING: the window had drawn nothing after 1m0s ...`; if it does not stay, `WARNING: it did not stay at (x, y)`. TESTED with a fake compositor that behaves like driftwm (small frame first, own placement at the first picture): `TestWindowIsNotMovedBeforeItHasDrawnItsFirstPicture`, `TestWindowIsPutAtItsHomeAgainWhenTheCompositorMovesItAfterTheFirstMove`, `TestWindowThatNeverDrawsIsMovedAnywayWithAWarning`, `TestWindowThatNeverStaysGetsAWarningNotASilentWrongPlace`.
+
+**Limit:** a viewer that needs more than 60 s for its first picture is moved too early and may stay at driftwm's spot (hubd says so in its message). A move that driftwm ignores after the picture has appeared is not retried later.
+
+### 18.6 `hubd restart-desktop`
+
+Restarts **only the compositor**; never a reboot, never another service. hubd finds the process that owns driftwm's control socket (the kernel's `SO_PEERCRED` of a connection to it), checks that its name is `driftwm`, remembers the windows, sends `SIGTERM`, and after 10 s (`KillWait`) `SIGKILL` if it is still there. hubd runs as the same user as driftwm, so it needs no extra rights. The init system (s6) starts driftwm again because it is a service that is meant to be up, and the restore of 18.4 does the rest. Waybar restarts by itself because it follows driftwm (as it did before); no other service is stopped or started. TESTED (unit): `TestRestartDesktopSendsTermToTheCompositorAndNothingElse`, `TestRestartDesktopKillsAfterTheWaitIfTheCompositorDoesNotExit`, `TestRestartDesktopRefusesWhenItCannotBeSureItIsTheCompositor`, `TestRestartDesktopKeepsTheWindowsEvenIfTheyVanishBeforeTheStreamEnds`; and as one of the cycles of the hub image test H3f (driftwm's log shows `received SIGTERM — stopping compositor`: it exits by itself on SIGTERM, so the SIGKILL after 10 s was not needed there). **No menu or bar entry:** the existing menu has no confirmation step and a stray click would make every window vanish for a few seconds, so it is a command only (question 3).
+
+### 18.7 The last known state, marked STALE, while hubd is down
+
+**Design (the smallest that fits Waybar and wofi as they are):**
+- While it runs, hubd writes one small file next to its socket, `/run/hubos/hubd.last.json` (memory, mode 0600): the exact bar line it sends and the menu list. At every change (at most once a second) and at least every 5 seconds, so the time in the file is never far behind. `Snapshot` in `internal/hub/stale.go`.
+- `hubd feed` (the bar's command) used to print `hubd stopped` when it could not reach hubd. Now it prints the last line from the file with **`STALE: `** in front of the text (for example `STALE: 3 of 4 up`), the alert colour, and a first tooltip line `hubd is not running: this is the last known state, from 12:00:03 UTC (40 s ago), not the current one`. The age changes in 10 s steps. With no file it prints `hubd stopped` as before. hubd's own word STALE (old check results) is not doubled.
+- `hubd menu` (the bar item's click) used to fail with "hubd is not running". Now it shows the last list under a first line `! STALE: hubd is not running; this list is 2 min old; picking does nothing`. Picking any line prints that nothing was done and closes the menu.
+- The marker is the word STALE, not a colour, because the bar is already red whenever a machine is down.
+- TESTED: `TestSnapshotHoldsTheBarLineAndTheMenuList`, `TestStaleLineIsMarkedStaleAndAlertAndSaysHowOldItIs`, `TestStaleListHasAStaleFirstLineAndTheLastList`, `TestReadSnapshotRefusesAnEmptyOrBrokenFile`, `TestRunSnapshotWritesAtOnceAndOnChange`, and in `cmd/hubd`: `TestFeedShowsTheLastKnownStateMarkedStaleWhenHubdIsDown`, `TestFeedWithNoLastStateStillSaysHubdStopped`, `TestMenuShowsTheLastListMarkedStaleAndPickingDoesNothing`; in the hub image: test H3e.
+- Limits: after a reboot there is no file until hubd has run once (the bar says `hubd stopped`, as before). The snapshot is not a second source of truth: a restarted hubd replaces it at once with its own first state (`checking... 0 of N done`).
+
+### 18.8 The hub list and `hubd end`
+
+- The hub's own line has **no dot** (three spaces of indent, then `hub`); the columns did not move. Other machines keep the filled or empty dot, and there is no ` [open]` text. TESTED: `TestMarkerOpenIsFilledClosedIsEmpty`, `TestListGroupsNestingFoldingAndDownFirst`; image test H3c now expects `none` for the hub line.
+- `hubd end` waits up to 30 s for the window to close (was 3 s). TESTED: `TestEndWaitsForASlowWindowUpToThirtySecondsByDefault`.
+
+### 18.9 Hub image tests (QEMU, TCG, no KVM, a computer shared with other jobs)
+
+`go test -tags qemu -count=1 -timeout 150m -v -run 'TestHubImage$' ./tools/image`, the build cached between runs (`HUBOS_HUB_WORK`). All of this ran in the build environment, without KVM, on 4 CPUs shared with other jobs (load average 8 to 14), the machine under test with 2 virtual CPUs and 2 GB, driftwm drawing in software, `foot` as the fake viewer. **Nothing here says how fast it is on real hardware (UNKNOWN).**
+
+**New and changed tests (`tools/image/hub_test.go`, helpers in `hub_restore_test.go`):**
+
+| Test | What it does | Result |
+|---|---|---|
+| H2 (changed) | `kill -9` of driftwm: the bar comes back, Waybar restarts, **the hubd process is the same one before and after** | PASS in both runs |
+| H3c (changed) | the hub line has no dot (`markerOf` says `none`); the rest as in section 17 | PASS in both runs |
+| H3d | Layouts on the real driftwm: save 3 windows and the view; the folder belongs to the user hub and the file has a checksum; overlap warns; apply moves the windows and the view back; hubd restarted: the active layout is remembered and the open windows are adopted; a machine opened later goes to its place in the active layout and, after clear, to its home; a half-written file is set aside with a warning while hubd keeps running | PASS in both runs |
+| H3e | `kill -9` of hubd (s6 told not to restart it): the bar item reads `STALE: 3 of 4 up` (the red box grew from 81 to 133 px; the tooltip says how old it is), the menu (opened by a click on the bar item, real wofi) shows the last list with the STALE first line (list drawn: 144597 pixels), `hubd menu` with a stand-in for wofi was shown `! STALE: ...` as first line, and after hubd is back the line is live | PASS in both runs |
+| H3f | 20 fake windows (`foot` with per-machine app-ids), 20 machines added by the test for this step only (the test replaces the inventory and viewers table on the guest and puts them back; the normal test inventory is unchanged). All 20 opened at once (27 to 32 s), arranged at places that are not their homes (some resized), view zoomed and moved; a 20-window layout saved, 5 windows scrambled, applied (20 windows moved). Then **8 cycles** of `kill -9` of the compositor at random moments, each time checking that the compositor process is a new one, that all 20 windows are back with exactly their place and size and the view, that exactly 20 windows and 20 viewer processes exist, that the hubd process is the same one, and that the layout folder has no temporary or damaged file. The modes, in turn: `idle` (kill after 0 to 3 s), `move` (move a random window, kill 0 to 0.4 s later; the old or the new place is accepted for that window), `save` (a row of 40 `hubd layout save` commands, kill 0.05 to 1.55 s later: the kill lands during layout saves), `restore` (kill, and kill again 0 to 3 s after the first restored window shows: a second crash during the restore), `restart` (`hubd restart-desktop`). The random seed is printed (`HUBOS_KILL_SEED` repeats a run; `HUBOS_KILL_CYCLES` changes the number) | PASS in both runs |
+
+**The two runs of the final code** (RESULTS blocks were given to the lead with this change):
+
+| | Run 1 (commit 88c479f) | Run 2 (commit add7ddd, only the H3f summary text changed) |
+|---|---|---|
+| Whole test | PASS, 1855 s | PASS, 1613 s |
+| H3f | 8 of 8 cycles, seed 1791243227674167010, median 51 s from the kill to "all 20 back and stable" (41 to 61 s) | 8 of 8 cycles, seed 1791244834734193144, median 65 s (50 to 80 s) |
+| Kills while hubd was saving layouts | 2 cycles (`save`) | 2 cycles |
+| Second crash during a restore | 2 cycles (`restore`): the second kill came when 10 and 9 of the 20 windows were back | 2 cycles (10 and 10 windows back) |
+| `restart-desktop` | 1 cycle | 1 cycle |
+| A move right before the kill | 2 cycles: the move was kept both times | 2 cycles: kept once; once (kill 0.13 s after the move) the window came back at its place before the move: hubd had not yet seen the event |
+| hubd's own count | `the desktop restarted: 20 of 20 windows are back at their places in 38 to 58 s` | `... in 45 to 75 s` |
+
+The development runs before these (listed below) ran more kills. The time to be back (about a minute) is the time of the test machine (20 viewers starting on 2 emulated CPUs); the nested run A6 of `docs/proposals/hub-stability.md` measured 3.4 s for 20 windows with the nested driftwm on the build computer (no emulation). They are not comparable (UNKNOWN on the real hub).
+
+**What the development runs found and what was changed (each is in the code and has a unit test where it could have one):**
+1. A duplicate home in my own 20-machine test inventory (the hub and `w03` at the same place): hubd refused to start. Test fixed.
+2. The test used window numbers from before a compositor restart (numbers start again from 0 in a new compositor). Test fixed (this made a window move to the wrong place in the test).
+3. One restored window kept the viewer's first size (cause not captured; BELIEVED: driftwm refused a resize while the window was still settling and hubd took the refusal as the end). Now such an answer is asked again.
+4. A kill during a restore restored the view that the first restore's new windows had caused (zoom 0.951 instead of 0.800). Now the view from before the first crash is kept.
+5. A viewer that was starting when the compositor died could place or record a window of the dead compositor. Now dropped (ticket); a new open of that machine is no longer refused.
+6. With 20 viewers at once on this slow machine, driftwm answered in seconds and hubd's own requests timed out, which ended the placing. Timeouts are asked again, polling slows down when driftwm is slow, a restore starts at most 10 viewers at once, and a window that could not be put at its place is not counted as restored.
+7. One QEMU run lost its disk space (another job on the same computer filled it): not a test result.
+
+### 18.10 Not verified, and limits
+
+- Nothing was tested on a real display, a real GPU, a real viewer (remote-viewer, Moonlight, a VNC viewer) or a real network. What a real viewer does when the compositor is killed (it should exit, as foot does) is UNKNOWN. If a viewer outlived the compositor, a restore would start a second one for the machine.
+- A compositor that exits gracefully on its own (not through `hubd restart-desktop`) and closes its windows one by one before the stream ends would make hubd forget those windows; only `kill -9`, a crash, and `restart-desktop` were tested.
+- The real-display backend (`udev`) was not run outside the QEMU test machine; zoom and camera setting were tested only there.
+- Power loss during a layout write was not tested.
+- The restore starts the viewers in groups of up to 10. How a real viewer's reconnect time and 20 real sessions behave is UNKNOWN.
+- Found but not changed (not part of the task): `hubd serve` builds its settings without `LogMax` and `LogTotalMax`, so the viewer logs are rotated every 5 s and have no total cap (section 2.5 says 128 KiB and 64 MiB). See question 7.
+
+### 18.11 Questions for the owner (not answered by the documents; the simplest reversible default was used)
+
+1. **Layout name length.** The rule is the machine-id rule and at most 100 layouts. I added a limit of 64 characters per name (it is a file name). OK, or another number?
+2. **`hubd layout save` over an existing name** is refused without `--replace` (the proposal's wording, not a decision). Should it overwrite without asking?
+3. **A menu or bar entry for "restart the desktop".** Not added: the menu has no confirmation and a stray click would blank the screen for a few seconds. Command only now. Do you want an entry anyway, or a confirmation step first?
+4. **Where the Layouts group stands in the menu.** At the bottom, after the machines, and only when a layout exists. Top of the list instead?
+5. **Overlap threshold.** A warning when two windows overlap by more than half of the smaller one (the proposal's number). Warn on any overlap instead?
+6. **After a restore, the view is put back** (zoom and camera as before the crash), not only the windows. The task said "windows at their saved places"; without the view the windows can be off screen. OK?
+7. **The viewer log limits** (`LogMax`, `LogTotalMax`) are not set by `hubd serve` (18.10). Fix it?
+8. **Restore and a machine that is down.** It is skipped and named on the bar. Or wait and retry when it comes up?
+9. **`SizedWait` of 60 s** for a window's first picture before hubd moves it anyway with a warning. A real viewer may need longer or shorter; measure in December.
+10. **Stacking order and focus** are not restored (driftwm's stand-ins would do both). Do you want hubd to restore which window had the focus?
+11. **At most 10 viewers at once in a restore** (`RestoreParallel`). The design note said "all at once"; on the slow test machine 20 at once made driftwm too slow to answer. A real hub may handle all 20: measure in December.
