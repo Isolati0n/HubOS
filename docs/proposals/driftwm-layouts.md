@@ -1,5 +1,21 @@
 # PROPOSAL: window layouts on the hub, saved by name and restored by name
 
+## Owner decisions (2026-10-05, round 5)
+
+These answer the questions of section 9. They are the owner's decisions, recorded by the lead agent from the owner's message, and also recorded in `HUB-OS.md`.
+
+- A layout holds positions, sizes and the view (camera and zoom).
+- Applying a layout also governs machines opened later, until another layout is applied or it is cleared.
+- The active layout is remembered in a file on the config partition. Windows still start manually after a reboot.
+- Names are free text under the machine-id rule, at most 100.
+- `/config/hubos/layouts` is in the NAS backup list and is owned by the user hubd runs as.
+- Command line first, plus a Layouts group in the menu.
+- Overlapping windows give a warning.
+- driftwm's `restore_*` switches and `suspend_on_close` stay off.
+- Release driftwm only, never a debug build.
+- Nothing is reported to the driftwm author for now.
+
+
 **Status: PROPOSAL, research only.** Nothing here is decided and nothing here is built. `HUB-OS.md` wins if this file disagrees with it. Written 2026-10-05. The tests used driftwm at the pinned commit `352333a8fa1b22171492d4b71a54102045c9a19d` (version 0.19.0). The test scripts and the full output of the runs are in `tools/image/experiments/layouts-and-file-transfer/` (`t/` and `results.txt`; "results L4" below means the section "L4" of that file).
 
 **What the owner asked for:** window layouts are saved by name and restored; they live on the config partition; windows never reopen by themselves after a reboot.

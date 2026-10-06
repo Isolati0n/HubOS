@@ -1,5 +1,29 @@
 # Hub stability: designing out freezes and crashes (research and proposal)
 
+## Owner decisions (2026-10-05, round 5)
+
+These answer the questions of section 12. They are the owner's decisions, recorded by the lead agent from the owner's message, and also recorded in `HUB-OS.md`. They override anything below that disagrees.
+
+1. Carry the driftwm and Smithay patches P1 to P10.
+2. The hub starts by itself after a power cut and shows the panel with no windows (firmware restore on AC loss).
+3. A kernel panic reboots after 5 s. A board watchdog reset for a frozen kernel is not a reboot for a service failure.
+4. Config hot reload is off on the hub: a config change is a compositor restart.
+5. Plan B (a session daemon) waits for the December measurement.
+6. hubd restores windows itself for all machines; driftwm's own restore switches stay off.
+7. The projector is 4K; software rendering is a fallback until the December CPU measurement.
+8. driftwm's default features stay enabled; one is turned off only if the soak finds a problem in it.
+9. Shadows, rounded corners and borders are off.
+10. After 5 compositor crashes in a minute, stop restarting, show a fixed message, keep hubd and the recovery terminal up, and never reboot.
+11. The hang probe kills after 4 failed rounds and 30 s with both probes failing, at most 3 kills in 10 minutes.
+12. Viewers run in a lower-priority memory-limited group: all viewers together at most 25% of RAM, each at most 1 GiB.
+13. ECC memory on the hub; candidate board ASRock Rack B650D4U-2L2T/BCM with an EPYC 4005.
+14. Crash evidence: the RAM black box plus a capped copy on the config partition.
+15. A "restart the desktop" button restarts only the compositor service.
+16. Adopt a new kernel or Mesa only after at least 4 weeks and a 72-hour soak.
+
+(The numbers are in the order of the owner's message; they follow the order of the questions in section 12 only as far as the owner's list says. Check the wording in section 12 before relying on a number.)
+
+
 **Written:** 2026-10-05. **Status:** research and proposal. Nothing here is a decision. Nothing here changes `HUB-OS.md`, the main image, or any program in this repository. Every choice that belongs to the owner is collected in section 12.
 
 **What this is for.** The owner's top priority for the hub is uptime: it must never freeze or crash, and as many causes of instability as possible must be designed out. This document lists what can make the hub freeze, crash, hang or become unusable, says how likely and how bad each is, what removes or contains it, what that costs, and how to test it. It then judges five architecture ideas, audits the compositor (driftwm) source, and reports every test I could run in the cloud build environment.

@@ -29,7 +29,7 @@ All SOURCE (repo, `HUB-OS.md` and `docs/proposals/node-helper-api.md`, read 2026
 - The hub is a client: it never carries workload data. Nodes show their whole desktop in one window; there are no terminals; each node has its own bespoke GUI.
 - Every node runs the **node helper**: a small program that answers signed HTTP requests from `hubd` (one cluster management key; the hub holds the private half; nodes hold public keys). It "answers only when asked; it never calls the hub". The API is versioned `/v1`, add-only.
 - Text clipboard: node to hub through the display protocol (wayvnc), hub to node through the helper (`PUT /v1/clipboard`), started by the owner (button or key chord), never automatic.
-- Each node may run its own distro (systemd and musl allowed on nodes, per the owner's latest note); so nothing here may depend on one distro's file manager, service manager or libc.
+- Each node may run its own distro (musl allowed on nodes that do not need glibc; no machine runs systemd, per the owner's correction of 2026-10-05); so nothing here may depend on one distro's file manager, service manager or libc.
 - `hubd` is Go. No new streaming protocol, no web dashboard as the control plane.
 
 ---
