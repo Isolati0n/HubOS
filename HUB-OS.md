@@ -130,7 +130,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - driftwm's default features stay enabled; one is turned off only if the soak finds a problem in it.
 - Shadows, rounded corners and borders are off.
 - After 5 compositor crashes in a minute the hub stops restarting it, shows a fixed message, keeps hubd and the recovery terminal up, and never reboots.
-- The hang probe kills the compositor after 4 failed rounds and 30 s with both probes failing, at most 3 kills in 10 minutes.
+- The hang probe kills the compositor after 4 failed rounds and 30 s with both probes failing, at most 3 kills in 10 minutes (this rule is NOT built yet; it waits for the init comparison to decide where it lives; see Compositor decisions).
 - Viewers run in a lower-priority memory-limited group: all viewers together at most 25% of RAM, each at most 1 GiB.
 - Crash evidence: the RAM black box plus a capped copy on the config partition.
 - A "restart the desktop" button restarts only the compositor service.
@@ -174,13 +174,19 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - The config is baked into the image: an unknown field fails the image build check and falls back to the last good config at runtime with an alert; the hub build sets restore_windows explicitly off, checked at build time.
 - Viewers are limited by the memory limit, with no per-client limit in the compositor.
 - Protocols nothing on the hub uses are disabled, starting with session lock (each disabled protocol is listed with who would use it).
-- A GPU reset exits and restarts the compositor (hubd restores the windows); the hang rule stays (kill after 4 failed rounds and 30 s).
+- A GPU reset exits and restarts the compositor (hubd restores the windows); the exit-after-failed-frames behaviour (P10) is accepted until December.
+- The hang rule (kill after 4 failed rounds and 30 s) is NOT built now; it waits for the init comparison (docs/proposals/init-comparison.md) to decide where it lives.
 - Session files are fsynced from the worker thread.
-- On any panic the compositor restarts and never carries on (P3 stays off).
+- On any panic the compositor restarts and never carries on (P3 stays off); the hub compositor build uses panic = "abort".
 - A nightly fuzz job and extra test machines are set up before December, as their own scheduled run.
 - Only the Smithay sites reachable from client input are classified; the rest are fuzzed.
 - The compositor does not try to survive running out of memory: a generous ceiling is set and it restarts on abort.
 - Window stacking order is part of "restore exact".
+- A fallback to the last good config also shows an alert on the bar (through hubd's feed), as well as in the serial log. The last-good copy is /config/hubos/driftwm.last-good.toml; with no copy the compositor starts with its defaults and alerts.
+- The 14 hidden protocols stay hidden, except that the virtual keyboard stays enabled until the input forwarder is decided in December.
+- A compositor IPC field with the true window stacking order will be added, and the stacking order is saved in layouts as an optional field.
+- The "compositor gave up" message is drawn by the kernel text console on the projector, because the bar dies with the compositor.
+- BC-9, BC-14, the Smithay audit of client-input paths, the nightly fuzz and the 72-hour soak are scheduled later, one at a time.
 
 ### Run schedule (owner, 2026-10-06)
 
@@ -580,3 +586,4 @@ HubOS/
 - **2026-10-06:** No display passwords and no request signing; session layer as the hub's core; 4K nodes; clipboard and notification designs; compositor answers; run schedule.
 - **2026-10-06:** driftwm patch set adopted: Smithay P7 to P11, driftwm D1 to D5, BC-11 to BC-13 fixes, config checks, protocol list; window stacking order restored.
 - **2026-10-06:** Recovery agent prototype: request signing removed (no challenge, signature or nonces); the image signature check stays.
+- **2026-10-06:** Compositor patch set, recovery agent without signing and clipboard and notification designs merged; compositor follow-up decisions recorded.

@@ -352,6 +352,11 @@ See section 6. In short: the device choice, whether an appliance with systemd or
 
 ---
 
+## Owner decisions (2026-10-06, round 8)
+
+- The "compositor gave up" message (the compositor crashed 5 times in a minute and was stopped) is drawn by the kernel text console on the projector, because the bar dies with the compositor; hubd and the recovery terminal stay up. Recorded in `HUB-OS.md` and `docs/proposals/driftwm-patches.md` 11.12a.
+- The recovery agent's requests are not signed (owner decision, 2026-10-06); `GET /v1/logs` stays open.
+
 ## History
 
 An earlier version of this document (up to 2026-10-05) had every changing request to the recovery agent signed by the hub with a separate management key and a one-time number fetched from `GET /v1/challenge` (later with the machine id in the signed text), and discussed TLS and the key's custody. The owner decided on 2026-10-06 that requests are not signed and not encrypted and that only the image signature stays. That text and its live-run transcript were removed; they can be read in the git history of this file before the commit that made this change. The prototype was changed to match (PR #69).
