@@ -1,0 +1,7 @@
+# What the HUB image's QEMU machine needs (devices of tools/image/qemu_test.go startVM with gui=true). Symbol names are the
+# ones image/kernel/hub.frag sets (SOURCE). '!' = boot-critical: must be built in, stage 0 loads no modules.
+!disk virtio-blk:       VIRTIO_BLK VIRTIO_PCI
+!network virtio-net:    VIRTIO_NET
+!watchdog i6300esb:     I6300ESB_WDT WATCHDOG_NOWAYOUT
+gpu virtio-vga:         DRM DRM_VIRTIO_GPU
+usb xhci keyboard/mouse: USB_XHCI_HCD USB_XHCI_PCI USB_HID INPUT_EVDEV
