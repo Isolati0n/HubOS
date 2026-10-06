@@ -36,7 +36,7 @@ Helpers: no helper agents were used. Everything below I ran or read myself.
 6. **The place in RAM matters.** Of five addresses tried, four survived a warm reset and one (480 MiB of a 512 MiB machine) did not. TESTED (section 4.1). I do not know why. On real hardware the right place has to be found by testing: UNKNOWN.
 7. **What a program prints with plain `echo` is not recorded.** Only kernel messages (printk) are. Stage 0 must write its progress lines to `/dev/kmsg`. TESTED (section 6.2).
 8. **A save step on the config partition works.** The prototype copied the pstore files into a capped folder, emptied pstore, and a **new QEMU** (cold boot) read them back from the config disk. TESTED (section 6).
-9. **`GET /v1/logs` already exists in the prototype agent and already needs a signature.** I propose its content and limits (section 7). BELIEVED.
+9. **`GET /v1/logs` already exists in the prototype agent and is open (no signature: requests are not signed since 2026-10-06).** I propose its content and limits (section 7). BELIEVED.
 10. **Real hardware is untested**: whether RAM survives a real warm reset, how big the real firmware variable store is, whether a real watchdog reset keeps RAM. UNKNOWN (section 9).
 
 ## 2. What the repo's kernel has
@@ -241,7 +241,7 @@ SOURCE (repo, `tools/image/experiments/recoveryagent/agent.go`, `backend_hubos.g
 
 **Proposal (all BELIEVED, none implemented in the agent):**
 
-- **Plain request, no signature** (the agent's requests are not signed any more). OPEN: kernel logs show hardware layout, addresses and software versions, and the network is assumed to be the owner's; the owner may still want to decide who may read them.
+- **Plain request, no signature** (the agent's requests are not signed any more). DECIDED (owner, 2026-10-06): `GET /v1/logs` stays open, consistent with no request signing.
 - **Format:** `text/plain; charset=utf-8`, sections in this order: a header line; the agent log tail (as today); then the saved boot folders **newest first**, each with its `meta.txt` and its files after a `### filename` line. Plain text so the owner can read it without a tool.
 - **Size limit:** 64 KiB by default for the whole answer (the prototype script cuts with `head -c`), newest content first; a query `?boot=NNNN` for one older folder. Reason for 64 KiB: a 50 KB boot (the lab's) fits. The number is a guess: BELIEVED.
 - **No secrets:** (1) no secret ever goes on the kernel command line or into a kernel message by Hub OS (a rule for our own code); (2) a filter on the way out as a second line of defence. TESTED on invented secrets: `tools/image/experiments/black-box/blackbox-logs.sh` printed
@@ -251,7 +251,7 @@ FAKE password=[REDACTED] token: [REDACTED] and Secret_Key=[REDACTED]
 ```
 
   for the line above, in both the console and the dmesg file. **This only catches words I thought of** (`pass(word)`, `secret`, `token`, `apikey`, `private key`, `credential` followed by `=`, `:` or a space). A secret with another name passes. BELIEVED not enough alone. The binary `pmsg` and dump files are `tr -d '\000'` filtered only.
-- **Clear:** a signed `POST /v1/blackbox/clear` to delete the folders after the hub has them (not designed; the existing `clear-failures` is the model).
+- **Clear:** a plain `POST /v1/blackbox/clear` to delete the folders after the hub has them (not designed; the existing `clear-failures` is the model).
 - The hub would show "last failed boot: ..." only when the agent says the machine is in recovery; hubd does not store the logs (HUB-OS.md: the hub is a client) unless the owner says so. Question 5.
 
 ## 8. Recommendation and questions
