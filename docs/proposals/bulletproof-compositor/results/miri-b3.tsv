@@ -1,0 +1,123 @@
+ok	config::parse::tests::action_names_round_trip_to_their_variant
+ok	config::parse::tests::bare_mod3_shift_combo_is_recognized_as_a_tap_binding
+ok	config::parse::tests::bookmark_actions_parse_with_name
+ok	config::parse::tests::bookmark_actions_reject_missing_name
+unsupported	config::parse::tests::mod3_combines_with_other_modifiers_in_a_combo	test config::parse::tests::mod3_combines_with_other_modifiers_in_a_combo ... error: unsupported operation: can't call fo
+unsupported	config::parse::tests::mod_plus_iso_level5_shift_parses_as_a_key_binding_not_a_tap	test config::parse::tests::mod_plus_iso_level5_shift_parses_as_a_key_binding_not_a_tap ... error: unsupported operation:
+ok	config::parse::tests::removed_actions_keep_their_migration_message_everywhere
+ok	config::parse::tests::set_trackpad_parses_with_explicit_state
+ok	config::parse_helpers::tests::clamp_warn_above_max_clamps_and_collects
+ok	config::parse_helpers::tests::clamp_warn_below_min_clamps_and_collects
+ok	config::parse_helpers::tests::clamp_warn_in_range_is_silent
+ok	config::parse_helpers::tests::nan_is_treated_as_invalid_not_silently_passed
+ok	config::parse_helpers::tests::non_negative_floors_and_collects_when_negative
+ok	config::parse_helpers::tests::non_negative_passes_through_when_positive
+ok	config::parse_helpers::tests::parse_focus_placement_all_variants
+ok	config::parse_helpers::tests::parse_focus_placement_case_and_whitespace_insensitive
+ok	config::parse_helpers::tests::parse_focus_placement_unknown_returns_none
+ok	config::parse_helpers::tests::parse_mode_invalid
+ok	config::parse_helpers::tests::parse_mode_max
+ok	config::parse_helpers::tests::parse_mode_preferred
+ok	config::parse_helpers::tests::parse_mode_size
+ok	config::parse_helpers::tests::parse_mode_size_refresh
+ok	config::parse_helpers::tests::parse_position_auto
+ok	config::parse_helpers::tests::parse_position_fixed
+ok	config::parse_helpers::tests::parse_position_invalid_string
+ok	config::parse_helpers::tests::parse_position_wrong_array_length
+ok	config::parse_helpers::tests::parse_transform_all_variants
+ok	config::parse_helpers::tests::parse_transform_invalid
+ok	config::tests::a_bad_hot_corner_action_drops_only_that_corner
+ok	config::tests::anchors_default_is_empty
+ok	config::tests::animate_blur_fps_zero_is_preserved
+ok	config::tests::bare_mod3_shift_keybinding_parses_as_tap
+ok	config::tests::bookmarks_absent_section_seeds_four_corners
+ok	config::tests::bookmarks_empty_section_disables_seeds
+ok	config::tests::bookmarks_table_parses_y_up_and_spaces_in_names
+ok	config::tests::camera_speed_zero_falls_back_to_default
+ok	config::tests::check_from_bad_value_is_ok_with_warnings
+ok	config::tests::check_from_malformed_toml_is_err
+ok	config::tests::check_from_missing_file_is_ok_with_no_warnings
+ok	config::tests::check_from_unknown_top_level_key_is_err
+unsupported	config::tests::check_from_unreadable_path_is_err	test config::tests::check_from_unreadable_path_is_err ... error: unsupported operation: open: opening directories is not
+ok	config::tests::check_from_valid_config_is_ok_with_no_warnings
+ok	config::tests::default_config_has_no_shadow_warnings
+ok	config::tests::default_touch_bindings_anywhere_three_finger_tap_centers_window
+ok	config::tests::default_touch_bindings_on_canvas_one_finger_swipe_pans
+ok	config::tests::default_touch_bindings_window_targeted_gestures_bind_on_window
+ok	config::tests::deprecated_animate_blur_warns
+ok	config::tests::direction_binding_over_non_continuous_base_does_not_warn
+ok	config::tests::duplicate_output_names_keeps_first
+ok	config::tests::effects_animation_scale_out_of_range_rejects_and_clamps
+ok	config::tests::effects_animation_speed_out_of_range_rejects_and_clamps
+ok	config::tests::every_config_field_is_documented
+ok	config::tests::focus_placement_absent_defaults_to_center
+ok	config::tests::focus_placement_top_level_all_variants_parse
+ok	config::tests::gesture_doubletap_swipe_accepts_move_snapped_windows
+ok	config::tests::invalid_output_focus_placement_keeps_other_fields_and_warns
+ok	config::tests::invalid_touch_binding_is_skipped_and_default_remains
+unsupported	config::tests::mod3_keybinding_does_not_fire_when_mod3_is_not_held	test config::tests::mod3_keybinding_does_not_fire_when_mod3_is_not_held ... error: unsupported operation: can't call for
+unsupported	config::tests::mod_key_mod3_resolves_mod_bindings_without_setting_logo_or_alt	test config::tests::mod_key_mod3_resolves_mod_bindings_without_setting_logo_or_alt ... error: unsupported operation: can
+ok	config::tests::modifier_only_keybinding_parses_as_tap
+ok	config::tests::no_outputs_section_produces_empty_vec
+ok	config::tests::non_finite_bookmark_seed_is_dropped_with_warning
+unsupported	config::tests::normal_keybinding_is_not_a_tap	test config::tests::normal_keybinding_is_not_a_tap ... error: unsupported operation: can't call foreign function `xkb_ke
+ok	config::tests::out_of_range_navigation_values_warn_and_clamp
+ok	config::tests::outer_frame_inset_goes_negative_at_zero_outer_gap_with_a_border
+ok	config::tests::output_config_lookup
+ok	config::tests::output_config_wildcard_is_fallback_exact_wins
+ok	config::tests::output_focus_placement_absent_inherits_top_level
+ok	config::tests::output_focus_placement_center_overrides_non_center_top_level
+ok	config::tests::parse_output_rule_defaults
+ok	config::tests::parse_output_rule_negative_scale
+ok	config::tests::parse_output_rule_valid
+ok	config::tests::parse_output_rule_zero_scale
+unsupported	config::tests::plain_keybinding_does_not_fire_when_mod3_is_also_held	test config::tests::plain_keybinding_does_not_fire_when_mod3_is_also_held ... error: unsupported operation: can't call f
+ok	config::tests::rejections_sort_before_clamps_for_error_bar
+ok	config::tests::remember_layout_per_window_omitted_in_toml_defaults_false
+ok	config::tests::remember_layout_per_window_parses_from_toml
+unsupported	config::tests::removed_go_to_binding_is_dropped_and_bookmarks_still_bind	test config::tests::removed_go_to_binding_is_dropped_and_bookmarks_still_bind ... error: unsupported operation: can't ca
+unsupported	config::tests::removed_go_to_errors_in_every_binding_table	test config::tests::removed_go_to_errors_in_every_binding_table ... error: unsupported operation: can't call foreign fun
+unsupported	config::tests::send_to_output_defaults_present_for_mod3_and_super_but_not_alt	test config::tests::send_to_output_defaults_present_for_mod3_and_super_but_not_alt ... error: unsupported operation: can
+ok	config::tests::shadowed_direction_binding_cross_context_fallback_warns
+ok	config::tests::shadowed_direction_binding_same_context_warns
+ok	config::tests::shadowed_touch_direction_binding_warns
+ok	config::tests::tap_binding_conflict_warns_for_side_specific_toggle
+ok	config::tests::tap_binding_conflicting_with_xkb_option_warns
+ok	config::tests::tap_binding_with_nonconflicting_xkb_option_does_not_warn
+ok	config::tests::touch_anywhere_override_replaces_default_action
+ok	config::tests::touch_doubletap_accepts_fit_window
+ok	config::tests::touch_doubletap_swipe_accepts_snapped_window_grabs
+ok	config::tests::touch_hold_swipe_accepts_move_window
+ok	config::tests::touch_hold_swipe_accepts_resize_window
+ok	config::tests::touch_hold_swipe_accepts_snapped_window_grabs
+ok	config::tests::touch_hold_swipe_rejects_pan_viewport
+ok	config::tests::touch_lookup_on_canvas_falls_back_to_anywhere_default
+ok	config::tests::touch_lookup_on_window_falls_back_to_anywhere_default
+ok	config::tests::touch_none_removes_default_binding
+ok	config::tests::touch_swipe_accepts_move_window
+ok	config::tests::touch_swipe_accepts_pan_viewport
+ok	config::tests::touch_swipe_accepts_threshold_action
+ok	config::tests::touch_swipe_rejects_zoom
+ok	config::tests::touch_tap_accepts_center_window
+ok	config::tests::touch_tap_rejects_center_nearest
+ok	config::tests::touch_tap_rejects_continuous_action
+ok	config::tests::touch_trigger_allows_five_fingers
+ok	config::tests::touch_trigger_allows_one_finger
+ok	config::tests::touch_trigger_parses_doubletap
+ok	config::tests::touch_trigger_parses_doubletap_swipe
+ok	config::tests::touch_trigger_parses_hold_swipe
+ok	config::tests::touch_trigger_parses_tap
+ok	config::tests::touch_trigger_rejects_plain_hold
+ok	config::tests::touch_trigger_rejects_six_fingers
+ok	config::tests::touch_trigger_rejects_unknown_type
+ok	config::tests::touch_trigger_rejects_zero_fingers
+ok	config::tests::unknown_top_level_focus_placement_warns_and_falls_back_to_center
+ok	config::tests::wildcard_fixed_position_warns_and_falls_back_to_auto
+ok	config::types::tests::action_ends_fullscreen
+ok	config::types::tests::all_held_requires_mod3_bit_too
+ok	config::types::tests::focus_placement_default_is_center
+ok	config::types::tests::focus_placement_pull_all_variants
+ok	config::types::tests::runs_during_fullscreen_allowlist
+ok	config::types::tests::threshold_action_ends_fullscreen
+ok	config::types::tests::union_combines_mod3_bit
+b3: total=122 ok=112 unsupported=10 fail=0

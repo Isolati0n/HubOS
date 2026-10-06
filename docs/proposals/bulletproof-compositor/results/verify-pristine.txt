@@ -1,0 +1,30 @@
+### NUL in config
+== config with a NUL character in the key string: --check-config
+thread 'main' (20593) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/x
+   exit status 101
+== config with a NUL character in the layout string: --check-config
+   exit status 0
+== config with a NUL character in the options string: --check-config
+   exit status 0
+start-up with NUL in layout: compositor DEAD, status 101
+start-up with NUL in options: compositor alive
+start-up with NUL in rules: compositor alive
+hot reload to a config with a NUL in layout: compositor DEAD, status 101
+hot reload to a config with a NUL in a key binding: compositor alive
+### popup parent cycles
+RESULT[v-driftwm-pristine-self]: compositor ALIVE BUT HUNG (state: State: R (running), cpu ticks 820)
+RESULT[v-driftwm-pristine-pair]: compositor ALIVE BUT HUNG (state: State: R (running), cpu ticks 811)
+RESULT[v-driftwm-pristine-nullparent]: compositor ALIVE and answering
+### subsurface place_above(self)
+answer from compositor: 0 bytes; sync/other
+RESULT[vsub-driftwm-pristine]: compositor DEAD, exit status 101
+### absurd geometry
+RESULT[vvp-driftwm-pristine]: compositor DEAD, exit status 134
+RESULT[vsp-driftwm-pristine]: compositor DEAD, exit status 134
+RESULT[vsp2-driftwm-pristine]: compositor DEAD, exit status 134
+### IPC: Move near the 32-bit limit, then a navigation action (BC-13)
+RESULT[vn-driftwm-pristine-nav]: compositor DEAD, exit status 101
+thread 'main' (25984) panicked at /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/rustup/toolchains/nightly-x86_64-unknown-linux-gnu/li
+### IPC: Resize of a stand-in to 32768 x 32768 (BC-12)
+RESULT[vsi-driftwm-pristine]: compositor DEAD, exit status 101
+thread 'main' (26355) panicked at /rustc/28221559263a3976766cf305940e80e30cf9ba8a/library/alloc/src/raw_vec/mod.rs:29:5:

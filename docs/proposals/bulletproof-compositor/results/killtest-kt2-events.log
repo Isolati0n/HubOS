@@ -1,0 +1,33 @@
+10-05 22:50:49 seeded 8 stand-ins
+10-05 22:50:51 cycle 0 stats {'kills_rand': 1, 'restore_ok_new': 1} elapsed 11s
+10-05 22:53:38 cycle 50 stats {'kills_rand': 32, 'restore_ok_new': 39, 'kills_strace': 5, 'strace_tmp_seen': 5, 'strace_tmp_partial': 5, 'restore_ok_old': 12, 'kills_edge': 14} elapsed 178s
+10-05 22:56:18 cycle 100 stats {'kills_rand': 60, 'restore_ok_new': 76, 'kills_strace': 12, 'strace_tmp_seen': 12, 'strace_tmp_partial': 12, 'restore_ok_old': 25, 'kills_edge': 29} elapsed 338s
+10-05 22:56:44 cycle 110: START FAILED rc=1
+10-05 22:58:51 cycle 150 stats {'kills_rand': 85, 'restore_ok_new': 113, 'kills_strace': 17, 'strace_tmp_seen': 17, 'strace_tmp_partial': 17, 'restore_ok_old': 37, 'kills_edge': 48, 'start_failed': 1} elapsed 492s
+10-05 23:01:38 cycle 200 stats {'kills_rand': 112, 'restore_ok_new': 151, 'kills_strace': 24, 'strace_tmp_seen': 24, 'strace_tmp_partial': 24, 'restore_ok_old': 49, 'kills_edge': 64, 'start_failed': 1} elapsed 659s
+10-05 23:04:31 cycle 250 stats {'kills_rand': 142, 'restore_ok_new': 186, 'kills_strace': 30, 'strace_tmp_seen': 30, 'strace_tmp_partial': 30, 'restore_ok_old': 64, 'kills_edge': 78, 'start_failed': 1} elapsed 831s
+10-05 23:07:19 cycle 300 stats {'kills_rand': 171, 'restore_ok_new': 227, 'kills_strace': 33, 'strace_tmp_seen': 33, 'strace_tmp_partial': 33, 'restore_ok_old': 73, 'kills_edge': 96, 'start_failed': 1} elapsed 999s
+10-05 23:10:04 cycle 350 stats {'kills_rand': 202, 'restore_ok_new': 266, 'kills_strace': 36, 'strace_tmp_seen': 36, 'strace_tmp_partial': 36, 'restore_ok_old': 84, 'kills_edge': 112, 'start_failed': 1} elapsed 1164s
+10-05 23:12:48 cycle 400 stats {'kills_rand': 227, 'restore_ok_new': 310, 'kills_strace': 40, 'strace_tmp_seen': 40, 'strace_tmp_partial': 40, 'restore_ok_old': 90, 'kills_edge': 133, 'start_failed': 1} elapsed 1328s
+10-05 23:15:31 cycle 450 stats {'kills_rand': 255, 'restore_ok_new': 351, 'kills_strace': 43, 'strace_tmp_seen': 43, 'strace_tmp_partial': 43, 'restore_ok_old': 99, 'kills_edge': 152, 'start_failed': 1} elapsed 1491s
+10-05 23:18:13 cycle 500 stats {'kills_rand': 280, 'restore_ok_new': 387, 'kills_strace': 50, 'strace_tmp_seen': 50, 'strace_tmp_partial': 50, 'restore_ok_old': 113, 'kills_edge': 170, 'start_failed': 1} elapsed 1653s
+10-05 23:20:57 cycle 550 stats {'kills_rand': 313, 'restore_ok_new': 428, 'kills_strace': 52, 'strace_tmp_seen': 52, 'strace_tmp_partial': 52, 'restore_ok_old': 122, 'kills_edge': 185, 'start_failed': 1} elapsed 1817s
+10-05 23:23:35 cycle 600 stats {'kills_rand': 341, 'restore_ok_new': 463, 'kills_strace': 57, 'strace_tmp_seen': 57, 'strace_tmp_partial': 57, 'restore_ok_old': 137, 'kills_edge': 202, 'start_failed': 1} elapsed 1975s
+10-05 23:26:08 cycle 650 stats {'kills_rand': 367, 'restore_ok_new': 498, 'kills_strace': 63, 'strace_tmp_seen': 62, 'strace_tmp_partial': 62, 'restore_ok_old': 152, 'kills_edge': 220, 'start_failed': 1} elapsed 2128s
+10-05 23:28:43 cycle 700 stats {'kills_rand': 391, 'restore_ok_new': 537, 'kills_strace': 68, 'strace_tmp_seen': 67, 'strace_tmp_partial': 67, 'restore_ok_old': 163, 'kills_edge': 241, 'start_failed': 1} elapsed 2284s
+10-05 23:31:18 cycle 750 stats {'kills_rand': 414, 'restore_ok_new': 579, 'kills_strace': 72, 'strace_tmp_seen': 71, 'strace_tmp_partial': 71, 'restore_ok_old': 171, 'kills_edge': 264, 'start_failed': 1} elapsed 2438s
+10-05 23:33:48 cycle 800 stats {'kills_rand': 444, 'restore_ok_new': 615, 'kills_strace': 77, 'strace_tmp_seen': 76, 'strace_tmp_partial': 76, 'restore_ok_old': 185, 'kills_edge': 279, 'start_failed': 1} elapsed 2588s
+10-05 23:36:21 cycle 850 stats {'kills_rand': 472, 'restore_ok_new': 658, 'kills_strace': 77, 'strace_tmp_seen': 76, 'strace_tmp_partial': 76, 'restore_ok_old': 192, 'kills_edge': 301, 'start_failed': 1} elapsed 2741s
+10-05 23:38:53 cycle 900 stats {'kills_rand': 495, 'restore_ok_new': 700, 'kills_strace': 83, 'strace_tmp_seen': 82, 'strace_tmp_partial': 82, 'restore_ok_old': 200, 'kills_edge': 322, 'start_failed': 1} elapsed 2893s
+10-05 23:41:20 cycle 950 stats {'kills_rand': 523, 'restore_ok_new': 737, 'kills_strace': 92, 'strace_tmp_seen': 91, 'strace_tmp_partial': 91, 'restore_ok_old': 213, 'kills_edge': 335, 'start_failed': 1} elapsed 3041s
+10-05 23:43:42 cycle 1000 stats {'kills_rand': 548, 'restore_ok_new': 779, 'kills_strace': 95, 'strace_tmp_seen': 94, 'strace_tmp_partial': 94, 'restore_ok_old': 221, 'kills_edge': 357, 'start_failed': 1} elapsed 3182s
+10-05 23:46:12 cycle 1050 stats {'kills_rand': 567, 'restore_ok_new': 819, 'kills_strace': 102, 'strace_tmp_seen': 101, 'strace_tmp_partial': 101, 'restore_ok_old': 231, 'kills_edge': 381, 'start_failed': 1} elapsed 3333s
+10-05 23:48:39 cycle 1100 stats {'kills_rand': 593, 'restore_ok_new': 855, 'kills_strace': 107, 'strace_tmp_seen': 106, 'strace_tmp_partial': 106, 'restore_ok_old': 245, 'kills_edge': 400, 'start_failed': 1} elapsed 3479s
+10-05 23:51:18 cycle 1150 stats {'kills_rand': 619, 'restore_ok_new': 895, 'kills_strace': 116, 'strace_tmp_seen': 114, 'strace_tmp_partial': 114, 'restore_ok_old': 255, 'kills_edge': 415, 'start_failed': 1} elapsed 3638s
+10-05 23:53:44 cycle 1200 stats {'kills_rand': 643, 'restore_ok_new': 934, 'kills_strace': 123, 'strace_tmp_seen': 121, 'strace_tmp_partial': 121, 'restore_ok_old': 266, 'kills_edge': 434, 'start_failed': 1} elapsed 3785s
+10-05 23:56:14 cycle 1250 stats {'kills_rand': 670, 'restore_ok_new': 972, 'kills_strace': 129, 'strace_tmp_seen': 127, 'strace_tmp_partial': 127, 'restore_ok_old': 278, 'kills_edge': 451, 'start_failed': 1} elapsed 3934s
+10-05 23:58:39 cycle 1300 stats {'kills_rand': 692, 'restore_ok_new': 1012, 'kills_strace': 132, 'strace_tmp_seen': 130, 'strace_tmp_partial': 130, 'restore_ok_old': 288, 'kills_edge': 476, 'start_failed': 1} elapsed 4080s
+10-06 00:01:11 cycle 1350 stats {'kills_rand': 720, 'restore_ok_new': 1053, 'kills_strace': 137, 'strace_tmp_seen': 134, 'strace_tmp_partial': 134, 'restore_ok_old': 297, 'kills_edge': 493, 'start_failed': 1} elapsed 4231s
+10-06 00:03:48 cycle 1400 stats {'kills_rand': 751, 'restore_ok_new': 1093, 'kills_strace': 138, 'strace_tmp_seen': 135, 'strace_tmp_partial': 135, 'restore_ok_old': 307, 'kills_edge': 511, 'start_failed': 1} elapsed 4388s
+10-06 00:06:16 cycle 1450 stats {'kills_rand': 774, 'restore_ok_new': 1136, 'kills_strace': 144, 'strace_tmp_seen': 141, 'strace_tmp_partial': 141, 'restore_ok_old': 314, 'kills_edge': 532, 'start_failed': 1} elapsed 4536s
+10-06 00:09:07 DONE 1500 cycles in 4708s: {'kills_rand': 805, 'restore_ok_new': 1173, 'kills_strace': 150, 'strace_tmp_seen': 147, 'strace_tmp_partial': 147, 'restore_ok_old': 326, 'kills_edge': 544, 'start_failed': 1}

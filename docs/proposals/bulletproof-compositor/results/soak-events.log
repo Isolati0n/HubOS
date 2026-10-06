@@ -1,0 +1,316 @@
+10-05 21:45:00 t=0 driftwm started pid=3329 sock=wayland-1 startup=0.20s
+10-05 21:45:00 t=0 soak2 start duration=43200.0s seed=20261005 binary=/tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/bc4/bin/driftwm-p22
+10-05 21:47:03 t=124 config test multibyte: compositor_ok=True
+10-05 21:48:08 t=189 config test garbage: compositor_ok=True
+10-05 21:50:53 t=353 config test unknownkeys: compositor_ok=True
+10-05 21:51:25 t=386 config test badtoml: compositor_ok=True
+10-05 21:52:54 t=474 kill -9 compositor (quiescent)
+10-05 21:52:55 t=475 driftwm started pid=12257 sock=wayland-1 startup=0.20s
+10-05 21:52:59 t=480 RESTORE (quiescent): quiescent exact=True order_ok=True expected=18 got=18; relaunched live same-geometry=18 different/missing=0 in 4.1s; ipc back after 0.20s; session.json before restart: True
+10-05 21:54:39 t=580 config test badtoml: compositor_ok=True
+10-05 21:56:18 t=679 config test valid: compositor_ok=True
+10-05 21:57:09 t=730 config test garbage: compositor_ok=True
+10-05 21:59:28 t=868 kill -9 compositor (random moment)
+10-05 21:59:29 t=869 driftwm started pid=5205 sock=wayland-1 startup=0.20s
+10-05 21:59:32 t=873 RESTORE (random): random-moment kill: restored=18 not-matching-any-recent-snapshot=0; relaunched live same-geometry=18 different/missing=0 in 3.4s; ipc back after 0.20s; session.json before restart: True
+10-05 21:59:35 t=876 config test badcolor: compositor_ok=True
+10-05 21:59:43 t=883 config test empty: compositor_ok=True
+10-05 22:00:08 t=909 config test bigfile: compositor_ok=True
+10-05 22:02:23 t=1043 config test unknownkeys: compositor_ok=True
+10-05 22:05:26 t=1226 config test garbage: compositor_ok=True
+10-05 22:07:28 t=1349 config test garbage: compositor_ok=True
+10-05 22:09:12 t=1453 config test garbage: compositor_ok=True
+10-05 22:09:44 t=1485 config test partial: compositor_ok=True
+10-05 22:10:55 t=1556 config test multibyte: compositor_ok=True
+10-05 22:12:06 t=1627 config test badtoml: compositor_ok=True
+10-05 22:12:13 t=1634 config test badcolor: compositor_ok=True
+10-05 22:13:26 t=1706 kill -9 compositor (random moment)
+10-05 22:13:27 t=1708 driftwm started pid=5885 sock=wayland-1 startup=0.30s
+10-05 22:13:32 t=1712 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=0; relaunched live same-geometry=19 different/missing=0 in 4.9s; ipc back after 0.33s; session.json before restart: True
+10-05 22:14:26 t=1766 config test unknownkeys: compositor_ok=True
+10-05 22:15:17 t=1818 kill -9 compositor (quiescent)
+10-05 22:15:18 t=1819 driftwm started pid=8611 sock=wayland-1 startup=0.20s
+10-05 22:15:23 t=1823 RESTORE (quiescent): quiescent exact=True order_ok=True expected=19 got=19; relaunched live same-geometry=19 different/missing=0 in 4.1s; ipc back after 0.33s; session.json before restart: True
+10-05 22:15:42 t=1843 config test bigfile: compositor_ok=True
+10-05 22:19:14 t=2054 config test badcolor: compositor_ok=True
+10-05 22:19:45 t=2086 kill -9 compositor (before session corruption)
+10-05 22:19:47 t=2087 driftwm started pid=17221 sock=wayland-1 startup=0.20s
+10-05 22:19:47 t=2087 SESSION-CORRUPT tmpleft: compositor alive=True ipc_ok=True quarantined_files=0
+10-05 22:20:14 t=2115 config test badcolor: compositor_ok=True
+10-05 22:22:13 t=2234 config test unknownkeys: compositor_ok=True
+10-05 22:24:39 t=2380 config test multibyte: compositor_ok=True
+10-05 22:28:16 t=2597 config test deleted: compositor_ok=True
+10-05 22:29:04 t=2645 kill -9 compositor (random moment)
+10-05 22:29:06 t=2646 driftwm started pid=28722 sock=wayland-1 startup=0.21s
+10-05 22:29:06 t=2646 RANDOM-KILL MISMATCH ["hubos-s08"]
+10-05 22:29:10 t=2650 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=1; relaunched live same-geometry=19 different/missing=0 in 4.1s; ipc back after 0.21s; session.json before restart: True
+10-05 22:29:22 t=2662 config test partial: compositor_ok=True
+10-05 22:30:31 t=2732 config test bigfile: compositor_ok=True
+10-05 22:30:49 t=2750 config test valid: compositor_ok=True
+10-05 22:31:45 t=2805 kill -9 compositor (quiescent)
+10-05 22:31:46 t=2807 driftwm started pid=19175 sock=wayland-1 startup=0.40s
+10-05 22:31:50 t=2811 RESTORE (quiescent): quiescent exact=True order_ok=True expected=18 got=18; relaunched live same-geometry=18 different/missing=0 in 4.1s; ipc back after 0.41s; session.json before restart: True
+10-05 22:34:18 t=2958 config test partial: compositor_ok=True
+10-05 22:34:21 t=2961 config test empty: compositor_ok=True
+10-05 22:34:37 t=2978 config test bigfile: compositor_ok=True
+10-05 22:34:56 t=2997 config test bigfile: compositor_ok=True
+10-05 22:37:44 t=3165 config test garbage: compositor_ok=True
+10-05 22:40:09 t=3310 config test badtoml: compositor_ok=True
+10-05 22:41:17 t=3377 config test badtoml: compositor_ok=True
+10-05 22:43:47 t=3527 kill -9 compositor (quiescent)
+10-05 22:43:48 t=3529 driftwm started pid=21537 sock=wayland-1 startup=0.30s
+10-05 22:43:52 t=3533 RESTORE (quiescent): quiescent exact=True order_ok=True expected=19 got=19; relaunched live same-geometry=19 different/missing=0 in 4.3s; ipc back after 0.31s; session.json before restart: True
+10-05 22:45:15 t=3615 config test unknownkeys: compositor_ok=True
+10-05 22:45:19 t=3620 kill -9 compositor (random moment)
+10-05 22:45:21 t=3621 driftwm started pid=24229 sock=wayland-1 startup=0.23s
+10-05 22:45:26 t=3626 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=0; relaunched live same-geometry=19 different/missing=0 in 5.1s; ipc back after 0.47s; session.json before restart: True
+10-05 22:46:56 t=3717 config test bigfile: compositor_ok=True
+10-05 22:48:01 t=3782 config test empty: compositor_ok=True
+10-05 22:51:43 t=4003 config test deleted: compositor_ok=True
+10-05 22:54:10 t=4151 config test empty: compositor_ok=True
+10-05 22:54:23 t=4163 kill -9 compositor (random moment)
+10-05 22:54:24 t=4164 driftwm started pid=13315 sock=wayland-1 startup=0.20s
+10-05 22:54:28 t=4169 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=0; relaunched live same-geometry=19 different/missing=0 in 4.3s; ipc back after 0.31s; session.json before restart: True
+10-05 22:54:49 t=4190 config test unknownkeys: compositor_ok=True
+10-05 22:55:42 t=4242 config test unknownkeys: compositor_ok=True
+10-05 22:56:25 t=4286 config test garbage: compositor_ok=True
+10-05 22:58:13 t=4393 config test valid: compositor_ok=True
+10-05 23:02:11 t=4632 config test deleted: compositor_ok=True
+10-05 23:03:20 t=4700 kill -9 compositor (quiescent)
+10-05 23:03:21 t=4701 driftwm started pid=29755 sock=wayland-1 startup=0.20s
+10-05 23:03:25 t=4705 RESTORE (quiescent): quiescent exact=True order_ok=True expected=18 got=18; relaunched live same-geometry=18 different/missing=0 in 4.0s; ipc back after 0.21s; session.json before restart: True
+10-05 23:03:50 t=4731 config test multibyte: compositor_ok=True
+10-05 23:03:57 t=4738 config test deleted: compositor_ok=True
+10-05 23:05:22 t=4822 config test badcolor: compositor_ok=True
+10-05 23:06:21 t=4881 config test garbage: compositor_ok=True
+10-05 23:07:18 t=4939 config test bigfile: compositor_ok=True
+10-05 23:08:34 t=5015 op error: TimeoutError timed out
+10-05 23:08:44 t=5024 config test badtoml: compositor_ok=True
+10-05 23:08:47 t=5027 config test badtoml: compositor_ok=True
+10-05 23:08:51 t=5031 config test valid: compositor_ok=True
+10-05 23:10:59 t=5160 kill -9 compositor (random moment)
+10-05 23:11:00 t=5161 driftwm started pid=22206 sock=wayland-1 startup=0.41s
+10-05 23:11:05 t=5166 RESTORE (random): random-moment kill: restored=17 not-matching-any-recent-snapshot=0; relaunched live same-geometry=17 different/missing=0 in 4.5s; ipc back after 0.57s; session.json before restart: True
+10-05 23:11:11 t=5172 config test multibyte: compositor_ok=True
+10-05 23:11:58 t=5219 config test deleted: compositor_ok=True
+10-05 23:12:19 t=5239 kill -9 compositor (before session corruption)
+10-05 23:12:20 t=5241 driftwm started pid=31053 sock=wayland-1 startup=0.32s
+10-05 23:12:20 t=5241 SESSION-CORRUPT huge: compositor alive=True ipc_ok=True quarantined_files=1
+10-05 23:13:26 t=5306 config test empty: compositor_ok=True
+10-05 23:14:39 t=5380 config test partial: compositor_ok=True
+10-05 23:16:13 t=5473 config test badcolor: compositor_ok=True
+10-05 23:19:10 t=5650 config test badcolor: compositor_ok=True
+10-05 23:20:18 t=5718 kill -9 compositor (quiescent)
+10-05 23:20:19 t=5720 driftwm started pid=13673 sock=wayland-1 startup=0.50s
+10-05 23:20:23 t=5724 RESTORE (quiescent): quiescent exact=True order_ok=True expected=18 got=18; relaunched live same-geometry=18 different/missing=0 in 4.2s; ipc back after 0.61s; session.json before restart: True
+10-05 23:20:43 t=5744 config test garbage: compositor_ok=True
+10-05 23:22:32 t=5853 config test empty: compositor_ok=True
+10-05 23:23:01 t=5882 config test garbage: compositor_ok=True
+10-05 23:26:03 t=6063 config test unknownkeys: compositor_ok=True
+10-05 23:26:33 t=6094 config test badtoml: compositor_ok=True
+10-05 23:28:06 t=6187 kill -9 compositor (random moment)
+10-05 23:28:07 t=6188 driftwm started pid=29741 sock=wayland-1 startup=0.20s
+10-05 23:28:07 t=6188 RANDOM-KILL MISMATCH ["hubos-s17"]
+10-05 23:28:11 t=6192 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=1; relaunched live same-geometry=19 different/missing=0 in 4.1s; ipc back after 0.24s; session.json before restart: True
+10-05 23:28:40 t=6220 config test badcolor: compositor_ok=True
+10-05 23:29:55 t=6295 config test multibyte: compositor_ok=True
+10-05 23:30:19 t=6319 config test badtoml: compositor_ok=True
+10-05 23:31:34 t=6395 config test multibyte: compositor_ok=True
+10-05 23:32:02 t=6422 config test partial: compositor_ok=True
+10-05 23:33:02 t=6482 config test unknownkeys: compositor_ok=True
+10-05 23:33:09 t=6489 config test garbage: compositor_ok=True
+10-05 23:34:54 t=6595 config test badcolor: compositor_ok=True
+10-05 23:35:01 t=6602 config test deleted: compositor_ok=True
+10-05 23:35:15 t=6615 kill -9 compositor (random moment)
+10-05 23:35:16 t=6616 driftwm started pid=12675 sock=wayland-1 startup=0.20s
+10-05 23:35:16 t=6616 RANDOM-KILL MISMATCH ["hubos-s04"]
+10-05 23:35:20 t=6620 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=1; relaunched live same-geometry=19 different/missing=0 in 3.8s; ipc back after 0.29s; session.json before restart: True
+10-05 23:36:36 t=6697 config test empty: compositor_ok=True
+10-05 23:38:00 t=6781 config test valid: compositor_ok=True
+10-05 23:39:16 t=6856 config test multibyte: compositor_ok=True
+10-05 23:40:03 t=6904 kill -9 compositor (quiescent)
+10-05 23:40:05 t=6905 driftwm started pid=21084 sock=wayland-1 startup=0.20s
+10-05 23:40:08 t=6909 RESTORE (quiescent): quiescent exact=True order_ok=True expected=20 got=20; relaunched live same-geometry=20 different/missing=0 in 3.6s; ipc back after 0.20s; session.json before restart: True
+10-05 23:41:02 t=6962 config test badtoml: compositor_ok=True
+10-05 23:42:44 t=7065 config test bigfile: compositor_ok=True
+10-05 23:42:49 t=7069 config test bigfile: compositor_ok=True
+10-05 23:45:02 t=7203 config test badcolor: compositor_ok=True
+10-05 23:45:41 t=7241 config test garbage: compositor_ok=True
+10-05 23:49:14 t=7455 config test partial: compositor_ok=True
+10-05 23:50:45 t=7546 config test unknownkeys: compositor_ok=True
+10-05 23:52:07 t=7627 config test deleted: compositor_ok=True
+10-05 23:52:54 t=7675 kill -9 compositor (random moment)
+10-05 23:52:56 t=7676 driftwm started pid=25926 sock=wayland-1 startup=0.28s
+10-05 23:52:56 t=7676 RANDOM-KILL MISMATCH ["hubos-s04"]
+10-05 23:53:01 t=7681 RESTORE (random): random-moment kill: restored=20 not-matching-any-recent-snapshot=1; relaunched live same-geometry=20 different/missing=0 in 4.8s; ipc back after 0.39s; session.json before restart: True
+10-05 23:54:18 t=7759 config test garbage: compositor_ok=True
+10-05 23:54:35 t=7776 config test garbage: compositor_ok=True
+10-05 23:56:01 t=7862 config test valid: compositor_ok=True
+10-05 23:56:19 t=7880 config test garbage: compositor_ok=True
+10-05 23:57:28 t=7948 config test multibyte: compositor_ok=True
+10-05 23:59:22 t=8062 config test empty: compositor_ok=True
+10-06 00:00:16 t=8117 config test garbage: compositor_ok=True
+10-06 00:00:43 t=8144 config test badcolor: compositor_ok=True
+10-06 00:01:11 t=8171 config test garbage: compositor_ok=True
+10-06 00:03:04 t=8285 kill -9 compositor (quiescent)
+10-06 00:03:05 t=8286 driftwm started pid=14238 sock=wayland-1 startup=0.20s
+10-06 00:03:09 t=8290 RESTORE (quiescent): quiescent exact=True order_ok=True expected=20 got=20; relaunched live same-geometry=20 different/missing=0 in 3.7s; ipc back after 0.20s; session.json before restart: True
+10-06 00:03:46 t=8326 config test multibyte: compositor_ok=True
+10-06 00:03:58 t=8339 config test partial: compositor_ok=True
+10-06 00:04:26 t=8367 config test partial: compositor_ok=True
+10-06 00:05:45 t=8446 config test multibyte: compositor_ok=True
+10-06 00:05:50 t=8450 kill -9 compositor (random moment)
+10-06 00:05:51 t=8451 driftwm started pid=18229 sock=wayland-1 startup=0.20s
+10-06 00:05:55 t=8456 RESTORE (random): random-moment kill: restored=20 not-matching-any-recent-snapshot=0; relaunched live same-geometry=20 different/missing=0 in 4.2s; ipc back after 0.20s; session.json before restart: True
+10-06 00:06:51 t=8512 config test deleted: compositor_ok=True
+10-06 00:08:37 t=8618 config test bigfile: compositor_ok=True
+10-06 00:09:42 t=8683 config test empty: compositor_ok=True
+10-06 00:10:04 t=8704 kill -9 compositor (before session corruption)
+10-06 00:10:05 t=8706 driftwm started pid=29240 sock=wayland-1 startup=0.20s
+10-06 00:10:05 t=8706 SESSION-CORRUPT huge: compositor alive=True ipc_ok=True quarantined_files=1
+10-06 00:11:07 t=8767 config test multibyte: compositor_ok=True
+10-06 00:11:46 t=8806 config test badcolor: compositor_ok=True
+10-06 00:13:07 t=8888 config test badcolor: compositor_ok=True
+10-06 00:13:12 t=8892 config test multibyte: compositor_ok=True
+10-06 00:13:16 t=8896 config test badtoml: compositor_ok=True
+10-06 00:13:51 t=8931 kill -9 compositor (quiescent)
+10-06 00:13:52 t=8933 driftwm started pid=651 sock=wayland-1 startup=0.20s
+10-06 00:13:56 t=8937 RESTORE (quiescent): quiescent exact=True order_ok=True expected=20 got=20; relaunched live same-geometry=20 different/missing=0 in 4.0s; ipc back after 0.24s; session.json before restart: True
+10-06 00:15:39 t=9040 config test badtoml: compositor_ok=True
+10-06 00:15:52 t=9053 config test empty: compositor_ok=True
+10-06 00:17:10 t=9131 config test empty: compositor_ok=True
+10-06 00:19:30 t=9270 config test multibyte: compositor_ok=True
+10-06 00:19:33 t=9274 kill -9 compositor (random moment)
+10-06 00:19:35 t=9275 driftwm started pid=8254 sock=wayland-1 startup=0.20s
+10-06 00:19:38 t=9279 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=0; relaunched live same-geometry=19 different/missing=0 in 3.7s; ipc back after 0.20s; session.json before restart: True
+10-06 00:19:54 t=9295 config test empty: compositor_ok=True
+10-06 00:21:36 t=9396 config test bigfile: compositor_ok=True
+10-06 00:23:31 t=9511 config test badtoml: compositor_ok=True
+10-06 00:23:37 t=9517 config test badtoml: compositor_ok=True
+10-06 00:23:43 t=9523 config test bigfile: compositor_ok=True
+10-06 00:25:31 t=9632 config test bigfile: compositor_ok=True
+10-06 00:26:40 t=9701 config test valid: compositor_ok=True
+10-06 00:27:45 t=9766 config test unknownkeys: compositor_ok=True
+10-06 00:28:15 t=9795 config test empty: compositor_ok=True
+10-06 00:28:40 t=9821 config test valid: compositor_ok=True
+10-06 00:32:06 t=10027 config test deleted: compositor_ok=True
+10-06 00:32:38 t=10058 config test unknownkeys: compositor_ok=True
+10-06 00:32:39 t=10059 kill -9 compositor (random moment)
+10-06 00:32:40 t=10061 driftwm started pid=28774 sock=wayland-1 startup=0.31s
+10-06 00:32:40 t=10061 RANDOM-KILL MISMATCH ["hubos-s12"]
+10-06 00:32:44 t=10064 RESTORE (random): random-moment kill: restored=18 not-matching-any-recent-snapshot=1; relaunched live same-geometry=18 different/missing=0 in 3.6s; ipc back after 0.34s; session.json before restart: True
+10-06 00:34:06 t=10147 kill -9 compositor (quiescent)
+10-06 00:34:07 t=10148 driftwm started pid=1480 sock=wayland-1 startup=0.30s
+10-06 00:34:12 t=10152 RESTORE (quiescent): quiescent exact=True order_ok=True expected=19 got=19; relaunched live same-geometry=19 different/missing=0 in 4.3s; ipc back after 0.30s; session.json before restart: True
+10-06 00:34:55 t=10196 config test garbage: compositor_ok=True
+10-06 00:36:17 t=10278 config test valid: compositor_ok=True
+10-06 00:38:05 t=10386 config test partial: compositor_ok=True
+10-06 00:38:09 t=10389 config test badcolor: compositor_ok=True
+10-06 00:40:22 t=10523 config test empty: compositor_ok=True
+10-06 00:43:37 t=10717 config test badcolor: compositor_ok=True
+10-06 00:45:11 t=10812 config test partial: compositor_ok=True
+10-06 00:46:27 t=10888 config test deleted: compositor_ok=True
+10-06 00:47:07 t=10928 kill -9 compositor (random moment)
+10-06 00:47:08 t=10929 driftwm started pid=5024 sock=wayland-1 startup=0.30s
+10-06 00:47:08 t=10929 RANDOM-KILL MISMATCH ["hubos-s19"]
+10-06 00:47:13 t=10933 RESTORE (random): random-moment kill: restored=20 not-matching-any-recent-snapshot=1; relaunched live same-geometry=20 different/missing=0 in 4.1s; ipc back after 0.39s; session.json before restart: True
+10-06 00:47:20 t=10941 kill -9 compositor (before session corruption)
+10-06 00:47:22 t=10942 driftwm started pid=6040 sock=wayland-1 startup=0.20s
+10-06 00:47:22 t=10942 SESSION-CORRUPT empty: compositor alive=True ipc_ok=True quarantined_files=1
+10-06 00:47:32 t=10953 config test garbage: compositor_ok=True
+10-06 00:50:38 t=11139 config test badcolor: compositor_ok=True
+10-06 00:51:49 t=11209 config test bigfile: compositor_ok=True
+10-06 00:52:17 t=11238 config test empty: compositor_ok=True
+10-06 00:52:20 t=11241 config test partial: compositor_ok=True
+10-06 00:55:12 t=11413 config test unknownkeys: compositor_ok=True
+10-06 00:56:03 t=11464 kill -9 compositor (random moment)
+10-06 00:56:04 t=11465 driftwm started pid=2047 sock=wayland-1 startup=0.20s
+10-06 00:56:04 t=11465 RANDOM-KILL MISMATCH ["hubos-s07"]
+10-06 00:56:08 t=11469 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=1; relaunched live same-geometry=19 different/missing=0 in 3.9s; ipc back after 0.23s; session.json before restart: True
+10-06 00:56:42 t=11503 config test garbage: compositor_ok=True
+10-06 01:00:32 t=11733 config test badcolor: compositor_ok=True
+10-06 01:00:58 t=11759 config test empty: compositor_ok=True
+10-06 01:02:07 t=11828 config test unknownkeys: compositor_ok=True
+10-06 01:02:49 t=11869 config test partial: compositor_ok=True
+10-06 01:04:02 t=11943 config test multibyte: compositor_ok=True
+10-06 01:04:06 t=11946 config test multibyte: compositor_ok=True
+10-06 01:06:14 t=12075 config test partial: compositor_ok=True
+10-06 01:07:07 t=12127 config test valid: compositor_ok=True
+10-06 01:07:23 t=12143 config test empty: compositor_ok=True
+10-06 01:07:35 t=12156 kill -9 compositor (quiescent)
+10-06 01:07:36 t=12157 driftwm started pid=5328 sock=wayland-1 startup=0.31s
+10-06 01:07:40 t=12160 RESTORE (quiescent): quiescent exact=True order_ok=True expected=19 got=19; relaunched live same-geometry=19 different/missing=0 in 3.6s; ipc back after 0.31s; session.json before restart: True
+10-06 01:07:48 t=12168 kill -9 compositor (random moment)
+10-06 01:07:49 t=12169 driftwm started pid=7309 sock=wayland-1 startup=0.10s
+10-06 01:07:52 t=12173 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=0; relaunched live same-geometry=19 different/missing=0 in 3.7s; ipc back after 0.17s; session.json before restart: True
+10-06 01:09:25 t=12265 config test partial: compositor_ok=True
+10-06 01:11:51 t=12412 config test multibyte: compositor_ok=True
+10-06 01:14:09 t=12550 config test valid: compositor_ok=True
+10-06 01:16:35 t=12696 config test empty: compositor_ok=True
+10-06 01:18:03 t=12784 config test bigfile: compositor_ok=True
+10-06 01:19:03 t=12843 config test multibyte: compositor_ok=True
+10-06 01:21:45 t=13005 config test badtoml: compositor_ok=True
+10-06 01:24:49 t=13189 config test valid: compositor_ok=True
+10-06 01:24:54 t=13194 config test partial: compositor_ok=True
+10-06 01:26:29 t=13290 config test badcolor: compositor_ok=True
+10-06 01:27:31 t=13351 kill -9 compositor (random moment)
+10-06 01:27:32 t=13352 driftwm started pid=6785 sock=wayland-1 startup=0.10s
+10-06 01:27:35 t=13356 RESTORE (random): random-moment kill: restored=17 not-matching-any-recent-snapshot=0; relaunched live same-geometry=17 different/missing=0 in 3.6s; ipc back after 0.16s; session.json before restart: True
+10-06 01:28:08 t=13388 config test deleted: compositor_ok=True
+10-06 01:28:24 t=13405 kill -9 compositor (quiescent)
+10-06 01:28:25 t=13406 driftwm started pid=7367 sock=wayland-1 startup=0.20s
+10-06 01:28:29 t=13409 RESTORE (quiescent): quiescent exact=True order_ok=True expected=19 got=19; relaunched live same-geometry=19 different/missing=0 in 3.5s; ipc back after 0.20s; session.json before restart: True
+10-06 01:28:33 t=13413 config test deleted: compositor_ok=True
+10-06 01:30:24 t=13525 config test badcolor: compositor_ok=True
+10-06 01:32:27 t=13648 config test empty: compositor_ok=True
+10-06 01:33:47 t=13728 config test badcolor: compositor_ok=True
+10-06 01:34:39 t=13780 config test multibyte: compositor_ok=True
+10-06 01:36:22 t=13883 config test badtoml: compositor_ok=True
+10-06 01:39:28 t=14069 config test empty: compositor_ok=True
+10-06 01:39:44 t=14084 config test garbage: compositor_ok=True
+10-06 01:40:17 t=14118 config test multibyte: compositor_ok=True
+10-06 01:41:51 t=14211 config test badcolor: compositor_ok=True
+10-06 01:42:41 t=14262 kill -9 compositor (random moment)
+10-06 01:42:42 t=14263 driftwm started pid=23650 sock=wayland-1 startup=0.20s
+10-06 01:42:46 t=14266 RESTORE (random): random-moment kill: restored=18 not-matching-any-recent-snapshot=0; relaunched live same-geometry=18 different/missing=0 in 3.4s; ipc back after 0.20s; session.json before restart: True
+10-06 01:44:11 t=14352 config test multibyte: compositor_ok=True
+10-06 01:44:22 t=14363 config test multibyte: compositor_ok=True
+10-06 01:44:51 t=14391 config test empty: compositor_ok=True
+10-06 01:45:24 t=14425 kill -9 compositor (before session corruption)
+10-06 01:45:25 t=14426 driftwm started pid=25437 sock=wayland-1 startup=0.20s
+10-06 01:45:25 t=14426 SESSION-CORRUPT dir: compositor alive=True ipc_ok=True quarantined_files=1
+10-06 01:45:25 t=14426 op error: IsADirectoryError [Errno 21] Is a directory: '/tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scra
+10-06 01:47:34 t=14555 config test valid: compositor_ok=True
+10-06 01:49:33 t=14674 config test badtoml: compositor_ok=True
+10-06 01:50:15 t=14715 kill -9 compositor (quiescent)
+10-06 01:50:16 t=14717 driftwm started pid=31041 sock=wayland-1 startup=0.20s
+10-06 01:50:20 t=14720 RESTORE (quiescent): quiescent exact=True order_ok=True expected=20 got=20; relaunched live same-geometry=20 different/missing=0 in 3.5s; ipc back after 0.20s; session.json before restart: True
+10-06 01:51:41 t=14802 config test multibyte: compositor_ok=True
+10-06 01:51:54 t=14815 config test empty: compositor_ok=True
+10-06 01:52:31 t=14852 config test deleted: compositor_ok=True
+10-06 01:54:54 t=14994 config test badtoml: compositor_ok=True
+10-06 01:55:27 t=15028 config test badcolor: compositor_ok=True
+10-06 01:56:35 t=15095 config test badtoml: compositor_ok=True
+10-06 01:57:24 t=15145 kill -9 compositor (random moment)
+10-06 01:57:25 t=15146 driftwm started pid=5889 sock=wayland-1 startup=0.20s
+10-06 01:57:29 t=15149 RESTORE (random): random-moment kill: restored=19 not-matching-any-recent-snapshot=0; relaunched live same-geometry=19 different/missing=0 in 3.6s; ipc back after 0.20s; session.json before restart: True
+10-06 01:57:46 t=15167 config test empty: compositor_ok=True
+10-06 01:59:17 t=15257 config test badcolor: compositor_ok=True
+10-06 02:02:24 t=15445 config test partial: compositor_ok=True
+10-06 02:06:22 t=15683 config test garbage: compositor_ok=True
+10-06 02:09:10 t=15851 config test valid: compositor_ok=True
+10-06 02:12:19 t=16040 kill -9 compositor (quiescent)
+10-06 02:12:20 t=16041 driftwm started pid=19053 sock=wayland-1 startup=0.21s
+10-06 02:12:24 t=16044 RESTORE (quiescent): quiescent exact=True order_ok=True expected=19 got=19; relaunched live same-geometry=19 different/missing=0 in 3.6s; ipc back after 0.22s; session.json before restart: True
+10-06 02:12:31 t=16051 config test badcolor: compositor_ok=True
+10-06 02:15:25 t=16225 config test deleted: compositor_ok=True
+10-06 02:15:39 t=16240 kill -9 compositor (random moment)
+10-06 02:15:40 t=16241 driftwm started pid=27293 sock=wayland-1 startup=0.21s
+10-06 02:15:44 t=16245 RESTORE (random): random-moment kill: restored=20 not-matching-any-recent-snapshot=0; relaunched live same-geometry=20 different/missing=0 in 4.1s; ipc back after 0.24s; session.json before restart: True
+10-06 02:16:11 t=16272 config test multibyte: compositor_ok=True
+10-06 02:18:15 t=16395 config test badtoml: compositor_ok=True
+10-06 02:21:13 t=16573 config test empty: compositor_ok=True
+10-06 02:21:28 t=16589 config test unknownkeys: compositor_ok=True
+10-06 02:22:02 t=16623 config test unknownkeys: compositor_ok=True
+10-06 02:25:50 t=16851 config test empty: compositor_ok=True
+10-06 02:26:19 SOAK CHUNK 0 STOPPED BY HAND (lead asked for 2-hour chunks); not an exit of the compositor

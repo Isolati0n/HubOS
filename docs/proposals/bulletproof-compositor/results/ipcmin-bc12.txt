@@ -1,0 +1,17 @@
+reproduced with 200 requests
+   100 requests left
+   100 requests left
+   75 requests left
+   50 requests left
+   25 requests left
+   13 requests left
+   13 requests left
+   10 requests left
+   7 requests left
+   4 requests left
+   2 requests left
+   1 requests left
+MINIMAL:
+   {"Resize": {"window": 2, "to": [65535, 65535]}}
+
+[exited with code 0]

@@ -1,0 +1,37 @@
+Resource tests (driftwm-p17..p23 release builds, nested, software GL). Output copied from the terminal, trimmed.
+
+## repro_bigbuf.py SOCK PID 4 4096 4096   (4 windows, 64 MB buffers each)
+before: compositor VmRSS=131 MB VmHWM=131 MB
+after 4 windows of 4096x4096 (64 MB each) in 3.0s: compositor VmRSS=649 MB VmHWM=649 MB
+compositor still answering: True
+
+## RLIM_V=5000000 repro_bigbuf.py SOCK PID 1 16384 16384   (one 1 GiB buffer, address-space limit 5 GB)
+before: compositor VmRSS=131 MB VmHWM=131 MB
+after 1 windows of 16384x16384 (1024 MB each) in 3.0s: compositor VmRSS=2179 MB VmHWM=2179 MB
+compositor still answering: True
+
+## RLIM_V=5000000 repro_bigbuf.py SOCK PID 4 16384 16384   (four 1 GiB buffers)
+log: GL_OUT_OF_MEMORY in glTexImage(internalformat=GL_BGRA) / glTexImage2D(GL_RGBA8) ...  (handled: client dropped, compositor kept running)
+compositor alive afterwards
+
+## leakloop.py SOCK PID 4000   (4,000 connections, each: toplevel + 64x64 buffer + subsurface + popup, then disconnect), driftwm-p23
+start: VmRSS=131 MB fds=21 threads=10
+   400 connections (    8s): VmRSS=  134.2 MB  VmHWM=  134.2 MB  fds=21 threads=11
+   800 connections (   15s): VmRSS=  134.4 MB  VmHWM=  134.4 MB  fds=21 threads=11
+  1200 connections (   22s): VmRSS=  134.4 MB  VmHWM=  134.8 MB  fds=21 threads=11
+  1600 connections (   29s): VmRSS=  134.4 MB  VmHWM=  134.8 MB  fds=21 threads=11
+  2000 connections (   37s): VmRSS=  134.5 MB  VmHWM=  134.8 MB  fds=21 threads=11
+  2400 connections (   45s): VmRSS=  134.5 MB  VmHWM=  135.3 MB  fds=21 threads=11
+  2800 connections (   52s): VmRSS=  134.6 MB  VmHWM=  135.3 MB  fds=21 threads=11
+  3200 connections (   59s): VmRSS=  134.6 MB  VmHWM=  135.3 MB  fds=21 threads=11
+RESULT: compositor ALIVE and answering
+
+## sessbig.sh driftwm-pristine   (session.json with ONE entry of size N x N, address-space limit 8 GB; compositor alive after 7 s?)
+4000 x 4000: alive (261,708 kB)
+20000 x 20000: alive (1,699,640 kB)
+32768 x 32768: alive (134,792 kB)
+40000 x 40000: alive (134,612 kB)
+2000000000 x 2000000000: alive (134,924 kB)
+
+## session.json with 30,000 entries (4 MB) on the pristine-based p18 build (first soak test, nested):
+kernel: "Memory cgroup out of memory: Killed process 31741 (driftwm-p18) total-vm:10347600kB, anon-rss:9344112kB"
