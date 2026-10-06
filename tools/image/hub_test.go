@@ -202,7 +202,7 @@ func TestHubImage(t *testing.T) {
 	// hubd is built from the source tree every run (build-root-image.sh keeps a built copy in the work folder between runs)
 	os.Remove(filepath.Join(work, "out", "hubd"))
 	// files for the layout and restore tests (H3d to H3f), served to the guest over HTTP
-	for name, content := range map[string]string{"h6lib.sh": h6lib(), "h6kill.sh": h6kill, "inventory-20.toml": h20Inventory(), "viewers-20.toml": h20Viewers} {
+	for name, content := range map[string]string{"h1b.sh": h1bScript(), "h6lib.sh": h6lib(), "h6kill.sh": h6kill, "inventory-20.toml": h20Inventory(), "viewers-20.toml": h20Viewers} {
 		if err := os.WriteFile(filepath.Join(bdir, name), []byte(content), 0o644); err != nil {
 			t.Fatal(err)
 		}
@@ -294,6 +294,60 @@ func TestHubImage(t *testing.T) {
 		t.Logf("state:\n%s\nprocesses:\n%s\nhubd list:\n%s", st, who, hubSt)
 		if !ok {
 			t.Errorf("up=%v status=%q bg=%d alert=%d userOK=%v", up, statusLine, bg, alert, userOK)
+			t.Fail()
+		}
+	})
+
+	t.Run("H1b_hidden_protocols_and_the_settings_file", func(t *testing.T) {
+		r.t = t
+		start := time.Now()
+		// 1. what the compositor advertises, and what the hub's own clients (foot, Waybar, wofi) bind (patch D8, owner decision 7)
+		r.sh(`wget -q -O /tmp/h1b.sh ` + r.base + `/h1b.sh && echo h1b-ok`)
+		_, out := r.vm.sh(asHub("sh /tmp/h1b.sh 2>&1"), 120*time.Second)
+		t.Logf("clients and globals:\n%s", out)
+		field := func(name string) []string {
+			m := regexp.MustCompile(`(?m)^` + name + `: (.*)$`).FindStringSubmatch(out)
+			if m == nil {
+				return nil
+			}
+			return strings.Fields(m[1])
+		}
+		advertised, foot, waybar, wofi := field("INFO"), field("FOOT"), field("WAYBAR"), field("WOFI")
+		has := func(list []string, w string) bool {
+			for _, x := range list {
+				if x == w {
+					return true
+				}
+			}
+			return false
+		}
+		var leaked, boundHidden []string
+		for _, h := range hiddenProtocols {
+			if has(advertised, h) {
+				leaked = append(leaked, h)
+			}
+			for _, c := range [][]string{foot, waybar, wofi} {
+				if has(c, h) {
+					boundHidden = append(boundHidden, h)
+				}
+			}
+		}
+		core := true
+		for _, need := range []string{"wl_compositor", "wl_shm", "wl_seat", "xdg_wm_base", "zwlr_layer_shell_v1", "zxdg_decoration_manager_v1", "wp_viewporter"} {
+			if !has(advertised, need) {
+				core = false
+				t.Errorf("the compositor does not advertise %s", need)
+			}
+		}
+		// 2. the settings file: the compositor was started with the image's file, which passed the check; a last good copy
+		// exists on the config partition; no alert marker
+		_, cmd := r.sh(`for p in $(pidof driftwm); do tr '\000' ' ' < /proc/$p/cmdline 2>/dev/null | grep -- '--backend'; done; ls -l /config/hubos/driftwm.last-good.toml; cmp /config/hubos/driftwm.last-good.toml /etc/hubos/driftwm.toml && echo SAME-AS-IMAGE; ls /run/hub/driftwm-config-fallback 2>&1; grep -n restore_windows /etc/hubos/driftwm.toml`)
+		cfgOK := strings.Contains(cmd, "--config /etc/hubos/driftwm.toml") && strings.Contains(cmd, "SAME-AS-IMAGE") && strings.Contains(cmd, "No such file") && regexp.MustCompile(`(?m)^\d+:restore_windows = false`).MatchString(cmd)
+		ok := core && len(leaked) == 0 && len(boundHidden) == 0 && len(advertised) > 10 && cfgOK
+		record("H1b the protocols nothing on the hub uses are not advertised (patch D8: "+strconv.Itoa(len(hiddenProtocols))+" interfaces, none shown by wayland-info, none bound by foot, Waybar or wofi), the core ones still are; the compositor runs with the image's settings file, a last good copy was kept, no alert", ok, time.Since(start),
+			fmt.Sprintf("advertised %d interfaces; leaked: %v; bound by foot: %v; Waybar: %v; wofi: %v; settings: %s", len(advertised), leaked, foot, waybar, wofi, firstLine(cmd)))
+		if !ok {
+			t.Errorf("core=%v leaked=%v boundHidden=%v advertised=%d cfgOK=%v\n%s", core, leaked, boundHidden, len(advertised), cfgOK, cmd)
 			t.Fail()
 		}
 	})
@@ -1009,6 +1063,24 @@ func TestHubImage(t *testing.T) {
 			return len(placeDiff(expected, hubWinsByApp(ws, "hubos-w"))) == 0 && z > expZoom-0.02 && z < expZoom+0.02
 		})
 
+		// the stacking order (owner decision 14: part of "restore exact"): focus all 20 windows in a random order, so the
+		// last one is on top and the order is far from the order in which they were opened; focusing pans the view, so the
+		// view is put back afterwards. wantOrder is the order bottom to top that every restore has to bring back.
+		perm := rng.Perm(20)
+		var wantOrder []string
+		var focusCmds strings.Builder
+		for _, k := range perm {
+			app := fmt.Sprintf("hubos-w%02d", k+1)
+			wantOrder = append(wantOrder, app)
+			fmt.Fprintf(&focusCmds, "dwm focus --id %d >/dev/null 2>&1; sleep 0.4; ", expected[app].ID)
+		}
+		r.vm.sh(`. /tmp/h6lib.sh; `+focusCmds.String()+fmt.Sprintf("dwm zoom %.2f > /dev/null; sleep 3; dwm camera %.1f %.1f > /dev/null; sleep 3; echo focused", expZoom, expCam[0], expCam[1]), 600*time.Second)
+		_, orderSet := pollState(120*time.Second, func(ws []hubWin, cam [2]float64, z float64) bool {
+			return sameStrings(stackAppsOf(ws, "hubos-w"), wantOrder) && z > expZoom-0.02 && z < expZoom+0.02 && cam[0] > expCam[0]-3 && cam[0] < expCam[0]+3 && cam[1] > expCam[1]-3 && cam[1] < expCam[1]+3
+		})
+		t.Logf("stacking order set (bottom to top): %v; read back equal: %v", wantOrder, orderSet)
+		orderChecks := 0
+
 		// the kill cycles
 		modes := []string{"idle", "move", "save", "restore", "restart", "move", "restore", "save"}
 		type cycleResult struct {
@@ -1080,6 +1152,10 @@ func TestHubImage(t *testing.T) {
 					return false
 				}
 				if len(d1) == 0 || (movedApp != "" && len(d2) == 0) {
+					if o := stackAppsOf(ws, "hubos-w"); !sameStrings(o, wantOrder) {
+						diffs = []string{fmt.Sprintf("stacking order (bottom to top) is %v, saved order %v", o, wantOrder)}
+						return false
+					}
 					gotMap = got
 					return true
 				}
@@ -1111,6 +1187,9 @@ func TestHubImage(t *testing.T) {
 				} else {
 					res.note = "the last move came too late for hubd to see it (the window is at its place before the move)"
 				}
+			}
+			if res.ok {
+				orderChecks++
 			}
 			if res.ok && gotMap != nil {
 				expected = gotMap // also takes the new window ids (they start again from 0 in every new compositor)
@@ -1145,9 +1224,9 @@ func TestHubImage(t *testing.T) {
 		r.sh(`kill $(pidof foot) 2>/dev/null; kill $(pidof fakenode) 2>/dev/null; mv /config/hubos/inventory.toml.orig /config/hubos/inventory.toml; mv /config/hubos/viewers.toml.orig /config/hubos/viewers.toml; rm -f /config/hubos/layouts/*; sync; s6-svc -t /run/service/hubd; echo restored-config`)
 		waitHubd(180 * time.Second)
 		r.sh(asHub("sh -c '/tmp/fakenode 127.0.0.12:21002 127.0.0.13:21003 127.0.0.15:21005 > /tmp/fakenode.log 2>&1 &'"))
-		ok := up && opened && armed && rcBig == 0 && strings.Contains(outBig, "20 windows") && rcBigApply == 0 && bigBack && allCyclesOK && len(results20) == cycles
-		record(fmt.Sprintf("H3f 20 fake windows survive kill -9 of the compositor: %d cycles of kill -9 at random moments (idle, right after a window move, during a row of layout saves, a second kill during the restore, and hubd restart-desktop); after each one hubd, which keeps running, starts the 20 viewers again and puts every window at its place, size and the view back; no duplicate, no leftover temp or damaged layout file", cycles), ok, time.Since(start),
-			fmt.Sprintf("seed %d; 20 windows opened at once in %.0f s; 20-window layout save rc=%d, apply after scrambling 5 windows rc=%d back=%v (%s); cycles run %d of %d, median %.0f s to be back; hubd pid unchanged: %v; results: %s; layouts at the end: %s", seed, openTook.Seconds(), rcBig, rcBigApply, bigBack, firstLine(outBigApply), len(results20), cycles, median, pidBase, strings.Join(summary, " | "), firstLine(lsEnd)))
+		ok := orderSet && orderChecks == len(results20) && up && opened && armed && rcBig == 0 && strings.Contains(outBig, "20 windows") && rcBigApply == 0 && bigBack && allCyclesOK && len(results20) == cycles
+		record(fmt.Sprintf("H3f 20 fake windows survive kill -9 of the compositor: %d cycles of kill -9 at random moments (idle, right after a window move, during a row of layout saves, a second kill during the restore, and hubd restart-desktop); after each one hubd, which keeps running, starts the 20 viewers again and puts every window at its place, size, stacking order and the view back; no duplicate, no leftover temp or damaged layout file", cycles), ok, time.Since(start),
+			fmt.Sprintf("seed %d; 20 windows opened at once in %.0f s; 20-window layout save rc=%d, apply after scrambling 5 windows rc=%d back=%v (%s); cycles run %d of %d, median %.0f s to be back; stacking order of the 20 windows (random, set with focus) checked after each restore: %d of %d equal; hubd pid unchanged: %v; results: %s; layouts at the end: %s", seed, openTook.Seconds(), rcBig, rcBigApply, bigBack, firstLine(outBigApply), len(results20), cycles, median, orderChecks, len(results20), pidBase, strings.Join(summary, " | "), firstLine(lsEnd)))
 		_ = outBigApply
 		if !ok {
 			t.Errorf("up=%v opened=%v armed=%v big=%d %q applied=%d back=%v cycles ok=%v ran %d/%d\n%s", up, opened, armed, rcBig, outBig, rcBigApply, bigBack, allCyclesOK, len(results20), cycles, strings.Join(summary, "\n"))

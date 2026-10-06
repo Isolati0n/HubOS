@@ -9,7 +9,7 @@
 #            0010 P10 exit on failed frames, 0011 P11 files on a worker thread, 0012 P12 no config hot reload,
 #            0013 D1 session entry cap, 0014 D2 NUL in config, 0015 D3 region overflow, 0016 D4 stand-in buffer size (BC-12),
 #            0017 D5 saturating geometry (BC-13, BC-11), 0018 D6 cluster shifts (BC-11), 0019 D7 BC-12/13 tests,
-#            0020 D8 protocols the hub does not use are hidden
+#            0020 D8 protocols the hub does not use are hidden, 0021 D9 docs without reload-config, 0022 D10 fsync of the session file
 #   Smithay  smithay/0006 P6 shm pool resize(0), smithay/0007 to 0011 = the research's Smithay P7 to P11 (BC-1 to BC-4)
 DRIFTWM_COMMIT=352333a8fa1b22171492d4b71a54102045c9a19d
 SMITHAY_REV=4cf0b62028039661477d482ec4758b687d8f4392

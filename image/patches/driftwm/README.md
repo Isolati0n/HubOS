@@ -6,7 +6,7 @@ and applies every patch below, in the order of the file names (`tools/image/buil
 revision. Nothing here is sent to the driftwm or Smithay authors (owner decision). The licence of driftwm is
 GPL-3.0-or-later; the patches are published under the same licence.
 
-Plain words: P1 to P12 and D6 to D8 are the hub's own set; "Smithay P7 to P11" and "D1 to D5" come from the
+Plain words: P1 to P12 and D6 to D10 are the hub's own set; "Smithay P7 to P11" and "D1 to D5" come from the
 bulletproof-compositor research (`docs/proposals/bulletproof-compositor.md`, its findings are named BC-1 to BC-14).
 The research called its Smithay patches "P7 to P11", which collides with this set's driftwm P7 to P11. **In file names
 and here the Smithay ones are `smithay-pN`; a bare `pN` is always a driftwm patch.**
@@ -27,7 +27,7 @@ section 3.3) and from the owner's decisions of 2026-10-06 for this adoption ("ro
 | `0008-p8-startup-shellouts.patch` | removes the `systemctl`/`dbus-update-activation-environment` start-up calls, time-boxes the xwayland-satellite probe | hub-stability F6 and F7 (start-up helpers block; `set_var` with threads running) | owner 2026-10-06: remove, not time-box |
 | `0009-p9-flat-background.patch` | a default shader that does not compile gives a flat background | hub-stability (the default background shader is a `.expect`; found by the bad-shader test) | owner 2026-10-06: black is fine |
 | `0010-p10-exit-on-failed-frames.patch` | every frame of an output fails for 2 s: log once and **exit 70** so the service restarts the compositor | hub-stability 8.2 (lost GPU; bulletproof A5) | owner 2026-10-06 OK; owner decision 8 of this adoption: a GPU reset or lost device **exits and restarts** the compositor, hubd restores the windows |
-| `0011-p11-files-on-a-worker-thread.patch` | session and state files are written by a worker thread (`bgwrite.rs`), never on the event loop | hub-stability F5 (a blocked session or state file freezes the loop) | owner 2026-10-06; decision 9 of this adoption (fsync from the worker thread) is **question 1 in the PR: not in this patch** (it does not fsync today) |
+| `0011-p11-files-on-a-worker-thread.patch` | session and state files are written by a worker thread (`bgwrite.rs`), never on the event loop | hub-stability F5 (a blocked session or state file freezes the loop) | owner 2026-10-06; decision 9 of this adoption (fsync from the worker thread) is done by `0022` |
 | `0012-p12-no-config-hot-reload.patch` | removes config hot reload (the inotify watch, `reload-config`, the dead code behind it) | BC-6/BC-7 reach the running compositor only through hot reload | owner 2026-10-06 (hot reload is off on the hub) |
 | `0013-d1-session-entry-cap.patch` | a `session.json` with more than 512 entries is set aside like a corrupt file | **BC-5** (30,000 entries: 9.3 GB, killed at every start) | decision 3: 512 session entries |
 | `0014-d2-config-nul.patch` | a NUL in a key binding is an error, in a keyboard setting a warning | **BC-6** (panic in `--check-config`, at start-up and at reload) | adopted (decision 3 batch) |
@@ -37,6 +37,8 @@ section 3.3) and from the owner's decisions of 2026-10-06 for this adoption ("ro
 | `0018-d6-cluster-shifts-overflow.patch` | **new here.** `resolve_cluster_shifts` uses saturating arithmetic; four regression tests | the rest of **BC-11** (overflow on add and on negate in `layout::cluster::resolve_cluster_shifts`, found by the `hsfuzz geom` run; D5 did not cover it) | decision 4 |
 | `0019-d7-bc12-bc13-regression-tests.patch` | **new here.** Unit tests (tests only, no code) for BC-12 and BC-13 | BC-12, BC-13 | "must have repro tests"; the live-compositor reproductions are in `tools/image/experiments/driftwm-patches/` |
 | `0020-d8-hide-unused-protocols.patch` | **new here.** The Wayland protocols nothing on the hub uses are not shown to any client (session lock and others; list and evidence in `docs/proposals/driftwm-patches.md` section 3.1) | **BC-10** (a locker that dies leaves the outputs blank) and less code reachable by clients | decision 7 |
+| `0021-d9-docs-without-reload-config.patch` | **new here.** `docs/cli.md` (regenerated with driftwm's own test command `UPDATE_CLI_DOCS=1 cargo test docs_cli_md_is_up_to_date`), `docs/ipc.md` and `docs/shaders.md` no longer mention `reload-config` or hot reload | follows P12 | the owner's request for this adoption |
+| `0022-d10-fsync-session-file.patch` | **new here.** The worker thread of P11 `fsync`s the session file before the rename and its folder after it (the state file in RAM is not synced); the event loop never waits | section 7.5 of the research (power loss: `session.json` was never synced, so a power cut could lose the newest write or leave an empty file) | decision 9 |
 
 ## Smithay patches (applied to `SMITHAY_REV`, `smithay/0*.patch`; driftwm is built against this patched copy)
 
@@ -51,7 +53,7 @@ section 3.3) and from the owner's decisions of 2026-10-06 for this adoption ("ro
 
 ## Overlaps between the two groups (checked, nothing dropped)
 
-Apply order is `0001`..`0020` then Smithay `0006`..`0011`. All of them apply cleanly in that order to the pins (TESTED, see the
+Apply order is `0001`..`0022` then Smithay `0006`..`0011`. All of them apply cleanly in that order to the pins (TESTED, see the
 PR). Same file touched by two patches, and which one is kept:
 
 - `src/session.rs`: P11 (writes) and D1 (the read-side cap). Different functions; **both kept**. A session file is capped on

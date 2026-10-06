@@ -1,0 +1,64 @@
+--- a/src/ipc/client.rs
++++ b/src/ipc/client.rs
+@@ -207,8 +207,8 @@
+     /// Window actions act on the focused window, so `focus` the target first, or
+     /// pass `--id` to a command that takes it.
+     ///
+-    /// The socket is a full control surface: `action` can `exec`/`spawn`, `quit`,
+-    /// and `reload-config`. It is safe only because the socket is `0600`.
++    /// The socket is a full control surface: `action` can `exec`/`spawn` and
++    /// `quit`. It is safe only because the socket is `0600`.
+     ///
+     /// `--json` reply: `{"Ok":"Ok"}`.
+     #[command(allow_negative_numbers = true)]
+--- a/docs/cli.md
++++ b/docs/cli.md
+@@ -336,7 +336,7 @@
+ 
+ Window actions act on the focused window, so `focus` the target first, or pass `--id` to a command that takes it.
+ 
+-The socket is a full control surface: `action` can `exec`/`spawn`, `quit`, and `reload-config`. It is safe only because the socket is `0600`.
++The socket is a full control surface: `action` can `exec`/`spawn` and `quit`. It is safe only because the socket is `0600`.
+ 
+ `--json` reply: `{"Ok":"Ok"}`.
+ 
+--- a/docs/ipc.md
++++ b/docs/ipc.md
+@@ -158,7 +158,7 @@
+ 
+ > [!WARNING]
+ > The socket is a full control surface, not a read-only one: `action` can run
+-> `exec`/`spawn`, `quit`, and `reload-config`, and `relaunch` launches a
++> `exec`/`spawn` and `quit`, and `relaunch` launches a
+ > suspended window's app. It is `0600` for that reason — don't loosen the
+ > permissions or bridge it over a network.
+ 
+--- a/docs/shaders.md
++++ b/docs/shaders.md
+@@ -322,23 +322,11 @@
+ 
+ ## Reloading after edits
+ 
+-driftwm reloads the config automatically when the file changes, and re-reads the
+-shader from disk on every reload. Bind the reload action to pick up shader edits
+-without editing the config:
+-
+-```toml
+-[keybindings]
+-"mod+shift+c" = "reload-config"
+-```
+-
+-Without a keybinding, touching the config file has the same effect:
+-
+-```bash
+-touch ~/.config/driftwm/config.toml
+-```
++Hub OS build: config hot reload is removed (patch P12). The config file and the
++shader are read at start; to pick up an edit, restart driftwm.
+ 
+ If the shader can't be read or fails to compile, driftwm falls back to the
+ built-in dot grid and reports the reason on the error bar
+ (`background shader: compile error: …`). A dot grid after an edit means the
+ shader was rejected, not that the config was ignored. The error clears on the
+-next reload that succeeds.
++next start that succeeds.
