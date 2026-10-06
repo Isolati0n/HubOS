@@ -1,0 +1,290 @@
+Hub OS P11: the session file and the runtime state file are written by a worker thread (never on the event loop), so a stalled disk
+cannot freeze the compositor. Only the newest bytes per file are kept while the worker is stuck.
+
+diff -ruN a/src/bgwrite.rs b/src/bgwrite.rs
+--- /dev/null
++++ b/src/bgwrite.rs
+@@ -0,0 +1,187 @@
++//! Files written by a worker thread (Hub OS patch P11).
++//!
++//! driftwm wrote its session file and its runtime state file on the event-loop
++//! thread. If the disk (or whatever the folder is on) stalls, `open`/`write`/
++//! `rename` block and the whole compositor freezes. Here the event loop only
++//! hands the finished bytes over (`submit`, never waits); one worker thread does
++//! the write (temporary file, then rename). Only the newest bytes for a path are
++//! kept: if the worker is stuck, later submissions replace the waiting one, so
++//! memory does not grow. Standard library only.
++//!
++//! [`set_inline`] makes [`submit`] write on the calling thread; the compositor's
++//! own tests use it, so they can read the file right after a write.
++
++use std::collections::HashMap;
++use std::io::Write as _;
++use std::path::{Path, PathBuf};
++use std::sync::atomic::{AtomicBool, Ordering};
++use std::sync::{Arc, Condvar, Mutex, OnceLock};
++use std::time::{Duration, Instant};
++
++#[derive(Default)]
++struct Inner {
++    pending: HashMap<PathBuf, Vec<u8>>,
++    busy: bool,
++}
++
++struct Shared {
++    inner: Mutex<Inner>,
++    cv: Condvar,
++}
++
++/// A worker thread and its mailbox.
++#[derive(Clone)]
++pub struct Writer {
++    shared: Arc<Shared>,
++}
++
++/// Write `bytes` to `path` atomically: parent folder, `path.tmp`, rename.
++pub fn write_atomic(path: &Path, bytes: &[u8]) -> std::io::Result<()> {
++    if let Some(dir) = path.parent() {
++        std::fs::create_dir_all(dir)?;
++    }
++    let mut tmp = path.as_os_str().to_owned();
++    tmp.push(".tmp");
++    let tmp = PathBuf::from(tmp);
++    let mut file = std::fs::File::create(&tmp)?;
++    file.write_all(bytes)?;
++    drop(file);
++    std::fs::rename(&tmp, path)
++}
++
++impl Writer {
++    pub fn new() -> Writer {
++        let shared = Arc::new(Shared {
++            inner: Mutex::new(Inner::default()),
++            cv: Condvar::new(),
++        });
++        let worker = shared.clone();
++        let _ = std::thread::Builder::new()
++            .name("driftwm-files".into())
++            .spawn(move || loop {
++                let (path, bytes) = {
++                    let mut g = worker.inner.lock().unwrap_or_else(|e| e.into_inner());
++                    loop {
++                        if let Some(p) = g.pending.keys().next().cloned() {
++                            let b = g.pending.remove(&p).unwrap_or_default();
++                            g.busy = true;
++                            break (p, b);
++                        }
++                        g = worker.cv.wait(g).unwrap_or_else(|e| e.into_inner());
++                    }
++                };
++                // May block for ever on a stalled disk: only this thread waits.
++                if let Err(e) = write_atomic(&path, &bytes) {
++                    tracing::warn!("failed to write {}: {e}", path.display());
++                }
++                let mut g = worker.inner.lock().unwrap_or_else(|e| e.into_inner());
++                g.busy = false;
++                worker.cv.notify_all();
++            });
++        Writer { shared }
++    }
++
++    /// Queue `bytes` for `path`, replacing any older bytes still waiting for it.
++    pub fn submit(&self, path: PathBuf, bytes: Vec<u8>) {
++        let mut g = self.shared.inner.lock().unwrap_or_else(|e| e.into_inner());
++        g.pending.insert(path, bytes);
++        self.shared.cv.notify_all();
++    }
++
++    /// Wait until nothing is queued or being written, at most `timeout`.
++    pub fn flush_for(&self, timeout: Duration) {
++        let end = Instant::now() + timeout;
++        let mut g = self.shared.inner.lock().unwrap_or_else(|e| e.into_inner());
++        while !g.pending.is_empty() || g.busy {
++            let now = Instant::now();
++            if now >= end {
++                return;
++            }
++            g = self
++                .shared
++                .cv
++                .wait_timeout(g, end - now)
++                .unwrap_or_else(|e| e.into_inner())
++                .0;
++        }
++    }
++}
++
++impl Default for Writer {
++    fn default() -> Self {
++        Writer::new()
++    }
++}
++
++static GLOBAL: OnceLock<Writer> = OnceLock::new();
++
++static INLINE: AtomicBool = AtomicBool::new(false);
++
++/// Make [`submit`] write on the calling thread (used by the compositor's own
++/// tests, which read the file right after a write). Never set in the compositor.
++pub fn set_inline(on: bool) {
++    INLINE.store(on, Ordering::Relaxed);
++}
++
++/// Hand `bytes` for `path` to the worker thread. Never blocks.
++pub fn submit(path: PathBuf, bytes: Vec<u8>) {
++    if INLINE.load(Ordering::Relaxed) {
++        let _ = write_atomic(&path, &bytes);
++        return;
++    }
++    GLOBAL.get_or_init(Writer::new).submit(path, bytes);
++}
++
++/// Give the worker up to `timeout` to finish what is queued (call before exit).
++pub fn flush_for(timeout: Duration) {
++    if let Some(w) = GLOBAL.get() {
++        w.flush_for(timeout);
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use std::os::unix::fs::FileTypeExt as _;
++
++    fn tmpdir(name: &str) -> PathBuf {
++        let d = std::env::temp_dir().join(format!("bgwrite-{name}-{}", std::process::id()));
++        let _ = std::fs::remove_dir_all(&d);
++        std::fs::create_dir_all(&d).unwrap();
++        d
++    }
++
++    #[test]
++    fn a_normal_write_arrives() {
++        let d = tmpdir("ok");
++        let w = Writer::new();
++        w.submit(d.join("sub/file"), b"hello".to_vec());
++        w.flush_for(Duration::from_secs(5));
++        assert_eq!(std::fs::read(d.join("sub/file")).unwrap(), b"hello");
++        let _ = std::fs::remove_dir_all(&d);
++    }
++
++    #[test]
++    fn a_blocked_write_never_blocks_the_caller_and_the_newest_bytes_win() {
++        let d = tmpdir("fifo");
++        // the temporary name is a FIFO nobody reads: open(2) for writing blocks
++        let mut tmp = d.join("session.json").into_os_string();
++        tmp.push(".tmp");
++        let tmp = PathBuf::from(tmp);
++        let c = std::ffi::CString::new(tmp.to_str().unwrap()).unwrap();
++        assert_eq!(unsafe { libc::mkfifo(c.as_ptr(), 0o600) }, 0);
++        assert!(std::fs::metadata(&tmp).unwrap().file_type().is_fifo());
++        let w = Writer::new();
++        let t = Instant::now();
++        for i in 0..1000 {
++            w.submit(d.join("session.json"), format!("{i}").into_bytes());
++        }
++        assert!(t.elapsed() < Duration::from_secs(1));
++        // a different path is stuck behind the blocked one (one worker) but the caller still never waits
++        w.flush_for(Duration::from_millis(100));
++        // unblock the worker: open the FIFO for reading, so it can finish
++        let _reader = std::fs::File::open(&tmp);
++        w.flush_for(Duration::from_secs(5));
++        let _ = std::fs::remove_dir_all(&d);
++    }
++}
+diff -ruN a/src/lib.rs b/src/lib.rs
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -1,3 +1,4 @@
++pub mod bgwrite;
+ pub mod canvas;
+ pub mod config;
+ pub mod desktop_entry;
+diff -ruN a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -492,6 +492,8 @@
+     // stopped the loop has already dispatched whatever client disconnects came
+     // with it, so a rebuild would serialize a drained stage over a good file
+     // (see `DriftWm::session_store_mark_dirty`).
++    // HUB-OS PATCH P11: let the file worker finish (at most 0.5 s) before the state file is removed.
++    driftwm::bgwrite::flush_for(std::time::Duration::from_millis(500));
+     state::remove_state_file();
+ 
+     run_result?;
+diff -ruN a/src/session.rs b/src/session.rs
+--- a/src/session.rs
++++ b/src/session.rs
+@@ -169,6 +169,15 @@
+     std::fs::rename(&tmp, path)
+ }
+ 
++/// Like [`write`], but the file is written by a worker thread (Hub OS patch P11):
++/// the caller only serializes and returns at once, so a stalled disk cannot
++/// freeze the event loop. Never fsync'd.
++pub fn write_async(path: &Path, envelope: &SessionEnvelope) -> std::io::Result<()> {
++    let json = serde_json::to_string_pretty(envelope)?;
++    crate::bgwrite::submit(path.to_path_buf(), json.into_bytes());
++    Ok(())
++}
++
+ /// Split entries into those to materialize now and those to carry forward
+ /// unchanged (re-emitted on the next write), so a flag-off session never
+ /// destroys the saved session. `restore` answers per entry, since a window rule
+diff -ruN a/src/state/persistence.rs b/src/state/persistence.rs
+--- a/src/state/persistence.rs
++++ b/src/state/persistence.rs
+@@ -516,11 +516,7 @@
+         let (cx, cy) = driftwm::canvas::viewport_center(self.camera(), z, vp);
+ 
+         let Some(dir) = state_file_dir() else { return };
+-        if std::fs::create_dir_all(&dir).is_err() {
+-            return;
+-        }
+         let path = dir.join("state");
+-        let tmp = dir.join("state.tmp");
+         // no separate dirty field: layout_short follows the active XKB group, so the
+         // layout-dirty check covers it (except two layouts sharing a display name).
+         let layout_short = crate::ipc::active_layout_short(self);
+@@ -578,10 +574,12 @@
+             }
+         }
+ 
+-        // Update content caches only after a successful atomic rename, so a
+-        // transient FS error gets retried on the next call instead of being
+-        // silently swallowed.
+-        if std::fs::write(&tmp, content).is_ok() && std::fs::rename(&tmp, &path).is_ok() {
++        // HUB-OS PATCH P11: the file (folder, temporary file, rename) is written by
++        // a worker thread, so a stalled disk cannot freeze the event loop. The
++        // content caches are therefore updated without waiting for the result:
++        // a failed write is logged by the worker and fixed by the next change.
++        driftwm::bgwrite::submit(path, content.into_bytes());
++        {
+             self.state_file_layer_count = layers.len();
+             for output in self.space.outputs() {
+                 let os = output_state(output);
+diff -ruN a/src/state/session_store.rs b/src/state/session_store.rs
+--- a/src/state/session_store.rs
++++ b/src/state/session_store.rs
+@@ -452,7 +452,8 @@
+         let envelope = self.build_session_envelope(include_live);
+         // Never fsync'd: it would block the main loop once a second through a
+         // drag or a pan, and buys nothing against the crashes this file is for.
+-        if let Err(err) = session::write(&path, &envelope, false) {
++        // HUB-OS PATCH P11: written by a worker thread (a stalled disk must not freeze the loop).
++        if let Err(err) = session::write_async(&path, &envelope) {
+             tracing::warn!("failed to write durable session store: {err}");
+         }
+     }
+diff -ruN a/src/tests/server.rs b/src/tests/server.rs
+--- a/src/tests/server.rs
++++ b/src/tests/server.rs
+@@ -27,6 +27,8 @@
+ 
+ impl Server {
+     pub fn new(config: (Config, Vec<String>)) -> Self {
++        // HUB-OS PATCH P11: the tests read the session and state files right after a write.
++        driftwm::bgwrite::set_inline(true);
+         let event_loop = EventLoop::try_new().unwrap();
+         let handle = event_loop.handle();
+         let mut display = Display::<DriftWm>::new().unwrap();
