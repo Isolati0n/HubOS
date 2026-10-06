@@ -237,11 +237,11 @@ Stage 0 mounts the config partition **read-only** today and the recovery kernel 
 
 ## 7. `GET /v1/logs` of the recovery agent
 
-SOURCE (repo, `tools/image/experiments/recoveryagent/agent.go`, `backend_hubos.go`): `GET /v1/logs` exists, **requires a signed request** (the test table in `agent_test.go` sends it without a signature and expects a refusal), and the real backend returns the **last 4096 bytes of `/run/recovery-agent.log`** as plain text. Nothing of the black box is in it today.
+SOURCE (repo, `tools/image/experiments/recoveryagent/agent.go`, `backend_hubos.go`): `GET /v1/logs` exists, needs no signature (requests are not signed since 2026-10-06), and the real backend returns the **last 4096 bytes of `/run/recovery-agent.log`** as plain text. Nothing of the black box is in it today.
 
 **Proposal (all BELIEVED, none implemented in the agent):**
 
-- **Signed, not open.** Reason: kernel logs show hardware layout, addresses and software versions, and sometimes more. The agent already has the signature path, and `HUB-OS.md` says the API is signed requests with one-time nonces.
+- **Plain request, no signature** (the agent's requests are not signed any more). OPEN: kernel logs show hardware layout, addresses and software versions, and the network is assumed to be the owner's; the owner may still want to decide who may read them.
 - **Format:** `text/plain; charset=utf-8`, sections in this order: a header line; the agent log tail (as today); then the saved boot folders **newest first**, each with its `meta.txt` and its files after a `### filename` line. Plain text so the owner can read it without a tool.
 - **Size limit:** 64 KiB by default for the whole answer (the prototype script cuts with `head -c`), newest content first; a query `?boot=NNNN` for one older folder. Reason for 64 KiB: a 50 KB boot (the lab's) fits. The number is a guess: BELIEVED.
 - **No secrets:** (1) no secret ever goes on the kernel command line or into a kernel message by Hub OS (a rule for our own code); (2) a filter on the way out as a second line of defence. TESTED on invented secrets: `tools/image/experiments/black-box/blackbox-logs.sh` printed
@@ -261,7 +261,7 @@ FAKE password=[REDACTED] token: [REDACTED] and Secret_Key=[REDACTED]
 1. Add `CONFIG_PSTORE`, `PSTORE_CONSOLE`, `PSTORE_RAM` (and `PSTORE_PMSG`) to the slot and recovery kernels; switch efi-pstore off.
 2. Reserve a small RAM block (1 MiB is enough here) and **test its address on each board** in December; use `memmap=` with a tested address, `reserve_mem` only if it proves stable.
 3. Stage 0 writes its progress to `/dev/kmsg` and saves pstore to the config partition when the failure counter is 1 or more.
-4. The recovery agent serves the saved folders on `GET /v1/logs`, signed, 64 KiB, redacted.
+4. The recovery agent serves the saved folders on `GET /v1/logs`, 64 KiB, redacted.
 
 **Questions for the owner (this document decided none of them):**
 

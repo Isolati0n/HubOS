@@ -4,7 +4,7 @@
 Writes the initramfs list (gen_init_cpio format) of the SEPARATE recovery kernel: static busybox (all applets as
 links), the recovery init, hubos-ctl, efibootmgr, signify, e2fsprogs, findfs/blkid, the udhcpc script and every
 shared library they need, taken from the base root (BASE) and the unpacked tools (TOOLS). With the environment variables
-RECOVERY_AGENT_BIN (and RECOVERY_AGENT_KEYS) it also adds the recovery agent: that is the TEST variant only. Nothing of a slot's root
+RECOVERY_AGENT_BIN it also adds the recovery agent: that is the TEST variant only. Nothing of a slot's root
 is used at run time; this is a copy taken at build time. Run from the repository root."""
 import os, subprocess, sys
 
@@ -84,12 +84,10 @@ for k in update_pubs:
     f("/etc/hubos/keys/" + hashlib.sha256(open(k, "rb").read()).hexdigest()[:16] + ".pub", k, "644")
 f("/etc/recovery.rc", os.path.join(REPO, "image/stage0/recovery.rc"), "644")
 # TEST variant only (RECOVERY_AGENT_BIN set by build-kernel.sh): the recovery agent (a static Go program), its start script
-# and the management public keys it accepts. The normal recovery kernel has none of these files.
+# (requests are not signed; the install request checks the IMAGE signature with the update keys). The normal recovery kernel has none of these files.
 if os.environ.get("RECOVERY_AGENT_BIN"):
     f("/usr/sbin/recovery-agent", os.environ["RECOVERY_AGENT_BIN"])
     f("/usr/lib/hubos/recovery-extra.sh", os.path.join(REPO, "image/stage0/recovery-agent-start.sh"))
-    for k in os.environ.get("RECOVERY_AGENT_KEYS", "").split():
-        f("/etc/hubos/mgmt/" + hashlib.sha256(open(k, "rb").read()).hexdigest()[:16] + ".pub", k, "644")
 for dd in ("/dev", "/proc", "/sys", "/run", "/tmp", "/config", "/data", "/boot/efi", "/etc/hubos"): d(dd)
 out.append("nod /dev/console 600 0 0 c 5 1")
 out.append("nod /dev/null 666 0 0 c 1 3")

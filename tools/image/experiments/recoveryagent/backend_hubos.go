@@ -34,7 +34,7 @@ func (b *HubosBackend) run(timeout time.Duration, args ...string) (string, error
 
 var failuresRe = regexp.MustCompile(`boot-failures=(\d+) limit=(\d+)`)
 
-// Machine is the machine id the hub signs for: NAME= in the node config (/config/hubos/node.conf, mounted read-only in recovery),
+// Machine is the machine id shown in the status: NAME= in the node config (/config/hubos/node.conf, mounted read-only in recovery),
 // else the host name. UNKNOWN: whether NAME is the same string as the inventory id (today nothing makes them equal).
 func (b *HubosBackend) Machine() string {
 	if raw, err := os.ReadFile(b.NodeConf); err == nil {
