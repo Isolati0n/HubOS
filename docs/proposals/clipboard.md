@@ -420,7 +420,7 @@ huge identical; copy 0.197 s, paste 0.123 s, bytes 24892993
 
 **T6. A watcher eats a paste-once item.** `echo -n once | wl-copy --paste-once` with a `wl-paste --watch` running: the next `wl-paste` printed nothing and the one after said `Nothing is copied`. The watcher's own read counted as the one paste. **Consequence (TESTED, a surprise):** a history watcher on the hub will consume the single paste of any hub program that offers a one-time item (BELIEVED: password managers do), so the owner's real paste fails. The store must either not capture on the hub with a `--watch` that reads data eagerly, or accept this; question 14.
 
-**F1-F6. The RFB Extended Clipboard flow against a fake server.** `tools/image/experiments/clipboard-notifications/fakerfb.py` (Python standard library only, about 230 lines, throwaway; it is both the fake node and a stand-in for the worker's clipboard part, written by me, so a pass shows self-consistency and agreement with the specification and neatvnc's source as I read them, **not** compatibility with real wayvnc). Command and output:
+**F1-F6. The RFB Extended Clipboard flow against a fake server.** `tools/image/experiments/clipboard-notifications/fakerfb.py` (Python standard library only, about 240 lines, throwaway; it is both the fake node and a stand-in for the worker's clipboard part, written by me, so a pass shows self-consistency and agreement with the specification and neatvnc's source as I read them, **not** compatibility with real wayvnc). Command and output:
 
 ```
 $ python3 -I tools/image/experiments/clipboard-notifications/fakerfb.py
