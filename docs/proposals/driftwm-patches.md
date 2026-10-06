@@ -445,6 +445,23 @@ The throwaway test `tools/image/hangcompare_test.go` and its two summary files (
 
 The 20 serial logs were kept in the scratchpad folder `hangcmp/` of that session (1.2 MB); they were **not committed** and are not available to this round (the folder belonged to the earlier helper). The comparison did not reproduce the hang of run A on either kernel and gives no sign that the text console causes it; 20 boots cannot prove the stall cannot happen (the run-A stall was 1 in about 10 trial boots of that session; UNKNOWN whether the rate is the same).
 
+### 11.12a Owner decisions (2026-10-06, round 8; recorded by the lead agent from the owner's message, also in `HUB-OS.md`)
+
+These answer the questions of 11.12 below.
+
+1. The fallback to the last good config also goes on the bar (through hubd's feed), as well as the serial log.
+2. The last-good copy path `/config/hubos/driftwm.last-good.toml` is fine; with no copy the compositor starts with defaults and alerts.
+3. The 14 hidden protocols stay hidden, except that the virtual keyboard stays enabled until the input forwarder is decided in December.
+4. The hang rule (kill after 4 failed rounds and 30 s) is NOT built now; it waits for the init comparison (Part 6) to decide where it lives.
+5. The hub compositor build uses `panic = "abort"`.
+6. A compositor IPC field with the true window stacking order will be added.
+7. The stacking order is saved in layouts as an optional field.
+8. The exit-after-failed-frames behaviour (P10) is accepted until December.
+9. fsync stays.
+10. The "compositor gave up" message is drawn by the kernel text console on the projector, because the bar dies with the compositor.
+11. BC-9, BC-14, the Smithay audit of client-input paths, the nightly fuzz and the 72-hour soak are scheduled later, one at a time.
+12. `docs/image.md` line 105 (an old results table) stays as history.
+
 ### 11.12 Questions for the owner (nothing here is decided; I picked the simplest reversible default where the text leaves it open)
 
 1. **Bar alert for a settings-file fallback.** Today the alert is a line on the serial console, in the service log and the file `/run/hub/driftwm-config-fallback`; nothing shows on the bar, like the gave-up message. Do you want hubd to read that file and turn the bar item red with the line in its tooltip (a small hubd change)? (11.4)
