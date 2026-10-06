@@ -1,5 +1,7 @@
 # PROPOSAL: network recovery agent and out-of-band options
 
+> **OWNER DECISION (2026-10-06): the hub's requests are NOT signed.** There is no management key, no challenge, no signature and no one-time nonce on requests to the recovery agent or the node helper, and no TLS. Wherever this document says "signed", "signature", "nonce", "challenge", "HubOS-Sig" or "management key" about a REQUEST, read it as "not used"; those sections are history (they describe what was prototyped and tested). The IMAGE signature is unchanged: the install request still refuses anything that is not a correctly signed image bundle (the manifest signature, the update keyring and the floor rule). The recovery agent prototype is being changed to match (a separate pull request).
+
 **Status: PROPOSAL.** Nothing here is decided and nothing here is in the images. `HUB-OS.md` wins if this file disagrees with it. The only code is a small experiment in `tools/image/experiments/recoveryagent/` (loopback only, fake backend). Written 2026-10-04.
 
 **Labels used on every item:**
@@ -74,7 +76,7 @@ Why two layers of checking for install: the **hub signature** says "the owner's 
 
 HTTP+JSON here is not a new streaming protocol or a web dashboard. It is a four-call control API that only `hubd` talks to; there is no web page.
 
-### 2.3 How it authenticates (and what the recovery kernel can afford)
+### 2.3 How it authenticates (and what the recovery kernel can afford) -- REQUEST SIGNING REMOVED by the owner, 2026-10-06; only the image-bundle check stays
 
 **Constraints.**
 1. The recovery kernel is on the open boot partition, so it can hold **public keys only**, never a private key or a password (decided rule: secrets never in git, and `docs/image.md` 3.11 says the same for recovery).
@@ -90,7 +92,7 @@ HTTP+JSON here is not a new streaming protocol or a web dashboard. It is a four-
 - The signature covers the machine id, method, path, body hash and nonce, so a captured request cannot be replayed, redirected to another path or **another machine**, or given a different body (each is a unit test, including "signed for another machine id is refused"). `GET /v1/status` also carries the add-only fields `api` (this API's version, 1) and `min_hub` (the lowest hub API version it works with, 1).
 - **Round 3 change** (the helper agent that wrote `docs/proposals/node-helper-api.md` noticed that the old text did not name the machine, so a challenge could be relayed from one node to another): TESTED in `tools/image/experiments/recoveryagent` (`go test`, including the real `signify-openbsd` interop test, run with the program unpacked into a temporary folder); the QEMU test T18 was changed to sign with the machine line and was **not re-run** (UNVERIFIED) unless the pull request says otherwise.
 
-**A separate management key, not the update key.** The update key signs releases and its private half is offline. The hub must sign requests at run time, so it would need its private key online. That key must not be the update key. So: **a second key pair, the management key**, whose public half goes into the recovery kernel (and a public keyring file like `/etc/hubos/keys`), and whose private half lives only on the hub (an input for the secrets design, section 5.3). Rotation could copy the update-key procedure (docs/image.md 3.12); not designed here.
+(REMOVED by the owner, 2026-10-06: there is no management key. The paragraph below is history.) **A separate management key, not the update key.** The update key signs releases and its private half is offline. The hub must sign requests at run time, so it would need its private key online. That key must not be the update key. So: **a second key pair, the management key**, whose public half goes into the recovery kernel (and a public keyring file like `/etc/hubos/keys`), and whose private half lives only on the hub (an input for the secrets design, section 5.3). Rotation could copy the update-key procedure (docs/image.md 3.12); not designed here.
 
 **TLS.** The signed requests give authenticity and replay protection but **not secrecy**: anyone on the wire can read status and logs. In the recovery kernel nothing secret should be in either (rule above), and the management network is meant to be isolated. A TLS server would need a certificate for each machine; the matching private key would have to live on the open boot partition, which is exactly what we cannot afford, and a certificate the hub cannot check proves nothing. So TLS adds cost and little in recovery. Whether the Go `crypto/tls` size matters was not measured (UNKNOWN). Also: **the agent cannot prove its own identity to the hub** (no secret to sign with). A fake agent on the management network could lie about status; it cannot make the hub install anything. This is a real weakness, stated plainly; the mitigation is network isolation (section 3) and the fact that actions are limited to what the hub asks and the bundle signature allows.
 

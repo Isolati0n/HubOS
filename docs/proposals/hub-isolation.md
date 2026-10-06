@@ -190,7 +190,7 @@ For every rule: the rule, why, how the code stands today (SOURCE or TESTED), and
 | "Where each machine's window should go" after a compositor restart | **open**: driftwm's stand-ins (Plan A) or hubd's own memory (direct restore) or the layout store | not built | SOURCE `hub-stability.md` 7.2, 9.6 (question 6 below) |
 | Named layouts | layout store (hubd or a small process) | not built | SOURCE `driftwm-layouts.md` |
 | Mixer settings (per-node volume, mute) | the mixer | not built; where they live is an open question | SOURCE `HUB-OS.md` |
-| Credentials | hubd (user split) | one user `hub` today | SOURCE `hub-user-split.md` |
+| Credentials | none (owner, 2026-10-06: no display passwords, no request signing, no user split) | - | - |
 | The hub clipboard | the compositor (Wayland owns the selection); the clipboard client only reads/sets it | not built | SOURCE `node-helper-api.md` 8 |
 | Boot and update state (slot, floor, failure counter) | `hubos-ctl` and stage 0 only | as designed | SOURCE `distro-contract.md` C8, C10, C18 |
 

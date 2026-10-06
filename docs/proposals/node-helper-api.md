@@ -1,5 +1,7 @@
 # PROPOSAL: the node helper API and the clipboard bridge
 
+> **OWNER DECISION (2026-10-06): the hub's requests are NOT signed.** There is no management key, no challenge, no signature and no one-time nonce on requests to the recovery agent or the node helper, and no TLS. Wherever this document says "signed", "signature", "nonce", "challenge", "HubOS-Sig" or "management key" about a REQUEST, read it as "not used"; those sections are history (they describe what was prototyped and tested). The IMAGE signature is unchanged: the install request still refuses anything that is not a correctly signed image bundle (the manifest signature, the update keyring and the floor rule). The recovery agent prototype is being changed to match (a separate pull request).
+
 **Status: PROPOSAL.** Nothing here is decided and nothing here is in the images. `HUB-OS.md` wins if this file disagrees with it. The only code is a small experiment in `tools/image/experiments/clipboard-bridge/` (loopback only, two headless compositors, no signing, not the production helper). Written 2026-10-04.
 
 **Labels used on every item:**
@@ -33,7 +35,7 @@ All SOURCE: the task text of 2026-10-04 and `HUB-OS.md`; not discussed again.
 - Node to hub clipboard works through the display protocol. Hub to node clipboard goes through a **clipboard bridge**, through the node helper's API.
 - The hub does not run an X11 compatibility stack for a viewer.
 - Display credentials are per node.
-- The management key's private half lives on the hub's config partition (root and `hubd` only). Nodes hold only public keys.
+- (REMOVED 2026-10-06: there is no management key.) The image signature key is separate and unchanged (`docs/proposals/secrets.md`).
 - Sound is PipeWire RTP with per-node mute and volume on the hub; `hubd` stores the values.
 - The recovery agent listens on the normal network; its address comes from a DHCP reservation.
 - No systemd. `hubd` is Go. No new streaming protocol; no web dashboard as the control plane.
@@ -76,7 +78,7 @@ Why one port: a machine is either in recovery or running, never both (BELIEVED: 
 - A reader **ignores fields it does not know** (TESTED in the experiment: a `PUT` with an extra field `"future":1` is accepted, scenario A5 in `results.txt`).
 - `GET /v1/status` carries `api` (the major version this program speaks) and `min_hub` (the lowest hub major version it works with). A hub that does not know a node's major version shows "needs newer hub". A node can serve `/v1` and `/v2` at the same time during an upgrade, so hub and nodes can be updated in any order.
 
-### 3.3 The signed request (exactly the recovery agent's scheme)
+### 3.3 The signed request (exactly the recovery agent's scheme) -- REMOVED by the owner, 2026-10-06 (history only)
 
 **SOURCE (repo):** `recovery-and-out-of-band.md` 2.3, `agent.go` function `SignedMessage` and `authorizeBody`, `signify.go`. **TESTED there** on loopback against the real `signify-openbsd`; **not re-run for the helper** (the experiment of this document has no signing).
 
@@ -155,7 +157,7 @@ Proposed (not built): the helper writes **one line per request** to its standard
 
 All bodies are JSON. "Signed" means the section 3.3 header. Examples are what the call would return; apart from the clipboard (TESTED shapes, section 8.7) nothing was run.
 
-### 4.1 `GET /v1/challenge` (open)
+### 4.1 `GET /v1/challenge` (open) -- REMOVED by the owner, 2026-10-06 (no challenge)
 
 ```json
 {"nonce": "3f9c0d1a77b24e55a1c8e90b4d2f6a13"}

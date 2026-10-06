@@ -1,5 +1,24 @@
 # Bulletproof compositor: acceptance criteria, what the best compositors do, and what I ran (research and tests, part 4)
 
+## Owner decisions (2026-10-06)
+
+These answer the 14 questions of section 12. They are the owner's decisions, recorded by the lead agent from the owner's message, and also recorded in `HUB-OS.md`.
+
+1. Report nothing upstream for now.
+2. Adopt every patch that fixes a tested bug (Smithay P7 to P11, driftwm D1 to D5, and the BC-11, BC-12 and BC-13 fixes).
+3. Keep the helper's limits (2^24 for sizes and offsets, 512 session entries, 256 MB per stand-in).
+4. A protocol error disconnects the client for client mistakes; an error reply answers requests from hubd; never a crash.
+5. The config is baked into the image: an unknown field fails the image build check and falls back to the last good config at runtime with an alert; the hub build sets restore_windows explicitly off, checked at build time.
+6. Rely on the memory limit for viewers; no per-client limit in the compositor.
+7. Disable protocols nothing on the hub uses, starting with session lock (list each protocol disabled and who would use it).
+8. A GPU reset exits and restarts the compositor (hubd restores the windows); the hang rule stays (kill after 4 failed rounds and 30 s).
+9. fsync session files from the worker thread.
+10. "Restart on any panic, never carry on" (P3 stays off).
+11. A nightly fuzz job and extra test machines before December, as its own scheduled run.
+12. Classify only the Smithay sites reachable from client input and fuzz the rest.
+13. Do not try to survive running out of memory: set a generous ceiling and restart on abort.
+14. Window stacking order is part of "restore exact".
+
 **Written:** 2026-10-05 (the fuzzing and builds on that day; the soak ran in chunks from the evening of 2026-10-05 into 2026-10-06). **Status:** research and proposal. Nothing here is a decision, and nothing here changes `HUB-OS.md`, the image, or any program in this repository. Everything that belongs to the owner is collected in section 12. This continues `docs/proposals/hub-stability.md` (read first) and uses its patch files and scripts in `docs/proposals/hub-stability/`.
 
 ## 0. Labels and what this is
