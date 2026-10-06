@@ -1,5 +1,16 @@
 # STATUS: PAUSED, INCOMPLETE (2026-10-05, by the coordinator's order; owner: not vital yet)
 
+## Owner decisions (2026-10-05, round 5)
+
+These are the owner's decisions, recorded by the lead agent from the owner's message, and also recorded in `HUB-OS.md`.
+
+- At least 4 hours of soak per candidate.
+- The scorecard wording of R3 becomes "returns by itself within the retry limit, then degraded and alert".
+- The owner's action on a degraded service is a bar button and a command.
+- The confirm step asks the init for health.
+- No machine runs systemd (the owner's correction of 2026-10-05); the init would be exclusive to the hub.
+
+
 **Done:** (1) the scorecard (section 1 below, committed before any measurement). (3) the harness in `tools/bench/init/` (stand-in services, fault injector with kill, hang, crash storm, slow/failed dependency, full disk, supervisor killed, PID 1 killed or wedged, out of memory, clock jumps, update trial boot, policy-bug test; a chaos soak mode; eight candidates: s6 plain, s6+s6-rc, runit, dinit, OpenRC, and architecture C with a Go brain, C with an Elixir/OTP brain, B approximated). Prototypes of the escalation ladder and health probe in Go and Elixir (unit tests pass). Static PID 1 language stubs measured (`results/pid1-stubs.txt`). Host-side checks (`results/graph-checks.txt`, `credentials-test.txt`, `sizes.txt`).
 
 **Not done:** the measurement campaign over all candidates (only s6plain was run: boots, PID 1 killed/wedged, three trial boots, and 36 of about 60 steps of the fault suite, in `results/partial-s6plain/`; its supervisor-killed, storm, dependency, disk-full, clock and OOM results do not exist); no chaos soak ran at all (so no soak hours to report); sections 2 and 4 to 6 of the task (comparison text, the data summary, the custom-init design and the owner questions) are not written, only drafts of some tables in `results/drafts/`. **No conclusion about s6 versus a custom init has been drawn.**
@@ -54,7 +65,7 @@ All run against the hub's real service graph, or a stand-in with the same start 
 |---|---|---|---|---|---|
 | R1 | A service is killed | 5 | `kill -9` of each of the six in turn, 10 times each | time until the desktop and bar answer again (median and worst); service restarted; dependents ok | 3: back by itself, dependents follow, worst case within 2x the best candidate; 2: back by itself, dependents need a layer; 1: some need a person; 0: stays dead |
 | R2 | A service is HUNG but alive | 6 | `SIGSTOP` on driftwm, and a busy-looping driftwm that no longer answers `state` | does anything notice; time to notice; does it restart it; what it does to the dependents | 3: notices and restarts by health probe by itself; 2: with our helper; 1: only a person can (it reports nothing); 0: not even visible |
-| R3 | Crash storm | 6 | a service that exits at once, every start, for 60 s, then is fixed | restarts per minute (CPU burnt), does it back off, does it give up, is it reported, does everything else keep running, does it return after the fix | 3: backoff and give-up by itself, reported, returns after the fix without a person; 2: with our helper; 1: spins at full speed or cannot return by itself; 0: takes other services down |
+| R3 | Crash storm | 6 | a service that exits at once, every start, for 60 s, then is fixed | restarts per minute (CPU burnt), does it back off, does it give up, is it reported, does everything else keep running, does it return after the fix | 3: backoff and give-up by itself, reported, returns by itself within the retry limit, then degraded and alert; 2: with our helper; 1: spins at full speed or cannot return by itself; 0: takes other services down |
 | R4 | A failed or slow dependency | 5 | seatd slow to start (20 s) and seatd failing to start | do dependents wait without busy polling, start when it is ready, avoid starting in the wrong order; what is reported | 3: ordering and waiting by itself, no polling scripts; 2: with scripts; 1: dependents crash-loop until it is up; 0: deadlock |
 | R5 | Disk full | 4 | fill the log/state filesystem to 100% (ENOSPC) while services log | do the services and the supervisor keep running, does logging stall a service, does it recover after space returns | 3: nothing stalls, recovers; 2: logs lost, nothing else; 1: a service stalls; 0: the supervisor or PID 1 stops or dies |
 | R6 | The supervisor itself is killed | 5 | `kill -9` of the per-service supervisor (e.g. `s6-supervise`, `runsv`) and of the scanner/manager (`s6-svscan`, `runsvdir`) where it is not PID 1 | do the managed services keep running (not orphaned or killed); who restarts the supervisor; time to full health | 3: restarted by its parent, children keep running; 2: restarted, children restarted; 1: only a person; 0: children lost forever or PID 1 dies |

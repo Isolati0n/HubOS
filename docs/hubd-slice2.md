@@ -1,5 +1,16 @@
 # hubd second slice
 
+## Owner decisions (2026-10-05, round 5)
+
+These answer the questions at the end of section 17. They are the owner's decisions, recorded by the lead agent from the owner's message, and also recorded in `HUB-OS.md`.
+
+- The list shows a dot only (no " [open]" text).
+- The hub's own line has no dot.
+- The bar does not show an open count.
+- `hubd end` waits up to 30 s for a window to close.
+- The home-position race (a window sometimes standing at driftwm's cascade spot) is to be investigated.
+- The hub-image test inventory may contain desk-1 and desk-2.
+
 **Section 11 (second review) supersedes earlier statements about STALE, the check cap and single click. Section 18 supersedes the driftwm row of "After restarts" in section 3 (hubd now brings the windows back), the 3 s wait of `end`, and the hub line with a dot in section 17.** **Built and measured: 2026-10-01 — build environment; will change. Includes the follow-ups the owner decided after the first review (section 10).** `HUB-OS.md` wins if anything here disagrees with it. This file describes what the second slice of `hubd` does, how it was tested, what was measured at 100 and at 5000 machines, and what is still unverified. It builds on `docs/inventory-format.md`, `docs/driftwm-findings.md` and `docs/bar-findings.md`.
 
 Everything here ran in the cloud build environment (`docs/environment.md`): a nested driftwm (software rendering, on a virtual X display), Waybar 0.9.24, wofi 1.4.1, `foot` as the **fake viewer**, and fake machines made of tiny listeners on this computer's own addresses. **No real Moonlight, virt-viewer or Remmina was run, no real screen, no real network, no real hardware.**
