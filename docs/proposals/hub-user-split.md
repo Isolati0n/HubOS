@@ -1,5 +1,7 @@
 # PROPOSAL: splitting the hub into a desktop user and a hubd user
 
+> **NOT PLANNED (owner decision, 2026-10-06).** The owner never wanted passwords on the display connections and wants none, with no encryption on them, and the hub's requests to nodes are not signed. So there are no display credentials and no management key for a launcher to hand out, and no user split is planned. This document is kept as research only. `HUB-OS.md` no longer refers to it.
+
 **Status: PROPOSAL. Nothing here is built, nothing is decided, and nothing is in the images.** `HUB-OS.md` wins if this file disagrees with it. Written 2026-10-05 by the owner's lead (not by a helper agent) from the repository and the primary sources named below. It answers `docs/proposals/secrets.md` question 4 and the `HUB-OS.md` line "The hub user is split: hubd ... and a desktop user (viewers), with a launcher handing credentials to viewers".
 
 **Labels:** **TESTED** (a command and its output, or a repository test), **SOURCE** (a document or file, with link or path, read 2026-10-05), **BELIEVED**, **UNKNOWN**, **DESIGN** (a proposal made here, for the owner to decide).
