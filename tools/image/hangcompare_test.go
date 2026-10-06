@@ -9,6 +9,7 @@ package image
 //   HUBOS_HANG_KERNEL=new   the current image/kernel/hub.frag
 //   HUBOS_HANG_KERNEL=old   hub.frag without the text console options (CONFIG_VT, FB, DRM_FBDEV_EMULATION, FRAMEBUFFER_CONSOLE, FONTS, FONT_8x16)
 //   HUBOS_HANG_N=10         cycles (default 10)
+//   HUBOS_HANG_BUILD_ONLY=1 build everything (and stop before the first cycle), so that the measuring run only boots
 //   HUBOS_HANG_LOGS=DIR     where the serial logs of every cycle are kept (required)
 //   HUBOS_HUB_WORK=DIR      keep the build between the two runs (the root and the base are reused; only the kernel is rebuilt)
 // Example: HUBOS_HANG_KERNEL=old HUBOS_HANG_LOGS=/some/dir HUBOS_HUB_WORK=/tmp/x go test -tags qemu -count=1 -timeout 150m -v -run 'TestHangCompare$' ./tools/image
@@ -113,6 +114,9 @@ func TestHangCompare(t *testing.T) {
 	}
 	t.Logf("kernel %s:%s", which, ks)
 
+	if os.Getenv("HUBOS_HANG_BUILD_ONLY") != "" {
+		t.Skip("build only: done")
+	}
 	var ok, hang, crash, firstBootTrouble, notConfirmed int
 	var lines []string
 	for i := 1; i <= n; i++ {
