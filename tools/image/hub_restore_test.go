@@ -228,3 +228,17 @@ var hiddenProtocols = []string{
 	"ext_foreign_toplevel_list_v1",
 	"ext_workspace_manager_v1",
 }
+
+// withoutApp returns the list without the one app (the list itself if app is "").
+func withoutApp(list []string, app string) []string {
+	if app == "" {
+		return list
+	}
+	var out []string
+	for _, a := range list {
+		if a != app {
+			out = append(out, a)
+		}
+	}
+	return out
+}
