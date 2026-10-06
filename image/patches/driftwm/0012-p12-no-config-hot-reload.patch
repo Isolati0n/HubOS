@@ -1,0 +1,142 @@
+Hub OS P12: no config hot reload: the inotify watch on the config file's folder is removed and the `reload-config` action is refused
+(unknown to the parser, so a key binding or `driftwm msg action reload-config` is rejected).
+
+diff -ruN a/config.reference.toml b/config.reference.toml
+--- a/config.reference.toml
++++ b/config.reference.toml
+@@ -424,7 +424,6 @@
+ # #   fit-window-snapped      — fit-window for the focused window's whole snap cluster
+ # #   fill-window             — grow in place to fill free space, up to snap.outer_gap from the usable area's edge and snap.gap from a neighbour; edges past those pull back; clears maximize; press again to restore
+ # #   toggle-pin-to-screen    — pin/unpin the focused window to the screen (ignores pan/zoom, floats above)
+-# #   reload-config           — hot-reload config file
+ # #   toggle-cursor-pan       — toggle cursor edge-pan (see [navigation.edge_pan])
+ # #   set-trackpad on|off|toggle — enable/disable every trackpad for the rest of the session (see [input.trackpad] enable)
+ # #   quit                    — exit the compositor
+diff -ruN a/docs/config.md b/docs/config.md
+--- a/docs/config.md
++++ b/docs/config.md
+@@ -780,7 +780,6 @@
+ - `fit-window-snapped` — fit-window for the focused window's whole snap cluster
+ - `fill-window` — grow in place to fill free space, up to snap.outer_gap from the usable area's edge and snap.gap from a neighbour; edges past those pull back; clears maximize; press again to restore
+ - `toggle-pin-to-screen` — pin/unpin the focused window to the screen (ignores pan/zoom, floats above)
+-- `reload-config` — hot-reload config file
+ - `toggle-cursor-pan` — toggle cursor edge-pan (see [navigation.edge_pan])
+ - `set-trackpad on|off|toggle` — enable/disable every trackpad for the rest of the session (see [input.trackpad] enable)
+ - `quit` — exit the compositor
+diff -ruN a/src/config/parse.rs b/src/config/parse.rs
+--- a/src/config/parse.rs
++++ b/src/config/parse.rs
+@@ -203,7 +203,7 @@
+             Ok(Action::SwitchLayout(target))
+         }
+         "toggle-pin-to-screen" => Ok(Action::TogglePinToScreen),
+-        "reload-config" => Ok(Action::ReloadConfig),
++        "reload-config" => Err("reload-config is not available (config hot reload is removed, Hub OS patch P12)".to_string()),
+         "toggle-cursor-pan" => Ok(Action::ToggleCursorPan),
+         "set-trackpad" => {
+             let state = match arg {
+@@ -246,7 +246,6 @@
+     ("nudge-window", "nudge-window up"),
+     ("pan-viewport", "pan-viewport up"),
+     ("quit", "quit"),
+-    ("reload-config", "reload-config"),
+     ("send-cursor-to-output", "send-cursor-to-output up"),
+     ("send-to-output", "send-to-output up"),
+     ("set-bookmark", "set-bookmark 1"),
+diff -ruN a/src/main.rs b/src/main.rs
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -346,90 +346,9 @@
+         }
+     }
+ 
+-    // inotify watch instead of an mtime poll, so an idle session never wakes
+-    // the CPU. Watch the directory, not the file: editor atomic-saves replace
+-    // the file's inode, which would silently kill a file-level watch.
+-    {
+-        use inotify::{Inotify, WatchMask};
+-        use smithay::reexports::calloop::{Interest, Mode, PostAction, generic::Generic};
+-        use std::os::fd::AsFd;
+-
+-        let config_path = driftwm::config::config_path();
+-        data.config_file_mtime = std::fs::metadata(&config_path)
+-            .and_then(|m| m.modified())
+-            .ok();
+-        // Resolve symlinks so a config linked from a dotfiles repo is watched at
+-        // its real location; fall back to the literal path when it doesn't exist
+-        // yet, so a later CREATE still fires.
+-        let watch_path =
+-            std::fs::canonicalize(&config_path).unwrap_or_else(|_| config_path.clone());
+-        let config_dir = watch_path.parent().map(|p| p.to_owned());
+-        let config_name = watch_path.file_name().map(|n| n.to_owned());
+-
+-        match (config_dir, Inotify::init()) {
+-            (Some(config_dir), Ok(mut inotify)) => {
+-                if let Err(e) = inotify.watches().add(
+-                    &config_dir,
+-                    WatchMask::CLOSE_WRITE | WatchMask::MOVED_TO | WatchMask::CREATE,
+-                ) {
+-                    tracing::warn!("Config hot-reload disabled: cannot watch {config_dir:?}: {e}");
+-                } else {
+-                    // calloop only hands the callback a shared ref to the Generic's
+-                    // payload, but read_events needs &mut. Poll a dup'd fd (same
+-                    // inotify description) and keep the instance in the closure,
+-                    // where it can be read mutably.
+-                    match inotify.as_fd().try_clone_to_owned() {
+-                        Ok(watch_fd) => {
+-                            let source = Generic::new(watch_fd, Interest::READ, Mode::Level);
+-                            let registered = event_loop.handle().insert_source(
+-                                source,
+-                                move |_, _, data: &mut DriftWm| {
+-                                    let mut buffer = [0u8; 1024];
+-                                    let touched = match inotify.read_events(&mut buffer) {
+-                                        Ok(events) => events
+-                                            .filter_map(|e| e.name)
+-                                            .any(|n| Some(n) == config_name.as_deref()),
+-                                        Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+-                                            false
+-                                        }
+-                                        Err(e) => {
+-                                            tracing::warn!("inotify read error: {e}");
+-                                            false
+-                                        }
+-                                    };
+-                                    // One save can emit several events (e.g. CREATE +
+-                                    // MOVED_TO on an atomic rename); reload only when
+-                                    // the file's mtime actually advances.
+-                                    if touched {
+-                                        let mtime = std::fs::metadata(&config_path)
+-                                            .and_then(|m| m.modified())
+-                                            .ok();
+-                                        if mtime != data.config_file_mtime && mtime.is_some() {
+-                                            data.config_file_mtime = mtime;
+-                                            data.reload_config();
+-                                        }
+-                                    }
+-                                    Ok(PostAction::Continue)
+-                                },
+-                            );
+-                            if let Err(e) = registered {
+-                                tracing::warn!("Config hot-reload disabled: {e}");
+-                            }
+-                        }
+-                        Err(e) => {
+-                            tracing::warn!("Config hot-reload disabled: fd clone failed: {e}");
+-                        }
+-                    }
+-                }
+-            }
+-            (None, _) => {
+-                tracing::warn!("Config hot-reload disabled: config path has no parent directory");
+-            }
+-            (_, Err(e)) => {
+-                tracing::warn!("Config hot-reload disabled: inotify init failed: {e}");
+-            }
+-        }
+-    }
++    // HUB-OS PATCH P12: there is no config hot reload. The inotify watch on the
++    // config file's folder is removed (and the `reload-config` action, see
++    // config/parse.rs): the config is read once at start, a change means a restart.
+ 
+     // Drives the off-screen frame-callback heartbeat when no rendering is
+     // happening (#141); see send_frame_callbacks_fallback. Must stay strictly
