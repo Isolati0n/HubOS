@@ -1,0 +1,34 @@
+H# start 2026-10-10 20:55:33 cand=c-go suite=pid1wedge cpus_seen=4 loadavg_at_start=['0.78', '0.57', '0.49']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     7.80 c[?7l[2JCH STAGE1 up=6.11
+H     7.85 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H     7.91 CH SUP-START up=6.22
+H     8.04 CH t=0.1 CHAOS start cand=c-go suite=pid1wedge seed=120 cpus=2
+H    13.74 CH S6RC-UP up=12.05
+H    14.20 CH t=6.2 BOOT-OK up=12.51 ok=1 (seconds since kernel start; waited 5.9)
+H    14.30 CH t=6.3 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=17980 memavail_kb=624600 init_side_cpu_ticks=233
+H    19.20 CH t=11.2 INJECT pid1-wedge (held stopped by ptrace)
+H    19.22 PID 1 held stopped
+H    24.23 CH t=16.3 PID1-STATE t guard=S watchdog_dev=true
+H    24.37 CH t=16.4 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=20776 memavail_kb=624604 init_side_cpu_ticks=326
+H    29.25 CH t=21.3 PID1-STATE t guard=S watchdog_dev=true
+H    34.26 CH t=26.3 PID1-STATE t guard=S watchdog_dev=true
+H    34.44 CH t=26.5 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=22580 memavail_kb=623604 init_side_cpu_ticks=417
+H    39.28 CH t=31.3 PID1-STATE t guard=S watchdog_dev=true
+H    44.30 CH t=36.3 PID1-STATE t guard=S watchdog_dev=true
+H    44.50 CH t=36.5 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=22720 memavail_kb=623604 init_side_cpu_ticks=500
+H    49.31 CH t=41.3 PID1-STATE t guard=S watchdog_dev=true
+H    54.33 CH t=46.4 PID1-STATE t guard=S watchdog_dev=true
+H    54.57 CH t=46.6 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=22792 memavail_kb=623604 init_side_cpu_ticks=581
+H    54.84 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    63.13 Booting from ROM..c[?7l[2JCH STAGE1 up=6.46
+H    63.20 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H    63.24 CH SUP-START up=6.58
+H    63.42 CH t=0.1 CHAOS start cand=c-go suite=pid1wedge seed=120 cpus=2
+H    70.15 CH S6RC-UP up=13.49
+H    70.56 CH t=7.2 BOOT-OK up=13.89 ok=1 (seconds since kernel start; waited 6.9)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 71s, loadavg ['1.14', '0.72', '0.55']
+H# end wall=70.6s launches=1 suite_done=True
