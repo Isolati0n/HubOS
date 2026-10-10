@@ -1,0 +1,1 @@
+svlogd: warning/fatal lines (3859 'no functional log directories' after each supervisor kill, expected) removed from the faults log; the panic trace at its end is kept.

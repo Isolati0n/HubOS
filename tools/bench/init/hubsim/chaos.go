@@ -116,7 +116,11 @@ func supOf(svc string) int {
 	}
 	for _, p := range procs() {
 		if comm(p) == n || strings.HasPrefix(cmdline(p), n+" ") || cmdline(p) == n {
-			for _, w := range strings.Fields(cmdline(p))[1:] {
+			fl := strings.Fields(cmdline(p))
+			if len(fl) < 2 { // the process exited between the listing and the read: empty command line
+				continue
+			}
+			for _, w := range fl[1:] {
 				if w == svc || strings.HasSuffix(w, "/"+svc) || strings.HasSuffix(w, "-"+svc) {
 					return p
 				}

@@ -1,0 +1,475 @@
+H# start 2026-10-10 17:53:56 cand=runit suite=faults cpus_seen=4 loadavg_at_start=['0.58', '0.57', '0.50']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.49 Booting from ROM..c[?7l[2JCH STAGE1 up=2.85
+H     4.55 CH CAND runit pid1=runit stage2=runsvdir
+H     4.61 CH SUP-START up=2.98
+H     4.68 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.69 - runit: enter stage: /etc/runit/1
+H     4.70 - runit: leave stage: /etc/runit/1
+H     4.71 - runit: enter stage: /etc/runit/2
+H     4.74 CH t=0.1 CHAOS start cand=runit suite=faults seed=200 cpus=2
+H    10.53 CH t=5.9 BOOT-OK up=8.89 ok=1 (seconds since kernel start; waited 5.6)
+H    10.70 CH t=6.0 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=743416 init_side_cpu_ticks=226
+H    15.54 CH t=10.9 STEP 1 fKill
+H    19.41 CH t=14.7 EV ev=1 fault=kill target=seatd rec=3.66 ok=1 fixed=0 
+H    20.75 CH t=16.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=741440 init_side_cpu_ticks=230
+H    22.42 CH t=17.8 STEP 2 fKill
+H    24.25 CH t=19.6 EV ev=2 fault=kill target=udevd rec=1.62 ok=1 fixed=0 
+H    27.25 CH t=22.6 STEP 3 fKill
+H    27.63 CH t=23.0 EV ev=3 fault=kill target=dbus rec=0.17 ok=1 fixed=0 
+H    30.64 CH t=26.0 STEP 4 fKill
+H    30.86 CH t=26.2 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=830792 init_side_cpu_ticks=233
+H    34.16 CH t=29.5 EV ev=4 fault=kill target=driftwm rec=3.31 ok=1 fixed=0 
+H    37.17 CH t=32.5 STEP 5 fKill
+H    38.64 CH t=34.0 EV ev=5 fault=kill target=waybar rec=1.26 ok=1 fixed=0 
+H    40.94 CH t=36.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=742632 init_side_cpu_ticks=236
+H    41.65 CH t=37.0 STEP 6 fKill
+H    44.82 CH t=40.2 EV ev=6 fault=kill target=hubd rec=2.95 ok=1 fixed=0 
+H    47.83 CH t=43.2 STEP 7 fKill
+H    50.99 CH t=46.3 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=748596 init_side_cpu_ticks=239
+H    52.28 CH t=47.6 EV ev=7 fault=kill target=seatd rec=4.22 ok=1 fixed=0 
+H    55.28 CH t=50.6 STEP 8 fKill
+H    57.41 CH t=52.7 EV ev=8 fault=kill target=udevd rec=1.91 ok=1 fixed=0 
+H    60.41 CH t=55.7 STEP 9 fKill
+H    60.84 CH t=56.2 EV ev=9 fault=kill target=dbus rec=0.20 ok=1 fixed=0 
+H    61.04 CH t=56.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=747336 init_side_cpu_ticks=241
+H    63.84 CH t=59.2 STEP 10 fKill
+H    68.07 CH t=63.4 EV ev=10 fault=kill target=driftwm rec=4.01 ok=1 fixed=0 
+H    71.07 CH t=66.4 STEP 11 fKill
+H    71.12 CH t=66.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=747616 init_side_cpu_ticks=245
+H    72.56 CH t=67.9 EV ev=11 fault=kill target=waybar rec=1.28 ok=1 fixed=0 
+H    75.57 CH t=70.9 STEP 12 fKill
+H    77.75 CH t=73.1 EV ev=12 fault=kill target=hubd rec=1.97 ok=1 fixed=0 
+H    80.75 CH t=76.1 STEP 13 fKill
+H    81.21 CH t=76.5 SAMPLE zombies=1 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=784704 init_side_cpu_ticks=249
+H    84.95 CH t=80.3 EV ev=13 fault=kill target=seatd rec=3.98 ok=1 fixed=0 
+H    87.95 CH t=83.3 STEP 14 fKill
+H    89.94 CH t=85.3 EV ev=14 fault=kill target=udevd rec=1.77 ok=1 fixed=0 
+H    91.28 CH t=86.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=736824 init_side_cpu_ticks=251
+H    92.94 CH t=88.3 STEP 15 fKill
+H    93.33 CH t=88.7 EV ev=15 fault=kill target=dbus rec=0.14 ok=1 fixed=0 
+H    96.34 CH t=91.7 STEP 16 fKill
+H   100.52 CH t=95.9 EV ev=16 fault=kill target=driftwm rec=3.97 ok=1 fixed=0 
+H   101.33 CH t=96.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745140 init_side_cpu_ticks=255
+H   103.52 CH t=98.9 STEP 17 fKill
+H   105.02 CH t=100.4 EV ev=17 fault=kill target=waybar rec=1.29 ok=1 fixed=0 
+H   108.02 CH t=103.4 STEP 18 fKill
+H   110.09 CH t=105.4 EV ev=18 fault=kill target=hubd rec=1.86 ok=1 fixed=0 
+H   111.40 CH t=106.7 SAMPLE zombies=0 nproc=88 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745140 init_side_cpu_ticks=257
+H   113.10 CH t=108.4 STEP 19 fHang
+H   121.48 CH t=116.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=744888 init_side_cpu_ticks=258
+H   131.55 CH t=126.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=744888 init_side_cpu_ticks=259
+H   141.61 CH t=136.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=742116 init_side_cpu_ticks=259
+H   151.67 CH t=147.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=742116 init_side_cpu_ticks=259
+H   161.76 CH t=157.1 SAMPLE zombies=0 nproc=88 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=742116 init_side_cpu_ticks=259
+H   171.81 CH t=167.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=742116 init_side_cpu_ticks=260
+H   173.33 CH t=168.7 UNRECOVERED ev=19 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   173.69 CH t=169.0 STATUS run: /run/service/dbus/: (pid 1421) 81s; run: log: (pid 120) 168s
+H   173.69 CH t=169.0 STATUS run: /run/service/driftwm/: (pid 1462) 77s; run: log: (pid 124) 168s
+H   173.70 CH t=169.0 STATUS run: /run/service/guard/: (pid 129) 168s
+H   173.70 CH t=169.0 STATUS run: /run/service/hubd/: (pid 1641) 65s; run: log: (pid 125) 168s
+H   173.70 CH t=169.0 STATUS run: /run/service/seatd/: (pid 1236) 93s; run: log: (pid 117) 169s
+H   173.70 CH t=169.0 STATUS run: /run/service/udevd/: (pid 1370) 86s; run: log: (pid 116) 169s
+H   173.71 CH t=169.0 STATUS run: /run/service/waybar/: (pid 1587) 70s; run: log: (pid 118) 169s
+H   173.75 CH t=169.1 operator-action target=driftwm why="driftwm stopped"
+H   174.25 ok: run: /run/service/driftwm: (pid 2362) 1s
+H   177.45 CH t=172.8 EV ev=19 fault=hang-stop target=driftwm rec=62.95 ok=0 fixed=1 
+H   180.46 CH t=175.8 STEP 20 fHang
+H   180.75 CH t=176.1 EV ev=20 fault=hang-spin target=driftwm rec=0.08 ok=1 fixed=0 
+H   181.86 CH t=177.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=733804 init_side_cpu_ticks=264
+H   183.76 CH t=179.1 STEP 21 fHang
+H   191.97 CH t=187.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=733804 init_side_cpu_ticks=264
+H   202.04 CH t=197.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=733804 init_side_cpu_ticks=266
+H   212.11 CH t=207.4 SAMPLE zombies=1 nproc=88 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=733804 init_side_cpu_ticks=266
+H   222.19 CH t=217.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=733804 init_side_cpu_ticks=267
+H   232.26 CH t=227.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=733804 init_side_cpu_ticks=268
+H   242.33 CH t=237.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=733804 init_side_cpu_ticks=268
+H   244.35 CH t=239.6 UNRECOVERED ev=21 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   245.35 CH t=240.7 STATUS run: /run/service/dbus/: (pid 1421) 153s; run: log: (pid 120) 240s
+H   245.35 CH t=240.7 STATUS run: /run/service/driftwm/: (pid 2362) 72s; run: log: (pid 124) 240s
+H   245.35 CH t=240.7 STATUS run: /run/service/guard/: (pid 129) 240s
+H   245.35 CH t=240.7 STATUS run: /run/service/hubd/: (pid 2405) 70s; run: log: (pid 125) 240s
+H   245.36 CH t=240.7 STATUS run: /run/service/seatd/: (pid 1236) 165s; run: log: (pid 117) 241s
+H   245.36 CH t=240.7 STATUS run: /run/service/udevd/: (pid 1370) 158s; run: log: (pid 116) 241s
+H   245.36 CH t=240.7 STATUS run: /run/service/waybar/: (pid 2410) 70s; run: log: (pid 118) 241s
+H   245.41 CH t=240.7 operator-action target=driftwm why="driftwm stopped"
+H   245.56 ok: run: /run/service/driftwm: (pid 3178) 0s
+H   250.86 CH t=246.2 EV ev=21 fault=hang-stop target=driftwm rec=65.04 ok=0 fixed=1 
+H   252.39 CH t=247.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=748168 init_side_cpu_ticks=272
+H   253.86 CH t=249.2 STEP 22 fHang
+H   262.45 CH t=257.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=747420 init_side_cpu_ticks=273
+H   272.54 CH t=267.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=747180 init_side_cpu_ticks=273
+H   282.63 CH t=278.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=746960 init_side_cpu_ticks=273
+H   292.73 CH t=288.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=746708 init_side_cpu_ticks=273
+H   302.81 CH t=298.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=746476 init_side_cpu_ticks=274
+H   312.93 CH t=308.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=746244 init_side_cpu_ticks=274
+H   316.15 CH t=311.5 UNRECOVERED ev=22 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   316.63 CH t=312.0 STATUS run: /run/service/dbus/: (pid 1421) 224s; run: log: (pid 120) 311s
+H   316.63 CH t=312.0 STATUS run: /run/service/driftwm/: (pid 3202) 70s; run: log: (pid 124) 311s
+H   316.63 CH t=312.0 STATUS run: /run/service/guard/: (pid 129) 311s
+H   316.63 CH t=312.0 STATUS run: /run/service/hubd/: (pid 3243) 68s; run: log: (pid 125) 311s
+H   316.64 CH t=312.0 STATUS run: /run/service/seatd/: (pid 1236) 236s; run: log: (pid 117) 312s
+H   316.64 CH t=312.0 STATUS run: /run/service/udevd/: (pid 1370) 229s; run: log: (pid 116) 312s
+H   316.64 CH t=312.0 STATUS run: /run/service/waybar/: (pid 3238) 68s; run: log: (pid 118) 312s
+H   317.82 CH t=313.2 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   317.93 ok: run: /run/service/driftwm: (pid 3995) 0s
+H   322.77 CH t=318.1 EV ev=22 fault=hang-spin target=driftwm rec=64.58 ok=0 fixed=1 
+H   322.99 CH t=318.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745236 init_side_cpu_ticks=279
+H   325.77 CH t=321.1 STEP 23 fHang
+H   333.05 CH t=328.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745236 init_side_cpu_ticks=280
+H   343.11 CH t=338.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745236 init_side_cpu_ticks=280
+H   353.24 CH t=348.6 SAMPLE zombies=0 nproc=90 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745236 init_side_cpu_ticks=281
+H   363.32 CH t=358.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745236 init_side_cpu_ticks=281
+H   373.43 CH t=368.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745236 init_side_cpu_ticks=282
+H   383.50 CH t=378.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=745236 init_side_cpu_ticks=282
+H   386.00 CH t=381.3 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   386.41 CH t=381.7 STATUS run: /run/service/dbus/: (pid 1421) 294s; run: log: (pid 120) 381s
+H   386.41 CH t=381.7 STATUS run: /run/service/driftwm/: (pid 4007) 68s; run: log: (pid 124) 381s
+H   386.41 CH t=381.7 STATUS run: /run/service/guard/: (pid 129) 381s
+H   386.42 CH t=381.8 STATUS run: /run/service/hubd/: (pid 4052) 66s; run: log: (pid 125) 381s
+H   386.42 CH t=381.8 STATUS run: /run/service/seatd/: (pid 1236) 306s; run: log: (pid 117) 382s
+H   386.42 CH t=381.8 STATUS run: /run/service/udevd/: (pid 1370) 299s; run: log: (pid 116) 382s
+H   386.43 CH t=381.8 STATUS run: /run/service/waybar/: (pid 4057) 65s; run: log: (pid 118) 382s
+H   386.48 CH t=381.8 operator-action target=driftwm why="driftwm stopped"
+H   387.93 ok: run: /run/service/driftwm: (pid 4791) 0s
+H   391.33 CH t=386.7 EV ev=23 fault=hang-stop target=driftwm rec=63.10 ok=0 fixed=1 
+H   393.57 CH t=388.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=757892 init_side_cpu_ticks=285
+H   394.34 CH t=389.7 STEP 24 fHang
+H   394.65 CH t=390.0 EV ev=24 fault=hang-spin target=driftwm rec=0.10 ok=1 fixed=0 
+H   397.65 CH t=393.0 STEP 25 fStorm
+H   403.72 CH t=399.1 SAMPLE zombies=0 nproc=90 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=757136 init_side_cpu_ticks=289
+H   413.78 CH t=409.1 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=755620 init_side_cpu_ticks=293
+H   423.84 CH t=419.2 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=755620 init_side_cpu_ticks=298
+H   433.93 CH t=429.3 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=755116 init_side_cpu_ticks=305
+H   438.01 CH t=433.3 STATUS run: /run/service/dbus/: (pid 1421) 345s; run: log: (pid 120) 432s
+H   438.01 CH t=433.3 STATUS run: /run/service/driftwm/: (pid 4791) 50s; run: log: (pid 124) 432s
+H   438.01 CH t=433.3 STATUS run: /run/service/guard/: (pid 129) 432s
+H   438.01 CH t=433.3 STATUS run: /run/service/hubd/: (pid 5773) 0s; run: log: (pid 125) 432s
+H   438.01 CH t=433.3 STATUS run: /run/service/seatd/: (pid 1236) 357s; run: log: (pid 117) 433s
+H   438.02 CH t=433.4 STATUS run: /run/service/udevd/: (pid 1370) 350s; run: log: (pid 116) 433s
+H   438.02 CH t=433.4 STATUS run: /run/service/waybar/: (pid 4843) 48s; run: log: (pid 118) 433s
+H   438.02 CH t=433.4 STORM target=hubd dur=40 starts=33 starts_last10s=9 cpu_ticks_init_side=21 bar-up
+H   439.36 CH t=434.7 EV ev=25 fault=storm target=hubd rec=1.14 ok=1 fixed=0 starts=33 last10=9 cpu=21 bar-up
+H   442.37 CH t=437.7 STEP 26 fStorm
+H   443.98 CH t=439.3 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=844324 init_side_cpu_ticks=309
+H   454.04 CH t=449.4 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=801040 init_side_cpu_ticks=320
+H   464.09 CH t=459.4 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=808608 init_side_cpu_ticks=330
+H   474.15 CH t=469.5 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=807904 init_side_cpu_ticks=343
+H   482.79 CH t=478.1 STATUS run: /run/service/dbus/: (pid 1421) 390s; run: log: (pid 120) 477s
+H   482.79 CH t=478.1 STATUS down: /run/service/driftwm/: 1s, normally up, want up; run: log: (pid 124) 477s
+H   482.79 CH t=478.1 STATUS run: /run/service/guard/: (pid 129) 477s
+H   482.80 CH t=478.1 STATUS run: /run/service/hubd/: (pid 6759) 2s; run: log: (pid 125) 477s
+H   482.80 CH t=478.1 STATUS run: /run/service/seatd/: (pid 1236) 402s; run: log: (pid 117) 478s
+H   482.80 CH t=478.1 STATUS run: /run/service/udevd/: (pid 1370) 395s; run: log: (pid 116) 478s
+H   482.80 CH t=478.1 STATUS run: /run/service/waybar/: (pid 6792) 0s; run: log: (pid 118) 478s
+H   482.80 CH t=478.1 STORM target=driftwm dur=40 starts=26 starts_last10s=7 cpu_ticks_init_side=46 bar-down
+H   484.21 CH t=479.5 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=749348 init_side_cpu_ticks=352
+H   486.75 CH t=482.1 EV ev=26 fault=storm target=driftwm rec=3.74 ok=1 fixed=0 starts=26 last10=7 cpu=46 bar-down
+H   489.75 CH t=485.1 STEP 27 fDep
+H   494.26 CH t=489.6 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=820440 init_side_cpu_ticks=358
+H   504.31 CH t=499.6 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13128 memavail_kb=764948 init_side_cpu_ticks=371
+H   509.62 CH t=505.0 EV ev=27 fault=dep-slow target=seatd rec=19.66 ok=1 fixed=0 
+H   509.62 CH t=505.0 DEPSTARTS mode=slow seatd=1 driftwm=11 waybar=8 hubd=4
+H   512.63 CH t=508.0 STEP 28 fDep
+H   514.39 CH t=509.7 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=788860 init_side_cpu_ticks=380
+H   524.48 CH t=519.8 SAMPLE zombies=0 nproc=82 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=818424 init_side_cpu_ticks=397
+H   534.56 CH t=529.9 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=746084 init_side_cpu_ticks=413
+H   538.21 CH t=533.5 EV ev=28 fault=dep-fail target=seatd rec=5.35 ok=1 fixed=0 
+H   538.21 CH t=533.5 DEPSTARTS mode=fail seatd=20 driftwm=15 waybar=12 hubd=2
+H   541.21 CH t=536.5 STEP 29 fDisk
+H   541.26 CH t=536.6 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   544.71 CH t=540.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=743348 init_side_cpu_ticks=415
+H   554.76 CH t=550.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=743348 init_side_cpu_ticks=416
+H   562.35 CH t=557.7 STATUS run: /run/service/dbus/: (pid 1421) 470s; run: log: (pid 120) 557s
+H   562.35 CH t=557.7 STATUS run: /run/service/driftwm/: (pid 7951) 29s; run: log: (pid 124) 557s
+H   562.36 CH t=557.7 STATUS run: /run/service/guard/: (pid 129) 557s
+H   562.36 CH t=557.7 STATUS run: /run/service/hubd/: (pid 8007) 26s; run: log: (pid 125) 557s
+H   562.36 CH t=557.7 STATUS run: /run/service/seatd/: (pid 7949) 29s; run: log: (pid 117) 558s
+H   562.36 CH t=557.7 STATUS run: /run/service/udevd/: (pid 1370) 475s; run: log: (pid 116) 558s
+H   562.36 CH t=557.7 STATUS run: /run/service/waybar/: (pid 8132) 16s; run: log: (pid 118) 558s
+H   562.77 CH t=558.1 EV ev=29 fault=disk-full target=waybar rec=0.15 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H   564.85 CH t=560.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=743100 init_side_cpu_ticks=418
+H   565.78 CH t=561.1 STEP 30 fDisk
+H   565.82 CH t=561.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   574.92 CH t=570.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=743100 init_side_cpu_ticks=418
+H   584.98 CH t=580.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13192 memavail_kb=743100 init_side_cpu_ticks=418
+H   586.80 CH t=582.1 STATUS run: /run/service/dbus/: (pid 1421) 494s; run: log: (pid 120) 581s
+H   586.80 CH t=582.1 STATUS run: /run/service/driftwm/: (pid 7951) 53s; run: log: (pid 124) 581s
+H   586.80 CH t=582.1 STATUS run: /run/service/guard/: (pid 129) 581s
+H   586.80 CH t=582.1 STATUS run: /run/service/hubd/: (pid 8007) 50s; run: log: (pid 125) 581s
+H   586.81 CH t=582.1 STATUS run: /run/service/seatd/: (pid 7949) 53s; run: log: (pid 117) 582s
+H   586.81 CH t=582.1 STATUS run: /run/service/udevd/: (pid 1370) 499s; run: log: (pid 116) 582s
+H   586.81 CH t=582.1 STATUS run: /run/service/waybar/: (pid 8416) 14s; run: log: (pid 118) 582s
+H   587.25 CH t=582.6 EV ev=30 fault=disk-full target=waybar rec=0.16 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H   590.25 CH t=585.6 STEP 31 fSupKill
+H   592.19 CH t=587.5 EV ev=31 fault=supervisor-killed target=driftwm rec=0.19 ok=1 fixed=0 child_kept_running=1
+H   595.06 CH t=590.4 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13100 memavail_kb=710552 init_side_cpu_ticks=370
+H   598.23 CH t=593.6 EV ev=32 fault=after-supervisor-killed target=driftwm rec=3.77 ok=1 fixed=0 supervisor_back=1
+H   601.24 CH t=596.6 STEP 32 fSupKill
+H   603.25 CH t=598.6 EV ev=33 fault=supervisor-killed target=waybar rec=0.27 ok=1 fixed=0 child_kept_running=1
+H   605.17 CH t=600.5 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13116 memavail_kb=728680 init_side_cpu_ticks=334
+H   607.76 CH t=603.1 EV ev=34 fault=after-supervisor-killed target=waybar rec=2.24 ok=1 fixed=0 supervisor_back=1
+H   610.77 CH t=606.1 STEP 33 fSupKill
+H   612.70 CH t=608.0 EV ev=35 fault=supervisor-killed target=driftwm rec=0.16 ok=1 fixed=0 child_kept_running=1
+H   615.30 CH t=610.6 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13180 memavail_kb=842608 init_side_cpu_ticks=340
+H   619.11 CH t=614.4 EV ev=36 fault=after-supervisor-killed target=driftwm rec=4.15 ok=1 fixed=0 supervisor_back=1
+H   622.11 CH t=617.4 STEP 34 fSupKill
+H   624.06 CH t=619.4 EV ev=37 fault=supervisor-killed target=waybar rec=0.17 ok=1 fixed=0 child_kept_running=1
+H   625.38 CH t=620.7 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13184 memavail_kb=753176 init_side_cpu_ticks=337
+H   627.90 CH t=623.2 EV ev=38 fault=after-supervisor-killed target=waybar rec=1.59 ok=1 fixed=0 supervisor_back=1
+H   630.91 CH t=626.2 STEP 35 fSupKill
+H   632.88 CH t=628.2 EV ev=39 fault=supervisor-killed target=driftwm rec=0.21 ok=1 fixed=0 child_kept_running=1
+H   635.42 CH t=630.8 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13132 memavail_kb=799856 init_side_cpu_ticks=337
+H   639.33 CH t=634.7 EV ev=40 fault=after-supervisor-killed target=driftwm rec=4.19 ok=1 fixed=0 supervisor_back=1
+H   642.33 CH t=637.7 STEP 36 fSupKill
+H   644.30 CH t=639.6 EV ev=41 fault=supervisor-killed target=waybar rec=0.20 ok=1 fixed=0 child_kept_running=1
+H   645.49 CH t=640.8 SAMPLE zombies=0 nproc=90 init_side_fds=108 init_side_rss_kb=13208 memavail_kb=743156 init_side_cpu_ticks=335
+H   648.10 CH t=643.4 EV ev=42 fault=after-supervisor-killed target=waybar rec=1.54 ok=1 fixed=0 supervisor_back=1
+H   651.10 CH t=646.4 STEP 37 fScanKill
+H   651.13 - runit: leave stage: /etc/runit/2
+H   651.14 - runit: enter stage: /etc/runit/3
+H   651.15 CH runit stage 3 (stage 2 returned or shutdown)
+H   651.15 - runit: leave stage: /etc/runit/3
+H   651.15 - runit: sending KILL signal to all processes...
+H   651.17 - runit: system reboot.
+H   651.18 [  649.580628] watchdog: watchdog0: watchdog did not stop!
+H   651.19 [  649.588869] reboot: Restarting system
+H   651.30 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   651.31 Booting from ROM...
+H   656.14 c[?7l[2JCH STAGE1 up=3.45
+H   656.19 CH CAND runit pid1=runit stage2=runsvdir
+H   656.26 CH SUP-START up=3.58
+H   656.32 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H   656.33 - runit: enter stage: /etc/runit/1
+H   656.34 - runit: leave stage: /etc/runit/1
+H   656.35 - runit: enter stage: /etc/runit/2
+H   656.41 CH t=0.1 CHAOS start cand=runit suite=faults seed=200 cpus=2
+H   663.29 CH t=7.0 BOOT-OK up=10.61 ok=1 (seconds since kernel start; waited 6.7)
+H   663.43 CH t=7.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=755960 init_side_cpu_ticks=278
+H   668.30 CH t=12.0 STEP 1 fKill
+H   672.15 CH t=15.8 EV ev=1 fault=kill target=seatd rec=3.64 ok=1 fixed=0 
+H   673.49 CH t=17.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=744164 init_side_cpu_ticks=283
+H   675.15 CH t=18.8 STEP 2 fKill
+H   677.26 CH t=20.9 EV ev=2 fault=kill target=udevd rec=1.90 ok=1 fixed=0 
+H   680.26 CH t=23.9 STEP 3 fKill
+H   680.62 CH t=24.3 EV ev=3 fault=kill target=dbus rec=0.15 ok=1 fixed=0 
+H   683.55 CH t=27.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=743408 init_side_cpu_ticks=285
+H   683.63 CH t=27.3 STEP 4 fKill
+H   688.03 CH t=31.7 EV ev=4 fault=kill target=driftwm rec=4.19 ok=1 fixed=0 
+H   691.03 CH t=34.7 STEP 5 fKill
+H   692.64 CH t=36.3 EV ev=5 fault=kill target=waybar rec=1.39 ok=1 fixed=0 
+H   693.60 CH t=37.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=747132 init_side_cpu_ticks=290
+H   695.64 CH t=39.3 STEP 6 fKill
+H   697.63 CH t=41.3 EV ev=6 fault=kill target=hubd rec=1.77 ok=1 fixed=0 
+H   700.63 CH t=44.3 STEP 7 fKill
+H   703.69 CH t=47.4 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=760740 init_side_cpu_ticks=295
+H   704.33 CH t=48.0 EV ev=7 fault=kill target=seatd rec=3.48 ok=1 fixed=0 
+H   707.33 CH t=51.0 STEP 8 fKill
+H   709.22 CH t=52.9 EV ev=8 fault=kill target=udevd rec=1.67 ok=1 fixed=0 
+H   712.23 CH t=55.9 STEP 9 fKill
+H   712.63 CH t=56.3 EV ev=9 fault=kill target=dbus rec=0.19 ok=1 fixed=0 
+H   713.75 CH t=57.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=758980 init_side_cpu_ticks=297
+H   715.63 CH t=59.3 STEP 10 fKill
+H   720.00 CH t=63.7 EV ev=10 fault=kill target=driftwm rec=4.15 ok=1 fixed=0 
+H   723.00 CH t=66.7 STEP 11 fKill
+H   723.81 CH t=67.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=759484 init_side_cpu_ticks=301
+H   724.67 CH t=68.3 EV ev=11 fault=kill target=waybar rec=1.45 ok=1 fixed=0 
+H   727.67 CH t=71.3 STEP 12 fKill
+H   729.84 CH t=73.5 EV ev=12 fault=kill target=hubd rec=1.96 ok=1 fixed=0 
+H   732.84 CH t=76.5 STEP 13 fKill
+H   733.86 CH t=77.5 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=761380 init_side_cpu_ticks=303
+H   737.41 CH t=81.1 EV ev=13 fault=kill target=seatd rec=4.35 ok=1 fixed=0 
+H   740.41 CH t=84.1 STEP 14 fKill
+H   742.47 CH t=86.1 EV ev=14 fault=kill target=udevd rec=1.84 ok=1 fixed=0 
+H   743.96 CH t=87.6 SAMPLE zombies=0 nproc=88 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=757380 init_side_cpu_ticks=307
+H   745.47 CH t=89.1 STEP 15 fKill
+H   745.85 CH t=89.5 EV ev=15 fault=kill target=dbus rec=0.15 ok=1 fixed=0 
+H   748.85 CH t=92.5 STEP 16 fKill
+H   752.54 CH t=96.2 EV ev=16 fault=kill target=driftwm rec=3.48 ok=1 fixed=0 
+H   754.01 CH t=97.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=762380 init_side_cpu_ticks=312
+H   755.55 CH t=99.2 STEP 17 fKill
+H   757.09 CH t=100.8 EV ev=17 fault=kill target=waybar rec=1.34 ok=1 fixed=0 
+H   760.09 CH t=103.8 STEP 18 fKill
+H   762.13 CH t=105.8 EV ev=18 fault=kill target=hubd rec=1.83 ok=1 fixed=0 
+H   764.08 CH t=107.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=761120 init_side_cpu_ticks=314
+H   765.13 CH t=108.8 STEP 19 fHang
+H   774.15 CH t=117.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=758348 init_side_cpu_ticks=314
+H   784.21 CH t=127.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=758348 init_side_cpu_ticks=314
+H   794.28 CH t=137.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=757592 init_side_cpu_ticks=315
+H   804.34 CH t=148.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=756332 init_side_cpu_ticks=315
+H   814.40 CH t=158.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=753560 init_side_cpu_ticks=328
+H   824.47 CH t=168.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13236 memavail_kb=753560 init_side_cpu_ticks=328
+H   825.25 CH t=168.9 UNRECOVERED ev=19 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   825.60 CH t=169.3 STATUS run: /run/service/dbus/: (pid 1422) 80s; run: log: (pid 121) 168s
+H   825.60 CH t=169.3 STATUS run: /run/service/driftwm/: (pid 1468) 76s; run: log: (pid 116) 168s
+H   825.61 CH t=169.3 STATUS run: /run/service/guard/: (pid 125) 168s
+H   825.61 CH t=169.3 STATUS run: /run/service/hubd/: (pid 1638) 65s; run: log: (pid 127) 168s
+H   825.62 CH t=169.3 STATUS run: /run/service/seatd/: (pid 1240) 92s; run: log: (pid 126) 168s
+H   825.62 CH t=169.3 STATUS run: /run/service/udevd/: (pid 1369) 85s; run: log: (pid 139) 168s
+H   825.62 CH t=169.3 STATUS run: /run/service/waybar/: (pid 1584) 70s; run: log: (pid 118) 169s
+H   825.66 CH t=169.3 operator-action target=driftwm why="driftwm stopped"
+H   827.01 ok: run: /run/service/driftwm: (pid 2369) 0s
+H   830.50 CH t=174.2 EV ev=19 fault=hang-stop target=driftwm rec=63.19 ok=0 fixed=1 
+H   833.50 CH t=177.2 STEP 20 fHang
+H   833.79 CH t=177.5 EV ev=20 fault=hang-spin target=driftwm rec=0.08 ok=1 fixed=0 
+H   834.55 CH t=178.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750804 init_side_cpu_ticks=335
+H   836.80 CH t=180.5 STEP 21 fHang
+H   844.63 CH t=188.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750580 init_side_cpu_ticks=335
+H   854.69 CH t=198.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750580 init_side_cpu_ticks=336
+H   864.74 CH t=208.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750580 init_side_cpu_ticks=337
+H   874.83 CH t=218.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750580 init_side_cpu_ticks=337
+H   884.92 CH t=228.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750328 init_side_cpu_ticks=338
+H   894.99 CH t=238.7 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750328 init_side_cpu_ticks=338
+H   897.03 CH t=240.7 UNRECOVERED ev=21 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   897.42 CH t=241.1 STATUS run: /run/service/dbus/: (pid 1422) 152s; run: log: (pid 121) 240s
+H   897.42 CH t=241.1 STATUS run: /run/service/driftwm/: (pid 2369) 70s; run: log: (pid 116) 240s
+H   897.42 CH t=241.1 STATUS run: /run/service/guard/: (pid 125) 240s
+H   897.43 CH t=241.1 STATUS run: /run/service/hubd/: (pid 2415) 69s; run: log: (pid 127) 240s
+H   897.43 CH t=241.1 STATUS run: /run/service/seatd/: (pid 1240) 164s; run: log: (pid 126) 240s
+H   897.43 CH t=241.1 STATUS run: /run/service/udevd/: (pid 1369) 157s; run: log: (pid 139) 240s
+H   897.43 CH t=241.1 STATUS run: /run/service/waybar/: (pid 2420) 68s; run: log: (pid 118) 240s
+H   897.49 CH t=241.1 operator-action target=driftwm why="driftwm stopped"
+H   898.01 ok: run: /run/service/driftwm: (pid 3169) 0s
+H   901.61 CH t=245.3 EV ev=21 fault=hang-stop target=driftwm rec=63.32 ok=0 fixed=1 
+H   904.61 CH t=248.3 STEP 22 fHang
+H   905.10 CH t=248.8 SAMPLE zombies=0 nproc=89 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=734704 init_side_cpu_ticks=342
+H   915.19 CH t=258.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=734464 init_side_cpu_ticks=343
+H   925.26 CH t=268.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=734232 init_side_cpu_ticks=343
+H   935.32 CH t=279.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=734232 init_side_cpu_ticks=343
+H   945.39 CH t=289.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=734232 init_side_cpu_ticks=344
+H   955.48 CH t=299.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=734240 init_side_cpu_ticks=344
+H   965.58 CH t=309.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=734244 init_side_cpu_ticks=344
+H   966.22 CH t=309.9 UNRECOVERED ev=22 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   966.64 CH t=310.3 STATUS run: /run/service/dbus/: (pid 1422) 221s; run: log: (pid 121) 309s
+H   966.64 CH t=310.3 STATUS run: /run/service/driftwm/: (pid 3169) 68s; run: log: (pid 116) 309s
+H   966.64 CH t=310.3 STATUS run: /run/service/guard/: (pid 125) 309s
+H   966.65 CH t=310.3 STATUS run: /run/service/hubd/: (pid 3221) 67s; run: log: (pid 127) 309s
+H   966.65 CH t=310.3 STATUS run: /run/service/seatd/: (pid 1240) 233s; run: log: (pid 126) 309s
+H   966.65 CH t=310.3 STATUS run: /run/service/udevd/: (pid 1369) 227s; run: log: (pid 139) 310s
+H   966.66 CH t=310.3 STATUS run: /run/service/waybar/: (pid 3226) 67s; run: log: (pid 118) 310s
+H   967.76 CH t=311.4 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   967.85 ok: run: /run/service/driftwm: (pid 3963) 0s
+H   972.52 CH t=316.2 EV ev=22 fault=hang-spin target=driftwm rec=64.42 ok=0 fixed=1 
+H   975.53 CH t=319.2 STEP 23 fHang
+H   975.69 CH t=319.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750876 init_side_cpu_ticks=348
+H   985.75 CH t=329.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750120 init_side_cpu_ticks=348
+H   995.80 CH t=339.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750120 init_side_cpu_ticks=348
+H  1005.86 CH t=349.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750120 init_side_cpu_ticks=351
+H  1015.91 CH t=359.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750120 init_side_cpu_ticks=351
+H  1025.98 CH t=369.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=750120 init_side_cpu_ticks=351
+H  1035.64 CH t=379.3 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1036.08 CH t=379.7 STATUS run: /run/service/dbus/: (pid 1422) 291s; run: log: (pid 121) 379s
+H  1036.08 CH t=379.7 STATUS run: /run/service/driftwm/: (pid 3987) 67s; run: log: (pid 116) 379s
+H  1036.08 CH t=379.7 STATUS run: /run/service/guard/: (pid 125) 379s
+H  1036.08 CH t=379.7 STATUS run: /run/service/hubd/: (pid 4023) 66s; run: log: (pid 127) 379s
+H  1036.08 CH t=379.7 STATUS run: /run/service/seatd/: (pid 1240) 303s; run: log: (pid 126) 379s
+H  1036.09 CH t=379.8 STATUS run: /run/service/udevd/: (pid 1369) 296s; run: log: (pid 139) 379s
+H  1036.09 CH t=379.8 STATUS run: /run/service/waybar/: (pid 4028) 65s; run: log: (pid 118) 379s
+H  1036.09 CH t=379.8 SAMPLE zombies=0 nproc=89 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749872 init_side_cpu_ticks=352
+H  1036.13 CH t=379.8 operator-action target=driftwm why="driftwm stopped"
+H  1036.60 ok: run: /run/service/driftwm: (pid 4753) 1s
+H  1040.44 CH t=384.1 EV ev=23 fault=hang-stop target=driftwm rec=63.59 ok=0 fixed=1 
+H  1043.45 CH t=387.1 STEP 24 fHang
+H  1046.19 CH t=389.8 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749872 init_side_cpu_ticks=355
+H  1056.30 CH t=400.0 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749872 init_side_cpu_ticks=355
+H  1066.41 CH t=410.1 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749872 init_side_cpu_ticks=356
+H  1076.50 CH t=420.2 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749872 init_side_cpu_ticks=356
+H  1086.66 CH t=430.3 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749620 init_side_cpu_ticks=356
+H  1096.87 CH t=440.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749620 init_side_cpu_ticks=357
+H  1105.84 CH t=449.5 UNRECOVERED ev=24 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H  1106.41 CH t=450.1 STATUS run: /run/service/dbus/: (pid 1422) 361s; run: log: (pid 121) 449s
+H  1106.41 CH t=450.1 STATUS run: /run/service/driftwm/: (pid 4753) 70s; run: log: (pid 116) 449s
+H  1106.41 CH t=450.1 STATUS run: /run/service/guard/: (pid 125) 449s
+H  1106.41 CH t=450.1 STATUS run: /run/service/hubd/: (pid 4773) 69s; run: log: (pid 127) 449s
+H  1106.42 CH t=450.1 STATUS run: /run/service/seatd/: (pid 1240) 373s; run: log: (pid 126) 449s
+H  1106.42 CH t=450.1 STATUS run: /run/service/udevd/: (pid 1369) 366s; run: log: (pid 139) 449s
+H  1106.42 CH t=450.1 STATUS run: /run/service/waybar/: (pid 4808) 67s; run: log: (pid 118) 449s
+H  1106.98 CH t=450.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=749620 init_side_cpu_ticks=358
+H  1107.55 CH t=451.2 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H  1108.11 ok: run: /run/service/driftwm: (pid 5539) 0s
+H  1111.47 CH t=455.1 EV ev=24 fault=hang-spin target=driftwm rec=63.10 ok=0 fixed=1 
+H  1114.48 CH t=458.1 STEP 25 fStorm
+H  1117.05 CH t=460.7 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=755916 init_side_cpu_ticks=365
+H  1127.11 CH t=470.8 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=753144 init_side_cpu_ticks=372
+H  1137.20 CH t=480.9 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=753144 init_side_cpu_ticks=377
+H  1147.30 CH t=491.0 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=753144 init_side_cpu_ticks=383
+H  1154.89 CH t=498.6 STATUS run: /run/service/dbus/: (pid 1422) 410s; run: log: (pid 121) 498s
+H  1154.90 CH t=498.6 STATUS run: /run/service/driftwm/: (pid 5539) 47s; run: log: (pid 116) 498s
+H  1154.90 CH t=498.6 STATUS run: /run/service/guard/: (pid 125) 498s
+H  1154.90 CH t=498.6 STATUS run: /run/service/hubd/: (pid 6493) 1s; run: log: (pid 127) 498s
+H  1154.90 CH t=498.6 STATUS run: /run/service/seatd/: (pid 1240) 422s; run: log: (pid 126) 498s
+H  1154.91 CH t=498.6 STATUS run: /run/service/udevd/: (pid 1369) 415s; run: log: (pid 139) 498s
+H  1154.91 CH t=498.6 STATUS run: /run/service/waybar/: (pid 5597) 45s; run: log: (pid 118) 498s
+H  1154.91 CH t=498.6 STORM target=hubd dur=40 starts=33 starts_last10s=9 cpu_ticks_init_side=23 bar-up
+H  1156.61 CH t=500.3 EV ev=25 fault=storm target=hubd rec=1.50 ok=1 fixed=0 starts=33 last10=9 cpu=23 bar-up
+H  1157.36 CH t=501.0 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=751884 init_side_cpu_ticks=387
+H  1159.62 CH t=503.3 STEP 26 fStorm
+H  1167.42 CH t=511.1 SAMPLE zombies=0 nproc=82 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=817800 init_side_cpu_ticks=398
+H  1177.48 CH t=521.1 SAMPLE zombies=0 nproc=82 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=801920 init_side_cpu_ticks=409
+H  1187.55 CH t=531.2 SAMPLE zombies=0 nproc=82 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=813540 init_side_cpu_ticks=420
+H  1197.62 CH t=541.3 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=754844 init_side_cpu_ticks=431
+H  1200.21 CH t=543.9 STATUS run: /run/service/dbus/: (pid 1422) 455s; run: log: (pid 121) 543s
+H  1200.21 CH t=543.9 STATUS down: /run/service/driftwm/: 1s, normally up, want up; run: log: (pid 116) 543s
+H  1200.21 CH t=543.9 STATUS run: /run/service/guard/: (pid 125) 543s
+H  1200.21 CH t=543.9 STATUS run: /run/service/hubd/: (pid 7527) 0s; run: log: (pid 127) 543s
+H  1200.22 CH t=543.9 STATUS run: /run/service/seatd/: (pid 1240) 467s; run: log: (pid 126) 543s
+H  1200.22 CH t=543.9 STATUS run: /run/service/udevd/: (pid 1369) 460s; run: log: (pid 139) 543s
+H  1200.22 CH t=543.9 STATUS run: /run/service/waybar/: (pid 7529) 0s; run: log: (pid 118) 543s
+H  1200.22 CH t=543.9 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=47 bar-down
+H  1204.37 CH t=548.0 EV ev=26 fault=storm target=driftwm rec=3.94 ok=1 fixed=0 starts=26 last10=6 cpu=47 bar-down
+H  1207.38 CH t=551.0 STEP 27 fDep
+H  1207.78 CH t=551.4 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=776244 init_side_cpu_ticks=440
+H  1217.88 CH t=561.5 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=825376 init_side_cpu_ticks=452
+H  1226.82 CH t=570.5 EV ev=27 fault=dep-slow target=seatd rec=19.22 ok=1 fixed=0 
+H  1226.82 CH t=570.5 DEPSTARTS mode=slow seatd=1 driftwm=11 waybar=8 hubd=2
+H  1227.94 CH t=571.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=758712 init_side_cpu_ticks=460
+H  1229.82 CH t=573.5 STEP 28 fDep
+H  1238.03 CH t=581.7 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=838396 init_side_cpu_ticks=477
+H  1248.09 CH t=591.8 SAMPLE zombies=0 nproc=81 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=821116 init_side_cpu_ticks=496
+H  1254.66 CH t=598.3 EV ev=28 fault=dep-fail target=seatd rec=4.61 ok=1 fixed=0 
+H  1254.66 CH t=598.3 DEPSTARTS mode=fail seatd=20 driftwm=15 waybar=11 hubd=2
+H  1257.67 CH t=601.3 STEP 29 fDisk
+H  1257.71 CH t=601.4 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1258.15 CH t=601.8 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=728844 init_side_cpu_ticks=502
+H  1268.21 CH t=611.9 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=728372 init_side_cpu_ticks=504
+H  1278.31 CH t=622.0 SAMPLE zombies=0 nproc=89 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=728372 init_side_cpu_ticks=504
+H  1278.55 CH t=622.2 STATUS run: /run/service/dbus/: (pid 1422) 533s; run: log: (pid 121) 621s
+H  1278.55 CH t=622.2 STATUS run: /run/service/driftwm/: (pid 8675) 27s; run: log: (pid 116) 621s
+H  1278.55 CH t=622.2 STATUS run: /run/service/guard/: (pid 125) 621s
+H  1278.55 CH t=622.2 STATUS run: /run/service/hubd/: (pid 8711) 26s; run: log: (pid 127) 621s
+H  1278.56 CH t=622.2 STATUS run: /run/service/seatd/: (pid 8672) 27s; run: log: (pid 126) 621s
+H  1278.56 CH t=622.2 STATUS run: /run/service/udevd/: (pid 1369) 538s; run: log: (pid 139) 621s
+H  1278.56 CH t=622.2 STATUS run: /run/service/waybar/: (pid 8851) 15s; run: log: (pid 118) 621s
+H  1278.97 CH t=622.6 EV ev=29 fault=disk-full target=waybar rec=0.15 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H  1281.98 CH t=625.6 STEP 30 fDisk
+H  1282.02 CH t=625.7 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1288.37 CH t=632.0 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=728372 init_side_cpu_ticks=505
+H  1298.44 CH t=642.1 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13300 memavail_kb=728372 init_side_cpu_ticks=505
+H  1302.70 CH t=646.4 STATUS run: /run/service/dbus/: (pid 1422) 557s; run: log: (pid 121) 645s
+H  1302.70 CH t=646.4 STATUS run: /run/service/driftwm/: (pid 8675) 51s; run: log: (pid 116) 645s
+H  1302.70 CH t=646.4 STATUS run: /run/service/guard/: (pid 125) 645s
+H  1302.71 CH t=646.4 STATUS run: /run/service/hubd/: (pid 8711) 51s; run: log: (pid 127) 646s
+H  1302.71 CH t=646.4 STATUS run: /run/service/seatd/: (pid 8672) 52s; run: log: (pid 126) 646s
+H  1302.71 CH t=646.4 STATUS run: /run/service/udevd/: (pid 1369) 563s; run: log: (pid 139) 646s
+H  1302.71 CH t=646.4 STATUS run: /run/service/waybar/: (pid 9125) 16s; run: log: (pid 118) 646s
+H  1303.14 CH t=646.8 EV ev=30 fault=disk-full target=waybar rec=0.17 ok=1 fixed=0 ok_during=18/19 all_alive_at_end=1
+H  1306.15 CH t=649.8 STEP 31 fSupKill
+H  1308.00 CH t=651.7 EV ev=31 fault=supervisor-killed target=driftwm rec=0.12 ok=1 fixed=0 child_kept_running=1
+H  1308.49 CH t=652.2 SAMPLE zombies=1 nproc=85 init_side_fds=93 init_side_rss_kb=11784 memavail_kb=731828 init_side_cpu_ticks=506
+H  1310.02 panic: runtime error: slice bounds out of range [1:0]
+H  1310.02 
+H  1310.02 goroutine 1 [running]:
+H  1310.03 main.supOf({0x55a298, 0x7})
+H  1310.03 	hubos/tools/bench/init/hubsim/chaos.go:119 +0x419
+H  1310.04 main.fSupKill({0x55a298, 0x7})
+H  1310.04 	hubos/tools/bench/init/hubsim/chaos.go:449 +0x167
+H  1310.05 main.faultSuite(0xc00009c067?)
+H  1310.05 	hubos/tools/bench/init/hubsim/chaos.go:710 +0x165
+H  1310.06 main.chaos({0x7fffaa5f1f7c?, 0xc000002380?, 0x7fffaa5f1f81?})
+H  1310.06 	hubos/tools/bench/init/hubsim/chaos.go:672 +0x8b6
+H  1310.06 main.main()
+H  1310.06 	hubos/tools/bench/init/hubsim/main.go:38 +0x1d0
+H# TIMEOUT, killing qemu
+H# vm exit code -9 after 5400s, loadavg ['0.24', '0.27', '0.28']
+H# end wall=5400.0s launches=1 suite_done=False
