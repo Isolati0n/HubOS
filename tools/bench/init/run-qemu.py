@@ -15,6 +15,7 @@ ap.add_argument("--dur", type=int, default=600); ap.add_argument("--seed", type=
 ap.add_argument("--reps", type=int, default=5); ap.add_argument("--timeout", type=int, default=3600)
 ap.add_argument("--out", default=None); ap.add_argument("--mem", type=int, default=1024)
 ap.add_argument("--smp", type=int, default=2)
+ap.add_argument("--skip", type=int, default=0)
 ap.add_argument("--trial", default="healthy"); ap.add_argument("--preflag", default="")
 a = ap.parse_args()
 W, T, REPO = os.environ["W"], os.environ["T"], os.environ.get("REPO", ".")
@@ -22,7 +23,7 @@ extra = open(f"{REPO}/tools/bench/init/candidates/{a.cand}/cmdline").read().stri
 out = a.out or f"{W}/runs/{a.cand}-{a.suite}-{a.seed}.log"
 os.makedirs(os.path.dirname(out), exist_ok=True)
 T0 = time.monotonic()
-skip = 0
+skip = a.skip
 dur_left = a.dur
 done = False
 launches = 0
