@@ -1,0 +1,49 @@
+H# start 2026-10-10 21:48:43 cand=b-go suite=pid1wedge cpus_seen=4 loadavg_at_start=['0.41', '0.47', '0.58']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.60 Booting from ROM..c[?7l[2JCH STAGE1 up=3.93
+H     5.65 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H     5.67 CH SUP-START up=4.00
+H     5.91 CH t=0.1 CHAOS start cand=b-go suite=pid1wedge seed=120 cpus=2
+H     6.03 brain: started mode=direct pid=105
+H     9.03 brain: starting driftwm: its dependencies are ready
+H    12.03 brain: starting waybar: its dependencies are ready
+H    12.05 brain: starting hubd: its dependencies are ready
+H    12.97 CH t=7.2 BOOT-OK up=11.30 ok=1 (seconds since kernel start; waited 6.9)
+H    13.01 CH t=7.2 SAMPLE zombies=0 nproc=72 init_side_fds=25 init_side_rss_kb=4620 memavail_kb=727724 init_side_cpu_ticks=248
+H    17.97 CH t=12.2 INJECT pid1-wedge (held stopped by ptrace)
+H    18.01 PID 1 held stopped
+H    18.18 guard: PID 1 check failed (1)
+H    21.18 guard: PID 1 check failed (2)
+H    22.99 CH t=17.2 PID1-STATE t guard=S watchdog_dev=true
+H    23.06 CH t=17.3 SAMPLE zombies=0 nproc=73 init_side_fds=26 init_side_rss_kb=4688 memavail_kb=727232 init_side_cpu_ticks=258
+H    24.19 guard: PID 1 check failed (3)
+H    27.19 guard: PID 1 check failed (4)
+H    28.00 CH t=22.2 PID1-STATE t guard=S watchdog_dev=true
+H    30.19 guard: PID 1 check failed (5)
+H    33.01 CH t=27.2 PID1-STATE t guard=S watchdog_dev=true
+H    33.09 CH t=27.3 SAMPLE zombies=0 nproc=73 init_side_fds=25 init_side_rss_kb=4728 memavail_kb=727232 init_side_cpu_ticks=266
+H    33.20 guard: PID 1 check failed (6)
+H    36.20 guard: PID 1 check failed (7)
+H    38.02 CH t=32.2 PID1-STATE t guard=S watchdog_dev=true
+H    39.21 guard: PID 1 check failed (8)
+H    42.22 guard: PID 1 check failed (9)
+H    43.03 CH t=37.2 PID1-STATE t guard=S watchdog_dev=true
+H    43.13 CH t=37.3 SAMPLE zombies=0 nproc=73 init_side_fds=25 init_side_rss_kb=4788 memavail_kb=727236 init_side_cpu_ticks=277
+H    45.22 guard: PID 1 check failed (10)
+H    48.05 CH t=42.2 PID1-STATE t guard=S watchdog_dev=true
+H    48.23 guard: PID 1 check failed (11)
+H    51.23 guard: PID 1 check failed (12)
+H    51.51 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    56.91 Booting from ROM..c[?7l[2JCH STAGE1 up=2.87
+H    56.95 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H    56.97 CH SUP-START up=2.93
+H    57.21 CH t=0.1 CHAOS start cand=b-go suite=pid1wedge seed=120 cpus=2
+H    57.34 brain: started mode=direct pid=106
+H    60.35 brain: starting driftwm: its dependencies are ready
+H    63.35 brain: starting waybar: its dependencies are ready
+H    63.36 brain: starting hubd: its dependencies are ready
+H    64.24 CH t=7.2 BOOT-OK up=10.20 ok=1 (seconds since kernel start; waited 6.8)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 64s, loadavg ['0.34', '0.44', '0.55']
+H# end wall=64.2s launches=1 suite_done=True

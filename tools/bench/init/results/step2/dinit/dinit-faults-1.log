@@ -1,0 +1,812 @@
+H# start 2026-10-10 19:31:37 cand=dinit suite=faults cpus_seen=4 loadavg_at_start=['0.28', '0.43', '0.35']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.91 Booting from ROM..c[?7l[2JCH STAGE1 up=3.30
+H     4.99 CH CAND dinit pid1=dinit
+H     5.00 CH SUP-START up=3.39
+H     5.10 [  OK  ] guard
+H     5.26 CH t=0.1 CHAOS start cand=dinit suite=faults seed=200 cpus=2
+H     5.27 [  OK  ] dbus
+H     5.27 [  OK  ] seatd
+H     6.72 [  OK  ] udevd
+H     9.03 [  OK  ] driftwm
+H     9.58 [  OK  ] hubd
+H     9.58 [  OK  ] waybar
+H     9.58 [  OK  ] boot
+H     9.85 CH t=4.7 BOOT-OK up=8.23 ok=1 (seconds since kernel start; waited 4.4)
+H     9.88 CH t=4.7 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2080 memavail_kb=747364 init_side_cpu_ticks=211
+H    14.85 CH t=9.7 STEP 1 fKill
+H    14.89 dinit: Service seatd terminated due to signal 9
+H    14.89 [STOPPD] hubd
+H    14.89 [STOPPD] waybar
+H    14.94 [STOPPD] driftwm
+H    14.94 [  OK  ] seatd
+H    14.94 [STOPPD] waybar
+H    14.95 [STOPPD] hubd
+H    14.95 [STOPPD] driftwm
+H    14.95 [STOPPD] seatd
+H    15.11 [  OK  ] seatd
+H    17.14 [  OK  ] driftwm
+H    17.68 [  OK  ] waybar
+H    17.69 [  OK  ] hubd
+H    17.96 CH t=12.8 EV ev=1 fault=kill target=seatd rec=2.90 ok=1 fixed=0 
+H    19.90 CH t=14.7 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=746596 init_side_cpu_ticks=219
+H    20.97 CH t=15.8 STEP 2 fKill
+H    20.99 dinit: Service udevd terminated due to signal 9
+H    20.99 [STOPPD] waybar
+H    21.00 [STOPPD] hubd
+H    21.05 [STOPPD] driftwm
+H    22.52 [  OK  ] udevd
+H    22.52 [STOPPD] waybar
+H    22.52 [STOPPD] hubd
+H    22.52 [STOPPD] driftwm
+H    22.52 [STOPPD] udevd
+H    24.07 [  OK  ] udevd
+H    25.98 [  OK  ] driftwm
+H    26.52 [  OK  ] waybar
+H    26.52 [  OK  ] hubd
+H    26.91 CH t=21.7 EV ev=2 fault=kill target=udevd rec=5.73 ok=1 fixed=0 
+H    29.91 CH t=24.7 STEP 3 fKill
+H    29.93 dinit: Service dbus terminated due to signal 9
+H    29.94 [STOPPD] waybar
+H    29.94 CH t=24.8 SAMPLE zombies=0 nproc=69 init_side_fds=24 init_side_rss_kb=2092 memavail_kb=754276 init_side_cpu_ticks=227
+H    29.98 [  OK  ] dbus
+H    29.98 dinit: Service waybar restarting too quickly; stopping.
+H    29.98 [STOPPD] waybar
+H    29.98 [STOPPD] dbus
+H    30.14 [  OK  ] dbus
+H    39.96 CH t=34.8 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2092 memavail_kb=754276 init_side_cpu_ticks=231
+H    49.98 CH t=44.8 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=753520 init_side_cpu_ticks=234
+H    60.00 CH t=54.8 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751756 init_side_cpu_ticks=238
+H    70.02 CH t=64.8 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751000 init_side_cpu_ticks=241
+H    80.05 CH t=74.9 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750748 init_side_cpu_ticks=245
+H    90.08 CH t=84.9 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750244 init_side_cpu_ticks=249
+H    90.10 CH t=84.9 UNRECOVERED ev=3 fault=kill target=dbus alert=0 why="waybar not running"
+H    90.18 CH t=85.0 STATUS [[+]     ] boot
+H    90.18 CH t=85.0 STATUS [{+}     ] guard (pid: 98)
+H    90.18 CH t=85.0 STATUS [{+}     ] seatd (pid: 176)
+H    90.19 CH t=85.0 STATUS [{+}     ] udevd (pid: 214)
+H    90.19 CH t=85.0 STATUS [{+}     ] dbus (pid: 262)
+H    90.19 CH t=85.0 STATUS [{+}     ] driftwm (pid: 227)
+H    90.19 CH t=85.0 STATUS [     {-}] waybar
+H    90.19 CH t=85.0 STATUS [{+}     ] hubd (pid: 231)
+H    90.23 CH t=85.1 operator-action target=dbus why="waybar not running"
+H    90.26 Service (already) started.
+H    90.28 Service 'dbus' stopped.
+H    90.28 [STOPPD] dbus
+H    90.30 [  OK  ] dbus
+H    90.30 Service 'dbus' started.
+H   100.11 CH t=94.9 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750244 init_side_cpu_ticks=255
+H   110.14 CH t=105.0 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750244 init_side_cpu_ticks=258
+H   120.15 CH t=115.0 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750244 init_side_cpu_ticks=262
+H   130.17 CH t=125.0 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750244 init_side_cpu_ticks=266
+H   140.19 CH t=135.0 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750244 init_side_cpu_ticks=269
+H   150.22 CH t=145.0 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=749992 init_side_cpu_ticks=273
+H   150.50 CH t=145.3 STUCK ev=3 step=3 fault=kill target=dbus why="waybar not running" (a reboot is the only way out; the host restarts the machine)
+H   151.51 [  149.935961] reboot: Power down
+H# vm exit code 0 after 152s, loadavg ['0.43', '0.43', '0.37']
+H# launch 2 skip=3 dur=449 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   151.66 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   156.38 Booting from ROM..c[?7l[2JCH STAGE1 up=3.13
+H   156.43 CH CAND dinit pid1=dinit
+H   156.44 CH SUP-START up=3.19
+H   156.56 [  OK  ] guard
+H   156.70 [  OK  ] seatd
+H   156.71 [  OK  ] dbus
+H   156.71 CH t=0.1 CHAOS start cand=dinit suite=faults seed=201 cpus=2
+H   158.16 [  OK  ] udevd
+H   160.46 [  OK  ] driftwm
+H   160.99 [  OK  ] waybar
+H   161.00 [  OK  ] hubd
+H   161.00 [  OK  ] boot
+H   161.41 CH t=4.8 BOOT-OK up=8.17 ok=1 (seconds since kernel start; waited 4.5)
+H   161.44 CH t=4.8 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2080 memavail_kb=751360 init_side_cpu_ticks=197
+H   171.47 CH t=14.8 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=749372 init_side_cpu_ticks=203
+H   175.42 CH t=18.8 STEP 4 fKill
+H   175.50 dinit: Service driftwm terminated due to signal 9
+H   175.50 [STOPPD] waybar
+H   175.51 [STOPPD] hubd
+H   177.40 [  OK  ] driftwm
+H   177.40 [STOPPD] waybar
+H   177.40 [STOPPD] hubd
+H   177.45 [STOPPD] driftwm
+H   179.40 [  OK  ] driftwm
+H   179.93 [  OK  ] hubd
+H   179.93 [  OK  ] waybar
+H   180.25 CH t=23.6 EV ev=1 fault=kill target=driftwm rec=4.62 ok=1 fixed=0 
+H   181.49 CH t=24.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=749760 init_side_cpu_ticks=208
+H   183.25 CH t=26.6 STEP 5 fKill
+H   183.26 dinit: Service waybar terminated due to signal 9
+H   183.26 [STOPPD] waybar
+H   183.74 CH t=27.1 EV ev=2 fault=kill target=waybar rec=0.29 ok=1 fixed=0 
+H   183.79 [  OK  ] waybar
+H   186.74 CH t=30.1 STEP 6 fKill
+H   186.76 dinit: Service hubd terminated due to signal 9
+H   186.76 [STOPPD] hubd
+H   187.30 [  OK  ] hubd
+H   187.70 CH t=31.1 EV ev=3 fault=kill target=hubd rec=0.75 ok=1 fixed=0 
+H   190.70 CH t=34.1 STEP 7 fKill
+H   190.73 dinit: Service seatd terminated due to signal 9
+H   190.73 [STOPPD] waybar
+H   190.74 [STOPPD] hubd
+H   190.76 [  OK  ] seatd
+H   190.76 [STOPPD] waybar
+H   190.76 [STOPPD] hubd
+H   190.78 [STOPPD] driftwm
+H   190.78 [STOPPD] seatd
+H   190.94 [  OK  ] seatd
+H   191.51 CH t=34.9 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2088 memavail_kb=754864 init_side_cpu_ticks=215
+H   192.83 [  OK  ] driftwm
+H   193.36 [  OK  ] waybar
+H   193.37 [  OK  ] hubd
+H   193.78 CH t=37.2 EV ev=4 fault=kill target=seatd rec=2.88 ok=1 fixed=0 
+H   196.79 CH t=40.2 STEP 8 fKill
+H   196.81 dinit: Service udevd terminated due to signal 9
+H   196.82 [STOPPD] waybar
+H   196.82 [STOPPD] hubd
+H   196.88 [STOPPD] driftwm
+H   198.34 [  OK  ] udevd
+H   198.35 dinit: Service driftwm restarting too quickly; stopping.
+H   198.35 [STOPPD] waybar
+H   198.35 [STOPPD] hubd
+H   198.35 [STOPPD] driftwm
+H   198.35 [STOPPD] udevd
+H   199.87 [  OK  ] udevd
+H   201.53 CH t=44.9 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=843316 init_side_cpu_ticks=222
+H   211.55 CH t=54.9 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=843316 init_side_cpu_ticks=224
+H   221.57 CH t=65.0 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=843068 init_side_cpu_ticks=226
+H   231.59 CH t=75.0 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842816 init_side_cpu_ticks=229
+H   241.60 CH t=85.0 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=232
+H   251.62 CH t=95.0 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=234
+H   256.92 CH t=100.3 UNRECOVERED ev=5 fault=kill target=udevd alert=0 why="driftwm not running"
+H   257.01 CH t=100.4 STATUS [[+]     ] boot
+H   257.01 CH t=100.4 STATUS [{+}     ] guard (pid: 102)
+H   257.01 CH t=100.4 STATUS [{+}     ] seatd (pid: 272)
+H   257.01 CH t=100.4 STATUS [{+}     ] udevd (pid: 311)
+H   257.01 CH t=100.4 STATUS [{+}     ] dbus (pid: 105)
+H   257.01 CH t=100.4 STATUS [     {X}] driftwm (signal: 15)
+H   257.01 CH t=100.4 STATUS [     {X}] waybar
+H   257.01 CH t=100.4 STATUS [     {X}] hubd
+H   257.06 CH t=100.4 operator-action target=udevd why="driftwm not running"
+H   257.11 Service (already) started.
+H   257.13 Service 'udevd' stopped.
+H   257.14 [STOPPD] udevd
+H   258.66 [  OK  ] udevd
+H   258.67 Service 'udevd' started.
+H   261.64 CH t=105.0 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=239
+H   271.67 CH t=115.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=241
+H   281.69 CH t=125.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=242
+H   291.71 CH t=135.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=244
+H   301.72 CH t=145.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=245
+H   311.74 CH t=155.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=842312 init_side_cpu_ticks=248
+H   318.81 CH t=162.2 STUCK ev=5 step=8 fault=kill target=udevd why="driftwm not running" (a reboot is the only way out; the host restarts the machine)
+H   319.82 [  166.610272] reboot: Power down
+H# vm exit code 0 after 168s, loadavg ['0.39', '0.41', '0.37']
+H# launch 3 skip=8 dur=281 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   319.96 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   324.51 Booting from ROM..c[?7l[2JCH STAGE1 up=2.91
+H   324.56 CH CAND dinit pid1=dinit
+H   324.56 CH SUP-START up=2.96
+H   324.68 [  OK  ] guard
+H   324.78 [  OK  ] seatd
+H   324.78 [  OK  ] dbus
+H   324.79 CH t=0.1 CHAOS start cand=dinit suite=faults seed=202 cpus=2
+H   326.26 [  OK  ] udevd
+H   328.52 [  OK  ] driftwm
+H   329.06 [  OK  ] waybar
+H   329.06 [  OK  ] hubd
+H   329.07 [  OK  ] boot
+H   329.46 CH t=4.8 BOOT-OK up=7.86 ok=1 (seconds since kernel start; waited 4.5)
+H   329.50 CH t=4.8 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2080 memavail_kb=750392 init_side_cpu_ticks=187
+H   339.53 CH t=14.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=749916 init_side_cpu_ticks=191
+H   349.55 CH t=24.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=748660 init_side_cpu_ticks=194
+H   358.48 CH t=33.8 STEP 9 fKill
+H   358.50 dinit: Service dbus terminated due to signal 9
+H   358.50 [STOPPD] waybar
+H   358.52 [  OK  ] dbus
+H   358.52 [STOPPD] waybar
+H   358.53 [STOPPD] dbus
+H   358.73 [  OK  ] dbus
+H   359.20 CH t=34.5 EV ev=1 fault=kill target=dbus rec=0.52 ok=1 fixed=0 
+H   359.27 [  OK  ] waybar
+H   359.57 CH t=34.9 SAMPLE zombies=0 nproc=71 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=748156 init_side_cpu_ticks=199
+H   362.20 CH t=37.5 STEP 10 fKill
+H   362.26 dinit: Service driftwm terminated due to signal 9
+H   362.26 [STOPPD] hubd
+H   362.27 [STOPPD] waybar
+H   364.18 [  OK  ] driftwm
+H   364.18 dinit: Service waybar restarting too quickly; stopping.
+H   364.18 [STOPPD] waybar
+H   364.18 [STOPPD] hubd
+H   364.23 [STOPPD] driftwm
+H   366.15 [  OK  ] driftwm
+H   366.71 [  OK  ] hubd
+H   369.59 CH t=44.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748156 init_side_cpu_ticks=205
+H   379.61 CH t=54.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748156 init_side_cpu_ticks=209
+H   389.63 CH t=65.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748156 init_side_cpu_ticks=212
+H   399.65 CH t=75.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748160 init_side_cpu_ticks=215
+H   409.67 CH t=85.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748160 init_side_cpu_ticks=219
+H   419.69 CH t=95.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748160 init_side_cpu_ticks=222
+H   422.42 CH t=97.7 UNRECOVERED ev=2 fault=kill target=driftwm alert=0 why="waybar not running"
+H   422.50 CH t=97.8 STATUS [[+]     ] boot
+H   422.50 CH t=97.8 STATUS [{+}     ] guard (pid: 100)
+H   422.50 CH t=97.8 STATUS [{+}     ] seatd (pid: 102)
+H   422.50 CH t=97.8 STATUS [{+}     ] udevd (pid: 103)
+H   422.51 CH t=97.8 STATUS [{+}     ] dbus (pid: 248)
+H   422.51 CH t=97.8 STATUS [{+}     ] driftwm (pid: 269)
+H   422.51 CH t=97.8 STATUS [     {-}] waybar
+H   422.51 CH t=97.8 STATUS [{+}     ] hubd (pid: 282)
+H   422.57 CH t=97.9 operator-action target=driftwm why="waybar not running"
+H   422.61 Service (already) started.
+H   429.72 CH t=105.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=747908 init_side_cpu_ticks=227
+H   439.74 CH t=115.1 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=747684 init_side_cpu_ticks=231
+H   449.77 CH t=125.1 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=747684 init_side_cpu_ticks=234
+H   459.79 CH t=135.1 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=746172 init_side_cpu_ticks=238
+H   469.80 CH t=145.1 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=746172 init_side_cpu_ticks=240
+H   479.83 CH t=155.2 SAMPLE zombies=0 nproc=71 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=746172 init_side_cpu_ticks=245
+H   482.78 CH t=158.1 STUCK ev=2 step=10 fault=kill target=driftwm why="waybar not running" (a reboot is the only way out; the host restarts the machine)
+H   483.79 [  162.226431] reboot: Power down
+H# vm exit code 0 after 164s, loadavg ['0.40', '0.37', '0.36']
+H# launch 4 skip=10 dur=117 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial 
+H   483.93 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   489.24 Booting from ROM..c[?7l[2JCH STAGE1 up=3.33
+H   489.31 CH CAND dinit pid1=dinit
+H   489.31 CH SUP-START up=3.41
+H   489.43 [  OK  ] guard
+H   489.54 [  OK  ] dbus
+H   489.54 [  OK  ] seatd
+H   489.58 CH t=0.1 CHAOS start cand=dinit suite=faults seed=203 cpus=2
+H   491.02 [  OK  ] udevd
+H   493.25 [  OK  ] driftwm
+H   493.80 [  OK  ] hubd
+H   493.82 [  OK  ] waybar
+H   493.82 [  OK  ] boot
+H   494.30 CH t=4.9 BOOT-OK up=8.38 ok=1 (seconds since kernel start; waited 4.5)
+H   494.35 CH t=4.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2080 memavail_kb=749380 init_side_cpu_ticks=215
+H   504.37 CH t=14.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=749392 init_side_cpu_ticks=220
+H   514.39 CH t=25.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=749140 init_side_cpu_ticks=223
+H   524.42 CH t=35.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=749140 init_side_cpu_ticks=227
+H   529.32 CH t=39.9 STEP 11 fKill
+H   529.34 dinit: Service waybar terminated due to signal 9
+H   529.34 [STOPPD] waybar
+H   529.84 CH t=40.4 EV ev=1 fault=kill target=waybar rec=0.31 ok=1 fixed=0 
+H   529.87 [  OK  ] waybar
+H   532.84 CH t=43.4 STEP 12 fKill
+H   532.86 dinit: Service hubd terminated due to signal 9
+H   532.86 [STOPPD] hubd
+H   533.40 [  OK  ] hubd
+H   533.77 CH t=44.3 EV ev=2 fault=kill target=hubd rec=0.72 ok=1 fixed=0 
+H   534.45 CH t=45.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=749140 init_side_cpu_ticks=233
+H   536.77 CH t=47.3 STEP 13 fKill
+H   536.80 dinit: Service seatd terminated due to signal 9
+H   536.80 [STOPPD] waybar
+H   536.81 [STOPPD] hubd
+H   536.84 [  OK  ] seatd
+H   536.84 [STOPPD] waybar
+H   536.84 [STOPPD] hubd
+H   536.86 [STOPPD] driftwm
+H   536.86 [STOPPD] seatd
+H   537.02 [  OK  ] seatd
+H   538.99 [  OK  ] driftwm
+H   539.52 [  OK  ] waybar
+H   539.53 [  OK  ] hubd
+H   539.81 CH t=50.4 EV ev=3 fault=kill target=seatd rec=2.83 ok=1 fixed=0 
+H   542.81 CH t=53.4 STEP 14 fKill
+H   542.83 dinit: Service udevd terminated due to signal 9
+H   542.83 dinit: Service hubd restarting too quickly; stopping.
+H   542.84 [STOPPD] hubd
+H   542.84 [STOPPD] waybar
+H   542.90 [STOPPD] driftwm
+H   544.37 [  OK  ] udevd
+H   544.37 dinit: Service driftwm restarting too quickly; stopping.
+H   544.37 [STOPPD] waybar
+H   544.37 [STOPPD] driftwm
+H   544.38 [STOPPD] udevd
+H   544.47 CH t=55.0 SAMPLE zombies=0 nproc=66 init_side_fds=23 init_side_rss_kb=2100 memavail_kb=847708 init_side_cpu_ticks=240
+H   545.90 [  OK  ] udevd
+H   554.49 CH t=65.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=242
+H   564.51 CH t=75.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=245
+H   574.54 CH t=85.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=248
+H   584.56 CH t=95.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=249
+H   594.57 CH t=105.1 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=251
+H   603.06 CH t=113.6 UNRECOVERED ev=4 fault=kill target=udevd alert=0 why="driftwm not running"
+H   603.13 CH t=113.7 STATUS [[+]     ] boot
+H   603.13 CH t=113.7 STATUS [{+}     ] guard (pid: 101)
+H   603.14 CH t=113.7 STATUS [{+}     ] seatd (pid: 294)
+H   603.14 CH t=113.7 STATUS [{+}     ] udevd (pid: 342)
+H   603.14 CH t=113.7 STATUS [{+}     ] dbus (pid: 104)
+H   603.14 CH t=113.7 STATUS [     {-}] driftwm
+H   603.14 CH t=113.7 STATUS [     {X}] waybar
+H   603.14 CH t=113.7 STATUS [     {X}] hubd
+H   603.20 CH t=113.8 operator-action target=udevd why="driftwm not running"
+H   603.24 Service (already) started.
+H   603.26 Service 'udevd' stopped.
+H   603.26 [STOPPD] udevd
+H   604.60 CH t=115.2 SAMPLE zombies=0 nproc=68 init_side_fds=24 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=255
+H   604.79 [  OK  ] udevd
+H   604.79 Service 'udevd' started.
+H   614.62 CH t=125.2 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=258
+H   624.64 CH t=135.2 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=261
+H   634.67 CH t=145.2 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=263
+H   644.69 CH t=155.2 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=264
+H   654.71 CH t=165.3 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=268
+H   664.73 CH t=175.3 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=844936 init_side_cpu_ticks=270
+H   664.84 CH t=175.4 STUCK ev=4 step=14 fault=kill target=udevd why="driftwm not running" (a reboot is the only way out; the host restarts the machine)
+H   665.84 [  179.988058] reboot: Power down
+H# vm exit code 0 after 182s, loadavg ['0.09', '0.25', '0.31']
+H# launch 5 skip=14 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   665.99 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   666.00 Booting from ROM...
+H   670.68 c[?7l[2JCH STAGE1 up=2.39
+H   670.73 CH CAND dinit pid1=dinit
+H   670.74 CH SUP-START up=2.45
+H   670.87 [  OK  ] guard
+H   670.96 [  OK  ] seatd
+H   670.97 [  OK  ] dbus
+H   670.98 CH t=0.1 CHAOS start cand=dinit suite=faults seed=204 cpus=2
+H   672.45 [  OK  ] udevd
+H   674.71 [  OK  ] driftwm
+H   675.26 [  OK  ] waybar
+H   675.26 [  OK  ] hubd
+H   675.27 [  OK  ] boot
+H   675.59 CH t=4.8 BOOT-OK up=7.31 ok=1 (seconds since kernel start; waited 4.4)
+H   675.64 CH t=4.8 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2080 memavail_kb=759620 init_side_cpu_ticks=187
+H   685.67 CH t=14.8 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=757672 init_side_cpu_ticks=192
+H   695.69 CH t=24.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=755404 init_side_cpu_ticks=196
+H   705.72 CH t=34.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=754648 init_side_cpu_ticks=201
+H   715.74 CH t=44.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=752884 init_side_cpu_ticks=205
+H   722.64 CH t=51.8 STEP 15 fKill
+H   722.66 dinit: Service dbus terminated due to signal 9
+H   722.67 [STOPPD] waybar
+H   722.72 [  OK  ] dbus
+H   722.72 [STOPPD] waybar
+H   722.73 [STOPPD] dbus
+H   722.89 [  OK  ] dbus
+H   723.19 CH t=52.4 EV ev=1 fault=kill target=dbus rec=0.34 ok=1 fixed=0 
+H   723.43 [  OK  ] waybar
+H   725.81 CH t=55.0 SAMPLE zombies=0 nproc=71 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751624 init_side_cpu_ticks=212
+H   726.19 CH t=55.4 STEP 16 fKill
+H   726.29 dinit: Service driftwm terminated due to signal 9
+H   726.29 [STOPPD] hubd
+H   726.29 [STOPPD] waybar
+H   728.25 [  OK  ] driftwm
+H   728.25 dinit: Service waybar restarting too quickly; stopping.
+H   728.25 [STOPPD] waybar
+H   728.25 [STOPPD] hubd
+H   728.29 [STOPPD] driftwm
+H   730.23 [  OK  ] driftwm
+H   730.77 [  OK  ] hubd
+H   735.87 CH t=65.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=757296 init_side_cpu_ticks=217
+H   745.89 CH t=75.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=757044 init_side_cpu_ticks=222
+H   755.91 CH t=85.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=756288 init_side_cpu_ticks=225
+H   765.97 CH t=95.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=755028 init_side_cpu_ticks=230
+H   775.95 CH t=105.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=755028 init_side_cpu_ticks=234
+H   785.97 CH t=115.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=754272 init_side_cpu_ticks=237
+H   786.41 CH t=115.6 UNRECOVERED ev=2 fault=kill target=driftwm alert=0 why="waybar not running"
+H   786.47 CH t=115.6 STATUS [[+]     ] boot
+H   786.47 CH t=115.6 STATUS [{+}     ] guard (pid: 100)
+H   786.47 CH t=115.6 STATUS [{+}     ] seatd (pid: 101)
+H   786.48 CH t=115.6 STATUS [{+}     ] udevd (pid: 102)
+H   786.48 CH t=115.6 STATUS [{+}     ] dbus (pid: 303)
+H   786.48 CH t=115.6 STATUS [{+}     ] driftwm (pid: 324)
+H   786.48 CH t=115.6 STATUS [     {-}] waybar
+H   786.48 CH t=115.6 STATUS [{+}     ] hubd (pid: 337)
+H   786.52 CH t=115.7 operator-action target=driftwm why="waybar not running"
+H   786.55 Service (already) started.
+H   796.00 CH t=125.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751504 init_side_cpu_ticks=242
+H   806.02 CH t=135.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751504 init_side_cpu_ticks=246
+H   816.04 CH t=145.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751504 init_side_cpu_ticks=250
+H   826.05 CH t=155.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750748 init_side_cpu_ticks=253
+H   836.07 CH t=165.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=749488 init_side_cpu_ticks=257
+H   846.10 CH t=175.3 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=746464 init_side_cpu_ticks=260
+H   846.61 CH t=175.8 STUCK ev=2 step=16 fault=kill target=driftwm why="waybar not running" (a reboot is the only way out; the host restarts the machine)
+H   847.61 [  179.320010] reboot: Power down
+H# vm exit code 0 after 182s, loadavg ['0.30', '0.29', '0.32']
+H# launch 6 skip=16 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   847.75 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   852.25 Booting from ROM..c[?7l[2JCH STAGE1 up=2.97
+H   852.31 CH CAND dinit pid1=dinit
+H   852.31 CH SUP-START up=3.04
+H   852.46 [  OK  ] guard
+H   852.59 CH t=0.2 CHAOS start cand=dinit suite=faults seed=205 cpus=2
+H   852.61 [  OK  ] dbus
+H   852.61 [  OK  ] seatd
+H   854.08 [  OK  ] udevd
+H   856.50 [  OK  ] driftwm
+H   857.05 [  OK  ] waybar
+H   857.05 [  OK  ] hubd
+H   857.05 [  OK  ] boot
+H   857.32 CH t=4.9 BOOT-OK up=8.05 ok=1 (seconds since kernel start; waited 4.5)
+H   857.36 CH t=4.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2080 memavail_kb=749364 init_side_cpu_ticks=194
+H   867.39 CH t=15.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=748868 init_side_cpu_ticks=198
+H   877.41 CH t=25.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=748616 init_side_cpu_ticks=202
+H   887.43 CH t=35.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=748616 init_side_cpu_ticks=206
+H   897.46 CH t=45.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748112 init_side_cpu_ticks=210
+H   907.48 CH t=55.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=214
+H   910.37 CH t=58.0 STEP 17 fKill
+H   910.42 dinit: Service waybar terminated due to signal 9
+H   910.42 [STOPPD] waybar
+H   910.71 CH t=58.3 EV ev=1 fault=kill target=waybar rec=0.12 ok=1 fixed=0 
+H   910.98 [  OK  ] waybar
+H   913.71 CH t=61.3 STEP 18 fKill
+H   913.72 dinit: Service hubd terminated due to signal 9
+H   913.72 [STOPPD] hubd
+H   914.27 [  OK  ] hubd
+H   914.66 CH t=62.2 EV ev=2 fault=kill target=hubd rec=0.75 ok=1 fixed=0 
+H   917.50 CH t=65.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=219
+H   917.67 CH t=65.2 STEP 19 fHang
+H   927.52 CH t=75.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=222
+H   937.53 CH t=85.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=226
+H   947.55 CH t=95.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=228
+H   957.58 CH t=105.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=232
+H   967.62 CH t=115.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=235
+H   977.64 CH t=125.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=748112 init_side_cpu_ticks=238
+H   977.74 CH t=125.3 UNRECOVERED ev=3 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   977.81 CH t=125.4 STATUS [[+]     ] boot
+H   977.81 CH t=125.4 STATUS [{+}     ] guard (pid: 101)
+H   977.81 CH t=125.4 STATUS [{+}     ] seatd (pid: 102)
+H   977.81 CH t=125.4 STATUS [{+}     ] udevd (pid: 103)
+H   977.81 CH t=125.4 STATUS [{+}     ] dbus (pid: 104)
+H   977.81 CH t=125.4 STATUS [{+}     ] driftwm (pid: 129)
+H   977.81 CH t=125.4 STATUS [{+}     ] waybar (pid: 310)
+H   977.82 CH t=125.4 STATUS [{+}     ] hubd (pid: 327)
+H   977.84 CH t=125.4 operator-action target=driftwm why="driftwm stopped"
+H   977.88 Service (already) started.
+H   977.90 dinit: Service driftwm terminated due to signal 9
+H   977.90 [STOPPD] waybar
+H   977.90 [STOPPD] hubd
+H   979.80 [  OK  ] driftwm
+H   979.80 [STOPPD] waybar
+H   979.80 [STOPPD] hubd
+H   979.84 [STOPPD] driftwm
+H   981.71 [  OK  ] driftwm
+H   982.25 [  OK  ] waybar
+H   982.26 [  OK  ] hubd
+H   982.59 CH t=130.2 EV ev=3 fault=hang-stop target=driftwm rec=64.47 ok=0 fixed=1 
+H   985.59 CH t=133.2 STEP 20 fHang
+H   987.68 CH t=135.3 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=752648 init_side_cpu_ticks=245
+H   997.72 CH t=145.3 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751924 init_side_cpu_ticks=248
+H  1007.76 CH t=155.3 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751924 init_side_cpu_ticks=252
+H  1017.79 CH t=165.4 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751172 init_side_cpu_ticks=256
+H  1027.82 CH t=175.4 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751180 init_side_cpu_ticks=259
+H  1037.86 CH t=185.4 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750424 init_side_cpu_ticks=262
+H  1047.48 CH t=195.1 UNRECOVERED ev=4 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H  1047.52 CH t=195.1 STATUS [[+]     ] boot
+H  1047.52 CH t=195.1 STATUS [{+}     ] guard (pid: 101)
+H  1047.52 CH t=195.1 STATUS [{+}     ] seatd (pid: 102)
+H  1047.52 CH t=195.1 STATUS [{+}     ] udevd (pid: 103)
+H  1047.52 CH t=195.1 STATUS [{+}     ] dbus (pid: 104)
+H  1047.52 CH t=195.1 STATUS [{+}     ] driftwm (pid: 541)
+H  1047.53 CH t=195.1 STATUS [{+}     ] waybar (pid: 555)
+H  1047.53 CH t=195.1 STATUS [{+}     ] hubd (pid: 554)
+H  1047.89 CH t=195.5 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=750180 init_side_cpu_ticks=266
+H  1048.65 CH t=196.2 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H  1048.69 Service (already) started.
+H  1048.72 dinit: Service driftwm terminated due to signal 9
+H  1048.72 [STOPPD] waybar
+H  1048.72 [STOPPD] hubd
+H  1050.58 [  OK  ] driftwm
+H  1050.59 [STOPPD] waybar
+H  1050.59 [STOPPD] hubd
+H  1050.63 [STOPPD] driftwm
+H  1052.54 [  OK  ] driftwm
+H  1053.05 [  OK  ] waybar
+H  1053.08 [  OK  ] hubd
+H  1053.40 CH t=201.0 EV ev=4 fault=hang-spin target=driftwm rec=64.49 ok=0 fixed=1 
+H  1056.41 CH t=204.0 STEP 21 fHang
+H  1057.91 CH t=205.5 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=731144 init_side_cpu_ticks=271
+H  1067.93 CH t=215.5 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=730892 init_side_cpu_ticks=274
+H  1077.95 CH t=225.5 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=732036 init_side_cpu_ticks=277
+H  1087.97 CH t=235.5 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=732428 init_side_cpu_ticks=280
+H  1097.99 CH t=245.6 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=732176 init_side_cpu_ticks=283
+H  1108.02 CH t=255.6 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=732176 init_side_cpu_ticks=286
+H  1116.56 CH t=264.1 UNRECOVERED ev=5 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1116.61 CH t=264.2 STATUS [[+]     ] boot
+H  1116.61 CH t=264.2 STATUS [{+}     ] guard (pid: 101)
+H  1116.61 CH t=264.2 STATUS [{+}     ] seatd (pid: 102)
+H  1116.61 CH t=264.2 STATUS [{+}     ] udevd (pid: 103)
+H  1116.61 CH t=264.2 STATUS [{+}     ] dbus (pid: 104)
+H  1116.61 CH t=264.2 STATUS [{+}     ] driftwm (pid: 775)
+H  1116.62 CH t=264.2 STATUS [{+}     ] waybar (pid: 789)
+H  1116.62 CH t=264.2 STATUS [{+}     ] hubd (pid: 788)
+H  1116.64 CH t=264.2 operator-action target=driftwm why="driftwm stopped"
+H  1116.67 Service (already) started.
+H  1116.70 dinit: Service driftwm terminated due to signal 9
+H  1116.70 [STOPPD] waybar
+H  1116.71 [STOPPD] hubd
+H  1118.04 CH t=265.6 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2100 memavail_kb=740492 init_side_cpu_ticks=289
+H  1118.59 [  OK  ] driftwm
+H  1118.59 [STOPPD] waybar
+H  1118.59 [STOPPD] hubd
+H  1118.67 [STOPPD] driftwm
+H  1120.57 [  OK  ] driftwm
+H  1121.11 [  OK  ] hubd
+H  1121.11 [  OK  ] waybar
+H  1121.55 CH t=269.1 EV ev=5 fault=hang-stop target=driftwm rec=64.66 ok=0 fixed=1 
+H  1124.55 CH t=272.1 STEP 22 fHang
+H  1128.08 CH t=275.7 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=755108 init_side_cpu_ticks=294
+H  1138.11 CH t=285.7 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=754856 init_side_cpu_ticks=296
+H  1148.14 CH t=295.7 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=754100 init_side_cpu_ticks=299
+H  1158.16 CH t=305.7 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=754100 init_side_cpu_ticks=302
+H  1168.19 CH t=315.8 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=754104 init_side_cpu_ticks=306
+H  1178.23 CH t=325.8 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=754104 init_side_cpu_ticks=309
+H  1185.95 CH t=333.5 UNRECOVERED ev=6 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H  1186.00 CH t=333.6 STATUS [[+]     ] boot
+H  1186.00 CH t=333.6 STATUS [{+}     ] guard (pid: 101)
+H  1186.00 CH t=333.6 STATUS [{+}     ] seatd (pid: 102)
+H  1186.00 CH t=333.6 STATUS [{+}     ] udevd (pid: 103)
+H  1186.00 CH t=333.6 STATUS [{+}     ] dbus (pid: 104)
+H  1186.01 CH t=333.6 STATUS [{+}     ] driftwm (pid: 1009)
+H  1186.01 CH t=333.6 STATUS [{+}     ] waybar (pid: 1023)
+H  1186.01 CH t=333.6 STATUS [{+}     ] hubd (pid: 1022)
+H  1187.04 CH t=334.6 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H  1187.08 Service (already) started.
+H  1187.14 dinit: Service driftwm terminated due to signal 9
+H  1187.14 [STOPPD] waybar
+H  1187.14 [STOPPD] hubd
+H  1188.25 CH t=335.8 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2100 memavail_kb=745040 init_side_cpu_ticks=313
+H  1189.00 [  OK  ] driftwm
+H  1189.00 [STOPPD] waybar
+H  1189.00 [STOPPD] hubd
+H  1189.04 [STOPPD] driftwm
+H  1190.96 [  OK  ] driftwm
+H  1191.48 [  OK  ] waybar
+H  1191.50 [  OK  ] hubd
+H  1191.90 CH t=339.5 EV ev=6 fault=hang-spin target=driftwm rec=64.60 ok=0 fixed=1 
+H  1194.90 CH t=342.5 STEP 23 fHang
+H  1198.28 CH t=345.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=724760 init_side_cpu_ticks=318
+H  1208.31 CH t=355.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=725016 init_side_cpu_ticks=321
+H  1218.33 CH t=365.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=725268 init_side_cpu_ticks=323
+H  1228.35 CH t=375.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=726132 init_side_cpu_ticks=327
+H  1238.37 CH t=386.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=726132 init_side_cpu_ticks=330
+H  1248.40 CH t=396.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=726132 init_side_cpu_ticks=332
+H  1254.93 CH t=402.5 UNRECOVERED ev=7 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1254.98 CH t=402.6 STATUS [[+]     ] boot
+H  1254.98 CH t=402.6 STATUS [{+}     ] guard (pid: 101)
+H  1254.98 CH t=402.6 STATUS [{+}     ] seatd (pid: 102)
+H  1254.98 CH t=402.6 STATUS [{+}     ] udevd (pid: 103)
+H  1254.98 CH t=402.6 STATUS [{+}     ] dbus (pid: 104)
+H  1254.98 CH t=402.6 STATUS [{+}     ] driftwm (pid: 1243)
+H  1254.99 CH t=402.6 STATUS [{+}     ] waybar (pid: 1257)
+H  1254.99 CH t=402.6 STATUS [{+}     ] hubd (pid: 1256)
+H  1255.02 CH t=402.6 operator-action target=driftwm why="driftwm stopped"
+H  1255.04 Service (already) started.
+H  1255.11 dinit: Service driftwm terminated due to signal 9
+H  1255.11 [STOPPD] hubd
+H  1255.12 [STOPPD] waybar
+H  1256.96 [  OK  ] driftwm
+H  1256.96 [STOPPD] waybar
+H  1256.97 [STOPPD] hubd
+H  1257.01 [STOPPD] driftwm
+H  1258.42 CH t=406.0 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2100 memavail_kb=732156 init_side_cpu_ticks=338
+H  1258.88 [  OK  ] driftwm
+H  1259.42 [  OK  ] waybar
+H  1259.45 [  OK  ] hubd
+H  1259.85 CH t=407.4 EV ev=7 fault=hang-stop target=driftwm rec=64.59 ok=0 fixed=1 
+H  1262.85 CH t=410.4 STEP 24 fHang
+H  1268.44 CH t=416.0 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=731908 init_side_cpu_ticks=342
+H  1278.48 CH t=426.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=731908 init_side_cpu_ticks=346
+H  1288.52 CH t=436.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=731908 init_side_cpu_ticks=350
+H  1298.55 CH t=446.1 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=731908 init_side_cpu_ticks=354
+H  1308.64 CH t=456.2 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=731908 init_side_cpu_ticks=357
+H  1318.68 CH t=466.3 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=731668 init_side_cpu_ticks=361
+H  1324.46 CH t=472.0 UNRECOVERED ev=8 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H  1324.50 CH t=472.1 STATUS [[+]     ] boot
+H  1324.51 CH t=472.1 STATUS [{+}     ] guard (pid: 101)
+H  1324.51 CH t=472.1 STATUS [{+}     ] seatd (pid: 102)
+H  1324.51 CH t=472.1 STATUS [{+}     ] udevd (pid: 103)
+H  1324.51 CH t=472.1 STATUS [{+}     ] dbus (pid: 104)
+H  1324.51 CH t=472.1 STATUS [{+}     ] driftwm (pid: 1466)
+H  1324.51 CH t=472.1 STATUS [{+}     ] waybar (pid: 1480)
+H  1324.51 CH t=472.1 STATUS [{+}     ] hubd (pid: 1479)
+H  1325.55 CH t=473.1 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H  1325.60 Service (already) started.
+H  1325.68 dinit: Service driftwm terminated due to signal 9
+H  1325.68 [STOPPD] waybar
+H  1325.68 [STOPPD] hubd
+H  1327.52 [  OK  ] driftwm
+H  1327.52 [STOPPD] waybar
+H  1327.52 [STOPPD] hubd
+H  1327.56 [STOPPD] driftwm
+H  1328.70 CH t=476.3 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2100 memavail_kb=747796 init_side_cpu_ticks=366
+H  1329.38 [  OK  ] driftwm
+H  1329.91 [  OK  ] waybar
+H  1329.92 [  OK  ] hubd
+H  1330.18 CH t=477.8 EV ev=8 fault=hang-spin target=driftwm rec=64.35 ok=0 fixed=1 
+H  1333.18 CH t=480.8 STEP 25 fStorm
+H  1333.20 dinit: Service hubd terminated due to signal 9
+H  1333.20 [STOPPD] hubd
+H  1333.28 dinit: Service hubd process terminated with exit code 1
+H  1333.28 [FAILED] hubd
+H  1338.72 CH t=486.3 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747544 init_side_cpu_ticks=371
+H  1348.74 CH t=496.3 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=374
+H  1358.76 CH t=506.3 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=377
+H  1368.78 CH t=516.4 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=380
+H  1373.23 CH t=520.8 STATUS [[+]     ] boot
+H  1373.23 CH t=520.8 STATUS [{+}     ] guard (pid: 101)
+H  1373.23 CH t=520.8 STATUS [{+}     ] seatd (pid: 102)
+H  1373.23 CH t=520.8 STATUS [{+}     ] udevd (pid: 103)
+H  1373.23 CH t=520.8 STATUS [{+}     ] dbus (pid: 104)
+H  1373.24 CH t=520.8 STATUS [{+}     ] driftwm (pid: 1698)
+H  1373.24 CH t=520.8 STATUS [{+}     ] waybar (pid: 1712)
+H  1373.24 CH t=520.8 STATUS [     {X}] hubd
+H  1373.24 CH t=520.8 STORM target=hubd dur=40 starts=1 starts_last10s=0 cpu_ticks_init_side=13 bar-up
+H  1378.80 CH t=526.4 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=383
+H  1388.82 CH t=536.4 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=386
+H  1398.84 CH t=546.4 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=390
+H  1408.86 CH t=556.4 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=393
+H  1418.89 CH t=566.5 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747292 init_side_cpu_ticks=395
+H  1428.90 CH t=576.5 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=747040 init_side_cpu_ticks=399
+H  1433.42 CH t=581.0 UNRECOVERED ev=9 fault=storm target=hubd alert=0 why="hubd not running"
+H  1433.45 CH t=581.0 STATUS [[+]     ] boot
+H  1433.45 CH t=581.0 STATUS [{+}     ] guard (pid: 101)
+H  1433.45 CH t=581.0 STATUS [{+}     ] seatd (pid: 102)
+H  1433.45 CH t=581.0 STATUS [{+}     ] udevd (pid: 103)
+H  1433.46 CH t=581.0 STATUS [{+}     ] dbus (pid: 104)
+H  1433.46 CH t=581.0 STATUS [{+}     ] driftwm (pid: 1698)
+H  1433.46 CH t=581.0 STATUS [{+}     ] waybar (pid: 1712)
+H  1433.46 CH t=581.0 STATUS [     {X}] hubd
+H  1433.49 CH t=581.1 operator-action target=hubd why="hubd not running"
+H  1433.53 Service (already) started.
+H  1438.92 CH t=586.5 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=746536 init_side_cpu_ticks=402
+H  1448.94 CH t=596.5 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=746032 init_side_cpu_ticks=405
+H  1458.96 CH t=606.5 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=746032 init_side_cpu_ticks=408
+H  1469.00 CH t=616.6 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=746032 init_side_cpu_ticks=411
+H  1479.01 CH t=626.6 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=746032 init_side_cpu_ticks=414
+H  1489.03 CH t=636.6 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=746032 init_side_cpu_ticks=417
+H  1493.78 CH t=641.4 STUCK ev=9 step=25 fault=storm target=hubd why="hubd not running" (a reboot is the only way out; the host restarts the machine)
+H  1494.80 [  645.557194] reboot: Power down
+H# vm exit code 0 after 647s, loadavg ['0.29', '0.72', '0.60']
+H# launch 7 skip=25 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H  1494.94 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1499.49 Booting from ROM..c[?7l[2J[0m.CH STAGE1 up=3.03
+H  1499.54 CH CAND dinit pid1=dinit
+H  1499.54 CH SUP-START up=3.09
+H  1499.71 [  OK  ] guard
+H  1499.75 CH t=0.1 CHAOS start cand=dinit suite=faults seed=206 cpus=2
+H  1499.85 [  OK  ] seatd
+H  1499.86 [  OK  ] dbus
+H  1501.32 [  OK  ] udevd
+H  1503.63 [  OK  ] driftwm
+H  1504.17 [  OK  ] waybar
+H  1504.18 [  OK  ] hubd
+H  1504.18 [  OK  ] boot
+H  1504.47 CH t=4.8 BOOT-OK up=8.01 ok=1 (seconds since kernel start; waited 4.5)
+H  1504.49 CH t=4.8 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=741276 init_side_cpu_ticks=202
+H  1514.53 CH t=14.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=740840 init_side_cpu_ticks=207
+H  1524.55 CH t=24.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2092 memavail_kb=739608 init_side_cpu_ticks=211
+H  1534.57 CH t=34.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2092 memavail_kb=738600 init_side_cpu_ticks=215
+H  1544.59 CH t=44.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=738600 init_side_cpu_ticks=218
+H  1554.62 CH t=55.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=738600 init_side_cpu_ticks=222
+H  1564.66 CH t=65.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=738348 init_side_cpu_ticks=225
+H  1574.69 CH t=75.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=738096 init_side_cpu_ticks=230
+H  1584.53 CH t=84.9 STEP 26 fStorm
+H  1584.58 dinit: Service driftwm terminated due to signal 9
+H  1584.58 [STOPPD] waybar
+H  1584.58 [STOPPD] hubd
+H  1584.72 CH t=85.1 SAMPLE zombies=0 nproc=68 init_side_fds=23 init_side_rss_kb=2104 memavail_kb=818492 init_side_cpu_ticks=235
+H  1585.09 dinit: Service driftwm process terminated with exit code 1
+H  1585.09 [FAILED] driftwm
+H  1585.09 [FAILED] hubd
+H  1585.09 [FAILED] waybar
+H  1594.75 CH t=95.1 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=830088 init_side_cpu_ticks=237
+H  1604.77 CH t=105.1 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=829584 init_side_cpu_ticks=240
+H  1614.79 CH t=115.1 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=829332 init_side_cpu_ticks=241
+H  1624.63 CH t=125.0 STATUS [[+]     ] boot
+H  1624.64 CH t=125.0 STATUS [{+}     ] guard (pid: 101)
+H  1624.64 CH t=125.0 STATUS [{+}     ] seatd (pid: 103)
+H  1624.64 CH t=125.0 STATUS [{+}     ] udevd (pid: 104)
+H  1624.64 CH t=125.0 STATUS [{+}     ] dbus (pid: 105)
+H  1624.64 CH t=125.0 STATUS [     {X}] driftwm
+H  1624.65 CH t=125.0 STATUS [     {X}] waybar
+H  1624.65 CH t=125.0 STATUS [     {X}] hubd
+H  1624.65 CH t=125.0 STORM target=driftwm dur=40 starts=1 starts_last10s=0 cpu_ticks_init_side=8 bar-down
+H  1624.82 CH t=125.2 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=829080 init_side_cpu_ticks=244
+H  1634.87 CH t=135.2 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=829080 init_side_cpu_ticks=245
+H  1644.89 CH t=145.2 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828828 init_side_cpu_ticks=247
+H  1654.91 CH t=155.3 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828576 init_side_cpu_ticks=250
+H  1664.92 CH t=165.3 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828576 init_side_cpu_ticks=251
+H  1674.94 CH t=175.3 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=253
+H  1684.83 CH t=185.2 UNRECOVERED ev=1 fault=storm target=driftwm alert=0 why="driftwm not running"
+H  1684.86 CH t=185.2 STATUS [[+]     ] boot
+H  1684.86 CH t=185.2 STATUS [{+}     ] guard (pid: 101)
+H  1684.86 CH t=185.2 STATUS [{+}     ] seatd (pid: 103)
+H  1684.86 CH t=185.2 STATUS [{+}     ] udevd (pid: 104)
+H  1684.87 CH t=185.2 STATUS [{+}     ] dbus (pid: 105)
+H  1684.87 CH t=185.2 STATUS [     {X}] driftwm
+H  1684.87 CH t=185.2 STATUS [     {X}] waybar
+H  1684.87 CH t=185.2 STATUS [     {X}] hubd
+H  1684.91 CH t=185.3 operator-action target=driftwm why="driftwm not running"
+H  1684.94 Service (already) started.
+H  1684.99 CH t=185.3 SAMPLE zombies=0 nproc=68 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=256
+H  1695.01 CH t=195.4 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=257
+H  1705.03 CH t=205.4 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=259
+H  1715.05 CH t=215.4 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=261
+H  1725.07 CH t=225.4 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=263
+H  1735.10 CH t=235.4 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=264
+H  1745.11 CH t=245.5 STUCK ev=1 step=26 fault=storm target=driftwm why="driftwm not running" (a reboot is the only way out; the host restarts the machine)
+H  1745.14 CH t=245.5 SAMPLE zombies=0 nproc=67 init_side_fds=22 init_side_rss_kb=2104 memavail_kb=828324 init_side_cpu_ticks=267
+H  1746.12 [  249.707028] reboot: Power down
+H# vm exit code 0 after 251s, loadavg ['0.05', '0.35', '0.47']
+H# launch 8 skip=26 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H  1746.32 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1746.33 Booting from ROM...
+H  1750.92 c[?7l[2JCH STAGE1 up=2.93
+H  1750.96 CH CAND dinit pid1=dinit
+H  1750.97 CH SUP-START up=2.99
+H  1751.11 [  OK  ] guard
+H  1751.17 [  OK  ] dbus
+H  1751.24 [  OK  ] seatd
+H  1751.26 CH t=0.1 CHAOS start cand=dinit suite=faults seed=207 cpus=2
+H  1752.73 [  OK  ] udevd
+H  1755.05 [  OK  ] driftwm
+H  1755.59 [  OK  ] waybar
+H  1755.61 [  OK  ] hubd
+H  1755.61 [  OK  ] boot
+H  1755.99 CH t=4.9 BOOT-OK up=8.01 ok=1 (seconds since kernel start; waited 4.5)
+H  1756.02 CH t=4.9 SAMPLE zombies=0 nproc=69 init_side_fds=22 init_side_rss_kb=2076 memavail_kb=748816 init_side_cpu_ticks=197
+H  1766.05 CH t=14.9 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2080 memavail_kb=748816 init_side_cpu_ticks=201
+H  1776.07 CH t=25.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=748592 init_side_cpu_ticks=206
+H  1786.10 CH t=35.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=748592 init_side_cpu_ticks=210
+H  1796.13 CH t=45.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2092 memavail_kb=748592 init_side_cpu_ticks=215
+H  1806.16 CH t=55.0 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748592 init_side_cpu_ticks=220
+H  1816.19 CH t=65.1 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=748340 init_side_cpu_ticks=224
+H  1826.21 CH t=75.1 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=747584 init_side_cpu_ticks=229
+H  1836.23 CH t=85.1 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=747584 init_side_cpu_ticks=233
+H  1839.05 CH t=87.9 STEP 27 fDep
+H  1839.09 dinit: Service seatd terminated due to signal 9
+H  1839.09 [STOPPD] hubd
+H  1839.09 [STOPPD] waybar
+H  1839.12 [STOPPD] driftwm
+H  1846.25 CH t=95.1 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2096 memavail_kb=835784 init_side_cpu_ticks=238
+H  1854.11 [  OK  ] seatd
+H  1854.11 [STOPPD] waybar
+H  1854.11 [STOPPD] hubd
+H  1854.11 [STOPPD] driftwm
+H  1854.12 [STOPPD] seatd
+H  1856.27 CH t=105.1 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2096 memavail_kb=835784 init_side_cpu_ticks=240
+H  1866.29 CH t=115.2 SAMPLE zombies=0 nproc=67 init_side_fds=23 init_side_rss_kb=2096 memavail_kb=835784 init_side_cpu_ticks=242
+H  1869.17 [  OK  ] seatd
+H  1871.25 [  OK  ] driftwm
+H  1871.79 [  OK  ] hubd
+H  1871.79 [  OK  ] waybar
+H  1872.19 CH t=121.1 EV ev=1 fault=dep-slow target=seatd rec=32.93 ok=1 fixed=0 
+H  1872.19 CH t=121.1 DEPSTARTS mode=slow seatd=2 driftwm=1 waybar=1 hubd=1
+H  1875.19 CH t=124.1 STEP 28 fDep
+H  1875.23 dinit: Service seatd terminated due to signal 9
+H  1875.24 [STOPPD] waybar
+H  1875.24 [STOPPD] hubd
+H  1875.30 [STOPPD] driftwm
+H  1875.32 [FAILED] seatd
+H  1875.32 [FAILED] driftwm
+H  1875.32 [FAILED] hubd
+H  1875.32 [FAILED] waybar
+H  1876.32 CH t=125.2 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=248
+H  1886.34 CH t=135.2 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=250
+H  1896.36 CH t=145.2 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=252
+H  1906.38 CH t=155.3 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=253
+H  1916.40 CH t=165.3 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=256
+H  1926.43 CH t=175.3 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=258
+H  1936.45 CH t=185.3 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=259
+H  1946.47 CH t=195.4 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=261
+H  1955.27 CH t=204.2 UNRECOVERED ev=2 fault=dep-fail target=seatd alert=0 why="seatd not running"
+H  1955.35 CH t=204.2 STATUS [[+]     ] boot
+H  1955.36 CH t=204.2 STATUS [{+}     ] guard (pid: 100)
+H  1955.36 CH t=204.2 STATUS [     {X}] seatd (exit status: 1)
+H  1955.36 CH t=204.2 STATUS [{+}     ] udevd (pid: 102)
+H  1955.36 CH t=204.2 STATUS [{+}     ] dbus (pid: 103)
+H  1955.36 CH t=204.2 STATUS [     {X}] driftwm
+H  1955.36 CH t=204.2 STATUS [     {X}] waybar
+H  1955.37 CH t=204.2 STATUS [     {X}] hubd
+H  1955.41 CH t=204.3 operator-action target=seatd why="seatd not running"
+H  1955.45 Service (already) started.
+H  1956.49 CH t=205.4 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=264
+H  1966.51 CH t=215.4 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=265
+H  1976.53 CH t=225.4 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=267
+H  1986.56 CH t=235.4 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=827724 init_side_cpu_ticks=269
+H  1996.58 CH t=245.5 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=829268 init_side_cpu_ticks=271
+H  2006.60 CH t=255.5 SAMPLE zombies=0 nproc=66 init_side_fds=22 init_side_rss_kb=2096 memavail_kb=829424 init_side_cpu_ticks=272
+H  2015.59 CH t=264.5 STUCK ev=2 step=28 fault=dep-fail target=seatd why="seatd not running" (a reboot is the only way out; the host restarts the machine)
+H  2016.60 [  268.647931] reboot: Power down
+H# vm exit code 0 after 270s, loadavg ['0.16', '0.29', '0.41']
+H# end wall=2016.6s launches=8 suite_done=False

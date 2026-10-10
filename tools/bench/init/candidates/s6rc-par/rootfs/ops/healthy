@@ -1,0 +1,2 @@
+#!/bin/sh
+for s in seatd udevd dbus driftwm waybar hubd; do s6-svstat /run/service/$s | grep -q '^up.*, ready ' || exit 1; done

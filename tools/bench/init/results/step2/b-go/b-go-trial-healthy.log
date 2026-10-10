@@ -1,0 +1,21 @@
+H# start 2026-10-10 21:49:47 cand=b-go suite=trial cpus_seen=4 loadavg_at_start=['0.34', '0.44', '0.55']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.38 Booting from ROM..c[?7l[2JCH STAGE1 up=3.55
+H     5.43 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H     5.45 CH SUP-START up=3.64
+H     5.68 CH t=0.1 CHAOS start cand=b-go suite=trial seed=130 cpus=2
+H     5.85 brain: started mode=direct pid=106
+H     8.86 brain: starting driftwm: its dependencies are ready
+H    11.86 brain: starting waybar: its dependencies are ready
+H    11.87 brain: starting hubd: its dependencies are ready
+H    29.24 CH t=23.7 TRIAL CONFIRMED scenario=healthy after=23.5s true_state=""
+H    29.29 CH t=23.7 STATUS dbus state=running up=true pid=143 restarts=0 last_failure=never needs=[] cause=""
+H    29.29 CH t=23.7 STATUS driftwm state=running up=true pid=172 restarts=0 last_failure=never needs=[seatd udevd] cause=""
+H    29.29 CH t=23.7 STATUS hubd state=running up=true pid=213 restarts=0 last_failure=never needs=[driftwm] cause=""
+H    29.29 CH t=23.7 STATUS seatd state=running up=true pid=135 restarts=0 last_failure=never needs=[] cause=""
+H    29.29 CH t=23.7 STATUS udevd state=running up=true pid=138 restarts=0 last_failure=never needs=[] cause=""
+H    29.30 CH t=23.7 STATUS waybar state=running up=true pid=212 restarts=0 last_failure=never needs=[driftwm dbus] cause=""
+H# trial finished
+H# vm exit code -9 after 49s, loadavg ['0.38', '0.44', '0.55']
+H# end wall=49.3s launches=1 suite_done=True

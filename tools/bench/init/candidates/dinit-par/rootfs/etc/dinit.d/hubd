@@ -1,0 +1,9 @@
+type = process
+command = /bin/follow-driftwm policy hubd -wait /run/dw/wayland-1 -notify 3
+restart = true
+log-type = buffer
+ready-notification = pipefd:3
+depends-on = driftwm
+oom-score-adj = -900
+nice = -5
+run-in-cgroup = /hub

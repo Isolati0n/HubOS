@@ -1,0 +1,33 @@
+H# start 2026-10-10 22:31:42 cand=s6rc-par suite=pid1wedge cpus_seen=4 loadavg_at_start=['0.56', '0.45', '0.43']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     7.54 c[?7l[2JCH STAGE1 up=5.78
+H     7.60 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     7.65 CH SUP-START up=5.90
+H     7.82 CH t=0.1 CHAOS start cand=s6rc suite=pid1wedge seed=120 cpus=2
+H    14.57 CH S6RC-UP up=12.82
+H    14.94 CH t=7.2 BOOT-OK up=13.19 ok=1 (seconds since kernel start; waited 6.9)
+H    15.02 CH t=7.3 SAMPLE zombies=0 nproc=99 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=639636 init_side_cpu_ticks=198
+H    19.95 CH t=12.2 INJECT pid1-wedge (held stopped by ptrace)
+H    19.97 PID 1 held stopped
+H    24.96 CH t=17.2 PID1-STATE t guard=S watchdog_dev=true
+H    25.06 CH t=17.3 SAMPLE zombies=0 nproc=100 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=639160 init_side_cpu_ticks=198
+H    29.98 CH t=22.3 PID1-STATE t guard=S watchdog_dev=true
+H    34.99 CH t=27.3 PID1-STATE t guard=S watchdog_dev=true
+H    35.10 CH t=27.4 SAMPLE zombies=0 nproc=100 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=639160 init_side_cpu_ticks=198
+H    40.00 CH t=32.3 PID1-STATE t guard=S watchdog_dev=true
+H    45.02 CH t=37.3 PID1-STATE t guard=S watchdog_dev=true
+H    45.16 CH t=37.4 SAMPLE zombies=0 nproc=100 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=639164 init_side_cpu_ticks=198
+H    50.04 CH t=42.3 PID1-STATE t guard=S watchdog_dev=true
+H    54.51 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    54.54 Booting from ROM...
+H    61.66 c[?7l[2JCH STAGE1 up=5.71
+H    61.72 CH CAND s6rc pid1=s6-svscan + s6-rc
+H    61.75 CH SUP-START up=5.80
+H    61.88 CH t=0.1 CHAOS start cand=s6rc suite=pid1wedge seed=120 cpus=2
+H    68.54 CH S6RC-UP up=12.58
+H    68.85 CH t=7.0 BOOT-OK up=12.90 ok=1 (seconds since kernel start; waited 6.8)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 69s, loadavg ['0.44', '0.43', '0.42']
+H# end wall=68.9s launches=1 suite_done=True

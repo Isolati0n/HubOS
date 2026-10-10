@@ -1,0 +1,31 @@
+H# start 2026-10-10 19:25:56 cand=dinit suite=boot cpus_seen=4 loadavg_at_start=['0.24', '0.24', '0.26']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.69 Booting from ROM..c[?7l[2JCH STAGE1 up=3.03
+H     4.75 CH CAND dinit pid1=dinit
+H     4.75 CH SUP-START up=3.10
+H     4.90 [  OK  ] guard
+H     5.04 CH t=0.2 CHAOS start cand=dinit suite=boot seed=103 cpus=2
+H     5.07 [  OK  ] dbus
+H     5.07 [  OK  ] seatd
+H     6.52 [  OK  ] udevd
+H     9.11 [  OK  ] driftwm
+H     9.65 [  OK  ] waybar
+H     9.66 [  OK  ] hubd
+H     9.66 [  OK  ] boot
+H    10.07 CH t=5.2 BOOT-OK up=8.42 ok=1 (seconds since kernel start; waited 4.8)
+H    10.12 CH t=5.2 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2084 memavail_kb=752124 init_side_cpu_ticks=197
+H    20.15 CH t=15.3 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2088 memavail_kb=751884 init_side_cpu_ticks=201
+H    30.17 CH t=25.3 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2092 memavail_kb=751884 init_side_cpu_ticks=206
+H    40.19 CH t=35.3 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2092 memavail_kb=751884 init_side_cpu_ticks=209
+H    50.21 CH t=45.3 SAMPLE zombies=0 nproc=70 init_side_fds=22 init_side_rss_kb=2100 memavail_kb=751884 init_side_cpu_ticks=213
+H    55.10 CH t=50.2 IDLE-CPU window=30s whole_vm_busy_ticks=175 whole_vm_idle_ticks=5728 init_side_ticks=13 (1 tick = 10 ms, 2 vCPUs)
+H    55.11 CH t=50.2 MEM pid=1 comm=dinit rss_kb=2104 pss_kb=2100
+H    55.15 CH t=50.3 POLICY driftwm oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    55.18 CH t=50.3 POLICY hubd oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    55.21 CH t=50.3 POLICY waybar oom_score_adj=0 nice=0 cgroup=0::/
+H    55.22 CH t=50.3 LISTEN tcp_listening_sockets=0 epmd_running=false
+H    55.22 CH t=50.3 SUITE-DONE
+H    57.23 [   55.610705] reboot: Power down
+H# vm exit code 0 after 57s, loadavg ['0.50', '0.33', '0.29']
+H# end wall=57.2s launches=1 suite_done=True

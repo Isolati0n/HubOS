@@ -1,0 +1,466 @@
+H# start 2026-10-10 22:01:56 cand=runit suite=faults cpus_seen=4 loadavg_at_start=['0.20', '0.28', '0.42']
+H# launch 1 skip=30 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial 
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.22 Booting from ROM...
+H     5.08 c[?7l[2JCH STAGE1 up=2.92
+H     5.12 CH CAND runit pid1=runit stage2=runsvdir
+H     5.17 CH SUP-START up=3.02
+H     5.22 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     5.23 - runit: enter stage: /etc/runit/1
+H     5.24 - runit: leave stage: /etc/runit/1
+H     5.24 - runit: enter stage: /etc/runit/2
+H     5.34 CH t=0.1 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H    11.21 CH t=6.0 BOOT-OK up=9.06 ok=1 (seconds since kernel start; waited 5.7)
+H    11.27 CH t=6.1 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=759844 init_side_cpu_ticks=209
+H    21.35 CH t=16.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=757600 init_side_cpu_ticks=210
+H    31.41 CH t=26.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755584 init_side_cpu_ticks=210
+H    41.47 CH t=36.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755596 init_side_cpu_ticks=210
+H    51.56 CH t=46.3 SAMPLE zombies=0 nproc=88 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755596 init_side_cpu_ticks=212
+H    61.62 CH t=56.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755596 init_side_cpu_ticks=212
+H    71.67 CH t=66.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755344 init_side_cpu_ticks=213
+H    81.73 CH t=76.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755344 init_side_cpu_ticks=214
+H    91.78 CH t=86.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755344 init_side_cpu_ticks=214
+H   101.87 CH t=96.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=755344 init_side_cpu_ticks=214
+H   106.27 CH t=101.0 STEP 31 fSupKill
+H   110.98 CH t=105.8 EV ev=1 fault=supervisor-killed target=driftwm rec=2.92 ok=1 fixed=0 child_kept_running=1
+H   111.93 CH t=106.7 SAMPLE zombies=1 nproc=87 init_side_fds=108 init_side_rss_kb=13080 memavail_kb=668580 init_side_cpu_ticks=220
+H   117.11 CH t=111.9 EV ev=2 fault=after-supervisor-killed target=driftwm rec=3.90 ok=1 fixed=0 supervisor_back=1
+H   120.11 CH t=114.9 STEP 32 fSupKill
+H   121.90 CH t=116.7 EV ev=3 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   122.01 CH t=116.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=12968 memavail_kb=739896 init_side_cpu_ticks=223
+H   125.60 CH t=120.4 EV ev=4 fault=after-supervisor-killed target=waybar rec=1.47 ok=1 fixed=0 supervisor_back=1
+H   128.60 CH t=123.4 STEP 33 fSupKill
+H   130.41 CH t=125.2 EV ev=5 fault=supervisor-killed target=driftwm rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   132.21 CH t=127.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13036 memavail_kb=739392 init_side_cpu_ticks=221
+H   136.05 CH t=130.8 EV ev=6 fault=after-supervisor-killed target=driftwm rec=3.40 ok=1 fixed=0 supervisor_back=1
+H   139.05 CH t=133.8 STEP 34 fSupKill
+H   140.85 CH t=135.6 EV ev=7 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   142.28 CH t=137.1 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=12976 memavail_kb=720616 init_side_cpu_ticks=222
+H   143.72 CH t=138.5 EV ev=8 fault=after-supervisor-killed target=waybar rec=0.60 ok=1 fixed=0 supervisor_back=1
+H   146.73 CH t=141.5 STEP 35 fSupKill
+H   151.38 CH t=146.2 EV ev=9 fault=supervisor-killed target=driftwm rec=2.90 ok=1 fixed=0 child_kept_running=1
+H   152.38 CH t=147.2 SAMPLE zombies=1 nproc=87 init_side_fds=108 init_side_rss_kb=13068 memavail_kb=722124 init_side_cpu_ticks=230
+H   157.50 CH t=152.3 EV ev=10 fault=after-supervisor-killed target=driftwm rec=3.90 ok=1 fixed=0 supervisor_back=1
+H   160.50 CH t=155.3 STEP 36 fSupKill
+H   162.32 CH t=157.1 EV ev=11 fault=supervisor-killed target=waybar rec=0.08 ok=1 fixed=0 child_kept_running=1
+H   162.43 CH t=157.2 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13124 memavail_kb=732256 init_side_cpu_ticks=236
+H   165.79 CH t=160.6 EV ev=12 fault=after-supervisor-killed target=waybar rec=1.25 ok=1 fixed=0 supervisor_back=1
+H   168.80 CH t=163.6 STEP 37 fScanKill
+H   168.82 - runit: leave stage: /etc/runit/2
+H   168.82 - runit: enter stage: /etc/runit/3
+H   168.83 CH runit stage 3 (stage 2 returned or shutdown)
+H   168.83 - runit: leave stage: /etc/runit/3
+H   168.83 - runit: sending KILL signal to all processes...
+H   168.85 - runit: system reboot.
+H   168.87 [  166.755833] watchdog: watchdog0: watchdog did not stop!
+H   168.87 [  166.758636] reboot: Restarting system
+H   169.00 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   173.34 Booting from ROM..c[?7l[2JCH STAGE1 up=2.93
+H   173.40 CH CAND runit pid1=runit stage2=runsvdir
+H   173.46 CH SUP-START up=3.05
+H   173.53 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H   173.54 - runit: enter stage: /etc/runit/1
+H   173.56 - runit: leave stage: /etc/runit/1
+H   173.57 - runit: enter stage: /etc/runit/2
+H   173.59 CH t=0.1 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H   179.92 CH t=6.4 BOOT-OK up=9.51 ok=1 (seconds since kernel start; waited 6.1)
+H   180.00 CH t=6.4 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=744376 init_side_cpu_ticks=220
+H   190.02 CH t=16.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743432 init_side_cpu_ticks=220
+H   200.09 CH t=26.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743432 init_side_cpu_ticks=220
+H   210.17 CH t=36.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743432 init_side_cpu_ticks=221
+H   220.22 CH t=46.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743432 init_side_cpu_ticks=221
+H   230.28 CH t=56.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743432 init_side_cpu_ticks=221
+H   240.34 CH t=66.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743432 init_side_cpu_ticks=223
+H   250.44 CH t=76.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743432 init_side_cpu_ticks=223
+H   260.50 CH t=87.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=743184 init_side_cpu_ticks=223
+H   270.55 CH t=97.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13416 memavail_kb=742932 init_side_cpu_ticks=224
+H   274.99 CH t=101.5 STEP 31 fSupKill
+H   280.62 CH t=107.1 SAMPLE zombies=1 nproc=86 init_side_fds=108 init_side_rss_kb=13460 memavail_kb=691408 init_side_cpu_ticks=234
+H   282.37 CH t=108.8 EV ev=1 fault=supervisor-killed target=driftwm rec=5.63 ok=1 fixed=0 child_kept_running=0
+H   288.67 CH t=115.1 EV ev=2 fault=after-supervisor-killed target=driftwm rec=4.07 ok=1 fixed=0 supervisor_back=1
+H   290.67 CH t=117.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13460 memavail_kb=733800 init_side_cpu_ticks=243
+H   291.67 CH t=118.1 STEP 32 fSupKill
+H   293.46 CH t=119.9 EV ev=3 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   296.94 CH t=123.4 EV ev=4 fault=after-supervisor-killed target=waybar rec=1.25 ok=1 fixed=0 supervisor_back=1
+H   299.95 CH t=126.4 STEP 33 fSupKill
+H   300.82 CH t=127.3 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13500 memavail_kb=663848 init_side_cpu_ticks=226
+H   303.45 CH t=129.9 EV ev=5 fault=supervisor-killed target=driftwm rec=1.78 ok=1 fixed=0 child_kept_running=1
+H   309.83 CH t=136.3 EV ev=6 fault=after-supervisor-killed target=driftwm rec=4.15 ok=1 fixed=0 supervisor_back=1
+H   310.91 CH t=137.4 SAMPLE zombies=0 nproc=88 init_side_fds=108 init_side_rss_kb=13500 memavail_kb=724536 init_side_cpu_ticks=236
+H   312.83 CH t=139.3 STEP 34 fSupKill
+H   314.62 CH t=141.1 EV ev=7 fault=supervisor-killed target=waybar rec=0.06 ok=1 fixed=0 child_kept_running=1
+H   319.03 CH t=145.5 EV ev=8 fault=after-supervisor-killed target=waybar rec=2.18 ok=1 fixed=0 supervisor_back=1
+H   320.98 CH t=147.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13600 memavail_kb=723888 init_side_cpu_ticks=236
+H   322.03 CH t=148.5 STEP 35 fSupKill
+H   323.85 CH t=150.3 EV ev=9 fault=supervisor-killed target=driftwm rec=0.08 ok=1 fixed=0 child_kept_running=1
+H   329.73 CH t=156.2 EV ev=10 fault=after-supervisor-killed target=driftwm rec=3.64 ok=1 fixed=0 supervisor_back=1
+H   331.03 CH t=157.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13496 memavail_kb=751852 init_side_cpu_ticks=231
+H   332.73 CH t=159.2 STEP 36 fSupKill
+H   334.54 CH t=161.0 EV ev=11 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   337.10 CH t=163.6 EV ev=12 fault=after-supervisor-killed target=waybar rec=0.32 ok=1 fixed=0 supervisor_back=1
+H   340.11 CH t=166.6 STEP 37 fScanKill
+H   340.13 - runit: leave stage: /etc/runit/2
+H   340.13 - runit: enter stage: /etc/runit/3
+H   340.14 CH runit stage 3 (stage 2 returned or shutdown)
+H   340.14 - runit: leave stage: /etc/runit/3
+H   340.15 - runit: sending KILL signal to all processes...
+H   340.15 [  169.785336] watchdog: watchdog0: watchdog did not stop!
+H   340.18 - runit: system reboot.
+H   340.18 [  169.820080] reboot: Restarting system
+H   340.31 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   345.39 Booting from ROM..c[?7l[2JCH STAGE1 up=2.96
+H   345.45 CH CAND runit pid1=runit stage2=runsvdir
+H   345.50 CH SUP-START up=3.07
+H   345.56 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H   345.57 - runit: enter stage: /etc/runit/1
+H   345.58 - runit: leave stage: /etc/runit/1
+H   345.58 - runit: enter stage: /etc/runit/2
+H   345.62 CH t=0.1 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H   351.75 CH t=6.2 BOOT-OK up=9.32 ok=1 (seconds since kernel start; waited 5.9)
+H   351.82 CH t=6.3 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=753448 init_side_cpu_ticks=214
+H   361.87 CH t=16.3 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=751464 init_side_cpu_ticks=215
+H   371.91 CH t=26.4 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=750712 init_side_cpu_ticks=215
+H   381.96 CH t=36.4 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=750212 init_side_cpu_ticks=215
+H   392.05 CH t=46.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=749708 init_side_cpu_ticks=216
+H   402.12 CH t=56.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=749456 init_side_cpu_ticks=217
+H   412.18 CH t=66.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=749456 init_side_cpu_ticks=217
+H   422.25 CH t=76.7 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=749460 init_side_cpu_ticks=219
+H   432.31 CH t=86.8 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=749460 init_side_cpu_ticks=219
+H   442.36 CH t=96.8 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13468 memavail_kb=749220 init_side_cpu_ticks=219
+H   446.83 CH t=101.3 STEP 31 fSupKill
+H   448.74 CH t=103.2 EV ev=1 fault=supervisor-killed target=driftwm rec=0.16 ok=1 fixed=0 child_kept_running=1
+H   452.41 CH t=106.9 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13436 memavail_kb=719836 init_side_cpu_ticks=228
+H   454.41 CH t=108.9 EV ev=2 fault=after-supervisor-killed target=driftwm rec=3.44 ok=1 fixed=0 supervisor_back=1
+H   457.42 CH t=111.9 STEP 32 fSupKill
+H   459.23 CH t=113.7 EV ev=3 fault=supervisor-killed target=waybar rec=0.08 ok=1 fixed=0 child_kept_running=1
+H   462.51 CH t=117.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13324 memavail_kb=733616 init_side_cpu_ticks=229
+H   463.92 CH t=118.4 EV ev=4 fault=after-supervisor-killed target=waybar rec=2.46 ok=1 fixed=0 supervisor_back=0
+H   466.93 CH t=121.4 STEP 33 fSupKill
+H   470.46 CH t=124.9 EV ev=5 fault=supervisor-killed target=driftwm rec=1.80 ok=1 fixed=0 child_kept_running=1
+H   472.57 CH t=127.0 SAMPLE zombies=2 nproc=86 init_side_fds=108 init_side_rss_kb=13268 memavail_kb=780732 init_side_cpu_ticks=233
+H   476.89 CH t=131.3 EV ev=6 fault=after-supervisor-killed target=driftwm rec=4.21 ok=1 fixed=0 supervisor_back=1
+H   479.89 CH t=134.3 STEP 34 fSupKill
+H   481.71 CH t=136.2 EV ev=7 fault=supervisor-killed target=waybar rec=0.09 ok=1 fixed=0 child_kept_running=1
+H   482.61 CH t=137.1 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13268 memavail_kb=753884 init_side_cpu_ticks=235
+H   486.21 CH t=140.7 EV ev=8 fault=after-supervisor-killed target=waybar rec=2.27 ok=1 fixed=0 supervisor_back=1
+H   489.21 CH t=143.7 STEP 35 fSupKill
+H   491.02 CH t=145.5 EV ev=9 fault=supervisor-killed target=driftwm rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   492.67 CH t=147.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13260 memavail_kb=745820 init_side_cpu_ticks=230
+H   497.41 CH t=151.9 EV ev=10 fault=after-supervisor-killed target=driftwm rec=4.17 ok=1 fixed=0 supervisor_back=1
+H   500.42 CH t=154.9 STEP 36 fSupKill
+H   502.22 CH t=156.7 EV ev=11 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   502.73 CH t=157.2 SAMPLE zombies=0 nproc=89 init_side_fds=108 init_side_rss_kb=13260 memavail_kb=731484 init_side_cpu_ticks=234
+H   506.41 CH t=160.9 EV ev=12 fault=after-supervisor-killed target=waybar rec=1.96 ok=1 fixed=0 supervisor_back=1
+H   509.41 CH t=163.9 STEP 37 fScanKill
+H   509.44 - runit: leave stage: /etc/runit/2
+H   509.44 - runit: enter stage: /etc/runit/3
+H   509.45 CH runit stage 3 (stage 2 returned or shutdown)
+H   509.46 - runit: leave stage: /etc/runit/3
+H   509.46 - runit: sending KILL signal to all processes...
+H   509.48 - runit: system reboot.
+H   509.48 [  167.099951] reboot: Restarting system
+H   509.62 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   515.66 Booting from ROM..c[?7l[2JCH STAGE1 up=3.16
+H   515.71 CH CAND runit pid1=runit stage2=runsvdir
+H   515.78 CH SUP-START up=3.28
+H   515.85 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H   515.85 - runit: enter stage: /etc/runit/1
+H   515.87 - runit: leave stage: /etc/runit/1
+H   515.88 - runit: enter stage: /etc/runit/2
+H   515.90 CH t=0.1 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H   521.63 CH t=5.8 BOOT-OK up=9.13 ok=1 (seconds since kernel start; waited 5.5)
+H   521.73 CH t=5.9 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=755072 init_side_cpu_ticks=227
+H   531.81 CH t=16.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=753080 init_side_cpu_ticks=228
+H   541.89 CH t=26.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=753080 init_side_cpu_ticks=229
+H   551.94 CH t=36.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=752072 init_side_cpu_ticks=230
+H   562.01 CH t=46.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=750308 init_side_cpu_ticks=231
+H   572.07 CH t=56.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=750060 init_side_cpu_ticks=231
+H   582.13 CH t=66.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=750060 init_side_cpu_ticks=232
+H   592.19 CH t=76.4 SAMPLE zombies=0 nproc=92 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=750060 init_side_cpu_ticks=233
+H   602.24 CH t=86.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=750060 init_side_cpu_ticks=233
+H   612.34 CH t=96.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13304 memavail_kb=750060 init_side_cpu_ticks=234
+H   616.71 CH t=100.9 STEP 31 fSupKill
+H   618.52 CH t=102.7 EV ev=1 fault=supervisor-killed target=driftwm rec=0.08 ok=1 fixed=0 child_kept_running=0
+H   622.39 CH t=106.6 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13288 memavail_kb=747892 init_side_cpu_ticks=240
+H   624.67 CH t=108.8 EV ev=2 fault=after-supervisor-killed target=driftwm rec=3.92 ok=1 fixed=0 supervisor_back=1
+H   627.68 CH t=111.8 STEP 32 fSupKill
+H   629.47 CH t=113.6 EV ev=3 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   632.44 CH t=116.6 SAMPLE zombies=1 nproc=83 init_side_fds=93 init_side_rss_kb=11732 memavail_kb=747388 init_side_cpu_ticks=242
+H   634.16 CH t=118.3 EV ev=4 fault=after-supervisor-killed target=waybar rec=2.44 ok=1 fixed=0 supervisor_back=0
+H   637.17 CH t=121.3 STEP 33 fSupKill
+H   640.76 CH t=124.9 EV ev=5 fault=supervisor-killed target=driftwm rec=1.86 ok=1 fixed=0 child_kept_running=1
+H   642.53 CH t=126.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13224 memavail_kb=639696 init_side_cpu_ticks=240
+H   646.93 CH t=131.1 EV ev=6 fault=after-supervisor-killed target=driftwm rec=3.95 ok=1 fixed=0 supervisor_back=1
+H   649.93 CH t=134.1 STEP 34 fSupKill
+H   651.73 CH t=135.9 EV ev=7 fault=supervisor-killed target=waybar rec=0.06 ok=1 fixed=0 child_kept_running=1
+H   652.58 CH t=136.8 SAMPLE zombies=1 nproc=86 init_side_fds=93 init_side_rss_kb=11752 memavail_kb=731844 init_side_cpu_ticks=243
+H   654.30 CH t=138.5 EV ev=8 fault=after-supervisor-killed target=waybar rec=0.32 ok=1 fixed=0 supervisor_back=1
+H   657.30 CH t=141.5 STEP 35 fSupKill
+H   660.87 CH t=145.0 EV ev=9 fault=supervisor-killed target=driftwm rec=1.84 ok=1 fixed=0 child_kept_running=1
+H   662.64 CH t=146.8 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13212 memavail_kb=658300 init_side_cpu_ticks=246
+H   667.85 CH t=152.0 EV ev=10 fault=after-supervisor-killed target=driftwm rec=4.72 ok=1 fixed=0 supervisor_back=1
+H   670.85 CH t=155.0 STEP 36 fSupKill
+H   672.70 CH t=156.9 EV ev=11 fault=supervisor-killed target=waybar rec=0.11 ok=1 fixed=0 child_kept_running=1
+H   672.76 CH t=156.9 SAMPLE zombies=1 nproc=86 init_side_fds=93 init_side_rss_kb=11752 memavail_kb=731152 init_side_cpu_ticks=251
+H   676.70 CH t=160.9 EV ev=12 fault=after-supervisor-killed target=waybar rec=1.77 ok=1 fixed=0 supervisor_back=1
+H   679.70 CH t=163.9 STEP 37 fScanKill
+H   679.73 - runit: leave stage: /etc/runit/2
+H   679.73 - runit: enter stage: /etc/runit/3
+H   679.74 CH runit stage 3 (stage 2 returned or shutdown)
+H   679.74 - runit: leave stage: /etc/runit/3
+H   679.74 - runit: sending KILL signal to all processes...
+H   679.75 [  167.288626] watchdog: watchdog0: watchdog did not stop!
+H   679.76 - runit: system reboot.
+H   679.77 [  167.312657] reboot: Restarting system
+H   679.90 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   685.14 Booting from ROM..c[?7l[2JCH STAGE1 up=3.27
+H   685.20 CH CAND runit pid1=runit stage2=runsvdir
+H   685.26 CH SUP-START up=3.40
+H   685.32 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H   685.33 - runit: enter stage: /etc/runit/1
+H   685.34 - runit: leave stage: /etc/runit/1
+H   685.35 - runit: enter stage: /etc/runit/2
+H   685.38 CH t=0.1 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H   691.68 CH t=6.4 BOOT-OK up=9.81 ok=1 (seconds since kernel start; waited 6.1)
+H   691.81 CH t=6.5 SAMPLE zombies=0 nproc=90 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=751228 init_side_cpu_ticks=235
+H   701.87 CH t=16.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=751240 init_side_cpu_ticks=235
+H   711.93 CH t=26.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=750744 init_side_cpu_ticks=236
+H   721.99 CH t=36.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=750748 init_side_cpu_ticks=236
+H   732.06 CH t=46.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=750748 init_side_cpu_ticks=236
+H   742.14 CH t=56.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=750524 init_side_cpu_ticks=237
+H   752.19 CH t=66.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=750532 init_side_cpu_ticks=238
+H   762.28 CH t=77.0 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=750532 init_side_cpu_ticks=239
+H   772.34 CH t=87.0 SAMPLE zombies=0 nproc=89 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=750532 init_side_cpu_ticks=240
+H   782.40 CH t=97.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13308 memavail_kb=749776 init_side_cpu_ticks=240
+H   786.75 CH t=101.4 STEP 31 fSupKill
+H   792.06 CH t=106.7 EV ev=1 fault=supervisor-killed target=driftwm rec=3.55 ok=1 fixed=0 child_kept_running=1
+H   792.45 CH t=107.1 SAMPLE zombies=1 nproc=87 init_side_fds=108 init_side_rss_kb=13488 memavail_kb=706936 init_side_cpu_ticks=251
+H   797.81 CH t=112.5 EV ev=2 fault=after-supervisor-killed target=driftwm rec=3.51 ok=1 fixed=0 supervisor_back=1
+H   800.81 CH t=115.5 STEP 32 fSupKill
+H   802.52 CH t=117.2 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13560 memavail_kb=759920 init_side_cpu_ticks=254
+H   802.63 CH t=117.3 EV ev=3 fault=supervisor-killed target=waybar rec=0.10 ok=1 fixed=0 child_kept_running=1
+H   805.90 CH t=120.6 EV ev=4 fault=after-supervisor-killed target=waybar rec=1.03 ok=1 fixed=0 supervisor_back=1
+H   808.90 CH t=123.6 STEP 33 fSupKill
+H   810.72 CH t=125.4 EV ev=5 fault=supervisor-killed target=driftwm rec=0.09 ok=1 fixed=0 child_kept_running=1
+H   812.64 CH t=127.3 SAMPLE zombies=0 nproc=89 init_side_fds=108 init_side_rss_kb=13464 memavail_kb=719852 init_side_cpu_ticks=252
+H   816.46 CH t=131.1 EV ev=6 fault=after-supervisor-killed target=driftwm rec=3.49 ok=1 fixed=0 supervisor_back=1
+H   819.46 CH t=134.1 STEP 34 fSupKill
+H   821.29 CH t=136.0 EV ev=7 fault=supervisor-killed target=waybar rec=0.10 ok=1 fixed=0 child_kept_running=1
+H   822.70 CH t=137.4 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13480 memavail_kb=735844 init_side_cpu_ticks=253
+H   823.86 CH t=138.5 EV ev=8 fault=after-supervisor-killed target=waybar rec=0.33 ok=1 fixed=0 supervisor_back=1
+H   826.87 CH t=141.5 STEP 35 fSupKill
+H   830.02 CH t=144.7 EV ev=9 fault=supervisor-killed target=driftwm rec=1.40 ok=1 fixed=0 child_kept_running=1
+H   832.74 CH t=147.4 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13484 memavail_kb=709676 init_side_cpu_ticks=259
+H   835.54 CH t=150.2 EV ev=10 fault=after-supervisor-killed target=driftwm rec=3.25 ok=1 fixed=0 supervisor_back=1
+H   838.54 CH t=153.2 STEP 36 fSupKill
+H   840.34 CH t=155.0 EV ev=11 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   842.82 CH t=157.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13376 memavail_kb=712800 init_side_cpu_ticks=257
+H   843.86 CH t=158.5 EV ev=12 fault=after-supervisor-killed target=waybar rec=1.27 ok=1 fixed=0 supervisor_back=1
+H   846.87 CH t=161.6 STEP 37 fScanKill
+H   846.90 - runit: leave stage: /etc/runit/2
+H   846.90 - runit: enter stage: /etc/runit/3
+H   846.91 CH runit stage 3 (stage 2 returned or shutdown)
+H   846.91 - runit: leave stage: /etc/runit/3
+H   846.91 - runit: sending KILL signal to all processes...
+H   846.93 [  165.115761] watchdog: watchdog0: watchdog did not stop!
+H   846.94 - runit: system reboot.
+H   846.95 [  165.136676] reboot: Restarting system
+H   847.08 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   847.09 Booting from ROM...
+H   852.08 c[?7l[2JCH STAGE1 up=3.07
+H   852.14 CH CAND runit pid1=runit stage2=runsvdir
+H   852.19 CH SUP-START up=3.18
+H   852.25 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H   852.26 - runit: enter stage: /etc/runit/1
+H   852.27 - runit: leave stage: /etc/runit/1
+H   852.27 - runit: enter stage: /etc/runit/2
+H   852.30 CH t=0.0 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H   858.35 CH t=6.1 BOOT-OK up=9.34 ok=1 (seconds since kernel start; waited 5.8)
+H   858.41 CH t=6.2 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=755464 init_side_cpu_ticks=229
+H   868.49 CH t=16.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=752012 init_side_cpu_ticks=229
+H   878.58 CH t=26.3 SAMPLE zombies=0 nproc=91 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=751260 init_side_cpu_ticks=229
+H   888.65 CH t=36.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=751264 init_side_cpu_ticks=230
+H   898.78 CH t=46.5 SAMPLE zombies=0 nproc=91 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=751264 init_side_cpu_ticks=230
+H   908.83 CH t=56.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=751264 init_side_cpu_ticks=230
+H   918.89 CH t=66.6 SAMPLE zombies=0 nproc=92 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=751264 init_side_cpu_ticks=231
+H   928.95 CH t=76.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=751264 init_side_cpu_ticks=232
+H   939.07 CH t=86.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=750004 init_side_cpu_ticks=233
+H   949.15 CH t=96.9 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13104 memavail_kb=749504 init_side_cpu_ticks=233
+H   953.42 CH t=101.2 STEP 31 fSupKill
+H   955.35 CH t=103.1 EV ev=1 fault=supervisor-killed target=driftwm rec=0.19 ok=1 fixed=0 child_kept_running=0
+H   959.21 CH t=107.0 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13112 memavail_kb=744728 init_side_cpu_ticks=238
+H   961.07 CH t=108.8 EV ev=2 fault=after-supervisor-killed target=driftwm rec=3.49 ok=1 fixed=0 supervisor_back=1
+H   964.07 CH t=111.8 STEP 32 fSupKill
+H   965.89 CH t=113.6 EV ev=3 fault=supervisor-killed target=waybar rec=0.09 ok=1 fixed=0 child_kept_running=1
+H   969.26 CH t=117.0 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13040 memavail_kb=752532 init_side_cpu_ticks=237
+H   970.46 CH t=118.2 EV ev=4 fault=after-supervisor-killed target=waybar rec=2.33 ok=1 fixed=0 supervisor_back=0
+H   973.47 CH t=121.2 STEP 33 fSupKill
+H   978.41 CH t=126.2 EV ev=5 fault=supervisor-killed target=driftwm rec=3.21 ok=1 fixed=0 child_kept_running=1
+H   979.32 CH t=127.1 SAMPLE zombies=1 nproc=87 init_side_fds=108 init_side_rss_kb=13136 memavail_kb=675836 init_side_cpu_ticks=241
+H   985.00 CH t=132.7 EV ev=6 fault=after-supervisor-killed target=driftwm rec=4.36 ok=1 fixed=0 supervisor_back=1
+H   988.02 CH t=135.7 STEP 34 fSupKill
+H   989.39 CH t=137.1 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13208 memavail_kb=744268 init_side_cpu_ticks=248
+H   989.81 CH t=137.6 EV ev=7 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   992.91 CH t=140.7 EV ev=8 fault=after-supervisor-killed target=waybar rec=0.85 ok=1 fixed=0 supervisor_back=1
+H   995.92 CH t=143.7 STEP 35 fSupKill
+H   997.74 CH t=145.5 EV ev=9 fault=supervisor-killed target=driftwm rec=0.08 ok=1 fixed=0 child_kept_running=1
+H   999.46 CH t=147.2 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13108 memavail_kb=720328 init_side_cpu_ticks=243
+H  1003.95 CH t=151.7 EV ev=10 fault=after-supervisor-killed target=driftwm rec=3.98 ok=1 fixed=0 supervisor_back=1
+H  1006.96 CH t=154.7 STEP 36 fSupKill
+H  1008.83 CH t=156.6 EV ev=11 fault=supervisor-killed target=waybar rec=0.11 ok=1 fixed=0 child_kept_running=1
+H  1009.56 CH t=157.3 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13120 memavail_kb=734228 init_side_cpu_ticks=246
+H  1013.06 CH t=160.8 EV ev=12 fault=after-supervisor-killed target=waybar rec=1.99 ok=1 fixed=0 supervisor_back=1
+H  1016.06 CH t=163.8 STEP 37 fScanKill
+H  1016.10 - runit: leave stage: /etc/runit/2
+H  1016.10 - runit: enter stage: /etc/runit/3
+H  1016.11 CH runit stage 3 (stage 2 returned or shutdown)
+H  1016.12 - runit: leave stage: /etc/runit/3
+H  1016.12 - runit: sending KILL signal to all processes...
+H  1016.14 [  167.181918] watchdog: watchdog0: watchdog did not stop!
+H  1016.14 - runit: system reboot.
+H  1016.15 [  167.192995] reboot: Restarting system
+H  1016.28 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1026.49 Booting from ROM..c[?7l[2JCH STAGE1 up=2.60
+H  1026.54 CH CAND runit pid1=runit stage2=runsvdir
+H  1026.59 CH SUP-START up=2.71
+H  1026.67 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H  1026.68 - runit: enter stage: /etc/runit/1
+H  1026.70 CH t=0.1 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H  1026.70 - runit: leave stage: /etc/runit/1
+H  1026.70 - runit: enter stage: /etc/runit/2
+H  1033.12 CH t=6.5 BOOT-OK up=9.24 ok=1 (seconds since kernel start; waited 6.2)
+H  1033.18 CH t=6.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=757804 init_side_cpu_ticks=243
+H  1043.25 CH t=16.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=757352 init_side_cpu_ticks=244
+H  1053.32 CH t=26.7 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=756596 init_side_cpu_ticks=245
+H  1063.39 CH t=36.8 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=756596 init_side_cpu_ticks=245
+H  1073.44 CH t=46.8 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=755616 init_side_cpu_ticks=246
+H  1083.52 CH t=56.9 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=755368 init_side_cpu_ticks=246
+H  1093.58 CH t=66.9 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=753352 init_side_cpu_ticks=246
+H  1103.68 CH t=77.0 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=752596 init_side_cpu_ticks=247
+H  1113.74 CH t=87.1 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=752596 init_side_cpu_ticks=247
+H  1123.80 CH t=97.2 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=751840 init_side_cpu_ticks=248
+H  1128.19 CH t=101.6 STEP 31 fSupKill
+H  1130.07 CH t=103.4 EV ev=1 fault=supervisor-killed target=driftwm rec=0.15 ok=1 fixed=0 child_kept_running=1
+H  1133.90 CH t=107.3 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13096 memavail_kb=737552 init_side_cpu_ticks=253
+H  1136.82 CH t=110.2 EV ev=2 fault=after-supervisor-killed target=driftwm rec=4.52 ok=1 fixed=0 supervisor_back=1
+H  1139.82 CH t=113.2 STEP 32 fSupKill
+H  1141.65 CH t=115.0 EV ev=3 fault=supervisor-killed target=waybar rec=0.10 ok=1 fixed=0 child_kept_running=1
+H  1144.02 CH t=117.4 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=13008 memavail_kb=736548 init_side_cpu_ticks=250
+H  1144.98 CH t=118.3 EV ev=4 fault=after-supervisor-killed target=waybar rec=1.09 ok=1 fixed=0 supervisor_back=1
+H  1147.99 CH t=121.3 STEP 33 fSupKill
+H  1151.57 CH t=124.9 EV ev=5 fault=supervisor-killed target=driftwm rec=1.86 ok=1 fixed=0 child_kept_running=1
+H  1154.12 CH t=127.5 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=12920 memavail_kb=812568 init_side_cpu_ticks=257
+H  1158.14 CH t=131.5 EV ev=6 fault=after-supervisor-killed target=driftwm rec=4.34 ok=1 fixed=0 supervisor_back=1
+H  1161.14 CH t=134.5 STEP 34 fSupKill
+H  1162.98 CH t=136.3 EV ev=7 fault=supervisor-killed target=waybar rec=0.11 ok=1 fixed=0 child_kept_running=1
+H  1164.17 CH t=137.5 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=12960 memavail_kb=753600 init_side_cpu_ticks=258
+H  1167.27 CH t=140.6 EV ev=8 fault=after-supervisor-killed target=waybar rec=2.05 ok=1 fixed=0 supervisor_back=1
+H  1170.28 CH t=143.6 STEP 35 fSupKill
+H  1172.09 CH t=145.5 EV ev=9 fault=supervisor-killed target=driftwm rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  1174.38 CH t=147.7 SAMPLE zombies=1 nproc=85 init_side_fds=108 init_side_rss_kb=12984 memavail_kb=708440 init_side_cpu_ticks=258
+H  1177.12 CH t=150.5 EV ev=10 fault=after-supervisor-killed target=driftwm rec=2.76 ok=1 fixed=0 supervisor_back=1
+H  1180.12 CH t=153.5 STEP 36 fSupKill
+H  1181.95 CH t=155.3 EV ev=11 fault=supervisor-killed target=waybar rec=0.09 ok=1 fixed=0 child_kept_running=1
+H  1184.43 CH t=157.8 SAMPLE zombies=0 nproc=83 init_side_fds=108 init_side_rss_kb=12988 memavail_kb=716540 init_side_cpu_ticks=255
+H  1185.19 CH t=158.6 EV ev=12 fault=after-supervisor-killed target=waybar rec=1.01 ok=1 fixed=0 supervisor_back=1
+H  1188.20 CH t=161.6 STEP 37 fScanKill
+H  1188.22 - runit: leave stage: /etc/runit/2
+H  1188.23 - runit: enter stage: /etc/runit/3
+H  1188.24 CH runit stage 3 (stage 2 returned or shutdown)
+H  1188.24 - runit: leave stage: /etc/runit/3
+H  1188.24 - runit: sending KILL signal to all processes...
+H  1188.26 [  164.367559] watchdog: watchdog0: watchdog did not stop!
+H  1188.27 - runit: system reboot.
+H  1188.29 [  164.391582] reboot: Restarting system
+H  1188.46 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1193.52 Booting from ROM..c[?7l[2JCH STAGE1 up=3.50
+H  1193.61 CH CAND runit pid1=runit stage2=runsvdir
+H  1193.66 CH SUP-START up=3.65
+H  1193.72 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H  1193.73 - runit: enter stage: /etc/runit/1
+H  1193.73 - runit: leave stage: /etc/runit/1
+H  1193.74 - runit: enter stage: /etc/runit/2
+H  1193.74 CH t=0.0 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H  1199.86 CH t=6.2 BOOT-OK up=9.84 ok=1 (seconds since kernel start; waited 5.9)
+H  1199.92 CH t=6.2 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=752740 init_side_cpu_ticks=243
+H  1209.97 CH t=16.3 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=751756 init_side_cpu_ticks=243
+H  1220.03 CH t=26.3 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=750748 init_side_cpu_ticks=244
+H  1230.08 CH t=36.4 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=750748 init_side_cpu_ticks=245
+H  1240.14 CH t=46.4 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=749744 init_side_cpu_ticks=245
+H  1250.20 CH t=56.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=749240 init_side_cpu_ticks=246
+H  1260.28 CH t=66.6 SAMPLE zombies=0 nproc=89 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=747728 init_side_cpu_ticks=246
+H  1270.36 CH t=76.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=746972 init_side_cpu_ticks=246
+H  1280.41 CH t=86.7 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=746720 init_side_cpu_ticks=247
+H  1290.51 CH t=96.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13232 memavail_kb=746732 init_side_cpu_ticks=248
+H  1294.92 CH t=101.2 STEP 31 fSupKill
+H  1296.74 CH t=103.0 EV ev=1 fault=supervisor-killed target=driftwm rec=0.10 ok=1 fixed=0 child_kept_running=1
+H  1300.56 CH t=106.9 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13148 memavail_kb=721016 init_side_cpu_ticks=255
+H  1302.52 CH t=108.8 EV ev=2 fault=after-supervisor-killed target=driftwm rec=3.55 ok=1 fixed=0 supervisor_back=1
+H  1305.52 CH t=111.8 STEP 32 fSupKill
+H  1307.33 CH t=113.6 EV ev=3 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H  1310.63 CH t=116.9 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13092 memavail_kb=732244 init_side_cpu_ticks=255
+H  1311.98 CH t=118.3 EV ev=4 fault=after-supervisor-killed target=waybar rec=2.40 ok=1 fixed=0 supervisor_back=0
+H  1314.98 CH t=121.3 STEP 33 fSupKill
+H  1319.86 CH t=126.2 EV ev=5 fault=supervisor-killed target=driftwm rec=3.16 ok=1 fixed=0 child_kept_running=1
+H  1320.68 CH t=127.0 SAMPLE zombies=1 nproc=87 init_side_fds=108 init_side_rss_kb=13168 memavail_kb=708760 init_side_cpu_ticks=254
+H  1326.14 CH t=132.5 EV ev=6 fault=after-supervisor-killed target=driftwm rec=4.06 ok=1 fixed=0 supervisor_back=1
+H  1329.15 CH t=135.5 STEP 34 fSupKill
+H  1330.75 CH t=137.1 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13324 memavail_kb=750916 init_side_cpu_ticks=257
+H  1330.95 CH t=137.3 EV ev=7 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H  1334.23 CH t=140.5 EV ev=8 fault=after-supervisor-killed target=waybar rec=1.04 ok=1 fixed=0 supervisor_back=1
+H  1337.23 CH t=143.5 STEP 35 fSupKill
+H  1339.05 CH t=145.4 EV ev=9 fault=supervisor-killed target=driftwm rec=0.09 ok=1 fixed=0 child_kept_running=1
+H  1340.81 CH t=147.1 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13248 memavail_kb=742348 init_side_cpu_ticks=253
+H  1345.40 CH t=151.7 EV ev=10 fault=after-supervisor-killed target=driftwm rec=4.11 ok=1 fixed=0 supervisor_back=1
+H  1348.40 CH t=154.7 STEP 36 fSupKill
+H  1350.21 CH t=156.5 EV ev=11 fault=supervisor-killed target=waybar rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  1350.86 CH t=157.2 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13168 memavail_kb=723884 init_side_cpu_ticks=254
+H  1354.37 CH t=160.7 EV ev=12 fault=after-supervisor-killed target=waybar rec=1.93 ok=1 fixed=0 supervisor_back=1
+H  1357.37 CH t=163.7 STEP 37 fScanKill
+H  1357.40 - runit: leave stage: /etc/runit/2
+H  1357.40 - runit: enter stage: /etc/runit/3
+H  1357.41 CH runit stage 3 (stage 2 returned or shutdown)
+H  1357.42 - runit: leave stage: /etc/runit/3
+H  1357.42 - runit: sending KILL signal to all processes...
+H  1357.43 [  167.463714] watchdog: watchdog0: watchdog did not stop!
+H  1357.44 - runit: system reboot.
+H  1357.46 [  167.486941] reboot: Restarting system
+H  1357.53 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1361.65 Booting from ROM..c[?7l[2JCH STAGE1 up=2.97
+H  1361.71 CH CAND runit pid1=runit stage2=runsvdir
+H  1361.76 CH SUP-START up=3.08
+H  1361.80 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H  1361.81 - runit: enter stage: /etc/runit/1
+H  1361.82 - runit: leave stage: /etc/runit/1
+H  1361.83 - runit: enter stage: /etc/runit/2
+H  1361.87 CH t=0.1 CHAOS start cand=runit suite=faults seed=230 cpus=2
+H  1367.83 CH t=6.0 BOOT-OK up=9.15 ok=1 (seconds since kernel start; waited 5.8)
+H  1367.93 CH t=6.1 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=756436 init_side_cpu_ticks=228
+H  1378.01 CH t=16.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=754220 init_side_cpu_ticks=228
+H  1388.07 CH t=26.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=754220 init_side_cpu_ticks=229
+H  1398.16 CH t=36.4 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=753468 init_side_cpu_ticks=229
+H  1408.30 CH t=46.5 SAMPLE zombies=0 nproc=90 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=753220 init_side_cpu_ticks=230
+H  1418.37 CH t=56.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=753224 init_side_cpu_ticks=231
+H  1428.42 CH t=66.6 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=753224 init_side_cpu_ticks=232
+H  1438.49 CH t=76.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=751964 init_side_cpu_ticks=232
+H  1448.54 CH t=86.7 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=751964 init_side_cpu_ticks=232
+H  1458.60 CH t=96.8 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=751964 init_side_cpu_ticks=233
+H  1462.92 CH t=101.1 STEP 31 fSupKill
+H  1464.95 CH t=103.2 EV ev=1 fault=supervisor-killed target=driftwm rec=0.29 ok=1 fixed=0 child_kept_running=1
+H  1468.66 CH t=106.9 SAMPLE zombies=0 nproc=84 init_side_fds=108 init_side_rss_kb=13604 memavail_kb=749040 init_side_cpu_ticks=238
+H  1472.05 CH t=110.3 EV ev=2 fault=after-supervisor-killed target=driftwm rec=4.87 ok=1 fixed=0 supervisor_back=1
+H  1475.06 CH t=113.3 STEP 32 fSupKill
+H  1476.86 CH t=115.1 EV ev=3 fault=supervisor-killed target=waybar rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  1478.75 CH t=117.0 SAMPLE zombies=0 nproc=90 init_side_fds=108 init_side_rss_kb=13560 memavail_kb=747528 init_side_cpu_ticks=236
+H  1480.14 CH t=118.3 EV ev=4 fault=after-supervisor-killed target=waybar rec=1.05 ok=1 fixed=0 supervisor_back=1
+H  1483.15 CH t=121.4 STEP 33 fSupKill
+H  1488.15 CH t=126.4 EV ev=5 fault=supervisor-killed target=driftwm rec=3.28 ok=1 fixed=0 child_kept_running=1
+H  1488.82 CH t=127.0 SAMPLE zombies=1 nproc=87 init_side_fds=108 init_side_rss_kb=13632 memavail_kb=677180 init_side_cpu_ticks=242
+H  1494.00 CH t=132.2 EV ev=6 fault=after-supervisor-killed target=driftwm rec=3.61 ok=1 fixed=0 supervisor_back=1
+H  1497.00 CH t=135.2 STEP 34 fSupKill
+H  1498.88 CH t=137.1 EV ev=7 fault=supervisor-killed target=waybar rec=0.15 ok=1 fixed=0 child_kept_running=1
+H  1498.92 CH t=137.1 SAMPLE zombies=0 nproc=93 init_side_fds=108 init_side_rss_kb=13636 memavail_kb=732480 init_side_cpu_ticks=245
+H  1502.37 CH t=140.6 EV ev=8 fault=after-supervisor-killed target=waybar rec=1.26 ok=1 fixed=0 supervisor_back=1
+H# TIMEOUT, killing qemu
+H# vm exit code -9 after 1502s, loadavg ['0.41', '0.43', '0.43']
+H# end wall=1502.4s launches=1 suite_done=False

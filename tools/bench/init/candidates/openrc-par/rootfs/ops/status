@@ -1,0 +1,2 @@
+#!/bin/sh
+rc-status -a 2>&1

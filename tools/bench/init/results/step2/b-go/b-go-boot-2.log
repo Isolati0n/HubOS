@@ -1,0 +1,29 @@
+H# start 2026-10-10 21:45:31 cand=b-go suite=boot cpus_seen=4 loadavg_at_start=['0.32', '0.57', '0.62']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.25 Booting from ROM..c[?7l[2JCH STAGE1 up=3.65
+H     5.33 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H     5.35 CH SUP-START up=3.75
+H     5.51 CH t=0.1 CHAOS start cand=b-go suite=boot seed=102 cpus=2
+H     5.71 brain: started mode=direct pid=107
+H     8.72 brain: starting driftwm: its dependencies are ready
+H    11.72 brain: starting waybar: its dependencies are ready
+H    11.73 brain: starting hubd: its dependencies are ready
+H    12.72 CH t=7.3 BOOT-OK up=11.12 ok=1 (seconds since kernel start; waited 7.0)
+H    12.79 CH t=7.3 SAMPLE zombies=0 nproc=72 init_side_fds=25 init_side_rss_kb=4704 memavail_kb=734568 init_side_cpu_ticks=233
+H    17.80 CH t=12.4 BRAIN-READY after 0.1s from BOOT-OK
+H    22.84 CH t=17.4 SAMPLE zombies=0 nproc=72 init_side_fds=25 init_side_rss_kb=4832 memavail_kb=733068 init_side_cpu_ticks=244
+H    32.90 CH t=27.5 SAMPLE zombies=0 nproc=72 init_side_fds=25 init_side_rss_kb=4876 memavail_kb=733068 init_side_cpu_ticks=255
+H    42.94 CH t=37.5 SAMPLE zombies=0 nproc=72 init_side_fds=25 init_side_rss_kb=4964 memavail_kb=733068 init_side_cpu_ticks=264
+H    52.99 CH t=47.5 SAMPLE zombies=0 nproc=72 init_side_fds=25 init_side_rss_kb=5012 memavail_kb=730296 init_side_cpu_ticks=275
+H    57.86 CH t=52.4 IDLE-CPU window=30s whole_vm_busy_ticks=204 whole_vm_idle_ticks=5667 init_side_ticks=29 (1 tick = 10 ms, 2 vCPUs)
+H    57.88 CH t=52.4 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H    57.88 CH t=52.4 MEM pid=107 comm=brain rss_kb=3940 pss_kb=3936
+H    57.92 CH t=52.5 POLICY driftwm oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    57.96 CH t=52.5 POLICY hubd oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    57.99 CH t=52.5 POLICY waybar oom_score_adj=0 nice=0 cgroup=0::/
+H    58.02 CH t=52.6 LISTEN tcp_listening_sockets=0 epmd_running=false
+H    58.02 CH t=52.6 SUITE-DONE
+H    60.03 [   58.462475] reboot: Power down
+H# vm exit code 0 after 60s, loadavg ['0.26', '0.52', '0.61']
+H# end wall=60.0s launches=1 suite_done=True

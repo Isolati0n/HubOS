@@ -1,0 +1,30 @@
+H# start 2026-10-10 22:32:51 cand=s6rc-par suite=trial cpus_seen=4 loadavg_at_start=['0.44', '0.43', '0.42']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     7.81 c[?7l[2JCH STAGE1 up=6.11
+H     7.87 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     7.92 CH SUP-START up=6.22
+H     8.06 CH t=0.1 CHAOS start cand=s6rc suite=trial seed=130 cpus=2
+H    14.77 CH S6RC-UP up=13.07
+H    31.17 CH t=23.2 TRIAL CONFIRMED scenario=healthy after=23.1s true_state=""
+H    31.44 CH t=23.5 STATUS dbus-log: up (pid 175 pgid 175) 22 seconds
+H    31.44 CH t=23.5 STATUS dbus: up (pid 189 pgid 189) 22 seconds, ready 21 seconds
+H    31.44 CH t=23.5 STATUS driftwm-log: up (pid 171 pgid 171) 22 seconds
+H    31.44 CH t=23.5 STATUS driftwm: up (pid 227 pgid 227) 20 seconds, ready 18 seconds
+H    31.45 CH t=23.5 STATUS guard-log: up (pid 167 pgid 167) 22 seconds
+H    31.45 CH t=23.5 STATUS guard: up (pid 191 pgid 191) 22 seconds
+H    31.45 CH t=23.5 STATUS hubd-log: up (pid 173 pgid 173) 22 seconds
+H    31.45 CH t=23.5 STATUS hubd: up (pid 268 pgid 268) 18 seconds, ready 16 seconds
+H    31.45 CH t=23.5 STATUS s6rc-fdholder: up (pid 135 pgid 135) 22 seconds, ready 22 seconds
+H    31.45 CH t=23.5 STATUS s6rc-oneshot-runner: down (not started yet) 
+H    31.45 CH t=23.5 STATUS seatd-log: up (pid 169 pgid 169) 22 seconds
+H    31.45 CH t=23.5 STATUS seatd: up (pid 187 pgid 187) 22 seconds, ready 22 seconds
+H    31.46 CH t=23.5 STATUS stage2: up (pid 109 pgid 109) 23 seconds
+H    31.46 CH t=23.5 STATUS udevd-log: up (pid 151 pgid 151) 22 seconds
+H    31.46 CH t=23.5 STATUS udevd: up (pid 182 pgid 182) 22 seconds, ready 20 seconds
+H    31.46 CH t=23.5 STATUS waybar-log: up (pid 159 pgid 159) 22 seconds
+H    31.47 CH t=23.5 STATUS waybar: up (pid 269 pgid 269) 18 seconds, ready 16 seconds
+H# trial finished
+H# vm exit code -9 after 51s, loadavg ['0.53', '0.46', '0.44']
+H# end wall=51.5s launches=1 suite_done=True

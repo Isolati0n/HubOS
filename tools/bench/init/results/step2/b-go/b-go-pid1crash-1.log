@@ -1,0 +1,59 @@
+H# start 2026-10-10 21:47:31 cand=b-go suite=pid1crash cpus_seen=4 loadavg_at_start=['0.16', '0.45', '0.58']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     5.31 c[?7l[2JCH STAGE1 up=3.73
+H     5.36 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H     5.38 CH SUP-START up=3.81
+H     5.70 CH t=0.1 CHAOS start cand=b-go suite=pid1crash seed=111 cpus=2
+H     5.79 brain: started mode=direct pid=105
+H     8.80 brain: starting driftwm: its dependencies are ready
+H    11.80 brain: starting waybar: its dependencies are ready
+H    11.81 brain: starting hubd: its dependencies are ready
+H    12.86 CH t=7.3 BOOT-OK up=11.28 ok=1 (seconds since kernel start; waited 6.9)
+H    12.90 CH t=7.3 SAMPLE zombies=0 nproc=73 init_side_fds=25 init_side_rss_kb=4648 memavail_kb=729020 init_side_cpu_ticks=231
+H    17.86 CH t=12.3 INJECT pid1-segv
+H    17.89 [   16.361832] s6-svscan[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffd5df077b0 error 15 likely on CPU 1 (core 1, socket 0)
+H    17.89 [   16.364133] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    17.90 [   16.378199] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    17.90 [   16.378418] CPU: 1 PID: 1 Comm: s6-svscan Not tainted 6.8.0-146-generic #146-Ubuntu
+H    17.90 [   16.378418] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    17.90 [   16.378418] Call Trace:
+H    17.90 [   16.378418]  <TASK>
+H    17.91 [   16.378418]  dump_stack_lvl+0x27/0xa0
+H    17.91 [   16.378418]  dump_stack+0x10/0x20
+H    17.91 [   16.378418]  panic+0x366/0x3c0
+H    17.91 [   16.378418]  do_exit+0x513/0x530
+H    17.91 [   16.378418]  do_group_exit+0x35/0x90
+H    17.91 [   16.378418]  get_signal+0x96e/0x9b0
+H    17.91 [   16.378418]  ? force_sig_info_to_task+0x128/0x1c0
+H    17.91 [   16.378418]  arch_do_signal_or_restart+0x42/0x210
+H    17.91 [   16.378418]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    17.91 [   16.378418]  irqentry_exit+0x43/0x50
+H    17.91 [   16.378418]  exc_page_fault+0x94/0x1b0
+H    17.91 [   16.378418]  asm_exc_page_fault+0x27/0x30
+H    17.91 [   16.378418] RIP: 0033:0xfffffffffffffffe
+H    17.91 [   16.378418] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    17.91 [   16.378418] RSP: 002b:00007ffd5df077b0 EFLAGS: 00000202
+H    17.91 [   16.378418] RAX: 000000000000010f RBX: 00007ffd5df5c9d0 RCX: 00000000004267ed
+H    17.91 [   16.378418] RDX: 00007ffd5df077d0 RSI: 0000000000000002 RDI: 00007ffd5df5c9d0
+H    17.91 [   16.378418] RBP: 00007ffd5df07800 R08: 0000000000000008 R09: 000000000040d440
+H    17.91 [   16.378418] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000002
+H    17.91 [   16.378418] R13: 00007ffd5df077d0 R14: 00007ffd5df07810 R15: 00007ffd5df07820
+H    17.91 [   16.378418]  </TASK>
+H    17.91 [   16.378418] Kernel Offset: 0x30200000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    17.91 [   16.378418] Rebooting in 5 seconds..
+H    23.16 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    23.17 Booting from ROM...
+H    28.70 c[?7l[2JCH STAGE1 up=3.94
+H    28.79 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H    28.81 CH SUP-START up=4.05
+H    29.00 CH t=0.1 CHAOS start cand=b-go suite=pid1crash seed=111 cpus=2
+H    29.26 brain: started mode=direct pid=107
+H    32.26 brain: starting driftwm: its dependencies are ready
+H    35.26 brain: starting waybar: its dependencies are ready
+H    35.27 brain: starting hubd: its dependencies are ready
+H    36.09 CH t=7.2 BOOT-OK up=11.33 ok=1 (seconds since kernel start; waited 6.9)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 36s, loadavg ['0.39', '0.48', '0.58']
+H# end wall=36.1s launches=1 suite_done=True
