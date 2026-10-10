@@ -34,3 +34,9 @@ If it is missing, stop and tell the owner. Do not guess its contents.
 - Helper agents may help with research; whatever they report is unverified until you have read the source yourself, and the pull request must say which parts came from helpers.
 - Before EVERY push, run `tools/check-push.sh` (after `git fetch origin`). It fails if the commits to push add a file named core or core.*, a file over 1 MiB (unless listed in `tools/check-push.allow`), a credential-looking variable set to a value, a private-key header, or the value of a credential-looking environment variable. It prints only the rule and the file, never a value. If it fails, do not push; tell the owner. Helper agents run it too; put this in their instructions. Its test is `go test ./tools/checkpush/`.
 - Before any `rm -rf`, run `findmnt` and check for mounts under the path; unmount first, or use `rm -rf --one-file-system`. Never `rm -rf` anything under `/root/.cargo` or `/root/.rustup`. Helper agents follow the same rule; put it in their instructions. (A bind mount under a scratch folder once made `rm -rf` delete the Rust toolchain of the machine.)
+
+## Usage rules for long jobs
+
+- After you start any job expected to take more than about 10 minutes, end your turn with one line saying what is running and when you will check. Do not post interim notices, do not poll, do not wait inside the conversation. Check back only by scheduled wake-up, about every 2 hours.
+- Before starting any long job run `pgrep -a` and confirm nothing else is running.
+- Run soaks as background jobs that write a results file every hour.
