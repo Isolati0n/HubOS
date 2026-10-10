@@ -3,7 +3,7 @@
 Start: START 2026-10-10T14:10:56Z uptime=8110.25
 End: exit=0 2026-10-10T15:05:37Z uptime=11391.22
 Code: main 2b9173e plus CLAUDE.md only; command: go test -tags qemu ./tools/image/ -run '^TestImage$' -v -count=1
-Note: the test saw 1 QEMU hang in step reboot and retried it by its own rule (hang log was in the temp folder, not kept); no crashes. Final result PASS.
+Note: the test saw 1 QEMU hang in step reboot and retried it by its own rule; no crashes. Final result PASS. Counts: the RESULTS block lists 41 PASS lines and 0 FAIL lines (checks); the Go output lists 27 passing subtests (the 27 reported earlier was the subtest count, not the RESULTS count). The hang log was in the test's temporary folder, which the test deletes at the end, so it was NOT kept (lost). From now on QEMU runs set HUBOS_IMAGE_WORK or HUBOS_HUB_WORK to a kept folder and any hang or crash log is copied into docs/qemu-runs/.
 
 ```
         RESULTS (QEMU hangs seen and retried: 1; every hang: 
