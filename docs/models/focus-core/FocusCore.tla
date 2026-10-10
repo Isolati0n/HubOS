@@ -5,14 +5,15 @@
    The model does not keep the last event or the last actions as state (that would multiply the state
    space); instead every step checks its own actions against the invariants and sets the flag `bad`
    when one fails. TLC then checks that `bad` stays FALSE. *)
-EXTENDS Naturals, Integers, FiniteSets, TLC
+EXTENDS Naturals, Integers, FiniteSets, Sequences, TLC
 
 CONSTANTS N,          \* number of machines (3 in the checked model)
           NKeys,      \* number of distinct keys (2)
           NButtons,   \* number of distinct mouse buttons (1)
           MaxEpoch,   \* the model bumps the epoch at most this often (a bound of the MODEL; the real core saturates)
           MaxGen,     \* each worker restarts at most this often (bound of the MODEL)
-          T           \* the verification timeout, in model ticks (stands for the real VERIFY_TIMEOUT)
+          T,          \* the verification timeout, in model ticks (stands for the real VERIFY_TIMEOUT)
+          Trace       \* TRUE only when a run is used to make test traces: then the last event and its actions are kept in the state
 
 HUB  == 0
 NONE == -1
@@ -21,8 +22,8 @@ Dest == M \cup {HUB}
 Keys == 1..NKeys
 Btns == 1..NButtons
 
-VARIABLES focus, epoch, gen, conn, held, heldB, waiting, owed, nodeK, nodeB, age, bad
-vars == <<focus, epoch, gen, conn, held, heldB, waiting, owed, nodeK, nodeB, age, bad>>
+VARIABLES focus, epoch, gen, conn, held, heldB, waiting, owed, nodeK, nodeB, age, bad, lastEv, lastActs
+vars == <<focus, epoch, gen, conn, held, heldB, waiting, owed, nodeK, nodeB, age, bad, lastEv, lastActs>>
 
 (* ---------------- events ---------------- *)
 InputKinds == {"kd", "ku", "bd", "bu", "chord", "menu"}
@@ -55,7 +56,7 @@ UpdB(s, m, acts) ==
 (* ---------------- the properties checked on every step (pre-state unprimed, post-state primed) ---------------- *)
 Valid(ev) ==   \* a verification event that counts
   CASE ev.kind = "vok" -> waiting = ev.m /\ ev.ep = epoch /\ conn[ev.m]
-    [] ev.kind = "vto" -> waiting = ev.m /\ ev.ep = epoch /\ age >= T
+    [] ev.kind = "vto" -> waiting = ev.m /\ ev.ep = epoch    \* the timer is outside the core: a timeout counts whenever it arrives for the current wait
     [] OTHER -> FALSE
 
 StepProps(acts, ev) ==
@@ -78,6 +79,8 @@ Finish(acts, ev) ==
   /\ nodeK' = [m \in M |-> UpdK(nodeK[m], m, acts)]
   /\ nodeB' = [m \in M |-> UpdB(nodeB[m], m, acts)]
   /\ bad' = (bad \/ ~StepProps(acts, ev))
+  /\ lastEv' = IF Trace THEN ev ELSE lastEv
+  /\ lastActs' = IF Trace THEN acts ELSE lastActs
 
 (* ---------------- steps ---------------- *)
 InputStep(ev) ==
@@ -149,21 +152,25 @@ RstStep(ev) ==   \* worker restart of m
 
 DisStep(ev) ==
   LET m == ev.m IN
-  /\ conn[m]
-  /\ conn' = [conn EXCEPT ![m] = FALSE]
-  /\ IF waiting = m THEN /\ waiting' = NONE /\ age' = 0 ELSE UNCHANGED <<waiting, age>>
-  /\ UNCHANGED <<focus, epoch, gen, held, heldB, owed>>
-  /\ Finish({}, ev)
+  IF conn[m]
+  THEN /\ conn' = [conn EXCEPT ![m] = FALSE]
+       /\ IF waiting = m THEN /\ waiting' = NONE /\ age' = 0 ELSE UNCHANGED <<waiting, age>>
+       /\ UNCHANGED <<focus, epoch, gen, held, heldB, owed>>
+       /\ Finish({}, ev)
+  ELSE /\ UNCHANGED <<focus, epoch, gen, conn, held, heldB, waiting, owed, age>>   \* already down: nothing happens
+       /\ Finish({}, ev)
 
 RecStep(ev) ==
   LET m == ev.m IN
-  /\ ~conn[m]
-  /\ conn' = [conn EXCEPT ![m] = TRUE]
-  /\ held' = [held EXCEPT ![m] = {}]
-  /\ heldB' = [heldB EXCEPT ![m] = {}]
-  /\ owed' = [owed EXCEPT ![m] = FALSE]
-  /\ UNCHANGED <<focus, epoch, gen, waiting, age>>
-  /\ Finish({ [t |-> "RelAll", dest |-> m] }, ev)
+  IF ~conn[m]
+  THEN /\ conn' = [conn EXCEPT ![m] = TRUE]
+       /\ held' = [held EXCEPT ![m] = {}]
+       /\ heldB' = [heldB EXCEPT ![m] = {}]
+       /\ owed' = [owed EXCEPT ![m] = FALSE]
+       /\ UNCHANGED <<focus, epoch, gen, waiting, age>>
+       /\ Finish({ [t |-> "RelAll", dest |-> m] }, ev)
+  ELSE /\ UNCHANGED <<focus, epoch, gen, conn, held, heldB, waiting, owed, age>>   \* already connected: nothing happens
+       /\ Finish({}, ev)
 
 TickStep(ev) ==
   /\ waiting # NONE /\ age < T
@@ -198,6 +205,7 @@ Init ==
   /\ waiting = NONE /\ owed = [m \in M |-> FALSE]
   /\ nodeK = [m \in M |-> {}] /\ nodeB = [m \in M |-> {}]
   /\ age = 0 /\ bad = FALSE
+  /\ lastEv = [kind |-> "init"] /\ lastActs = {}
 
 Next == \E ev \in Events : (Urgent => UrgentOK(ev)) /\ Step(ev)
 
