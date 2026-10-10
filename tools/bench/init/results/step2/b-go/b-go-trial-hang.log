@@ -1,0 +1,27 @@
+H# start 2026-10-10 21:51:50 cand=b-go suite=trial cpus_seen=4 loadavg_at_start=['0.63', '0.51', '0.56']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.19 Booting from ROM..c[?7l[2JCH STAGE1 up=3.56
+H     5.25 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H     5.28 CH SUP-START up=3.66
+H     5.51 CH t=0.1 CHAOS start cand=b-go suite=trial seed=132 cpus=2
+H     5.63 brain: started mode=direct pid=107
+H     8.66 brain: starting driftwm: its dependencies are ready
+H    11.66 brain: starting waybar: its dependencies are ready
+H    11.66 brain: starting hubd: its dependencies are ready
+H    14.50 CH t=9.1 TRIAL-INJECT driftwm stopped (wedged)
+H    20.69 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H    21.66 brain: driftwm failed (signal: killed), failures=2 action=1
+H    21.67 brain: holding hubd: a dependency is down
+H    25.66 brain: starting waybar: its dependencies are ready
+H    25.66 brain: starting hubd: its dependencies are ready
+H    43.08 CH t=37.7 TRIAL CONFIRMED scenario=hang after=37.5s true_state=""
+H    43.14 CH t=37.7 STATUS dbus state=running up=true pid=142 restarts=0 last_failure=never needs=[] cause=""
+H    43.15 CH t=37.7 STATUS driftwm state=running up=true pid=351 restarts=2 last_failure=21s needs=[seatd udevd] cause="signal: killed"
+H    43.15 CH t=37.8 STATUS hubd state=running up=true pid=385 restarts=0 last_failure=never needs=[driftwm] cause=""
+H    43.15 CH t=37.8 STATUS seatd state=running up=true pid=134 restarts=0 last_failure=never needs=[] cause=""
+H    43.15 CH t=37.8 STATUS udevd state=running up=true pid=138 restarts=0 last_failure=never needs=[] cause=""
+H    43.15 CH t=37.8 STATUS waybar state=running up=true pid=384 restarts=0 last_failure=never needs=[driftwm dbus] cause=""
+H# trial finished
+H# vm exit code -9 after 63s, loadavg ['0.65', '0.54', '0.57']
+H# end wall=63.2s launches=1 suite_done=True
