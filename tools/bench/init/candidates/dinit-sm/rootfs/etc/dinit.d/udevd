@@ -1,0 +1,6 @@
+type = process
+command = /bin/udevd -log 2 -notify 3
+restart = true
+log-type = buffer
+ready-notification = pipefd:3
+smooth-recovery = true

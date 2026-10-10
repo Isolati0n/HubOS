@@ -1,0 +1,27 @@
+H# start 2026-10-10 22:54:27 cand=dinit-par suite=trial cpus_seen=4 loadavg_at_start=['0.57', '0.58', '0.62']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.51 Booting from ROM..c[?7l[2JCH STAGE1 up=2.82
+H     4.57 CH CAND dinit pid1=dinit
+H     4.57 CH SUP-START up=2.89
+H     4.70 [  OK  ] guard
+H     4.75 [  OK  ] dbus
+H     4.79 CH t=0.1 CHAOS start cand=dinit suite=trial seed=130 cpus=2
+H     4.81 [  OK  ] seatd
+H     6.29 [  OK  ] udevd
+H     8.61 [  OK  ] driftwm
+H    10.29 [  OK  ] waybar
+H    10.38 [  OK  ] hubd
+H    10.38 [  OK  ] boot
+H    26.07 CH t=21.4 TRIAL CONFIRMED scenario=healthy after=21.2s true_state=""
+H    26.13 CH t=21.5 STATUS [[+]     ] boot
+H    26.13 CH t=21.5 STATUS [{+}     ] guard (pid: 102)
+H    26.13 CH t=21.5 STATUS [{+}     ] seatd (pid: 103)
+H    26.14 CH t=21.5 STATUS [{+}     ] udevd (pid: 104)
+H    26.14 CH t=21.5 STATUS [{+}     ] dbus (pid: 105)
+H    26.14 CH t=21.5 STATUS [{+}     ] driftwm (pid: 137)
+H    26.14 CH t=21.5 STATUS [{+}     ] waybar (pid: 161)
+H    26.14 CH t=21.5 STATUS [{+}     ] hubd (pid: 160)
+H# trial finished
+H# vm exit code -9 after 46s, loadavg ['0.34', '0.52', '0.60']
+H# end wall=46.2s launches=1 suite_done=True

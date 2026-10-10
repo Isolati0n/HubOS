@@ -1,0 +1,65 @@
+H# start 2026-10-10 22:52:54 cand=dinit-par suite=pid1crash cpus_seen=4 loadavg_at_start=['0.43', '0.55', '0.61']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.90 Booting from ROM..c[?7l[2JCH STAGE1 up=3.12
+H     4.96 CH CAND dinit pid1=dinit
+H     4.97 CH SUP-START up=3.19
+H     5.15 [  OK  ] guard
+H     5.28 [  OK  ] seatd
+H     5.29 [  OK  ] dbus
+H     5.29 CH t=0.1 CHAOS start cand=dinit suite=pid1crash seed=112 cpus=2
+H     6.74 [  OK  ] udevd
+H     9.43 [  OK  ] driftwm
+H    11.11 [  OK  ] waybar
+H    11.18 [  OK  ] hubd
+H    11.18 [  OK  ] boot
+H    11.45 CH t=6.3 BOOT-OK up=9.67 ok=1 (seconds since kernel start; waited 6.0)
+H    11.48 CH t=6.3 SAMPLE zombies=0 nproc=71 init_side_fds=24 init_side_rss_kb=2076 memavail_kb=749244 init_side_cpu_ticks=201
+H    16.46 CH t=11.3 INJECT pid1-segv
+H    16.48 [   14.739348] dinit[1]: segfault at 0 ip 0000000000000000 sp 00007ffc7f8cdfb8 error 14 in dinit[400000+1000] likely on CPU 0 (core 0, socket 0)
+H    16.48 [   14.741913] Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+H    16.49 [   14.744505] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    16.49 [   14.744681] CPU: 0 PID: 1 Comm: dinit Not tainted 6.8.0-146-generic #146-Ubuntu
+H    16.49 [   14.744681] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    16.49 [   14.744681] Call Trace:
+H    16.49 [   14.744681]  <TASK>
+H    16.50 [   14.744681]  dump_stack_lvl+0x27/0xa0
+H    16.50 [   14.744681]  dump_stack+0x10/0x20
+H    16.50 [   14.744681]  panic+0x366/0x3c0
+H    16.50 [   14.744681]  do_exit+0x513/0x530
+H    16.50 [   14.744681]  do_group_exit+0x35/0x90
+H    16.50 [   14.744681]  get_signal+0x96e/0x9b0
+H    16.50 [   14.744681]  arch_do_signal_or_restart+0x42/0x210
+H    16.50 [   14.744681]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    16.50 [   14.744681]  irqentry_exit+0x43/0x50
+H    16.50 [   14.744681]  exc_page_fault+0x94/0x1b0
+H    16.50 [   14.744681]  asm_exc_page_fault+0x27/0x30
+H    16.50 [   14.744681] RIP: 0033:0x0
+H    16.50 [   14.744681] Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+H    16.50 [   14.744681] RSP: 002b:00007ffc7f8cdfb8 EFLAGS: 00000202
+H    16.50 [   14.744681] RAX: fffffffffffffffc RBX: 0000000000000000 RCX: 000000000054c647
+H    16.50 [   14.744681] RDX: 0000000000000010 RSI: 00007ffc7f8ce0e8 RDI: 0000000000000003
+H    16.50 [   14.744681] RBP: 000000000062a2c0 R08: 000000002fcd3f98 R09: 000000002fcd4918
+H    16.50 [   14.744681] R10: 00000000ffffffff R11: 0000000000000202 R12: 0000000000000000
+H    16.50 [   14.744681] R13: 00007ffc7f8ce1f8 R14: 000000000062a420 R15: 00007ffc7f8ce308
+H    16.50 [   14.744681]  </TASK>
+H    16.51 [   14.744681] Kernel Offset: 0x1b800000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    16.51 [   14.744681] Rebooting in 5 seconds..
+H    21.64 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    21.64 Booting from ROM...
+H    25.91 c[?7l[2JCH STAGE1 up=2.90
+H    25.97 CH CAND dinit pid1=dinit
+H    25.98 CH SUP-START up=2.97
+H    26.11 [  OK  ] guard
+H    26.20 [  OK  ] dbus
+H    26.22 [  OK  ] seatd
+H    26.23 CH t=0.1 CHAOS start cand=dinit suite=pid1crash seed=112 cpus=2
+H    27.64 [  OK  ] udevd
+H    29.79 [  OK  ] driftwm
+H    31.46 [  OK  ] waybar
+H    31.54 [  OK  ] hubd
+H    31.54 [  OK  ] boot
+H    31.78 CH t=5.7 BOOT-OK up=8.77 ok=1 (seconds since kernel start; waited 5.3)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 32s, loadavg ['0.51', '0.56', '0.62']
+H# end wall=31.8s launches=1 suite_done=True
