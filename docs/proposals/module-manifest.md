@@ -109,8 +109,12 @@ Order (extends `distro-workshop.md` 7.1): P0 validate (includes the checks in se
 4. That "no conditional includes" does not make machine files repetitive (BELIEVED).
 5. That the init stays swappable (the init comparison is not finished: the service directory format is a placeholder).
 
-## 12. Questions for the owner
-1. Should module tests run serially or in parallel (in separate VMs)?
-2. Should any failed module test be allowed to only warn?
-3. What build plus preflight time is acceptable?
-4. Should there be a dry-run mode that shows the resolved set and the lock without building?
+## 12. Decided by the owner (2026-10-10)
+
+- Module tests run **serially**.
+- **Any failed module test fails the build** (no warn-only).
+- A **dry-run mode** is added: it shows the resolved set (and the lock) without building.
+
+## 13. Questions for the owner (still open)
+
+1. What build plus preflight time is acceptable?

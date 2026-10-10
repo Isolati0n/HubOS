@@ -72,8 +72,13 @@ Real fetches from the internet remain **UNKNOWN** until tested elsewhere.
 4. That the weekly job can run where the images have no cron (BELIEVED).
 5. That the lock plus the mirror is enough to rebuild an image years later (UNKNOWN; toolchains must be in the mirror too).
 
-## 9. Questions for the owner
-1. Fallback fetching: should a build ever be allowed to fetch a missing input when the owner says so?
-2. The off-site copy mechanism (the NAS has a backup NAS; is the mirror part of that backup, and is there an off-site copy?).
-3. Retention per input kind (forever is assumed), and who clears a corrupt entry.
-4. How should corruption alerts be delivered (bar alert, notification, both)?
+## 9. Decided by the owner (2026-10-10)
+
+- **Builds never fetch upstream** (no fallback fetching).
+- **Retention is forever.**
+- **Corruption alerts** go to a toast and to the workshop view. Neither exists yet, so for now the tool writes a **status file** and **exits non-zero**.
+- The **off-site mechanism waits** for the off-site backup design.
+
+## 10. Questions for the owner (still open)
+
+1. Who clears a corrupt entry (retention is forever, so the entry stays until a person decides)?

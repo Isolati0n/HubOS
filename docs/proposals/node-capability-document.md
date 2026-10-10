@@ -111,11 +111,15 @@ The four **required** sections are `display`, `health`, `update`, `recovery`. `n
 4. That an old reader is safe with a newer schema that keeps the four required sections (UNKNOWN).
 5. That the TOML parser the repo will use (a third-party library is approved but not chosen: SOURCE `docs/inventory-format.md`) handles hostile input safely (UNKNOWN; fuzz it).
 
-## 9. Questions for the owner
-1. Is 30 s too slow for any capability?
-2. One global staleness policy, or one per capability?
-3. Polling only, or also a push from the node? (A push would reverse "the helper never calls the hub": `node-helper-api.md` 3.1.)
-4. A "force capability present" switch in the debug image?
-5. TOML or JSON for this document (the helper's other calls are JSON)?
-6. Should `/v1/status` and this document be merged so there is one source for the overlapping fields?
-7. Should a new schema version be allowed to change the meaning of the four required sections?
+## 9. Decided by the owner (2026-10-10)
+
+- The poll interval stays **30 seconds** (the 30 s question is answered: not too slow).
+- **One global staleness policy**, not one per capability.
+- **Polling only**: no push requests from nodes.
+- A **"force capability present" switch exists in the debug image only**.
+
+## 10. Questions for the owner (still open)
+
+1. Is it TOML or JSON for this document (the helper's other calls are JSON)?
+2. Should `/v1/status` and this document be merged so there is one source for the overlapping fields?
+3. Should a new schema version be allowed to change the meaning of the four required sections?

@@ -68,9 +68,14 @@ Windows never open by themselves after a reboot; the owner opens them (SOURCE `H
 4. That cancel semantics ("in-flight opens complete") are what the owner expects (BELIEVED).
 5. That 500 ms is enough to avoid a burst on the nodes' wayvnc servers (UNKNOWN; there are no real nodes).
 
-## 9. Questions for the owner
-1. Should focus return before or after verification?
-2. A per-node stagger (slow nodes get more time)?
-3. Cancel: stop only new requests (as written), or also close windows opened in this run?
-4. A "force open" option that tries machines marked down?
-5. What does "saved order" mean: the order of the layout file, the stacking order, or an explicit list?
+## 9. Decided by the owner (2026-10-10)
+
+- **Focus is restored after verification.**
+- **Cancel lets in-flight opens finish** (it only stops new requests).
+- The **stagger is 500 ms and configurable**.
+- There is **no "force open"** option.
+
+## 10. Questions for the owner (still open)
+
+1. Should the stagger also be settable per node (slow nodes get more time)? (Only "configurable" was answered.)
+2. What does "saved order" mean: the order of the layout file, the stacking order, or an explicit list?

@@ -126,10 +126,14 @@ Where the repo already says something about a rule, it is quoted in the seam; ot
 4. That "newest frame wins" is enough and no frame ever needs to be delivered (BELIEVED).
 5. That the feed can stay a full-state line forever without a size problem at 5000 machines (BELIEVED: `hubd list` is 2.9 KB at 5000 machines; SOURCE `hubd-slice2.md` 7.4).
 
-## 8. Questions for the owner
-1. Should PUBLIC seams have a formal compatibility test suite?
-2. Should the panel be able to reconnect without `hubd` restarting? (Assumed yes.)
-3. Keep the feed as a full-state line each time, or change to "snapshot plus updates"?
-4. Hub-to-node paste: is the node helper's `PUT /v1/clipboard` called by `hubd`, by the store, or by a worker?
-5. Should serious notifications be re-sent when the toast daemon returns?
-6. Which seams should get a written schema id now and which later?
+## 8. Decided by the owner (2026-10-10)
+
+- **Every PUBLIC seam gets a formal compatibility test** (a suite that a second implementation of either side can run).
+
+## 9. Questions for the owner (still open)
+
+1. Should the panel be able to reconnect without `hubd` restarting? (Assumed yes; not answered.)
+2. Keep the feed as a full-state line each time, or change to "snapshot plus updates"?
+3. Hub-to-node paste: is the node helper's `PUT /v1/clipboard` called by `hubd`, by the store, or by a worker?
+4. Should serious notifications be re-sent when the toast daemon returns?
+5. Which seams should get a written schema id now and which later?

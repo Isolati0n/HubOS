@@ -76,8 +76,13 @@ The existing rule (SOURCE `hub-stability.md` 11.14 and `HUB-OS.md` "A new kernel
 4. That a 3-second violation limit is achievable with a restart of the compositor (UNKNOWN: compositor restart plus window restore took seconds in the repo's tests; see `hub-stability.md`).
 5. That a pilot variance is stable across builds (UNKNOWN).
 
-## 12. Questions for the owner
-1. Are faults into real hub components in the debug image acceptable? (Assumed yes.)
-2. Fake nodes on loopback ports, or in network namespaces?
-3. Recovery deadlines per fault type: from the pilot, or fixed by you?
-4. Promotion after probation: automatic, or manual? (Assumed manual.)
+## 12. Decided by the owner (2026-10-10)
+
+- **Faults are injected into real hub components in the debug image.**
+- **Recovery deadlines come from the pilot run**, not from guesses.
+- **Promotion after probation is manual**, based on the tool's report.
+- Fake nodes use **loopback ports**, not network namespaces.
+
+## 13. Questions for the owner (still open)
+
+None left from the earlier list.
