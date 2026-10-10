@@ -37,6 +37,6 @@ If it is missing, stop and tell the owner. Do not guess its contents.
 
 ## Usage rules for long jobs
 
-- After you start any job expected to take more than about 10 minutes, end your turn with one line saying what is running and when you will check. Do not post interim notices, do not poll, do not wait inside the conversation. Check back only by scheduled wake-up, about every 2 hours.
+- In this cloud container an idle session loses its background jobs: a job died about 11 minutes after the turn ended, four times (TESTED). So never end the turn or schedule a wake-up while a long job runs. Wait for a long job with a Monitor loop that prints at most one line per 540 seconds (TESTED: a one-minute ticker had no gap over 60 s for 45 minutes this way). Push the results of each unit as soon as it finishes. Start long jobs from a fresh, small session. Do not post interim notices.
 - Before starting any long job run `pgrep -a` and confirm nothing else is running.
 - Run soaks as background jobs that write a results file every hour.
