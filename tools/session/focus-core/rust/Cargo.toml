@@ -1,0 +1,25 @@
+[package]
+name = "focus_core"
+version = "0.1.0"
+edition = "2021"
+description = "The focus core of the session layer: step(state, event) -> (new_state, actions). Bake-off candidate: Rust with Kani."
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "trace"
+path = "src/bin/trace.rs"
+
+[[bin]]
+name = "fuzz"
+path = "src/bin/fuzz.rs"
+
+[profile.release]
+opt-level = 3
+debug-assertions = true   # the fuzz run keeps debug assertions and overflow checks ON: a panic is a failure
+overflow-checks = true
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(kani)'] }
