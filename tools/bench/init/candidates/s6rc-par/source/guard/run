@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+echo -1000 > /proc/self/oom_score_adj
+exec hubsim guard /dev/watchdog

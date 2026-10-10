@@ -1,0 +1,8 @@
+type = internal
+waits-for = guard
+waits-for = seatd
+waits-for = udevd
+waits-for = dbus
+waits-for = driftwm
+waits-for = waybar
+waits-for = hubd
