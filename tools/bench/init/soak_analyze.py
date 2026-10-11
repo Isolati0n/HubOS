@@ -3,7 +3,7 @@
 Reads SOAKMEM / MEM lines (PSS from /proc/PID/smaps_rollup of PID 1, scanner, every supervisor, policy layer, every 60 s).
 For the total and for each process name: least-squares slope of PSS against the number of service restarts, in kB per 1000
 restarts, plus the noise (standard deviation of the points around the line) and the slope's standard error.
-Only samples inside one VM launch are joined (a reboot resets memory); the slopes of the launches are averaged weighted by
+Only samples between two reboots are joined (a reboot resets memory; a time that goes backwards counts as a reboot); the slopes of the launches are averaged weighted by
 their number of restarts."""
 import re, sys, math, collections
 WARMUP = 600   # seconds of each launch left out: the first minutes are start-up and heap growth
@@ -27,6 +27,8 @@ for path in sys.argv[1:]:
             cur = []; launches.append(cur); continue
         m = re.search(r"SOAKMEM t=(\d+) restarts=(\d+) faults=(\d+)", line)
         if m and cur is not None:
+            if cur and int(m[1]) < cur[-1]["t"]:   # time went back: the machine rebooted by itself inside one launch
+                cur = []; launches.append(cur)
             sample = {"t": int(m[1]), "restarts": int(m[2]), "pss": collections.defaultdict(int)}; cur.append(sample); continue
         m = re.search(r" MEM pid=\d+ comm=(\S+) rss_kb=\d+ pss_kb=(\d+)", line)
         if m and sample is not None:

@@ -1,4 +1,4 @@
-== /home/user/HubOS/tools/bench/init/results/step2/soak/s6plain-chunk2.log: 2 launch(es), first 600 s of each left out
+== tools/bench/init/results/step2/soak/s6plain-chunk2.log: 2 launch(es), first 600 s of each left out
 TOTAL          slope   +22.22 kB per 1000 restarts (std.err   5.02)  noise sd    3.2 kB  range 2446..2474 kB  samples 101  restarts covered 621
 s6-supervise   slope   +22.22 kB per 1000 restarts (std.err   5.02)  noise sd    3.2 kB  range 1350..1378 kB  samples 101  restarts covered 621
 s6-svscan      slope    +0.00 kB per 1000 restarts (std.err   0.00)  noise sd    0.0 kB  range 1096..1096 kB  samples 101  restarts covered 621
