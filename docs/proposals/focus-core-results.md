@@ -14,7 +14,7 @@ Invariant numbers are those of `focus-core.md` section 3. "Fuzz" = the independe
 | 4 epoch never decreases | proven (small bounds) + fuzzed | fuzzed only | fuzzed; also the `Step` postcondition `Epoch >= Epoch'Old` is proven by GNATprove at full bounds |
 | 5 hub path always reachable | proven (small bounds) + fuzzed | fuzzed only | fuzzed; the postcondition "chord/menu gives exactly one `Deliver_Hub` first" is proven at full bounds |
 | 6 bounded transition | model only (TLC, with the urgent-clock assumption); the core has no clock; `stale_verification_accepted` mutant shows the check sees it | same | same |
-| No crash (index, overflow, range) | proven by Kani within the small bounds; plus overflow-checked arithmetic | not proven; Zig `ReleaseSafe` traps, 0 traps in 1000 M steps | **proven by GNATprove at the real bounds (20 machines, 32 keys, 8 buttons)**: 96 of 96 run-time checks |
+| No crash (index, overflow, range) | proven by Kani within the small bounds; plus overflow-checked arithmetic | not proven; Zig `ReleaseSafe` traps, 0 traps in the 10 fuzz chunks (2000 M steps) | **proven by GNATprove at the real bounds (20 machines, 32 keys, 8 buttons)**: 96 of 96 run-time checks |
 | State stays valid (limits, "waiting means hub has focus", only the focus holds anything, hub holds nothing) | proven (small bounds) | fuzzed only | **proven at full bounds** (`Step` postcondition `Valid`) |
 
 So: only Rust has a machine proof of invariants 1–5 (and only at the small bounds, 3 machines / 3 keys / 2 buttons: the model checker does not finish at 20/32/8). Ada has a stronger proof of a smaller thing (no run-time error and a valid state, at the real bounds) and tests invariants 1–5. Zig has tests only (UNKNOWN whether any Zig prover exists; I did not find one). Invariants 1–5 at the real bounds are TESTED only in all three candidates. SPARK could express invariants 1–5 with ghost code, as Kani's checker does; I did not write it (see 5).
@@ -32,7 +32,7 @@ So: only Rust has a machine proof of invariants 1–5 (and only at the small bou
 |---|---|---|---|
 | Core lines (types, `step`, helpers; no checker) | about 385 (`lib.rs` lines 1-386) | about 222 (`core.zig` lines 1-222) | 413 (`.ads` 96 + `.adb` 317; includes about 130 lines of contracts and loop invariants) |
 | Checker lines | about 155 | about 90 | 167 |
-| Proof effort | `proofs` module about 115 lines; the first attempt's mutation run found two gaps in the checker which I fixed; proof took 61.7 s | none (no prover) | about 3 hours of my time in total to get from "1 postcondition unproved" to all proved: helper postconditions and loop invariants (about 130 lines), one added `Valid` clause (hub holds nothing), two postconditions on the count functions; final run 22 s |
+| Proof effort | `proofs` module about 115 lines; the first attempt's mutation run found two gaps in the checker which I fixed; proof took 61.7 s | none (no prover) | four GNATprove runs (not timed in hours) to get from "1 postcondition unproved" to all proved: helper postconditions and loop invariants (about 130 lines), one added `Valid` clause (hub holds nothing), two postconditions on the count functions; final run 22 s |
 | Proof result | `step_keeps_all_invariants`: 1959 checks, 0 failed, 9 of 9 cover properties reached; `initial_state_is_valid`: 226 checks, 0 failed (Kani 0.68.0 / CBMC 6.11.0, small bounds) | n/a | GNATprove 16.1.0: 168 checks, all proved, 0 unproved (96 run-time, 56 assertions, 9 functional contracts, 7 termination) at full bounds |
 | Clean build time | not measured reliably (cargo reported 0.5 s from a warm directory; UNKNOWN) | 38 s | 2.4 s (GNAT 13) |
 | Fuzz throughput (steps/s, one thread) | about 6.0 M | about 7.9 M | about 5.1 M (200 M steps in 38 s) |
@@ -58,5 +58,5 @@ Line counts are from `wc -l` on the files; the split between "core" and "checker
 5. Which physical key is the "one menu key"?
 6. Are scroll events button events for `held`?
 7. Is a window flash acceptable as the cue for input dropped on a down machine?
-8. Should I also write invariants 1-5 as SPARK ghost code (more proof work: my guess is another day) so that Ada reaches the same level as Rust, or is "no run-time error + valid state" enough for the comparison?
+8. Should I also write invariants 1-5 as SPARK ghost code (more proof work; size UNKNOWN) so that Ada reaches the same level as Rust, or is "no run-time error + valid state" enough for the comparison?
 9. The Ada binary needs `libgnat` (dynamic) unless built with static runtime; the Zig binary is static. Does static linking matter for the hub?
