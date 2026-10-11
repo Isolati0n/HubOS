@@ -1,0 +1,55 @@
+H# start 2026-10-10 23:34:47 cand=openrc-par suite=trial cpus_seen=4 loadavg_at_start=['1.11', '0.72', '0.51']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.14 Booting from ROM...
+H     4.99 c[?7l[2JCH STAGE1 up=3.41
+H     5.06 CH CAND openrc pid1=openrc-init
+H     5.09 CH SUP-START up=3.50
+H     5.17 OpenRC init version 0.63.3 starting
+H     5.17 Starting sysinit runlevel
+H     5.31 CH t=0.1 CHAOS start cand=openrc suite=trial seed=130 cpus=2
+H     5.41 
+H     5.41    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.41 
+H     5.56  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     5.62  [1m[32m*[m Mounting /proc[K ...
+H     5.68  [1m[31m*[m /etc/fstab does not exist[K
+H     5.74  [ ok ]
+H     5.92  [1m[32m*[m /run/openrc: creating directory[K
+H     5.98  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     6.01  [1m[32m*[m Caching service dependencies[K ...
+H     6.34  [ ok ]
+H     6.36 Starting boot runlevel
+H     6.47 Starting default runlevel
+H     7.09  [1m[32m*[m Starting seatd[K ...
+H     7.45  [1m[32m*[m Starting dbus[K ...
+H     7.58  [ ok ]
+H     7.59  [1m[32m*[m Starting udevd[K ...
+H     7.77  [ ok ]
+H     9.36  [ ok ]
+H     9.55  [1m[32m*[m Starting driftwm[K ...
+H    11.98  [ ok ]
+H    12.29  [1m[32m*[m Starting hubd[K ...
+H    12.51  [1m[32m*[m Starting waybar[K ...
+H    14.25  [ ok ]
+H    14.34  [ ok ]
+H    65.67 CH t=60.5 TRIAL ROLLBACK scenario=healthy after=60s true_state="" guard_still_feeding=true
+H    65.82 CH t=60.6 STATUS Runlevel: sysinit
+H    65.83 CH t=60.6 STATUS Runlevel: default
+H    65.83 CH t=60.6 STATUS  dbus                                                  [  started 00:00:58 (0) ]
+H    65.83 CH t=60.6 STATUS  seatd                                                 [  started 00:00:58 (0) ]
+H    65.83 CH t=60.6 STATUS  udevd                                                 [  started 00:00:58 (0) ]
+H    65.83 CH t=60.7 STATUS  driftwm                                               [  started 00:00:56 (0) ]
+H    65.83 CH t=60.7 STATUS  waybar                                                [  started 00:00:53 (0) ]
+H    65.83 CH t=60.7 STATUS  hubd                                                  [  started 00:00:53 (0) ]
+H    65.83 CH t=60.7 STATUS Runlevel: boot
+H    65.84 CH t=60.7 STATUS Dynamic Runlevel: hotplugged
+H    65.84 CH t=60.7 STATUS Dynamic Runlevel: needed/wanted
+H    65.84 CH t=60.7 STATUS Dynamic Runlevel: manual
+H    66.86 [   65.309183] reboot: Restarting system
+H    66.93 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    66.95 Booting from ROM...
+H    94.26 c[?7l[2JCH STAGE1 up=3.65
+H# trial finished
+H# vm exit code -9 after 94s, loadavg ['1.04', '0.81', '0.56']
+H# end wall=94.3s launches=1 suite_done=True

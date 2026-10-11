@@ -1,0 +1,50 @@
+H# start 2026-10-10 23:30:07 cand=openrc-par suite=boot cpus_seen=4 loadavg_at_start=['0.52', '0.35', '0.37']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.88 Booting from ROM..c[?7l[2JCH STAGE1 up=2.76
+H     4.93 CH CAND openrc pid1=openrc-init
+H     4.95 CH SUP-START up=2.83
+H     5.06 OpenRC init version 0.63.3 starting
+H     5.06 Starting sysinit runlevel
+H     5.12 CH t=0.1 CHAOS start cand=openrc suite=boot seed=102 cpus=2
+H     5.24 
+H     5.24    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.24 
+H     5.37  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     5.43  [1m[32m*[m Mounting /proc[K ...
+H     5.49  [1m[31m*[m /etc/fstab does not exist[K
+H     5.54  [ ok ]
+H     5.71  [1m[32m*[m /run/openrc: creating directory[K
+H     5.78  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     5.81  [1m[32m*[m Caching service dependencies[K ...
+H     6.27  [ ok ]
+H     6.32 Starting boot runlevel
+H     6.45 Starting default runlevel
+H     7.27  [1m[32m*[m Starting seatd[K ...
+H     7.29  [1m[32m*[m Starting dbus[K ...
+H     7.42  [1m[32m*[m Starting udevd[K ...
+H     7.69  [ ok ]
+H     7.72  [ ok ]
+H     9.24  [ ok ]
+H     9.52  [1m[32m*[m Starting driftwm[K ...
+H    12.16  [ ok ]
+H    12.41  [1m[32m*[m Starting waybar[K ...
+H    12.50  [1m[32m*[m Starting hubd[K ...
+H    14.28  [ ok ]
+H    14.41  [ ok ]
+H    14.62 CH t=9.6 BOOT-OK up=12.50 ok=1 (seconds since kernel start; waited 9.3)
+H    14.68 CH t=9.6 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1800 memavail_kb=723244 init_side_cpu_ticks=165
+H    24.71 CH t=19.7 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1800 memavail_kb=722252 init_side_cpu_ticks=165
+H    34.74 CH t=29.7 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1800 memavail_kb=720236 init_side_cpu_ticks=165
+H    44.79 CH t=39.7 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1800 memavail_kb=717968 init_side_cpu_ticks=166
+H    54.82 CH t=49.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1800 memavail_kb=717716 init_side_cpu_ticks=166
+H    59.68 CH t=54.6 IDLE-CPU window=30s whole_vm_busy_ticks=784 whole_vm_idle_ticks=5029 init_side_ticks=1 (1 tick = 10 ms, 2 vCPUs)
+H    59.71 CH t=54.7 MEM pid=1 comm=openrc-init rss_kb=1800 pss_kb=491
+H    59.74 CH t=54.7 POLICY driftwm oom_score_adj=0 nice=0 cgroup=0::/
+H    59.79 CH t=54.8 POLICY hubd oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    59.82 CH t=54.8 POLICY waybar oom_score_adj=0 nice=0 cgroup=0::/
+H    59.86 CH t=54.8 LISTEN tcp_listening_sockets=0 epmd_running=false
+H    59.86 CH t=54.8 SUITE-DONE
+H    61.86 [   59.731893] reboot: Power down
+H# vm exit code 0 after 62s, loadavg ['0.45', '0.35', '0.37']
+H# end wall=61.9s launches=1 suite_done=True

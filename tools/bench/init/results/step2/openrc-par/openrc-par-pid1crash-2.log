@@ -1,0 +1,103 @@
+H# start 2026-10-10 23:32:50 cand=openrc-par suite=pid1crash cpus_seen=4 loadavg_at_start=['0.75', '0.49', '0.41']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.10 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.05 Booting from ROM..c[?7l[2JCH STAGE1 up=3.52
+H     5.11 CH CAND openrc pid1=openrc-init
+H     5.14 CH SUP-START up=3.61
+H     5.23 OpenRC init version 0.63.3 starting
+H     5.24 Starting sysinit runlevel
+H     5.33 CH t=0.1 CHAOS start cand=openrc suite=pid1crash seed=112 cpus=2
+H     5.41 
+H     5.41    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.41 
+H     5.54  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     5.59  [1m[32m*[m Mounting /proc[K ...
+H     5.63  [1m[31m*[m /etc/fstab does not exist[K
+H     5.69  [ ok ]
+H     5.87  [1m[32m*[m /run/openrc: creating directory[K
+H     5.94  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     5.97  [1m[32m*[m Caching service dependencies[K ...
+H     6.34  [ ok ]
+H     6.37 Starting boot runlevel
+H     6.48 Starting default runlevel
+H     7.32  [1m[32m*[m Starting seatd[K ...
+H     7.35  [1m[32m*[m Starting udevd[K ...
+H     7.39  [1m[32m*[m Starting dbus[K ...
+H     7.67  [ ok ]
+H     7.79  [ ok ]
+H     9.18  [ ok ]
+H     9.44  [1m[32m*[m Starting driftwm[K ...
+H    11.92  [ ok ]
+H    12.20  [1m[32m*[m Starting waybar[K ...
+H    12.21  [1m[32m*[m Starting hubd[K ...
+H    14.13  [ ok ]
+H    14.20  [ ok ]
+H    14.53 CH t=9.3 BOOT-OK up=12.99 ok=1 (seconds since kernel start; waited 9.0)
+H    14.58 CH t=9.3 SAMPLE zombies=0 nproc=84 init_side_fds=8 init_side_rss_kb=1900 memavail_kb=722308 init_side_cpu_ticks=178
+H    19.54 CH t=14.3 INJECT pid1-segv
+H    19.58 [   18.082862] openrc-init[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffeaa1bf378 error 15 likely on CPU 1 (core 1, socket 0)
+H    19.58 [   18.084580] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    19.58 [   18.087628] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    19.58 [   18.087628] CPU: 1 PID: 1 Comm: openrc-init Not tainted 6.8.0-146-generic #146-Ubuntu
+H    19.58 [   18.087628] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    19.58 [   18.087628] Call Trace:
+H    19.58 [   18.087628]  <TASK>
+H    19.58 [   18.087628]  dump_stack_lvl+0x27/0xa0
+H    19.58 [   18.087628]  dump_stack+0x10/0x20
+H    19.58 [   18.087628]  panic+0x366/0x3c0
+H    19.58 [   18.087628]  do_exit+0x513/0x530
+H    19.58 [   18.087628]  do_group_exit+0x35/0x90
+H    19.59 [   18.087628]  get_signal+0x96e/0x9b0
+H    19.59 [   18.087628]  ? native_load_gs_index.part.0+0x20/0x50
+H    19.59 [   18.087628]  arch_do_signal_or_restart+0x42/0x210
+H    19.59 [   18.087628]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    19.59 [   18.087628]  irqentry_exit+0x43/0x50
+H    19.59 [   18.087628]  exc_page_fault+0x94/0x1b0
+H    19.59 [   18.087628]  asm_exc_page_fault+0x27/0x30
+H    19.59 [   18.087628] RIP: 0033:0xfffffffffffffffe
+H    19.59 [   18.087628] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    19.59 [   18.087628] RSP: 002b:00007ffeaa1bf378 EFLAGS: 00000202
+H    19.59 [   18.087628] RAX: 00000000000000db RBX: 00007ffeaa1bfe18 RCX: 00007b2caca054c4
+H    19.59 [   18.087628] RDX: 00000000ffffffff RSI: 0000000000000002 RDI: 00007ffeaa1bf3b0
+H    19.59 [   18.087628] RBP: 00007ffeaa1bfcf0 R08: 0000000000000000 R09: 0000000000001fff
+H    19.59 [   18.087628] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000001
+H    19.59 [   18.087628] R13: 0000000000000000 R14: 000057d296518ba0 R15: 00007b2cacb4c000
+H    19.59 [   18.087628]  </TASK>
+H    19.59 [   18.087628] Kernel Offset: 0x2ce00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    19.59 [   18.087628] Rebooting in 5 seconds..
+H    24.75 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    36.38 Booting from ROM..c[?7l[2JCH STAGE1 up=4.37
+H    36.44 CH CAND openrc pid1=openrc-init
+H    36.47 CH SUP-START up=4.45
+H    36.66 CH t=0.1 CHAOS start cand=openrc suite=pid1crash seed=112 cpus=2
+H    36.68 OpenRC init version 0.63.3 starting
+H    36.68 Starting sysinit runlevel
+H    36.82 
+H    36.83    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H    36.83 
+H    37.02  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H    37.09  [1m[32m*[m Mounting /proc[K ...
+H    37.16  [1m[31m*[m /etc/fstab does not exist[K
+H    37.25  [ ok ]
+H    37.52  [1m[32m*[m /run/openrc: creating directory[K
+H    37.62  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H    37.65  [1m[32m*[m Caching service dependencies[K ...
+H    38.01  [ ok ]
+H    38.04 Starting boot runlevel
+H    38.18 Starting default runlevel
+H    39.01  [1m[32m*[m Starting seatd[K ...
+H    39.16  [1m[32m*[m Starting dbus[K ...
+H    39.42  [1m[32m*[m Starting udevd[K ...
+H    39.52  [ ok ]
+H    39.66  [ ok ]
+H    41.19  [ ok ]
+H    41.45  [1m[32m*[m Starting driftwm[K ...
+H    44.22  [ ok ]
+H    44.47  [1m[32m*[m Starting hubd[K ...
+H    44.52  [1m[32m*[m Starting waybar[K ...
+H    46.41  [ ok ]
+H    46.44  [ ok ]
+H    46.68 CH t=10.1 BOOT-OK up=14.68 ok=1 (seconds since kernel start; waited 9.8)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 47s, loadavg ['1.07', '0.61', '0.46']
+H# end wall=46.7s launches=1 suite_done=True

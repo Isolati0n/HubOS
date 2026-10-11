@@ -1,0 +1,577 @@
+H# start 2026-10-10 23:39:06 cand=openrc-par suite=faults cpus_seen=4 loadavg_at_start=['0.92', '0.86', '0.62']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     4.87 c[?7l[2JCH STAGE1 up=3.30
+H     4.92 CH CAND openrc pid1=openrc-init
+H     4.94 CH SUP-START up=3.36
+H     5.02 OpenRC init version 0.63.3 starting
+H     5.03 Starting sysinit runlevel
+H     5.17 CH t=0.1 CHAOS start cand=openrc suite=faults seed=200 cpus=2
+H     5.20 
+H     5.21    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.21 
+H     5.34  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     5.38  [1m[32m*[m Mounting /proc[K ...
+H     5.45  [1m[31m*[m /etc/fstab does not exist[K
+H     5.51  [ ok ]
+H     5.68  [1m[32m*[m /run/openrc: creating directory[K
+H     5.74  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     5.77  [1m[32m*[m Caching service dependencies[K ...
+H     6.10  [ ok ]
+H     6.13 Starting boot runlevel
+H     6.28 Starting default runlevel
+H     6.98  [1m[32m*[m Starting dbus[K ...
+H     7.05  [1m[32m*[m Starting udevd[K ...
+H     7.14  [1m[32m*[m Starting seatd[K ...
+H     7.35  [ ok ]
+H     7.45  [ ok ]
+H     8.89  [ ok ]
+H     9.13  [1m[32m*[m Starting driftwm[K ...
+H    11.31  [ ok ]
+H    11.58  [1m[32m*[m Starting waybar[K ...
+H    11.62  [1m[32m*[m Starting hubd[K ...
+H    13.51  [ ok ]
+H    13.57  [ ok ]
+H    13.82 CH t=8.8 BOOT-OK up=12.24 ok=1 (seconds since kernel start; waited 8.4)
+H    13.87 CH t=8.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=721560 init_side_cpu_ticks=174
+H    18.82 CH t=13.8 STEP 1 fKill
+H    23.90 CH t=18.8 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718648 init_side_cpu_ticks=175
+H    25.50 CH t=20.4 EV ev=1 fault=kill target=seatd rec=6.47 ok=1 fixed=0 
+H    28.50 CH t=23.4 STEP 2 fKill
+H    31.69 CH t=26.6 EV ev=2 fault=kill target=udevd rec=2.98 ok=1 fixed=0 
+H    33.93 CH t=28.9 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718648 init_side_cpu_ticks=175
+H    34.69 CH t=29.6 STEP 3 fKill
+H    36.23 CH t=31.2 EV ev=3 fault=kill target=dbus rec=1.33 ok=1 fixed=0 
+H    39.24 CH t=34.2 STEP 4 fKill
+H    43.99 CH t=38.9 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=719152 init_side_cpu_ticks=175
+H    46.20 CH t=41.1 EV ev=4 fault=kill target=driftwm rec=6.75 ok=1 fixed=0 
+H    49.20 CH t=44.1 STEP 5 fKill
+H    52.39 CH t=47.3 EV ev=5 fault=kill target=waybar rec=2.97 ok=1 fixed=0 
+H    54.02 CH t=49.0 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718176 init_side_cpu_ticks=175
+H    55.39 CH t=50.3 STEP 6 fKill
+H    59.19 CH t=54.1 EV ev=6 fault=kill target=hubd rec=3.59 ok=1 fixed=0 
+H    62.20 CH t=57.1 STEP 7 fKill
+H    64.07 CH t=59.0 SAMPLE zombies=0 nproc=77 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=734080 init_side_cpu_ticks=176
+H    69.65 CH t=64.6 EV ev=7 fault=kill target=seatd rec=7.25 ok=1 fixed=0 
+H    72.66 CH t=67.6 STEP 8 fKill
+H    74.10 CH t=69.0 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=724784 init_side_cpu_ticks=176
+H    75.83 CH t=70.8 EV ev=8 fault=kill target=udevd rec=2.96 ok=1 fixed=0 
+H    78.84 CH t=73.8 STEP 9 fKill
+H    80.45 CH t=75.4 EV ev=9 fault=kill target=dbus rec=1.40 ok=1 fixed=0 
+H    83.45 CH t=78.4 STEP 10 fKill
+H    84.17 CH t=79.1 SAMPLE zombies=0 nproc=76 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=818476 init_side_cpu_ticks=176
+H    89.94 CH t=84.9 EV ev=10 fault=kill target=driftwm rec=6.28 ok=1 fixed=0 
+H    92.95 CH t=87.9 STEP 11 fKill
+H    94.20 CH t=89.1 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=721288 init_side_cpu_ticks=177
+H    95.73 CH t=90.7 EV ev=11 fault=kill target=waybar rec=2.58 ok=1 fixed=0 
+H    98.73 CH t=93.7 STEP 12 fKill
+H   101.99 CH t=96.9 EV ev=12 fault=kill target=hubd rec=3.05 ok=1 fixed=0 
+H   104.24 CH t=99.2 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=720028 init_side_cpu_ticks=177
+H   105.00 CH t=99.9 STEP 13 fKill
+H   111.62 CH t=106.6 EV ev=13 fault=kill target=seatd rec=6.42 ok=1 fixed=0 
+H   114.27 CH t=109.2 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=727336 init_side_cpu_ticks=177
+H   114.62 CH t=109.6 STEP 14 fKill
+H   117.63 CH t=112.6 EV ev=14 fault=kill target=udevd rec=2.80 ok=1 fixed=0 
+H   120.63 CH t=115.6 STEP 15 fKill
+H   122.06 CH t=117.0 EV ev=15 fault=kill target=dbus rec=1.22 ok=1 fixed=0 
+H   124.31 CH t=119.2 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=725852 init_side_cpu_ticks=178
+H   125.06 CH t=120.0 STEP 16 fKill
+H   132.06 CH t=127.0 EV ev=16 fault=kill target=driftwm rec=6.79 ok=1 fixed=0 
+H   134.34 CH t=129.3 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=728124 init_side_cpu_ticks=178
+H   135.06 CH t=130.0 STEP 17 fKill
+H   138.41 CH t=133.3 EV ev=17 fault=kill target=waybar rec=3.15 ok=1 fixed=0 
+H   141.41 CH t=136.4 STEP 18 fKill
+H   144.38 CH t=139.3 SAMPLE zombies=0 nproc=82 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=726108 init_side_cpu_ticks=178
+H   145.29 CH t=140.2 EV ev=18 fault=kill target=hubd rec=3.67 ok=1 fixed=0 
+H   148.29 CH t=143.2 STEP 19 fHang
+H   154.42 CH t=149.4 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=726108 init_side_cpu_ticks=178
+H   164.45 CH t=159.4 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=725864 init_side_cpu_ticks=179
+H   174.50 CH t=169.4 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=725864 init_side_cpu_ticks=179
+H   184.53 CH t=179.5 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=725864 init_side_cpu_ticks=179
+H   194.57 CH t=189.5 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=725864 init_side_cpu_ticks=179
+H   204.61 CH t=199.5 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=725864 init_side_cpu_ticks=179
+H   208.35 CH t=203.3 UNRECOVERED ev=19 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   208.49 CH t=203.4 STATUS Runlevel: sysinit
+H   208.49 CH t=203.4 STATUS Runlevel: default
+H   208.49 CH t=203.4 STATUS  dbus                                                  [  started 00:01:27 (0) ]
+H   208.49 CH t=203.4 STATUS  seatd                                                 [  started 00:01:42 (0) ]
+H   208.49 CH t=203.4 STATUS  udevd                                                 [  started 00:01:33 (0) ]
+H   208.49 CH t=203.4 STATUS  driftwm                                               [  started 00:01:22 (2) ]
+H   208.49 CH t=203.4 STATUS  waybar                                                [  started 00:01:11 (7) ]
+H   208.50 CH t=203.4 STATUS  hubd                                                  [  started 00:01:05 (7) ]
+H   208.50 CH t=203.4 STATUS Runlevel: boot
+H   208.50 CH t=203.4 STATUS Dynamic Runlevel: hotplugged
+H   208.50 CH t=203.4 STATUS Dynamic Runlevel: needed/wanted
+H   208.50 CH t=203.4 STATUS Dynamic Runlevel: manual
+H   208.53 CH t=203.5 operator-action target=driftwm why="driftwm stopped"
+H   209.14  [1m[32m*[m Stopping hubd[K ...
+H   209.16  [1m[32m*[m Stopping waybar[K ...
+H   209.69  [ ok ]
+H   210.26  [ ok ]
+H   210.62  [1m[32m*[m Stopping driftwm[K ...
+H   210.82  [ ok ]
+H   211.08  [1m[32m*[m Starting driftwm[K ...
+H   213.24  [ ok ]
+H   213.58  [1m[32m*[m Starting hubd[K ...
+H   213.77  [1m[32m*[m Starting waybar[K ...
+H   214.64 CH t=209.6 SAMPLE zombies=0 nproc=87 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=699612 init_side_cpu_ticks=180
+H   215.44  [ ok ]
+H   215.53  [ ok ]
+H   215.85 CH t=210.8 EV ev=19 fault=hang-stop target=driftwm rec=62.17 ok=0 fixed=1 
+H   218.85 CH t=213.8 STEP 20 fHang
+H   219.15 CH t=214.1 EV ev=20 fault=hang-spin target=driftwm rec=0.09 ok=1 fixed=0 
+H   222.15 CH t=217.1 STEP 21 fHang
+H   224.71 CH t=219.6 SAMPLE zombies=0 nproc=84 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=704236 init_side_cpu_ticks=180
+H   234.74 CH t=229.7 SAMPLE zombies=0 nproc=85 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=703732 init_side_cpu_ticks=180
+H   244.78 CH t=239.7 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=703984 init_side_cpu_ticks=180
+H   254.81 CH t=249.7 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=705264 init_side_cpu_ticks=180
+H   264.84 CH t=259.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=705264 init_side_cpu_ticks=180
+H   274.87 CH t=269.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=705012 init_side_cpu_ticks=181
+H   282.37 CH t=277.3 UNRECOVERED ev=21 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   282.49 CH t=277.4 STATUS Runlevel: sysinit
+H   282.49 CH t=277.4 STATUS Runlevel: default
+H   282.49 CH t=277.4 STATUS  dbus                                                  [  started 00:02:41 (0) ]
+H   282.49 CH t=277.4 STATUS  seatd                                                 [  started 00:02:56 (0) ]
+H   282.49 CH t=277.4 STATUS  udevd                                                 [  started 00:02:47 (0) ]
+H   282.50 CH t=277.4 STATUS  driftwm                                               [  started 00:01:11 (0) ]
+H   282.50 CH t=277.4 STATUS  waybar                                                [  started 00:01:09 (0) ]
+H   282.50 CH t=277.4 STATUS  hubd                                                  [  started 00:01:09 (0) ]
+H   282.50 CH t=277.4 STATUS Runlevel: boot
+H   282.50 CH t=277.4 STATUS Dynamic Runlevel: hotplugged
+H   282.50 CH t=277.4 STATUS Dynamic Runlevel: needed/wanted
+H   282.50 CH t=277.4 STATUS Dynamic Runlevel: manual
+H   282.54 CH t=277.5 operator-action target=driftwm why="driftwm stopped"
+H   283.10  [1m[32m*[m Stopping waybar[K ...
+H   283.14  [1m[32m*[m Stopping hubd[K ...
+H   283.86  [ ok ]
+H   284.27  [ ok ]
+H   284.58  [1m[32m*[m Stopping driftwm[K ...
+H   284.78  [ ok ]
+H   284.91 CH t=279.8 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=781264 init_side_cpu_ticks=181
+H   284.99  [1m[32m*[m Starting driftwm[K ...
+H   287.01  [ ok ]
+H   287.51  [1m[32m*[m Starting waybar[K ...
+H   287.53  [1m[32m*[m Starting hubd[K ...
+H   289.72  [ ok ]
+H   289.73  [ ok ]
+H   290.03 CH t=285.0 EV ev=21 fault=hang-stop target=driftwm rec=62.52 ok=0 fixed=1 
+H   293.03 CH t=288.0 STEP 22 fHang
+H   293.36 CH t=288.3 EV ev=22 fault=hang-spin target=driftwm rec=0.11 ok=1 fixed=0 
+H   294.94 CH t=289.9 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=725108 init_side_cpu_ticks=181
+H   296.36 CH t=291.3 STEP 23 fHang
+H   304.98 CH t=299.9 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=724856 init_side_cpu_ticks=181
+H   315.01 CH t=309.9 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=724856 init_side_cpu_ticks=182
+H   325.15 CH t=320.1 SAMPLE zombies=0 nproc=87 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723848 init_side_cpu_ticks=182
+H   335.19 CH t=330.1 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723596 init_side_cpu_ticks=182
+H   345.25 CH t=340.2 SAMPLE zombies=0 nproc=88 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723348 init_side_cpu_ticks=182
+H   355.28 CH t=350.2 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=722844 init_side_cpu_ticks=182
+H   356.63 CH t=351.6 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   356.74 CH t=351.7 STATUS Runlevel: sysinit
+H   356.74 CH t=351.7 STATUS Runlevel: default
+H   356.74 CH t=351.7 STATUS  dbus                                                  [  started 00:03:55 (0) ]
+H   356.74 CH t=351.7 STATUS  seatd                                                 [  started 00:04:10 (0) ]
+H   356.75 CH t=351.7 STATUS  udevd                                                 [  started 00:04:01 (0) ]
+H   356.75 CH t=351.7 STATUS  driftwm                                               [  started 00:01:11 (0) ]
+H   356.75 CH t=351.7 STATUS  waybar                                                [  started 00:01:09 (0) ]
+H   356.75 CH t=351.7 STATUS  hubd                                                  [  started 00:01:09 (0) ]
+H   356.75 CH t=351.7 STATUS Runlevel: boot
+H   356.75 CH t=351.7 STATUS Dynamic Runlevel: hotplugged
+H   356.75 CH t=351.7 STATUS Dynamic Runlevel: needed/wanted
+H   356.75 CH t=351.7 STATUS Dynamic Runlevel: manual
+H   356.79 CH t=351.7 operator-action target=driftwm why="driftwm stopped"
+H   357.37  [1m[32m*[m Stopping hubd[K ...
+H   357.41  [1m[32m*[m Stopping waybar[K ...
+H   358.11  [ ok ]
+H   358.16  [ ok ]
+H   358.51  [1m[32m*[m Stopping driftwm[K ...
+H   358.70  [ ok ]
+H   358.94  [1m[32m*[m Starting driftwm[K ...
+H   360.98  [ ok ]
+H   361.41  [1m[32m*[m Starting hubd[K ...
+H   361.45  [1m[32m*[m Starting waybar[K ...
+H   363.27  [ ok ]
+H   363.33  [ ok ]
+H   363.68 CH t=358.6 EV ev=23 fault=hang-stop target=driftwm rec=62.23 ok=0 fixed=1 
+H   365.32 CH t=360.3 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=701432 init_side_cpu_ticks=183
+H   366.68 CH t=361.6 STEP 24 fHang
+H   375.35 CH t=370.3 SAMPLE zombies=1 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=800648 init_side_cpu_ticks=183
+H   382.59 CH t=377.5 EV ev=24 fault=hang-spin target=driftwm rec=15.70 ok=1 fixed=0 
+H   385.39 CH t=380.3 SAMPLE zombies=0 nproc=85 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=727596 init_side_cpu_ticks=184
+H   385.60 CH t=380.5 STEP 25 fStorm
+H   395.45 CH t=390.4 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723564 init_side_cpu_ticks=184
+H   405.49 CH t=400.4 SAMPLE zombies=0 nproc=82 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723564 init_side_cpu_ticks=184
+H   415.55 CH t=410.5 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723564 init_side_cpu_ticks=185
+H   425.61 CH t=420.5 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723564 init_side_cpu_ticks=185
+H   425.77 CH t=420.7 STATUS Runlevel: sysinit
+H   425.78 CH t=420.7 STATUS Runlevel: default
+H   425.78 CH t=420.7 STATUS  dbus                                                  [  started 00:05:04 (0) ]
+H   425.78 CH t=420.7 STATUS  seatd                                                 [  started 00:05:19 (0) ]
+H   425.78 CH t=420.7 STATUS  udevd                                                 [  started 00:05:10 (0) ]
+H   425.79 CH t=420.7 STATUS  driftwm                                               [  started 00:00:48 (1) ]
+H   425.79 CH t=420.7 STATUS  waybar                                                [  started 00:00:44 (2) ]
+H   425.79 CH t=420.7 STATUS  hubd                                                                 [ failed ]
+H   425.79 CH t=420.7 STATUS Runlevel: boot
+H   425.79 CH t=420.7 STATUS Dynamic Runlevel: hotplugged
+H   425.79 CH t=420.7 STATUS Dynamic Runlevel: needed/wanted
+H   425.79 CH t=420.7 STATUS Dynamic Runlevel: manual
+H   425.79 CH t=420.7 STATUS  hubd                                                                 [ failed ]
+H   425.80 CH t=420.7 STORM target=hubd dur=40 starts=8 starts_last10s=0 cpu_ticks_init_side=1 bar-up
+H   435.65 CH t=430.6 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=722808 init_side_cpu_ticks=185
+H   445.68 CH t=440.6 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=720796 init_side_cpu_ticks=185
+H   455.71 CH t=450.6 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=720544 init_side_cpu_ticks=185
+H   465.75 CH t=460.7 SAMPLE zombies=0 nproc=82 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=720544 init_side_cpu_ticks=185
+H   475.78 CH t=470.7 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=720544 init_side_cpu_ticks=186
+H   485.81 CH t=480.7 SAMPLE zombies=0 nproc=82 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=720544 init_side_cpu_ticks=186
+H   486.02 CH t=481.0 UNRECOVERED ev=25 fault=storm target=hubd alert=0 why="hubd not running"
+H   486.14 CH t=481.1 STATUS Runlevel: sysinit
+H   486.15 CH t=481.1 STATUS Runlevel: default
+H   486.15 CH t=481.1 STATUS  dbus                                                  [  started 00:06:05 (0) ]
+H   486.15 CH t=481.1 STATUS  seatd                                                 [  started 00:06:20 (0) ]
+H   486.15 CH t=481.1 STATUS  udevd                                                 [  started 00:06:11 (0) ]
+H   486.15 CH t=481.1 STATUS  driftwm                                               [  started 00:01:49 (1) ]
+H   486.15 CH t=481.1 STATUS  waybar                                                [  started 00:01:45 (2) ]
+H   486.16 CH t=481.1 STATUS  hubd                                                                 [ failed ]
+H   486.16 CH t=481.1 STATUS Runlevel: boot
+H   486.16 CH t=481.1 STATUS Dynamic Runlevel: hotplugged
+H   486.16 CH t=481.1 STATUS Dynamic Runlevel: needed/wanted
+H   486.16 CH t=481.1 STATUS Dynamic Runlevel: manual
+H   486.16 CH t=481.1 STATUS  hubd                                                                 [ failed ]
+H   486.23 CH t=481.2 operator-action target=hubd why="hubd not running"
+H   486.65  [1m[32m*[m Starting hubd[K ...
+H   488.44  [ ok ]
+H   488.96 CH t=483.9 EV ev=25 fault=storm target=hubd rec=60.15 ok=0 fixed=1 starts=8 last10=0 cpu=1 bar-up
+H   491.96 CH t=486.9 STEP 26 fStorm
+H   495.86 CH t=490.8 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=791256 init_side_cpu_ticks=186
+H   505.90 CH t=500.8 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=811920 init_side_cpu_ticks=187
+H   515.94 CH t=510.9 SAMPLE zombies=0 nproc=77 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=795868 init_side_cpu_ticks=188
+H   525.98 CH t=520.9 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=810808 init_side_cpu_ticks=188
+H   532.14 CH t=527.1 STATUS Runlevel: sysinit
+H   532.14 CH t=527.1 STATUS Runlevel: default
+H   532.14 CH t=527.1 STATUS  dbus                                                  [  started 00:06:51 (0) ]
+H   532.14 CH t=527.1 STATUS  seatd                                                 [  started 00:07:06 (0) ]
+H   532.14 CH t=527.1 STATUS  udevd                                                 [  started 00:06:57 (0) ]
+H   532.15 CH t=527.1 STATUS  driftwm                                                              [ failed ]
+H   532.15 CH t=527.1 STATUS  waybar                                                [  started 00:00:14 (7) ]
+H   532.15 CH t=527.1 STATUS  hubd                                                  [  started 00:00:16 (7) ]
+H   532.15 CH t=527.1 STATUS Runlevel: boot
+H   532.15 CH t=527.1 STATUS Dynamic Runlevel: hotplugged
+H   532.15 CH t=527.1 STATUS Dynamic Runlevel: needed/wanted
+H   532.15 CH t=527.1 STATUS  driftwm                                                              [ failed ]
+H   532.15 CH t=527.1 STATUS Dynamic Runlevel: manual
+H   532.16 CH t=527.1 STORM target=driftwm dur=40 starts=11 starts_last10s=0 cpu_ticks_init_side=2 bar-down
+H   536.01 CH t=530.9 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=809804 init_side_cpu_ticks=188
+H   546.05 CH t=541.0 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=809804 init_side_cpu_ticks=188
+H   556.09 CH t=551.0 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=809048 init_side_cpu_ticks=188
+H   566.13 CH t=561.1 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=808796 init_side_cpu_ticks=189
+H   576.16 CH t=571.1 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=808796 init_side_cpu_ticks=189
+H   586.20 CH t=581.1 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=808796 init_side_cpu_ticks=189
+H   592.20 CH t=587.1 UNRECOVERED ev=26 fault=storm target=driftwm alert=0 why="driftwm not running"
+H   592.32 CH t=587.3 STATUS Runlevel: sysinit
+H   592.32 CH t=587.3 STATUS Runlevel: default
+H   592.33 CH t=587.3 STATUS  dbus                                                  [  started 00:07:51 (0) ]
+H   592.33 CH t=587.3 STATUS  seatd                                                 [  started 00:08:06 (0) ]
+H   592.33 CH t=587.3 STATUS  udevd                                                 [  started 00:07:57 (0) ]
+H   592.33 CH t=587.3 STATUS  driftwm                                                              [ failed ]
+H   592.33 CH t=587.3 STATUS  waybar                                                [  started 00:01:14 (7) ]
+H   592.33 CH t=587.3 STATUS  hubd                                                  [  started 00:01:16 (7) ]
+H   592.33 CH t=587.3 STATUS Runlevel: boot
+H   592.33 CH t=587.3 STATUS Dynamic Runlevel: hotplugged
+H   592.34 CH t=587.3 STATUS Dynamic Runlevel: needed/wanted
+H   592.34 CH t=587.3 STATUS  driftwm                                                              [ failed ]
+H   592.34 CH t=587.3 STATUS Dynamic Runlevel: manual
+H   592.37 CH t=587.3 operator-action target=driftwm why="driftwm not running"
+H   592.73  [1m[32m*[m Starting driftwm[K ...
+H   594.79  [ ok ]
+H   596.23 CH t=591.2 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=704216 init_side_cpu_ticks=189
+H   598.16 CH t=593.1 EV ev=26 fault=storm target=driftwm rec=63.03 ok=0 fixed=1 starts=11 last10=0 cpu=2 bar-down
+H   601.17 CH t=596.1 STEP 27 fDep
+H   606.33 CH t=601.3 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=722688 init_side_cpu_ticks=190
+H   616.45 CH t=611.4 SAMPLE zombies=0 nproc=81 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=796476 init_side_cpu_ticks=190
+H   624.00 CH t=618.9 EV ev=27 fault=dep-slow target=seatd rec=22.61 ok=1 fixed=0 
+H   624.00 CH t=618.9 DEPSTARTS mode=slow seatd=1 driftwm=8 waybar=5 hubd=2
+H   626.49 CH t=621.4 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=697184 init_side_cpu_ticks=191
+H   627.00 CH t=621.9 STEP 28 fDep
+H   636.52 CH t=631.5 SAMPLE zombies=0 nproc=76 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=816500 init_side_cpu_ticks=191
+H   646.56 CH t=641.5 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=816500 init_side_cpu_ticks=192
+H   656.59 CH t=651.5 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=816500 init_side_cpu_ticks=192
+H   666.63 CH t=661.6 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=816248 init_side_cpu_ticks=192
+H   676.67 CH t=671.6 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=816248 init_side_cpu_ticks=192
+H   686.70 CH t=681.6 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=815748 init_side_cpu_ticks=193
+H   696.73 CH t=691.7 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=815748 init_side_cpu_ticks=193
+H   706.77 CH t=701.7 SAMPLE zombies=0 nproc=75 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=815496 init_side_cpu_ticks=194
+H   707.19 CH t=702.1 UNRECOVERED ev=28 fault=dep-fail target=seatd alert=0 why="seatd not running"
+H   707.32 CH t=702.3 STATUS Runlevel: sysinit
+H   707.32 CH t=702.3 STATUS Runlevel: default
+H   707.32 CH t=702.3 STATUS  dbus                                                  [  started 00:09:46 (0) ]
+H   707.32 CH t=702.3 STATUS  seatd                                                                [ failed ]
+H   707.32 CH t=702.3 STATUS  udevd                                                 [  started 00:09:52 (0) ]
+H   707.32 CH t=702.3 STATUS  driftwm                                                              [ failed ]
+H   707.32 CH t=702.3 STATUS  waybar                                                [  started 00:01:15 (7) ]
+H   707.33 CH t=702.3 STATUS  hubd                                                  [  started 00:01:18 (7) ]
+H   707.33 CH t=702.3 STATUS Runlevel: boot
+H   707.33 CH t=702.3 STATUS Dynamic Runlevel: hotplugged
+H   707.33 CH t=702.3 STATUS Dynamic Runlevel: needed/wanted
+H   707.33 CH t=702.3 STATUS  seatd                                                                [ failed ]
+H   707.33 CH t=702.3 STATUS  driftwm                                                              [ failed ]
+H   707.33 CH t=702.3 STATUS Dynamic Runlevel: manual
+H   707.36 CH t=702.3 operator-action target=seatd why="seatd not running"
+H   707.79  [1m[32m*[m Starting seatd[K ...
+H   708.03  [ ok ]
+H   708.54  [1m[32m*[m Starting driftwm[K ...
+H   710.62  [ ok ]
+H   713.72 CH t=708.7 EV ev=28 fault=dep-fail target=seatd rec=62.86 ok=0 fixed=1 
+H   713.72 CH t=708.7 DEPSTARTS mode=fail seatd=10 driftwm=3 waybar=3 hubd=2
+H   716.73 CH t=711.7 STEP 29 fDisk
+H   716.77 CH t=711.7 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   716.83 CH t=711.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=709692 init_side_cpu_ticks=194
+H   726.86 CH t=721.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=709440 init_side_cpu_ticks=194
+H   736.89 CH t=731.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=708684 init_side_cpu_ticks=194
+H   737.70 CH t=732.6 STATUS Runlevel: sysinit
+H   737.70 CH t=732.6 STATUS Runlevel: default
+H   737.70 CH t=732.6 STATUS  dbus                                                  [  started 00:10:16 (0) ]
+H   737.70 CH t=732.6 STATUS  seatd                                                 [  started 00:00:29 (0) ]
+H   737.70 CH t=732.6 STATUS  udevd                                                 [  started 00:10:22 (0) ]
+H   737.70 CH t=732.6 STATUS  driftwm                                               [  started 00:00:29 (0) ]
+H   737.71 CH t=732.6 STATUS  waybar                                                [  started 00:00:13 (1) ]
+H   737.71 CH t=732.6 STATUS  hubd                                                  [  started 00:00:27 (0) ]
+H   737.71 CH t=732.6 STATUS Runlevel: boot
+H   737.71 CH t=732.7 STATUS Dynamic Runlevel: hotplugged
+H   737.71 CH t=732.7 STATUS Dynamic Runlevel: needed/wanted
+H   737.71 CH t=732.7 STATUS Dynamic Runlevel: manual
+H   738.00 CH t=732.9 EV ev=29 fault=disk-full target=waybar rec=0.06 ok=1 fixed=0 ok_during=16/20 all_alive_at_end=1
+H   741.00 CH t=735.9 STEP 30 fDisk
+H   741.10 CH t=736.0 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   746.93 CH t=741.9 SAMPLE zombies=0 nproc=82 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=708684 init_side_cpu_ticks=194
+H   756.99 CH t=751.9 SAMPLE zombies=0 nproc=84 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=708432 init_side_cpu_ticks=195
+H   761.98 CH t=756.9 STATUS Runlevel: sysinit
+H   761.98 CH t=756.9 STATUS Runlevel: default
+H   761.98 CH t=756.9 STATUS  dbus                                                  [  started 00:10:41 (0) ]
+H   761.98 CH t=756.9 STATUS  seatd                                                 [  started 00:00:54 (0) ]
+H   761.98 CH t=756.9 STATUS  udevd                                                 [  started 00:10:47 (0) ]
+H   761.99 CH t=756.9 STATUS  driftwm                                               [  started 00:00:54 (0) ]
+H   761.99 CH t=756.9 STATUS  waybar                                                [  started 00:00:03 (5) ]
+H   761.99 CH t=756.9 STATUS  hubd                                                  [  started 00:00:52 (0) ]
+H   761.99 CH t=756.9 STATUS Runlevel: boot
+H   761.99 CH t=756.9 STATUS Dynamic Runlevel: hotplugged
+H   761.99 CH t=756.9 STATUS Dynamic Runlevel: needed/wanted
+H   761.99 CH t=756.9 STATUS Dynamic Runlevel: manual
+H   767.04 CH t=762.0 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=707928 init_side_cpu_ticks=195
+H   769.07 CH t=764.0 EV ev=30 fault=disk-full target=waybar rec=6.83 ok=1 fixed=0 ok_during=5/20 all_alive_at_end=0
+H   772.07 CH t=767.0 STEP 31 fSupKill
+H   773.85 CH t=768.8 EV ev=31 fault=supervisor-killed target=driftwm rec=0.06 ok=1 fixed=0 child_kept_running=1
+H   777.07 CH t=772.0 SAMPLE zombies=0 nproc=74 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=796380 init_side_cpu_ticks=195
+H   787.12 CH t=782.1 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=804444 init_side_cpu_ticks=195
+H   797.16 CH t=792.1 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=804444 init_side_cpu_ticks=196
+H   807.22 CH t=802.2 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=804192 init_side_cpu_ticks=196
+H   817.25 CH t=812.2 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=804192 init_side_cpu_ticks=196
+H   827.28 CH t=822.2 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=804192 init_side_cpu_ticks=196
+H   836.07 CH t=831.0 UNRECOVERED ev=32 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H   836.19 CH t=831.1 STATUS Runlevel: sysinit
+H   836.19 CH t=831.1 STATUS Runlevel: default
+H   836.20 CH t=831.1 STATUS  dbus                                                  [  started 00:11:55 (0) ]
+H   836.20 CH t=831.1 STATUS  seatd                                                 [  started 00:02:08 (0) ]
+H   836.20 CH t=831.1 STATUS  udevd                                                 [  started 00:12:01 (0) ]
+H   836.20 CH t=831.1 STATUS  driftwm                                                      [  unsupervised  ]
+H   836.20 CH t=831.1 STATUS  waybar                                                [  started 00:00:58 (8) ]
+H   836.21 CH t=831.1 STATUS  hubd                                                  [  started 00:00:59 (1) ]
+H   836.21 CH t=831.1 STATUS Runlevel: boot
+H   836.21 CH t=831.1 STATUS Dynamic Runlevel: hotplugged
+H   836.21 CH t=831.1 STATUS Dynamic Runlevel: needed/wanted
+H   836.21 CH t=831.1 STATUS Dynamic Runlevel: manual
+H   836.25 CH t=831.2 operator-action target=driftwm why="driftwm not running"
+H   836.90  [1m[32m*[m Stopping waybar[K ...
+H   836.96  [1m[32m*[m Stopping hubd[K ...
+H   837.08  [ ok ]
+H   837.17  [ ok ]
+H   837.32 CH t=832.3 SAMPLE zombies=0 nproc=77 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=804192 init_side_cpu_ticks=196
+H   837.56  [1m[32m*[m Stopping driftwm[K ...
+H   837.69  [ ok ]
+H   837.89  [1m[32m*[m Starting driftwm[K ...
+H   839.92  [ ok ]
+H   840.35  [1m[32m*[m Starting hubd[K ...
+H   840.39  [1m[32m*[m Starting waybar[K ...
+H   842.19  [ ok ]
+H   842.22  [ ok ]
+H   842.49 CH t=837.4 EV ev=32 fault=after-supervisor-killed target=driftwm rec=62.09 ok=0 fixed=1 supervisor_back=1
+H   845.49 CH t=840.4 STEP 32 fSupKill
+H   847.29 CH t=842.2 EV ev=33 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   847.35 CH t=842.3 SAMPLE zombies=0 nproc=82 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=716020 init_side_cpu_ticks=197
+H   857.38 CH t=852.3 SAMPLE zombies=0 nproc=81 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723580 init_side_cpu_ticks=197
+H   867.42 CH t=862.4 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=721816 init_side_cpu_ticks=197
+H   877.45 CH t=872.4 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=721060 init_side_cpu_ticks=197
+H   887.48 CH t=882.4 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718540 init_side_cpu_ticks=197
+H   897.52 CH t=892.5 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718316 init_side_cpu_ticks=198
+H   907.55 CH t=902.5 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718316 init_side_cpu_ticks=198
+H   909.45 CH t=904.4 UNRECOVERED ev=34 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H   909.56 CH t=904.5 STATUS Runlevel: sysinit
+H   909.56 CH t=904.5 STATUS Runlevel: default
+H   909.56 CH t=904.5 STATUS  dbus                                                  [  started 00:13:08 (0) ]
+H   909.56 CH t=904.5 STATUS  seatd                                                 [  started 00:03:21 (0) ]
+H   909.56 CH t=904.5 STATUS  udevd                                                 [  started 00:13:14 (0) ]
+H   909.56 CH t=904.5 STATUS  driftwm                                               [  started 00:01:11 (0) ]
+H   909.56 CH t=904.5 STATUS  waybar                                                       [  unsupervised  ]
+H   909.57 CH t=904.5 STATUS  hubd                                                  [  started 00:01:09 (0) ]
+H   909.57 CH t=904.5 STATUS Runlevel: boot
+H   909.57 CH t=904.5 STATUS Dynamic Runlevel: hotplugged
+H   909.57 CH t=904.5 STATUS Dynamic Runlevel: needed/wanted
+H   909.57 CH t=904.5 STATUS Dynamic Runlevel: manual
+H   909.61 CH t=904.5 operator-action target=waybar why="waybar not running"
+H   910.05  [1m[32m*[m Stopping waybar[K ...
+H   910.18  [ ok ]
+H   910.43  [1m[32m*[m Starting waybar[K ...
+H   912.20  [ ok ]
+H   912.63 CH t=907.6 EV ev=34 fault=after-supervisor-killed target=waybar rec=60.09 ok=0 fixed=1 supervisor_back=0
+H   915.64 CH t=910.6 STEP 33 fSupKill
+H   917.43 CH t=912.4 EV ev=35 fault=supervisor-killed target=driftwm rec=0.07 ok=1 fixed=0 child_kept_running=1
+H   917.58 CH t=912.5 SAMPLE zombies=0 nproc=82 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718316 init_side_cpu_ticks=198
+H   927.63 CH t=922.6 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=822896 init_side_cpu_ticks=198
+H   937.66 CH t=932.6 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=822896 init_side_cpu_ticks=199
+H   947.70 CH t=942.6 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=822896 init_side_cpu_ticks=199
+H   957.75 CH t=952.7 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=822644 init_side_cpu_ticks=199
+H   967.78 CH t=962.7 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=822140 init_side_cpu_ticks=199
+H   977.81 CH t=972.7 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=822140 init_side_cpu_ticks=199
+H   979.53 CH t=974.5 UNRECOVERED ev=36 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H   979.66 CH t=974.6 STATUS Runlevel: sysinit
+H   979.66 CH t=974.6 STATUS Runlevel: default
+H   979.66 CH t=974.6 STATUS  dbus                                                  [  started 00:14:18 (0) ]
+H   979.66 CH t=974.6 STATUS  seatd                                                 [  started 00:04:31 (0) ]
+H   979.66 CH t=974.6 STATUS  udevd                                                 [  started 00:14:24 (0) ]
+H   979.67 CH t=974.6 STATUS  driftwm                                                      [  unsupervised  ]
+H   979.67 CH t=974.6 STATUS  waybar                                                [  started 00:00:59 (1) ]
+H   979.67 CH t=974.6 STATUS  hubd                                                  [  started 00:00:59 (1) ]
+H   979.67 CH t=974.6 STATUS Runlevel: boot
+H   979.67 CH t=974.6 STATUS Dynamic Runlevel: hotplugged
+H   979.67 CH t=974.6 STATUS Dynamic Runlevel: needed/wanted
+H   979.68 CH t=974.6 STATUS Dynamic Runlevel: manual
+H   979.73 CH t=974.7 operator-action target=driftwm why="driftwm not running"
+H   980.39  [1m[32m*[m Stopping waybar[K ...
+H   980.49  [1m[32m*[m Stopping hubd[K ...
+H   980.62  [ ok ]
+H   980.64  [ ok ]
+H   980.96  [1m[32m*[m Stopping driftwm[K ...
+H   981.09  [ ok ]
+H   981.33  [1m[32m*[m Starting driftwm[K ...
+H   983.41  [ ok ]
+H   983.80  [1m[32m*[m Starting hubd[K ...
+H   983.83  [1m[32m*[m Starting waybar[K ...
+H   985.62  [ ok ]
+H   985.70  [ ok ]
+H   985.94 CH t=980.9 EV ev=36 fault=after-supervisor-killed target=driftwm rec=62.09 ok=0 fixed=1 supervisor_back=1
+H   987.85 CH t=982.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=716048 init_side_cpu_ticks=200
+H   988.94 CH t=983.9 STEP 34 fSupKill
+H   990.77 CH t=985.7 EV ev=37 fault=supervisor-killed target=waybar rec=0.10 ok=1 fixed=0 child_kept_running=1
+H   997.88 CH t=992.8 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723860 init_side_cpu_ticks=200
+H  1007.92 CH t=1002.9 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723860 init_side_cpu_ticks=200
+H  1017.96 CH t=1012.9 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723356 init_side_cpu_ticks=200
+H  1027.99 CH t=1022.9 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723356 init_side_cpu_ticks=200
+H  1038.05 CH t=1033.0 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723356 init_side_cpu_ticks=201
+H  1048.09 CH t=1043.0 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723104 init_side_cpu_ticks=201
+H  1053.06 CH t=1048.0 UNRECOVERED ev=38 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H  1053.16 CH t=1048.1 STATUS Runlevel: sysinit
+H  1053.16 CH t=1048.1 STATUS Runlevel: default
+H  1053.16 CH t=1048.1 STATUS  dbus                                                  [  started 00:15:32 (0) ]
+H  1053.17 CH t=1048.1 STATUS  seatd                                                 [  started 00:05:45 (0) ]
+H  1053.17 CH t=1048.1 STATUS  udevd                                                 [  started 00:15:38 (0) ]
+H  1053.17 CH t=1048.1 STATUS  driftwm                                               [  started 00:01:12 (0) ]
+H  1053.17 CH t=1048.1 STATUS  waybar                                                       [  unsupervised  ]
+H  1053.17 CH t=1048.1 STATUS  hubd                                                  [  started 00:01:10 (0) ]
+H  1053.17 CH t=1048.1 STATUS Runlevel: boot
+H  1053.17 CH t=1048.1 STATUS Dynamic Runlevel: hotplugged
+H  1053.17 CH t=1048.1 STATUS Dynamic Runlevel: needed/wanted
+H  1053.17 CH t=1048.1 STATUS Dynamic Runlevel: manual
+H  1053.21 CH t=1048.1 operator-action target=waybar why="waybar not running"
+H  1053.61  [1m[32m*[m Stopping waybar[K ...
+H  1053.72  [ ok ]
+H  1053.92  [1m[32m*[m Starting waybar[K ...
+H  1055.65  [ ok ]
+H  1056.06 CH t=1051.0 EV ev=38 fault=after-supervisor-killed target=waybar rec=60.07 ok=0 fixed=1 supervisor_back=0
+H  1058.12 CH t=1053.1 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=721372 init_side_cpu_ticks=201
+H  1059.06 CH t=1054.0 STEP 35 fSupKill
+H  1060.84 CH t=1055.8 EV ev=39 fault=supervisor-killed target=driftwm rec=0.06 ok=1 fixed=0 child_kept_running=1
+H  1068.21 CH t=1063.1 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=810884 init_side_cpu_ticks=201
+H  1078.24 CH t=1073.2 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=810632 init_side_cpu_ticks=201
+H  1088.27 CH t=1083.2 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=808616 init_side_cpu_ticks=202
+H  1098.32 CH t=1093.3 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=808112 init_side_cpu_ticks=202
+H  1108.36 CH t=1103.3 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=807860 init_side_cpu_ticks=202
+H  1118.39 CH t=1113.3 SAMPLE zombies=0 nproc=78 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=807860 init_side_cpu_ticks=202
+H  1123.04 CH t=1118.0 UNRECOVERED ev=40 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H  1123.15 CH t=1118.1 STATUS Runlevel: sysinit
+H  1123.15 CH t=1118.1 STATUS Runlevel: default
+H  1123.15 CH t=1118.1 STATUS  dbus                                                  [  started 00:16:42 (0) ]
+H  1123.15 CH t=1118.1 STATUS  seatd                                                 [  started 00:06:55 (0) ]
+H  1123.15 CH t=1118.1 STATUS  udevd                                                 [  started 00:16:48 (0) ]
+H  1123.16 CH t=1118.1 STATUS  driftwm                                                      [  unsupervised  ]
+H  1123.16 CH t=1118.1 STATUS  waybar                                                [  started 00:00:59 (1) ]
+H  1123.16 CH t=1118.1 STATUS  hubd                                                  [  started 00:00:59 (1) ]
+H  1123.16 CH t=1118.1 STATUS Runlevel: boot
+H  1123.16 CH t=1118.1 STATUS Dynamic Runlevel: hotplugged
+H  1123.16 CH t=1118.1 STATUS Dynamic Runlevel: needed/wanted
+H  1123.16 CH t=1118.1 STATUS Dynamic Runlevel: manual
+H  1123.20 CH t=1118.1 operator-action target=driftwm why="driftwm not running"
+H  1123.65  [1m[32m*[m Stopping waybar[K ...
+H  1123.67  [1m[32m*[m Stopping hubd[K ...
+H  1123.81  [ ok ]
+H  1123.81  [ ok ]
+H  1124.12  [1m[32m*[m Stopping driftwm[K ...
+H  1124.23  [ ok ]
+H  1124.42  [1m[32m*[m Starting driftwm[K ...
+H  1126.42  [ ok ]
+H  1126.75  [1m[32m*[m Starting hubd[K ...
+H  1126.83  [1m[32m*[m Starting waybar[K ...
+H  1128.42 CH t=1123.4 SAMPLE zombies=0 nproc=89 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=716312 init_side_cpu_ticks=202
+H  1128.51  [ ok ]
+H  1128.56  [ ok ]
+H  1128.82 CH t=1123.8 EV ev=40 fault=after-supervisor-killed target=driftwm rec=61.98 ok=0 fixed=1 supervisor_back=1
+H  1131.82 CH t=1126.8 STEP 36 fSupKill
+H  1133.60 CH t=1128.5 EV ev=41 fault=supervisor-killed target=waybar rec=0.05 ok=1 fixed=0 child_kept_running=1
+H  1138.47 CH t=1133.4 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=723420 init_side_cpu_ticks=203
+H  1148.49 CH t=1143.4 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=722164 init_side_cpu_ticks=203
+H  1158.53 CH t=1153.5 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=720148 init_side_cpu_ticks=203
+H  1168.55 CH t=1163.5 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=718916 init_side_cpu_ticks=203
+H  1178.58 CH t=1173.5 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=717660 init_side_cpu_ticks=203
+H  1188.62 CH t=1183.6 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=717660 init_side_cpu_ticks=203
+H  1195.73 CH t=1190.7 UNRECOVERED ev=42 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H  1195.85 CH t=1190.8 STATUS Runlevel: sysinit
+H  1195.85 CH t=1190.8 STATUS Runlevel: default
+H  1195.85 CH t=1190.8 STATUS  dbus                                                  [  started 00:17:54 (0) ]
+H  1195.86 CH t=1190.8 STATUS  seatd                                                 [  started 00:08:07 (0) ]
+H  1195.86 CH t=1190.8 STATUS  udevd                                                 [  started 00:18:00 (0) ]
+H  1195.86 CH t=1190.8 STATUS  driftwm                                               [  started 00:01:11 (0) ]
+H  1195.86 CH t=1190.8 STATUS  waybar                                                       [  unsupervised  ]
+H  1195.86 CH t=1190.8 STATUS  hubd                                                  [  started 00:01:09 (0) ]
+H  1195.86 CH t=1190.8 STATUS Runlevel: boot
+H  1195.86 CH t=1190.8 STATUS Dynamic Runlevel: hotplugged
+H  1195.86 CH t=1190.8 STATUS Dynamic Runlevel: needed/wanted
+H  1195.86 CH t=1190.8 STATUS Dynamic Runlevel: manual
+H  1195.91 CH t=1190.9 operator-action target=waybar why="waybar not running"
+H  1196.44  [1m[32m*[m Stopping waybar[K ...
+H  1196.59  [ ok ]
+H  1196.85  [1m[32m*[m Starting waybar[K ...
+H  1198.58  [ ok ]
+H  1198.67 CH t=1193.6 SAMPLE zombies=0 nproc=86 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=716432 init_side_cpu_ticks=203
+H  1198.99 CH t=1193.9 EV ev=42 fault=after-supervisor-killed target=waybar rec=60.07 ok=0 fixed=1 supervisor_back=0
+H  1202.00 CH t=1196.9 STEP 37 fScanKill
+H  1205.00 CH t=1199.9 STEP 38 fBrainKill
+H  1208.00 CH t=1202.9 STEP 39 fBrainKill
+H  1208.70 CH t=1203.6 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=716188 init_side_cpu_ticks=204
+H  1211.01 CH t=1205.9 STEP 40 fClock
+H  1217.67 CH t=1212.6 EV ev=43 fault=clock-3600 target=driftwm rec=6.46 ok=1 fixed=0 
+H  1218.75 CH t=1213.7 SAMPLE zombies=0 nproc=80 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=721096 init_side_cpu_ticks=204
+H  1222.04 CH t=1217.0 EV ev=44 fault=after-clock-3600 target=hubd rec=3.15 ok=1 fixed=0 
+H  1225.04 CH t=1220.0 STEP 41 fClock
+H  1228.78 CH t=1223.7 SAMPLE zombies=0 nproc=79 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=717312 init_side_cpu_ticks=205
+H  1232.53 CH t=1227.5 EV ev=45 fault=clock+86400 target=driftwm rec=7.28 ok=1 fixed=0 
+H  1237.07 CH t=1232.0 EV ev=46 fault=after-clock+86400 target=hubd rec=3.34 ok=1 fixed=0 
+H  1238.81 CH t=1233.7 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=716304 init_side_cpu_ticks=205
+H  1240.08 CH t=1235.0 STEP 42 fOOM
+H  1240.13 CH t=1235.1 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  1248.33 CH t=1243.3 EV ev=47 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1248.85 CH t=1243.8 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1856 memavail_kb=678740 init_side_cpu_ticks=205
+H  1251.33 CH t=1246.3 STEP 43 fOOM
+H  1251.39 CH t=1246.3 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  1256.57 CH t=1251.5 EV ev=48 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1256.57 CH t=1251.5 SUITE-DONE
+H  1258.59 [ 1257.051501] reboot: Power down
+H# vm exit code 0 after 1259s, loadavg ['0.63', '0.44', '0.46']
+H# end wall=1258.6s launches=1 suite_done=True
