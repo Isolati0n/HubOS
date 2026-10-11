@@ -71,15 +71,18 @@ package Focus_Core with SPARK_Mode => On is
 
    function Is_Machine (M : U8) return Boolean is (M >= 1 and then M <= Max_M);
 
-   function Count_Keys (S : State; Dest : U8) return Natural;
-   function Count_Btns (S : State; Dest : U8) return Natural;
+   function Count_Keys (S : State; Dest : U8) return Natural
+     with Post => Count_Keys'Result <= S.Nkeys;
+   function Count_Btns (S : State; Dest : U8) return Natural
+     with Post => Count_Btns'Result <= S.Nbtns;
 
    --  The state is valid when the held lists are within their limits, a waiting machine means the hub has the
-   --  focus, and only the focus machine holds anything.
+   --  focus, only the focus machine holds anything, and the hub itself never holds a key or button.
    function Valid (S : State) return Boolean is
      (S.Nkeys <= Max_Keys
       and then S.Nbtns <= Max_Btns
       and then (if S.Waiting /= None then S.Focus = Hub)
+      and then (if S.Focus = Hub then S.Nkeys = 0 and then S.Nbtns = 0)
       and then (for all I in 0 .. S.Nkeys - 1 => S.Keys (I).Dest = S.Focus)
       and then (for all I in 0 .. S.Nbtns - 1 => S.Btns (I).Dest = S.Focus));
 

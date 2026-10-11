@@ -34,11 +34,29 @@ package body Focus_Core with SPARK_Mode => On is
 
    function Sat_Inc (X : U32) return U32 is (if X = U32'Last then X else X + 1);
 
-   procedure Remove_Dest_Keys (S : in out State; Dest : U8) is
+   procedure Remove_Dest_Keys (S : in out State; Dest : U8)
+     with Post => S.Nkeys <= S.Nkeys'Old and then S.Nbtns = S.Nbtns'Old and then S.Btns = S.Btns'Old
+                  and then S.Focus = S.Focus'Old and then S.Waiting = S.Waiting'Old
+                  and then S.Epoch = S.Epoch'Old and then S.Gen = S.Gen'Old and then S.Conn = S.Conn'Old
+                  and then S.Owed = S.Owed'Old
+                  and then (for all I in 0 .. S.Nkeys - 1 => S.Keys (I).Dest /= Dest)
+                  and then (if (for all I in 0 .. S.Nkeys'Old - 1 => S.Keys'Old (I).Dest = Dest) then S.Nkeys = 0)
+                  and then (for all I in 0 .. S.Nkeys - 1 =>
+                              (for some J in 0 .. S.Nkeys'Old - 1 => S.Keys (I) = S.Keys'Old (J)))
+   is
       W : Natural := 0;
    begin
       for R in 0 .. S.Nkeys - 1 loop
          pragma Loop_Invariant (W <= R);
+         pragma Loop_Invariant (S.Nkeys = S.Nkeys'Loop_Entry);
+         pragma Loop_Invariant (S.Nbtns = S.Nbtns'Loop_Entry and then S.Btns = S.Btns'Loop_Entry);
+         pragma Loop_Invariant (S.Focus = S.Focus'Loop_Entry and then S.Waiting = S.Waiting'Loop_Entry
+                                and then S.Epoch = S.Epoch'Loop_Entry and then S.Gen = S.Gen'Loop_Entry
+                                and then S.Conn = S.Conn'Loop_Entry and then S.Owed = S.Owed'Loop_Entry);
+         pragma Loop_Invariant (for all I in 0 .. W - 1 => S.Keys (I).Dest /= Dest);
+         pragma Loop_Invariant (for all I in 0 .. W - 1 =>
+                                  (for some J in 0 .. S.Nkeys - 1 => S.Keys (I) = S.Keys'Loop_Entry (J)));
+         pragma Loop_Invariant (for all I in R .. S.Nkeys - 1 => S.Keys (I) = S.Keys'Loop_Entry (I));
          if S.Keys (R).Dest /= Dest then
             S.Keys (W) := S.Keys (R);
             W := W + 1;
@@ -47,11 +65,29 @@ package body Focus_Core with SPARK_Mode => On is
       S.Nkeys := W;
    end Remove_Dest_Keys;
 
-   procedure Remove_Dest_Btns (S : in out State; Dest : U8) is
+   procedure Remove_Dest_Btns (S : in out State; Dest : U8)
+     with Post => S.Nbtns <= S.Nbtns'Old and then S.Nkeys = S.Nkeys'Old and then S.Keys = S.Keys'Old
+                  and then S.Focus = S.Focus'Old and then S.Waiting = S.Waiting'Old
+                  and then S.Epoch = S.Epoch'Old and then S.Gen = S.Gen'Old and then S.Conn = S.Conn'Old
+                  and then S.Owed = S.Owed'Old
+                  and then (for all I in 0 .. S.Nbtns - 1 => S.Btns (I).Dest /= Dest)
+                  and then (if (for all I in 0 .. S.Nbtns'Old - 1 => S.Btns'Old (I).Dest = Dest) then S.Nbtns = 0)
+                  and then (for all I in 0 .. S.Nbtns - 1 =>
+                              (for some J in 0 .. S.Nbtns'Old - 1 => S.Btns (I) = S.Btns'Old (J)))
+   is
       W : Natural := 0;
    begin
       for R in 0 .. S.Nbtns - 1 loop
          pragma Loop_Invariant (W <= R);
+         pragma Loop_Invariant (S.Nbtns = S.Nbtns'Loop_Entry);
+         pragma Loop_Invariant (S.Nkeys = S.Nkeys'Loop_Entry and then S.Keys = S.Keys'Loop_Entry);
+         pragma Loop_Invariant (S.Focus = S.Focus'Loop_Entry and then S.Waiting = S.Waiting'Loop_Entry
+                                and then S.Epoch = S.Epoch'Loop_Entry and then S.Gen = S.Gen'Loop_Entry
+                                and then S.Conn = S.Conn'Loop_Entry and then S.Owed = S.Owed'Loop_Entry);
+         pragma Loop_Invariant (for all I in 0 .. W - 1 => S.Btns (I).Dest /= Dest);
+         pragma Loop_Invariant (for all I in 0 .. W - 1 =>
+                                  (for some J in 0 .. S.Nbtns - 1 => S.Btns (I) = S.Btns'Loop_Entry (J)));
+         pragma Loop_Invariant (for all I in R .. S.Nbtns - 1 => S.Btns (I) = S.Btns'Loop_Entry (I));
          if S.Btns (R).Dest /= Dest then
             S.Btns (W) := S.Btns (R);
             W := W + 1;
@@ -80,17 +116,49 @@ package body Focus_Core with SPARK_Mode => On is
       return -1;
    end Find_Btn;
 
-   procedure Remove_Key_At (S : in out State; I : Natural) with Pre => I < S.Nkeys is
+   procedure Remove_Key_At (S : in out State; I : Natural)
+     with Pre  => I < S.Nkeys,
+          Post => S.Nkeys = S.Nkeys'Old - 1 and then S.Nbtns = S.Nbtns'Old and then S.Btns = S.Btns'Old
+                  and then S.Focus = S.Focus'Old and then S.Waiting = S.Waiting'Old
+                  and then S.Epoch = S.Epoch'Old and then S.Gen = S.Gen'Old and then S.Conn = S.Conn'Old
+                  and then S.Owed = S.Owed'Old
+                  and then (for all K in 0 .. S.Nkeys - 1 =>
+                              (for some J in 0 .. S.Nkeys'Old - 1 => S.Keys (K) = S.Keys'Old (J)))
+   is
    begin
       for J in I .. S.Nkeys - 2 loop
+         pragma Loop_Invariant (S.Nkeys = S.Nkeys'Loop_Entry);
+         pragma Loop_Invariant (S.Nbtns = S.Nbtns'Loop_Entry and then S.Btns = S.Btns'Loop_Entry);
+         pragma Loop_Invariant (S.Focus = S.Focus'Loop_Entry and then S.Waiting = S.Waiting'Loop_Entry
+                                and then S.Epoch = S.Epoch'Loop_Entry and then S.Gen = S.Gen'Loop_Entry
+                                and then S.Conn = S.Conn'Loop_Entry and then S.Owed = S.Owed'Loop_Entry);
+         pragma Loop_Invariant (for all K in 0 .. I - 1 => S.Keys (K) = S.Keys'Loop_Entry (K));
+         pragma Loop_Invariant (for all K in I .. J - 1 => S.Keys (K) = S.Keys'Loop_Entry (K + 1));
+         pragma Loop_Invariant (for all K in J .. S.Nkeys - 1 => S.Keys (K) = S.Keys'Loop_Entry (K));
          S.Keys (J) := S.Keys (J + 1);
       end loop;
       S.Nkeys := S.Nkeys - 1;
    end Remove_Key_At;
 
-   procedure Remove_Btn_At (S : in out State; I : Natural) with Pre => I < S.Nbtns is
+   procedure Remove_Btn_At (S : in out State; I : Natural)
+     with Pre  => I < S.Nbtns,
+          Post => S.Nbtns = S.Nbtns'Old - 1 and then S.Nkeys = S.Nkeys'Old and then S.Keys = S.Keys'Old
+                  and then S.Focus = S.Focus'Old and then S.Waiting = S.Waiting'Old
+                  and then S.Epoch = S.Epoch'Old and then S.Gen = S.Gen'Old and then S.Conn = S.Conn'Old
+                  and then S.Owed = S.Owed'Old
+                  and then (for all K in 0 .. S.Nbtns - 1 =>
+                              (for some J in 0 .. S.Nbtns'Old - 1 => S.Btns (K) = S.Btns'Old (J)))
+   is
    begin
       for J in I .. S.Nbtns - 2 loop
+         pragma Loop_Invariant (S.Nbtns = S.Nbtns'Loop_Entry);
+         pragma Loop_Invariant (S.Nkeys = S.Nkeys'Loop_Entry and then S.Keys = S.Keys'Loop_Entry);
+         pragma Loop_Invariant (S.Focus = S.Focus'Loop_Entry and then S.Waiting = S.Waiting'Loop_Entry
+                                and then S.Epoch = S.Epoch'Loop_Entry and then S.Gen = S.Gen'Loop_Entry
+                                and then S.Conn = S.Conn'Loop_Entry and then S.Owed = S.Owed'Loop_Entry);
+         pragma Loop_Invariant (for all K in 0 .. I - 1 => S.Btns (K) = S.Btns'Loop_Entry (K));
+         pragma Loop_Invariant (for all K in I .. J - 1 => S.Btns (K) = S.Btns'Loop_Entry (K + 1));
+         pragma Loop_Invariant (for all K in J .. S.Nbtns - 1 => S.Btns (K) = S.Btns'Loop_Entry (K));
          S.Btns (J) := S.Btns (J + 1);
       end loop;
       S.Nbtns := S.Nbtns - 1;
