@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"syscall"
 	"time"
 )
@@ -765,10 +766,36 @@ func soak(rng *rand.Rand, dur time.Duration) {
 			fOOM()
 		}
 	}
+	// Memory and restart bookkeeping for the soak: every 60 s the PSS of PID 1, the scanner, every supervisor and the
+	// policy layer (smaps_rollup), and the number of service restarts seen so far (a service whose PID changed).
+	var restarts, faults int64
+	go func() {
+		last := map[string]int{}
+		for {
+			for _, n := range allSvc {
+				p := pidOf(n)
+				if p > 0 && last[n] > 0 && p != last[n] {
+					atomic.AddInt64(&restarts, 1)
+				}
+				if p > 0 {
+					last[n] = p
+				}
+			}
+			time.Sleep(time.Second)
+		}
+	}()
+	go func() {
+		for t0 := time.Now(); ; time.Sleep(60 * time.Second) {
+			say("SOAKMEM t=%.0f restarts=%d faults=%d", time.Since(t0).Seconds(), atomic.LoadInt64(&restarts), atomic.LoadInt64(&faults))
+			memReport()
+		}
+	}()
 	for time.Now().Before(end) {
 		pick()
+		atomic.AddInt64(&faults, 1)
 		time.Sleep(time.Duration(5+rng.Intn(15)) * time.Second)
 	}
+	say("SOAK-END restarts=%d faults=%d", atomic.LoadInt64(&restarts), atomic.LoadInt64(&faults))
 }
 
 func guardState() byte {
