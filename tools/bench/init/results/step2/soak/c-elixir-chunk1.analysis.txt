@@ -1,0 +1,5 @@
+== tools/bench/init/results/step2/soak/c-elixir-chunk1.log: 2 launch(es), first 600 s of each left out
+TOTAL          slope +9350.77 kB per 1000 restarts (std.err 1532.93)  noise sd  156.7 kB  range 35542..36838 kB  samples 13  restarts covered 83
+beam.smp       slope +9392.32 kB per 1000 restarts (std.err 1532.36)  noise sd  156.6 kB  range 32736..34036 kB  samples 13  restarts covered 83
+s6-supervise   slope   -41.54 kB per 1000 restarts (std.err  12.83)  noise sd    1.3 kB  range 1710..1714 kB  samples 13  restarts covered 83
+s6-svscan      slope    +0.00 kB per 1000 restarts (std.err   0.00)  noise sd    0.0 kB  range 1092..1092 kB  samples 13  restarts covered 83
