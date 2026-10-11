@@ -1,0 +1,12 @@
+no_synth_releases                  detected: Error: Invariant NoStuckKeys is violated.
+no_epoch_bump_on_request           detected: Error: Invariant NoBad is violated.
+reconnect_without_release_all      detected: Error: Invariant NoStuckKeys is violated.
+deliver_without_conn_check         detected: Error: Invariant NoBad is violated.
+deliver_without_gen_check          detected: Error: Invariant NoBad is violated.
+hub_input_with_stale_epoch         detected: Error: Invariant NoBad is violated.
+chord_dropped                      detected: Error: Invariant NoBad is violated.
+stale_verification_accepted        detected: Error: Invariant NoBad is violated.
+owed_never_set                     detected: Error: Invariant NoStuckKeys is violated.
+restart_keeps_held                 detected: Error: Invariant NoStuckKeys is violated.
+timeout_does_not_clear_the_wait    detected: Error: Invariant NoBad is violated.
+stale_verification_timeout_accepted detected: Error: Invariant NoBad is violated.

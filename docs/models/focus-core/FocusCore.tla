@@ -59,6 +59,12 @@ Valid(ev) ==   \* a verification event that counts
     [] ev.kind = "vto" -> waiting = ev.m /\ ev.ep = epoch    \* the timer is outside the core: a timeout counts whenever it arrives for the current wait
     [] OTHER -> FALSE
 
+\* The rule for "this verification event counts", written a second time and independently of Valid above, so that the
+\* checks in StepProps do not just repeat whatever Valid says (a mutation of Valid must be caught).
+Counts(ev) ==
+  \/ ev.kind = "vok" /\ waiting = ev.m /\ ev.ep = epoch /\ conn[ev.m]
+  \/ ev.kind = "vto" /\ waiting = ev.m /\ ev.ep = epoch
+
 StepProps(acts, ev) ==
   /\ \* 1. No stale delivery: every Deliver matched focus, generation, epoch and connection of the PRE-state.
      \A a \in acts : a.t = "Deliver" => (a.dest = focus /\ a.g = gen[a.dest] /\ a.ep = epoch /\ conn[a.dest])
@@ -69,11 +75,17 @@ StepProps(acts, ev) ==
   /\ \* 5. The flip chord and the menu key reach the hub in every state.
      (ev.kind \in {"chord", "menu"} => \E a \in acts : a.t = "DeliverHub" /\ a.kind = ev.kind)
   /\ \* A valid timeout falls back to the hub and ends the wait.
-     (ev.kind = "vto" /\ Valid(ev) => (waiting' = NONE /\ focus' = HUB))
+     (ev.kind = "vto" /\ Counts(ev) => (waiting' = NONE /\ focus' = HUB))
   /\ \* A stale verification (wrong epoch, wrong machine, no longer waiting) never moves the focus.
-     (ev.kind \in {"vok", "vto"} /\ ~Valid(ev) => focus' = focus /\ waiting' = waiting)
+     (ev.kind \in {"vok", "vto"} /\ ~Counts(ev) => focus' = focus /\ waiting' = waiting)
+  /\ \* A verification that counts ends the wait; a successful one gives the machine the focus.
+     (ev.kind = "vok" /\ Counts(ev) => (waiting' = NONE /\ focus' = ev.m))
   /\ \* Nothing is delivered to a node that is waiting for verification: the focus is the hub then.
      (waiting' # NONE => focus' = HUB)
+  /\ \* Input for the hub is delivered only while the hub has the focus and only with the current epoch.
+     \A a \in acts : (a.t = "DeliverHub" /\ a.kind \notin {"chord", "menu"}) => (focus = HUB /\ a.ep = epoch)
+  /\ \* A focus change bumps the epoch (owner decision 3): in-flight events then drop at once.
+     (ev.kind = "req" => epoch' = epoch + 1)
 
 Finish(acts, ev) ==
   /\ nodeK' = [m \in M |-> UpdK(nodeK[m], m, acts)]
@@ -90,7 +102,7 @@ InputStep(ev) ==
       hubok   == d = HUB /\ focus = HUB /\ ev.ep = epoch
       acts    == IF special THEN { [t |-> "DeliverHub", kind |-> ev.kind, code |-> ev.code] }
                  ELSE IF ok THEN { [t |-> "Deliver", dest |-> d, kind |-> ev.kind, code |-> ev.code, g |-> ev.gen, ep |-> ev.ep] }
-                 ELSE IF hubok THEN { [t |-> "DeliverHub", kind |-> ev.kind, code |-> ev.code] }
+                 ELSE IF hubok THEN { [t |-> "DeliverHub", kind |-> ev.kind, code |-> ev.code, ep |-> ev.ep] }
                  ELSE { [t |-> "Drop"] } \cup (IF d \in M /\ ~conn[d] THEN { [t |-> "Flash", dest |-> d] } ELSE {})
   IN /\ IF ok /\ ev.kind = "kd" THEN held' = [held EXCEPT ![d] = @ \cup {ev.code}]
         ELSE IF ok /\ ev.kind = "ku" THEN held' = [held EXCEPT ![d] = @ \ {ev.code}]

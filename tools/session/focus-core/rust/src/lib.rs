@@ -291,7 +291,7 @@ impl State {
             }
             out.push(Act { t: ActKind::Deliver, dest: d, kind: ev.kind, code: ev.code, gen: ev.gen, ep: ev.ep });
         } else if d == HUB && self.focus == HUB && ev.ep == self.epoch {
-            out.push(Act { t: ActKind::DeliverHub, dest: HUB, kind: ev.kind, code: ev.code, gen: 0, ep: 0 });
+            out.push(Act { t: ActKind::DeliverHub, dest: HUB, kind: ev.kind, code: ev.code, gen: 0, ep: ev.ep });
         } else {
             out.push(Act { t: ActKind::Drop, dest: d, kind: ev.kind, code: ev.code, gen: 0, ep: 0 });
             if is_machine(d) && !self.conn[d as usize] {
@@ -434,8 +434,21 @@ pub mod check {
         if delivers > 1 {
             return 2;
         }
+        // 1 (hub): input for the hub is delivered only while the hub has the focus and with the current epoch
+        let mut h = 0;
+        while h < out.n {
+            let a = out.acts[h];
+            if a.t == ActKind::DeliverHub && !matches!(a.kind, Kind::Chord | Kind::Menu) && !(pre.focus == HUB && a.ep == pre.epoch) {
+                return 1;
+            }
+            h += 1;
+        }
         // 4
         if post.epoch < pre.epoch {
+            return 4;
+        }
+        // 4 (bump): a focus change to a real destination bumps the epoch first
+        if ev.kind == Kind::Req && (ev.a == HUB || is_machine(ev.a)) && pre.epoch != u32::MAX && post.epoch != pre.epoch + 1 {
             return 4;
         }
         // 5
