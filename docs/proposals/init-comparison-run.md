@@ -61,3 +61,7 @@ Environment: cloud container, QEMU 8.2.2 without KVM (timings are distorted). Lo
 
 ### runit steps 38 to 43 (results/step2/runit/runit-faults-rerun2-from38.log)
 - TESTED: the brain-killed steps (38, 39) produced no event line (runit has no brain: nothing to kill; BELIEVED, not checked in the harness source), clock jumps (steps 40, 41): all recovered in 1.8 to 5.0 s; out-of-memory (steps 42, 43): the memory hog was killed, no service lost, 0.07 s. No stuck state. The runit fault suite is now complete, steps 1 to 43.
+
+### s6plain full repeat (results/step2/s6plain-repeat/) — answer to Q1 (stuck loop)
+- TESTED: the full fault suite run again alone, one launch, 695 s, `suite_done=True`, 48 events, no stuck state, **the stuck loop seen in the first s6plain run did NOT recur**. The 6 SIGSTOP hangs of driftwm (the harness fixes them after about 65 s, `fixed=1`) are the same weakness as in the first run: plain s6 does not notice a hung process. Steps 31 to 43 all ran (supervisor-killed, scanner-killed, brain-killed, clocks, OOM).
+- **Verdict for Q1 stays UNKNOWN**: one occurrence, not reproduced in two complete runs of the suite and a third partial one. Cause not found. BELIEVED, not tested: it is not a systematic s6 fault, since the same steps passed twice. Spam lines stripped.

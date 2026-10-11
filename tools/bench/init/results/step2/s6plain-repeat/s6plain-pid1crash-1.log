@@ -1,0 +1,49 @@
+H# start 2026-10-11 02:07:24 cand=s6plain suite=pid1crash cpus_seen=4 loadavg_at_start=['0.60', '0.44', '0.45']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6plain.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1crash hub.dur=600 hub.seed=111 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=s6plain hub.sup=s6-supervise
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.03 Booting from ROM..c[?7l[2JCH STAGE1 up=2.77
+H     5.08 CH CAND s6plain pid1=s6-svscan
+H     5.13 CH SUP-START up=2.87
+H     5.28 CH t=0.1 CHAOS start cand=s6plain suite=pid1crash seed=111 cpus=2
+H    11.09 CH t=5.9 BOOT-OK up=8.83 ok=1 (seconds since kernel start; waited 5.6)
+H    16.10 CH t=10.9 INJECT pid1-segv
+H    16.14 [   13.859634] s6-svscan[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffdbc1d6850 error 15 likely on CPU 1 (core 1, socket 0)
+H    16.14 [   13.863316] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.14 [   13.866331] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    16.14 [   13.866380] CPU: 1 PID: 1 Comm: s6-svscan Not tainted 6.8.0-146-generic #146-Ubuntu
+H    16.14 [   13.866380] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    16.14 [   13.866380] Call Trace:
+H    16.15 [   13.866380]  <TASK>
+H    16.15 [   13.866380]  dump_stack_lvl+0x27/0xa0
+H    16.15 [   13.866380]  dump_stack+0x10/0x20
+H    16.15 [   13.866380]  panic+0x366/0x3c0
+H    16.15 [   13.866380]  do_exit+0x513/0x530
+H    16.15 [   13.866380]  do_group_exit+0x35/0x90
+H    16.15 [   13.866380]  get_signal+0x96e/0x9b0
+H    16.15 [   13.866380]  ? force_sig_info_to_task+0x128/0x1c0
+H    16.15 [   13.866380]  arch_do_signal_or_restart+0x42/0x210
+H    16.15 [   13.866380]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    16.15 [   13.866380]  irqentry_exit+0x43/0x50
+H    16.15 [   13.866380]  exc_page_fault+0x94/0x1b0
+H    16.15 [   13.866380]  asm_exc_page_fault+0x27/0x30
+H    16.15 [   13.866380] RIP: 0033:0xfffffffffffffffe
+H    16.15 [   13.866380] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.15 [   13.866380] RSP: 002b:00007ffdbc1d6850 EFLAGS: 00000202
+H    16.15 [   13.866380] RAX: 000000000000010f RBX: 00007ffdbc22ba70 RCX: 00000000004267ed
+H    16.15 [   13.866380] RDX: 00007ffdbc1d6870 RSI: 0000000000000002 RDI: 00007ffdbc22ba70
+H    16.15 [   13.866380] RBP: 00007ffdbc1d68a0 R08: 0000000000000008 R09: 000000000040d440
+H    16.15 [   13.866380] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000002
+H    16.15 [   13.866380] R13: 00007ffdbc1d6870 R14: 00007ffdbc1d68b0 R15: 00007ffdbc1d68c0
+H    16.15 [   13.866380]  </TASK>
+H    16.15 [   13.866380] Kernel Offset: 0x16400000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    16.15 [   13.866380] Rebooting in 5 seconds..
+H    21.28 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    21.30 Booting from ROM...
+H    26.54 c[?7l[2JCH STAGE1 up=3.48
+H    26.61 CH CAND s6plain pid1=s6-svscan
+H    26.67 CH SUP-START up=3.61
+H    27.15 CH t=0.3 CHAOS start cand=s6plain suite=pid1crash seed=111 cpus=2
+H    32.76 CH t=6.0 BOOT-OK up=9.70 ok=1 (seconds since kernel start; waited 5.4)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 33s, loadavg ['0.77', '0.49', '0.47']
+H# end wall=32.8s launches=1 suite_done=True
