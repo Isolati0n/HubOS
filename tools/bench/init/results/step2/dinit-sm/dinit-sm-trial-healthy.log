@@ -1,0 +1,27 @@
+H# start 2026-10-11 01:36:07 cand=dinit-sm suite=trial cpus_seen=4 loadavg_at_start=['0.39', '0.48', '0.81']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=130 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=dinit
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.69 Booting from ROM..c[?7l[2JCH STAGE1 up=3.07
+H     4.75 CH CAND dinit pid1=dinit
+H     4.76 CH SUP-START up=3.15
+H     4.90 [  OK  ] guard
+H     4.92 CH t=0.1 CHAOS start cand=dinit suite=trial seed=130 cpus=2
+H     5.02 [  OK  ] dbus
+H     5.03 [  OK  ] seatd
+H     6.50 [  OK  ] udevd
+H     8.75 [  OK  ] driftwm
+H    10.38 [  OK  ] waybar
+H    10.45 [  OK  ] hubd
+H    10.45 [  OK  ] boot
+H    26.35 CH t=21.5 TRIAL CONFIRMED scenario=healthy after=21.4s true_state=""
+H    26.40 CH t=21.5 STATUS [[+]     ] boot
+H    26.40 CH t=21.6 STATUS [{+}     ] guard (pid: 101)
+H    26.40 CH t=21.6 STATUS [{+}     ] seatd (pid: 103)
+H    26.40 CH t=21.6 STATUS [{+}     ] udevd (pid: 105)
+H    26.40 CH t=21.6 STATUS [{+}     ] dbus (pid: 106)
+H    26.41 CH t=21.6 STATUS [{+}     ] driftwm (pid: 136)
+H    26.42 CH t=21.6 STATUS [{+}     ] waybar (pid: 160)
+H    26.42 CH t=21.6 STATUS [{+}     ] hubd (pid: 159)
+H# trial finished
+H# vm exit code -9 after 46s, loadavg ['0.42', '0.49', '0.79']
+H# end wall=46.4s launches=1 suite_done=True
