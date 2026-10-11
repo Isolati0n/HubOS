@@ -1,8 +1,9 @@
 #!/usr/bin/env python3 -I
 """Mutation check of the fuzz checker: break the Rust core on purpose and see that the fuzz run reports a violation.
-Usage: python3 -I mutate_rust.py WORKDIR"""
+Usage: python3 -I mutate_rust.py WORKDIR [kani]   (with "kani": the Kani proof must FAIL for every mutant; needs the Kani environment on PATH)"""
 import os, shutil, subprocess, sys
 WORK = sys.argv[1]
+KANI = len(sys.argv) > 2 and sys.argv[2] == "kani"
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = open(os.path.join(HERE, "rust", "src", "lib.rs")).read()
 MUT = {
@@ -26,6 +27,16 @@ for name, (a, b) in MUT.items():
     shutil.copytree(os.path.join(HERE, "rust"), d)
     open(os.path.join(d, "src", "lib.rs"), "w").write(SRC.replace(a, b, 1))
     env = dict(os.environ, CARGO_TARGET_DIR=os.path.join(d, "target"))
+    if KANI:
+        r = subprocess.run(["nice", "-n", "19", "cargo", "kani", "--harness", "step_keeps_all_invariants", "--output-format", "terse"], cwd=d, env=env, capture_output=True, text=True)
+        out = r.stdout + r.stderr
+        if "VERIFICATION:- FAILED" in out:
+            print("%-34s proof FAILS (mutant detected)" % name)
+        elif "VERIFICATION:- SUCCESSFUL" in out:
+            print("%-34s PROOF STILL SUCCEEDS (mutant NOT detected)" % name)
+        else:
+            print("%-34s kani did not finish: %s" % (name, out.strip().splitlines()[-1][:80]))
+        continue
     r = subprocess.run(["nice", "-n", "19", "cargo", "build", "--release", "--bin", "fuzz"], cwd=d, env=env, capture_output=True, text=True)
     if r.returncode != 0:
         print("%-34s BUILD FAILED: %s" % (name, r.stderr.strip().splitlines()[-1][:80])); continue

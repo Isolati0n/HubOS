@@ -1,0 +1,13 @@
+# Kani 0.68.0 (CBMC 6.11.0) on the Rust focus core, 2026-10-11. Bounds: 3 machines, 3 keys, 2 buttons (cfg(kani) constants); key codes < 64, button codes < 8.
+Checking harness proofs::initial_state_is_valid...
+VERIFICATION RESULT:
+** 0 of 226 failed (20 unreachable)
+VERIFICATION:- SUCCESSFUL
+Verification Time: 0.079284385s
+Checking harness proofs::step_keeps_all_invariants...
+VERIFICATION RESULT:
+** 0 of 1959 failed (6 unreachable)
+** 9 of 9 cover properties satisfied
+VERIFICATION:- SUCCESSFUL
+Verification Time: 61.67832s
+Complete - 2 successfully verified harnesses, 0 failures, 2 total.

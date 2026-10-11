@@ -1,6 +1,6 @@
 with Interfaces; use Interfaces;
 
-package body Focus_Check with SPARK_Mode => Off is
+package body Focus_Check is
 
    procedure Reset (G : out Ghost) is
    begin

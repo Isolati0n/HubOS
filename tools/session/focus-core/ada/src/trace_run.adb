@@ -5,6 +5,7 @@ with Ada.Command_Line;
 with Ada.Strings.Unbounded; use Ada.Strings.Unbounded;
 with Ada.Strings.Fixed;
 with Focus_Core; use Focus_Core;
+with Interfaces; use Interfaces;
 
 procedure Trace_Run is
 

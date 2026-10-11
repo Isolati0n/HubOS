@@ -8,16 +8,31 @@
 //! docs/proposals/focus-core.md section 2.5 and docs/models/focus-core/FocusCore.tla.
 #![no_std]
 
+#[cfg(not(kani))]
 pub const MAX_M: usize = 20;
 /// Placeholder limits (owner question 1 in docs/proposals/focus-core.md).
+#[cfg(not(kani))]
 pub const MAX_KEYS: usize = 32;
+#[cfg(not(kani))]
 pub const MAX_BTNS: usize = 8;
 /// A focus change can emit one release per held key and button; one more for a reconnect.
+#[cfg(not(kani))]
 pub const MAX_ACTS: usize = 64;
+// The proofs use SMALLER bounds (3 machines, 3 keys, 2 buttons): a model checker over arrays of 32 keys and 20 machines
+// does not finish. The code is the same; only these four constants differ.
+#[cfg(kani)]
+pub const MAX_M: usize = 3;
+#[cfg(kani)]
+pub const MAX_KEYS: usize = 3;
+#[cfg(kani)]
+pub const MAX_BTNS: usize = 2;
+#[cfg(kani)]
+pub const MAX_ACTS: usize = 8;
 pub const HUB: u8 = 0;
 pub const NONE: u8 = 255;
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[cfg_attr(kani, derive(kani::Arbitrary))]
 #[repr(u8)]
 pub enum Kind {
     Kd = 0,
@@ -54,6 +69,7 @@ impl Kind {
 /// One event. `a` is the destination of an input, the target of a focus request, or the machine of the other events.
 /// `gen` and `ep` are the stamps of an input, or the epoch (`ep`) of a verification.
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[cfg_attr(kani, derive(kani::Arbitrary))]
 pub struct Event {
     pub kind: Kind,
     pub a: u8,
@@ -111,6 +127,7 @@ impl Out {
 }
 
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[cfg_attr(kani, derive(kani::Arbitrary))]
 pub struct Held {
     pub code: u32,
     pub dest: u8,
@@ -119,6 +136,7 @@ pub struct Held {
 const NO_HELD: Held = Held { code: 0, dest: 0 };
 
 #[derive(Clone, Copy)]
+#[cfg_attr(kani, derive(kani::Arbitrary))]
 pub struct State {
     pub focus: u8,
     pub epoch: u32,
@@ -372,6 +390,7 @@ pub mod check {
     /// What each node believes is held, built ONLY from the emitted actions. Keys 0..64 and buttons 0..8 (the
     /// fuzz and proof inputs stay inside that range).
     #[derive(Clone, Copy)]
+    #[cfg_attr(kani, derive(kani::Arbitrary))]
     pub struct Ghost {
         pub keys: [u64; MAX_M + 1],
         pub btns: [u8; MAX_M + 1],
@@ -513,5 +532,125 @@ pub mod check {
             m += 1;
         }
         0
+    }
+}
+
+/// Kani proofs (cargo kani). One inductive proof: from ANY state that satisfies `valid_state`, with ANY event, one step
+/// does not panic or overflow, every invariant of `check::after_step` holds, and the state after is again valid.
+/// The bounds are 3 machines, 3 keys, 2 buttons (see the constants above); key codes < 64, button codes < 8
+/// (the ghost in the checker is a bit set). What this does NOT prove: sizes above those bounds, the I/O shell.
+#[cfg(kani)]
+mod proofs {
+    use super::check::*;
+    use super::*;
+
+    fn bits_keys(s: &State, m: u8) -> u64 {
+        let mut b = 0u64;
+        let mut i = 0;
+        while i < s.nkeys {
+            if s.keys[i].dest == m {
+                b |= 1u64 << (s.keys[i].code & 63);
+            }
+            i += 1;
+        }
+        b
+    }
+    fn bits_btns(s: &State, m: u8) -> u8 {
+        let mut b = 0u8;
+        let mut i = 0;
+        while i < s.nbtns {
+            if s.btns[i].dest == m {
+                b |= 1u8 << (s.btns[i].code & 7);
+            }
+            i += 1;
+        }
+        b
+    }
+
+    /// The state invariant (what "valid" means; the inductive hypothesis).
+    fn valid_state(s: &State, g: &Ghost) -> bool {
+        if !(s.focus == HUB || is_machine(s.focus)) || !(s.waiting == NONE || is_machine(s.waiting)) {
+            return false;
+        }
+        if s.waiting != NONE && s.focus != HUB {
+            return false;
+        }
+        if s.nkeys > MAX_KEYS || s.nbtns > MAX_BTNS {
+            return false;
+        }
+        let mut i = 0;
+        while i < s.nkeys {
+            if s.keys[i].dest != s.focus || !is_machine(s.focus) || s.keys[i].code >= 64 {
+                return false;
+            }
+            let mut j = 0;
+            while j < i {
+                if s.keys[j].code == s.keys[i].code {
+                    return false;
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        let mut i = 0;
+        while i < s.nbtns {
+            if s.btns[i].dest != s.focus || !is_machine(s.focus) || s.btns[i].code >= 8 {
+                return false;
+            }
+            let mut j = 0;
+            while j < i {
+                if s.btns[j].code == s.btns[i].code {
+                    return false;
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+        let mut m = 1;
+        while m <= MAX_M {
+            if !s.owed[m] && (g.keys[m] != bits_keys(s, m as u8) || g.btns[m] != bits_btns(s, m as u8)) {
+                return false;
+            }
+            m += 1;
+        }
+        true
+    }
+
+    #[kani::proof]
+    #[kani::unwind(6)]
+    fn step_keeps_all_invariants() {
+        let mut st: State = kani::any();
+        let mut ghost = Ghost { keys: kani::any(), btns: kani::any() };
+        kani::assume(valid_state(&st, &ghost));
+        let ev: Event = kani::any();
+        match ev.kind {
+            Kind::Kd | Kind::Ku => kani::assume(ev.code < 64),
+            Kind::Bd | Kind::Bu => kani::assume(ev.code < 8),
+            _ => {}
+        }
+        let pre = st;
+        let mut out = Out::new();
+        st.step(&ev, &mut out);
+        assert!(out.n <= MAX_ACTS);
+        let bad = after_step(&pre, &ev, &out, &st, &mut ghost);
+        assert!(bad == 0);
+        assert!(valid_state(&st, &ghost));
+        // Reachability of the interesting cases, so that the proof is not vacuous:
+        kani::cover!(ev.kind == Kind::Req && pre.nkeys > 0 && pre.conn[pre.focus as usize] && out.n > 0, "a focus change with held keys emits releases");
+        kani::cover!(ev.kind == Kind::Req && pre.nbtns > 0 && out.n > 0, "a focus change with held buttons emits releases");
+        kani::cover!(ev.kind == Kind::Req && pre.nkeys > 0 && is_machine(pre.focus) && !pre.conn[pre.focus as usize] && st.owed[pre.focus as usize], "a focus change away from a dead machine owes a release");
+        kani::cover!(ev.kind == Kind::Rec && out.n == 1 && out.acts[0].t == ActKind::ReleaseAll, "a reconnect sends release-all");
+        kani::cover!(ev.kind == Kind::Vok && st.focus != pre.focus, "a verification gives the focus");
+        kani::cover!(ev.kind == Kind::Vto && pre.waiting != NONE && st.waiting == NONE, "a timeout ends the wait");
+        kani::cover!(matches!(ev.kind, Kind::Kd) && out.n == 1 && out.acts[0].t == ActKind::Deliver, "a key is delivered");
+        kani::cover!(matches!(ev.kind, Kind::Kd) && out.n == 1 && out.acts[0].t == ActKind::Drop && pre.nkeys == MAX_KEYS, "a key press that does not fit is dropped");
+        kani::cover!(ev.kind == Kind::Rst && pre.focus == ev.a && st.focus == HUB, "a worker restart of the focus machine returns the focus to the hub");
+    }
+
+    #[kani::proof]
+    fn initial_state_is_valid() {
+        let st = State::new();
+        let ghost = Ghost::new();
+        assert!(valid_state(&st, &ghost));
     }
 }

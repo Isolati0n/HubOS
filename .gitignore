@@ -6,3 +6,7 @@ core.*
 *.core
 *.dump
 *.env
+tools/session/focus-core/ada/out/
+tools/session/focus-core/zig/out/
+tools/session/focus-core/zig/src/all.trace
+tools/session/focus-core/rust/target/

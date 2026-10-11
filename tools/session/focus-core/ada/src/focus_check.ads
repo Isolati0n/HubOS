@@ -4,7 +4,7 @@
 with Interfaces;
 with Focus_Core; use Focus_Core;
 
-package Focus_Check is
+package Focus_Check with SPARK_Mode => Off is
 
    type U64_Array is array (0 .. Max_M) of Interfaces.Unsigned_64;
    type U8_Array is array (0 .. Max_M) of U8;
