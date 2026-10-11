@@ -882,6 +882,7 @@ func listenReport() {
 func trial(scn string) {
 	start := time.Now()
 	good := 0
+	iters, slowest := 0, time.Duration(0)
 	hung := false
 	sawOK := time.Time{}
 	for time.Since(start) < 60*time.Second {
@@ -893,10 +894,15 @@ func trial(scn string) {
 			hung = true
 			say("TRIAL-INJECT driftwm stopped (wedged)")
 		}
+		t0 := time.Now()
 		if _, err := os.Stat("/ops/healthy"); err == nil && exec.Command("/bin/sh", "/ops/healthy").Run() == nil {
 			good++
 		} else {
 			good = 0
+		}
+		iters++
+		if d := time.Since(t0); d > slowest {
+			slowest = d
 		}
 		if good >= 15 {
 			say("TRIAL CONFIRMED scenario=%s after=%.1fs true_state=%q", scn, time.Since(start).Seconds(), why())
@@ -905,7 +911,7 @@ func trial(scn string) {
 		}
 		time.Sleep(time.Second)
 	}
-	say("TRIAL ROLLBACK scenario=%s after=60s true_state=%q guard_still_feeding=%v", scn, why(), guardState() != '-')
+	say("TRIAL ROLLBACK scenario=%s after=60s true_state=%q guard_still_feeding=%v health_checks_run=%d slowest_check=%.1fs consecutive_good=%d (15 needed)", scn, why(), guardState() != '-', iters, slowest.Seconds(), good)
 	status()
 	time.Sleep(time.Second)
 	syscall.Sync()

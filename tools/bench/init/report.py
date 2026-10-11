@@ -5,7 +5,7 @@ RUNDIR holds <candidate>-boot-N.log, -pid1crash-N.log, -pid1wedge-1.log, -trial-
 run-qemu.py. Prints tables for the document; every number comes from a log line, nothing is typed in by hand."""
 import glob, os, re, statistics as st, sys, collections
 
-CANDS = ["s6plain", "s6rc", "runit", "dinit", "openrc", "c-go", "c-elixir", "b-go"]
+CANDS = os.environ.get("HUB_CANDS", "s6plain,s6rc,runit,dinit,openrc,c-go,c-elixir,b-go").split(",")   # HUB_CANDS=a,b,c picks the columns
 
 def kv(line):
     return {m.group(1): m.group(2).strip('"') for m in re.finditer(r'(\w+)=("[^"]*"|\S+)', line)}
