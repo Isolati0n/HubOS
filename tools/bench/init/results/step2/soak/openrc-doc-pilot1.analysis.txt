@@ -1,0 +1,4 @@
+== /home/user/HubOS/tools/bench/init/results/step2/soak/openrc-doc-pilot1.log: 1 launch(es), first 600 s of each left out
+TOTAL          slope  -156.35 kB per 1000 restarts (std.err 140.22)  noise sd   26.6 kB  range 621..731 kB  samples 21  restarts covered 148
+openrc-init    slope  -156.35 kB per 1000 restarts (std.err 140.22)  noise sd   26.6 kB  range 621..731 kB  samples 21  restarts covered 148
+STUCK states in chunk: 0; SOAK-END lines: 1; launches: 1; self-reboots (reboot: Restarting system): 0; events that needed a person (ok=0): 7; UNRECOVERED lines: 7
