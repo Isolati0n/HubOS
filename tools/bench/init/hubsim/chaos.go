@@ -737,6 +737,55 @@ func faultSuite(reps int) {
 	fOOM()
 	between()
 	fOOM()
+	if cfg["watcher"] != "" { // follow-up 3, item 3: the test watcher is one more service; the init must restart it when it is killed
+		between()
+		fWatcherKill()
+		between()
+		fWatcherKill()
+	}
+}
+
+// fWatcherKill: kill the test watcher itself (SIGKILL). Recovery = a new watcher process exists. If it does not come back
+// within 60 s a person acts (the candidate's ops/fix), as for every other fault.
+func fWatcherKill() result {
+	if !begin("fWatcherKill") {
+		return result{ok: true}
+	}
+	n := cfg["watcher"]
+	old := pidOf(n)
+	if old == 0 {
+		say("skip watcher kill: %s is not running", n)
+		return result{ok: true}
+	}
+	evn++
+	st := time.Now()
+	syscall.Kill(old, syscall.SIGKILL)
+	wait := func(max time.Duration) (float64, bool) {
+		for time.Since(st) < max {
+			time.Sleep(200 * time.Millisecond)
+			if p := pidOf(n); p != 0 && p != old {
+				return time.Since(st).Seconds(), true
+			}
+		}
+		return time.Since(st).Seconds(), false
+	}
+	rec, ok := wait(60 * time.Second)
+	r := result{rec: rec, ok: ok}
+	if !ok {
+		say("UNRECOVERED ev=%d fault=watcher-killed target=%s alert=%d why=%q", evn, n, b2i(exists("/run/hubos/alert")), n+" not running")
+		status()
+		operator(n)
+		rec2, ok2 := wait(120 * time.Second)
+		r.fixed, r.rec = ok2, rec2
+		if !ok2 {
+			say("STUCK ev=%d step=%d fault=watcher-killed target=%s why=%q (a reboot is the only way out; the host restarts the machine)", evn, step, n, n+" not running")
+			time.Sleep(time.Second)
+			syscall.Sync()
+			syscall.Reboot(syscall.LINUX_REBOOT_CMD_POWER_OFF)
+		}
+	}
+	say("EV ev=%d fault=watcher-killed target=%s rec=%.2f ok=%d fixed=%d old_pid=%d new_pid=%d", evn, n, r.rec, b2i(ok), b2i(r.fixed), old, pidOf(n))
+	return r
 }
 
 func soak(rng *rand.Rand, dur time.Duration) {

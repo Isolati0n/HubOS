@@ -1,0 +1,4 @@
+#!/bin/sh
+exec 2>&1
+MODE=$(sed -n 's/.*hub\.wmode=\([^ ]*\).*/\1/p' /proc/cmdline)
+exec watcher -mode "${MODE:-both}"

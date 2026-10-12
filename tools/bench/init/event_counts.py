@@ -8,11 +8,13 @@ and the script goes on at the next step). A run also ends when the driver has re
 Usage example: event_counts.py runit=a.log,b.log,c.log   (the logs of one candidate are merged by step number)"""
 import re, sys, collections
 FEAT = {  # which features each candidate has (from hub.sup / hub.scan / hub.brain in its cmdline file)
- "sup":  {"s6plain","s6rc","s6rc-par","runit","runit-111","c-go","c-elixir","openrc","openrc-par","openrc-doc"},
- "scan": {"runit","runit-111"},
+ "sup":  {"s6plain","s6rc","s6rc-par","s6rc-par-wd","s6rc-par-wdc","runit","runit-111","runit-111np","runit-wd","runit-wdc","c-go","c-elixir","openrc","openrc-par","openrc-doc"},
+ "scan": {"runit","runit-111","runit-111np","runit-wd","runit-wdc"},
+ "watcher": {"s6rc-par-wd","s6rc-par-wdc","runit-wd","runit-wdc"},  # steps 44-45 (follow-up 3): kill the test watcher; the init must restart it
  "brain":{"b-go","c-go","c-elixir"},
 }
 def expect(step, c):
+    if step in (44, 45): return 1 if c in FEAT["watcher"] else 0
     if step <= 30: return 1
     if 31 <= step <= 36: return 2 if c in FEAT["sup"] else 0
     if step == 37: return 2 if c in FEAT["scan"] else 0
@@ -38,10 +40,10 @@ def analyse(c, paths):
             m = re.search(r" STUCK ev=\d+ step=(\d+) fault=(\S+)", l)
             if m: stuck[int(m[1])] = m[2]; reached.add(int(m[1]))
             if "SUITE-DONE" in l: done = True
-    defined = sum(expect(s, c) for s in range(1, 44))
+    defined = sum(expect(s, c) for s in range(1, 46))
     ran = sum(ev.values())
     lost_stuck = sum(max(0, expect(s, c) - ev[s]) for s in stuck)
-    notreached = sum(expect(s, c) for s in range(1, 44) if s not in reached)
+    notreached = sum(expect(s, c) for s in range(1, 46) if s not in reached)
     other = defined - ran - lost_stuck - notreached
     common = [x for x in range(1, 44) if x <= 30 or x >= 40]      # the 36 events every candidate has (not the supervisor, scanner, brain ones)
     # steps 40 and 41 give two events each, 42 and 43 one: 30 + 4 + 2 = 36

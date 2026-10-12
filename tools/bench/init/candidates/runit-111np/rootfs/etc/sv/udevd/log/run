@@ -1,0 +1,4 @@
+#!/bin/sh
+mkdir -p /var/log/udevd
+printf 's100000\nn5\n' > /var/log/udevd/config
+exec svlogd -tt /var/log/udevd

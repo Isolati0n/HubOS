@@ -1,0 +1,4 @@
+#!/bin/sh
+mkdir -p /var/log/hubd
+printf 's100000\nn5\n' > /var/log/hubd/config
+exec svlogd -tt /var/log/hubd

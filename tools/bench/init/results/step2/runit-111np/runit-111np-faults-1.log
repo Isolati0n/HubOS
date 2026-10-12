@@ -1,0 +1,340 @@
+H# start 2026-10-12 16:16:13 cand=runit-111np suite=faults cpus_seen=4 loadavg_at_start=['0.42', '0.43', '0.30']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-111np.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=600 hub.seed=200 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     6.02 Booting from ROM..c[?7l[2JCH STAGE1 up=3.58
+H     6.08 CH CAND runit pid1=runit stage2=runsvdir
+H     6.13 CH SUP-START up=3.71
+H     6.18 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     6.19 - runit: enter stage: /etc/runit/1
+H     6.20 - runit: leave stage: /etc/runit/1
+H     6.20 - runit: enter stage: /etc/runit/2
+H     6.24 CH t=0.0 CHAOS start cand=runit suite=faults seed=200 cpus=2
+H    12.11 CH t=5.9 BOOT-OK up=9.69 ok=1 (seconds since kernel start; waited 5.7)
+H    17.12 CH t=10.9 STEP 1 fKill
+H    20.92 CH t=14.7 EV ev=1 fault=kill target=seatd rec=3.58 ok=1 fixed=0 
+H    23.92 CH t=17.7 STEP 2 fKill
+H    25.94 CH t=19.7 EV ev=2 fault=kill target=udevd rec=1.81 ok=1 fixed=0 
+H    28.95 CH t=22.8 STEP 3 fKill
+H    29.31 CH t=23.1 EV ev=3 fault=kill target=dbus rec=0.16 ok=1 fixed=0 
+H    32.32 CH t=26.1 STEP 4 fKill
+H    36.72 CH t=30.5 EV ev=4 fault=kill target=driftwm rec=4.19 ok=1 fixed=0 
+H    39.73 CH t=33.5 STEP 5 fKill
+H    41.36 CH t=35.2 EV ev=5 fault=kill target=waybar rec=1.42 ok=1 fixed=0 
+H    44.37 CH t=38.2 STEP 6 fKill
+H    46.48 CH t=40.3 EV ev=6 fault=kill target=hubd rec=1.89 ok=1 fixed=0 
+H    49.48 CH t=43.3 STEP 7 fKill
+H    54.09 CH t=47.9 EV ev=7 fault=kill target=seatd rec=4.40 ok=1 fixed=0 
+H    57.10 CH t=50.9 STEP 8 fKill
+H    59.19 CH t=53.0 EV ev=8 fault=kill target=udevd rec=1.87 ok=1 fixed=0 
+H    62.19 CH t=56.0 STEP 9 fKill
+H    62.61 CH t=56.4 EV ev=9 fault=kill target=dbus rec=0.20 ok=1 fixed=0 
+H    65.61 CH t=59.4 STEP 10 fKill
+H    69.93 CH t=63.7 EV ev=10 fault=kill target=driftwm rec=4.08 ok=1 fixed=0 
+H    72.94 CH t=66.7 STEP 11 fKill
+H    74.50 CH t=68.3 EV ev=11 fault=kill target=waybar rec=1.35 ok=1 fixed=0 
+H    77.50 CH t=71.3 STEP 12 fKill
+H    79.72 CH t=73.5 EV ev=12 fault=kill target=hubd rec=2.02 ok=1 fixed=0 
+H    82.73 CH t=76.5 STEP 13 fKill
+H    87.03 CH t=80.8 EV ev=13 fault=kill target=seatd rec=4.09 ok=1 fixed=0 
+H    90.03 CH t=83.8 STEP 14 fKill
+H    92.07 CH t=85.9 EV ev=14 fault=kill target=udevd rec=1.81 ok=1 fixed=0 
+H    95.20 CH t=89.0 STEP 15 fKill
+H    95.54 CH t=89.3 EV ev=15 fault=kill target=dbus rec=0.08 ok=1 fixed=0 
+H    98.54 CH t=92.3 STEP 16 fKill
+H   102.81 CH t=96.6 EV ev=16 fault=kill target=driftwm rec=4.06 ok=1 fixed=0 
+H   105.81 CH t=99.6 STEP 17 fKill
+H   107.27 CH t=101.1 EV ev=17 fault=kill target=waybar rec=1.25 ok=1 fixed=0 
+H   110.28 CH t=104.1 STEP 18 fKill
+H   112.30 CH t=106.1 EV ev=18 fault=kill target=hubd rec=1.80 ok=1 fixed=0 
+H   115.32 CH t=109.1 STEP 19 fHang
+H   175.45 CH t=169.3 UNRECOVERED ev=19 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   175.86 CH t=169.7 STATUS run: /run/service/dbus/: (pid 1419) 81s; run: log: (pid 118) 170s
+H   175.86 CH t=169.7 STATUS run: /run/service/driftwm/: (pid 1465) 77s; run: log: (pid 125) 169s
+H   175.86 CH t=169.7 STATUS run: /run/service/guard/: (pid 134) 169s
+H   175.86 CH t=169.7 STATUS run: /run/service/hubd/: (pid 1623) 66s; run: log: (pid 128) 169s
+H   175.87 CH t=169.7 STATUS run: /run/service/seatd/: (pid 1230) 93s; run: log: (pid 124) 169s
+H   175.87 CH t=169.7 STATUS run: /run/service/udevd/: (pid 1366) 86s; run: log: (pid 127) 169s
+H   175.87 CH t=169.7 STATUS run: /run/service/waybar/: (pid 1569) 70s; run: log: (pid 119) 170s
+H   175.95 CH t=169.8 operator-action target=driftwm why="driftwm stopped"
+H   176.06 ok: run: /run/service/driftwm: (pid 2346) 0s
+H   180.94 CH t=174.7 EV ev=19 fault=hang-stop target=driftwm rec=64.61 ok=0 fixed=1 
+H   183.94 CH t=177.7 STEP 20 fHang
+H   245.40 CH t=239.2 UNRECOVERED ev=20 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   245.74 CH t=239.5 STATUS run: /run/service/dbus/: (pid 1419) 151s; run: log: (pid 118) 240s
+H   245.74 CH t=239.5 STATUS run: /run/service/driftwm/: (pid 2358) 69s; run: log: (pid 125) 239s
+H   245.74 CH t=239.5 STATUS run: /run/service/guard/: (pid 134) 239s
+H   245.74 CH t=239.5 STATUS run: /run/service/hubd/: (pid 2403) 67s; run: log: (pid 128) 239s
+H   245.74 CH t=239.5 STATUS run: /run/service/seatd/: (pid 1230) 163s; run: log: (pid 124) 239s
+H   245.74 CH t=239.5 STATUS run: /run/service/udevd/: (pid 1366) 156s; run: log: (pid 127) 239s
+H   245.75 CH t=239.6 STATUS run: /run/service/waybar/: (pid 2408) 67s; run: log: (pid 119) 240s
+H   246.80 CH t=240.6 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   247.29 ok: run: /run/service/driftwm: (pid 3136) 0s
+H   250.55 CH t=244.4 EV ev=20 fault=hang-spin target=driftwm rec=63.00 ok=0 fixed=1 
+H   253.56 CH t=247.4 STEP 21 fHang
+H   313.68 CH t=307.5 UNRECOVERED ev=21 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   313.98 CH t=307.8 STATUS run: /run/service/dbus/: (pid 1419) 219s; run: log: (pid 118) 308s
+H   313.98 CH t=307.8 STATUS run: /run/service/driftwm/: (pid 3136) 67s; run: log: (pid 125) 307s
+H   313.98 CH t=307.8 STATUS run: /run/service/guard/: (pid 134) 307s
+H   313.98 CH t=307.8 STATUS run: /run/service/hubd/: (pid 3154) 66s; run: log: (pid 128) 307s
+H   313.99 CH t=307.8 STATUS run: /run/service/seatd/: (pid 1230) 231s; run: log: (pid 124) 307s
+H   313.99 CH t=307.8 STATUS run: /run/service/udevd/: (pid 1366) 224s; run: log: (pid 127) 307s
+H   313.99 CH t=307.8 STATUS run: /run/service/waybar/: (pid 3189) 65s; run: log: (pid 119) 308s
+H   314.02 CH t=307.8 operator-action target=driftwm why="driftwm stopped"
+H   314.50 ok: run: /run/service/driftwm: (pid 3891) 1s
+H   318.30 CH t=312.1 EV ev=21 fault=hang-stop target=driftwm rec=63.53 ok=0 fixed=1 
+H   321.31 CH t=315.1 STEP 22 fHang
+H   383.24 CH t=377.0 UNRECOVERED ev=22 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   383.61 CH t=377.4 STATUS run: /run/service/dbus/: (pid 1419) 288s; run: log: (pid 118) 377s
+H   383.62 CH t=377.4 STATUS run: /run/service/driftwm/: (pid 3891) 69s; run: log: (pid 125) 376s
+H   383.62 CH t=377.4 STATUS run: /run/service/guard/: (pid 134) 376s
+H   383.63 CH t=377.4 STATUS run: /run/service/hubd/: (pid 3943) 68s; run: log: (pid 128) 377s
+H   383.63 CH t=377.4 STATUS run: /run/service/seatd/: (pid 1230) 301s; run: log: (pid 124) 377s
+H   383.64 CH t=377.4 STATUS run: /run/service/udevd/: (pid 1366) 294s; run: log: (pid 127) 377s
+H   383.64 CH t=377.4 STATUS run: /run/service/waybar/: (pid 3950) 67s; run: log: (pid 119) 378s
+H   384.75 CH t=378.6 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   385.25 ok: run: /run/service/driftwm: (pid 4684) 0s
+H   388.95 CH t=382.8 EV ev=22 fault=hang-spin target=driftwm rec=63.42 ok=0 fixed=1 
+H   391.96 CH t=385.8 STEP 23 fHang
+H   452.20 CH t=446.0 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   452.54 CH t=446.3 STATUS run: /run/service/dbus/: (pid 1419) 357s; run: log: (pid 118) 446s
+H   452.55 CH t=446.4 STATUS run: /run/service/driftwm/: (pid 4684) 67s; run: log: (pid 125) 445s
+H   452.55 CH t=446.4 STATUS run: /run/service/guard/: (pid 134) 445s
+H   452.56 CH t=446.4 STATUS run: /run/service/hubd/: (pid 4732) 66s; run: log: (pid 128) 445s
+H   452.56 CH t=446.4 STATUS run: /run/service/seatd/: (pid 1230) 370s; run: log: (pid 124) 446s
+H   452.56 CH t=446.4 STATUS run: /run/service/udevd/: (pid 1366) 363s; run: log: (pid 127) 446s
+H   452.56 CH t=446.4 STATUS run: /run/service/waybar/: (pid 4737) 66s; run: log: (pid 119) 447s
+H   452.62 CH t=446.4 operator-action target=driftwm why="driftwm stopped"
+H   452.73 ok: run: /run/service/driftwm: (pid 5449) 0s
+H   457.40 CH t=451.2 EV ev=23 fault=hang-stop target=driftwm rec=64.43 ok=0 fixed=1 
+H   460.40 CH t=454.2 STEP 24 fHang
+H   521.77 CH t=515.6 UNRECOVERED ev=24 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   522.24 CH t=516.0 STATUS run: /run/service/dbus/: (pid 1419) 427s; run: log: (pid 118) 516s
+H   522.25 CH t=516.1 STATUS run: /run/service/driftwm/: (pid 5473) 68s; run: log: (pid 125) 515s
+H   522.25 CH t=516.1 STATUS run: /run/service/guard/: (pid 134) 515s
+H   522.25 CH t=516.1 STATUS run: /run/service/hubd/: (pid 5509) 67s; run: log: (pid 128) 515s
+H   522.25 CH t=516.1 STATUS run: /run/service/seatd/: (pid 1230) 439s; run: log: (pid 124) 515s
+H   522.26 CH t=516.1 STATUS run: /run/service/udevd/: (pid 1366) 432s; run: log: (pid 127) 515s
+H   522.26 CH t=516.1 STATUS run: /run/service/waybar/: (pid 5514) 66s; run: log: (pid 119) 516s
+H   523.34 CH t=517.1 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   523.86 ok: run: /run/service/driftwm: (pid 6246) 0s
+H   527.61 CH t=521.4 EV ev=24 fault=hang-spin target=driftwm rec=63.49 ok=0 fixed=1 
+H   530.61 CH t=524.4 STEP 25 fStorm
+H   571.11 CH t=564.9 STATUS run: /run/service/dbus/: (pid 1419) 476s; run: log: (pid 118) 565s
+H   571.11 CH t=564.9 STATUS run: /run/service/driftwm/: (pid 6246) 47s; run: log: (pid 125) 564s
+H   571.11 CH t=564.9 STATUS run: /run/service/guard/: (pid 134) 564s
+H   571.12 CH t=564.9 STATUS run: /run/service/hubd/: (pid 7205) 0s; run: log: (pid 128) 564s
+H   571.12 CH t=564.9 STATUS run: /run/service/seatd/: (pid 1230) 488s; run: log: (pid 124) 564s
+H   571.12 CH t=564.9 STATUS run: /run/service/udevd/: (pid 1366) 481s; run: log: (pid 127) 564s
+H   571.13 CH t=564.9 STATUS run: /run/service/waybar/: (pid 6303) 45s; run: log: (pid 119) 565s
+H   571.13 CH t=564.9 STORM target=hubd dur=40 starts=33 starts_last10s=9 cpu_ticks_init_side=25 bar-up
+H   572.81 CH t=566.6 EV ev=25 fault=storm target=hubd rec=1.48 ok=1 fixed=0 starts=33 last10=9 cpu=25 bar-up
+H   575.82 CH t=569.6 STEP 26 fStorm
+H   616.27 CH t=610.1 STATUS run: /run/service/dbus/: (pid 1419) 521s; run: log: (pid 118) 610s
+H   616.27 CH t=610.1 STATUS down: /run/service/driftwm/: 0s, normally up, want up; run: log: (pid 125) 609s
+H   616.27 CH t=610.1 STATUS run: /run/service/guard/: (pid 134) 609s
+H   616.27 CH t=610.1 STATUS run: /run/service/hubd/: (pid 8209) 1s; run: log: (pid 128) 609s
+H   616.27 CH t=610.1 STATUS run: /run/service/seatd/: (pid 1230) 533s; run: log: (pid 124) 609s
+H   616.28 CH t=610.1 STATUS run: /run/service/udevd/: (pid 1366) 526s; run: log: (pid 127) 609s
+H   616.28 CH t=610.1 STATUS run: /run/service/waybar/: (pid 8152) 4s; run: log: (pid 119) 610s
+H   616.28 CH t=610.1 STORM target=driftwm dur=40 starts=26 starts_last10s=7 cpu_ticks_init_side=51 bar-down
+H   620.90 CH t=614.7 EV ev=26 fault=storm target=driftwm rec=4.41 ok=1 fixed=0 starts=26 last10=7 cpu=51 bar-down
+H   623.90 CH t=617.7 STEP 27 fDep
+H   644.27 CH t=638.1 EV ev=27 fault=dep-slow target=seatd rec=20.15 ok=1 fixed=0 
+H   644.27 CH t=638.1 DEPSTARTS mode=slow seatd=1 driftwm=11 waybar=9 hubd=2
+H   647.28 CH t=641.1 STEP 28 fDep
+H   672.88 CH t=666.7 EV ev=28 fault=dep-fail target=seatd rec=5.38 ok=1 fixed=0 
+H   672.88 CH t=666.7 DEPSTARTS mode=fail seatd=20 driftwm=15 waybar=11 hubd=3
+H   675.89 CH t=669.7 STEP 29 fDisk
+H   675.93 CH t=669.7 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   683.65 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   686.66 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   688.34 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   689.31 svlogd: pausing: unable to write to current: /var/log/driftwm: out of disk space
+H   689.66 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   691.35 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   692.31 svlogd: pausing: unable to write to current: /var/log/driftwm: out of disk space
+H   692.66 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   694.35 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   695.31 svlogd: pausing: unable to write to current: /var/log/driftwm: out of disk space
+H   695.66 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   696.79 CH t=690.6 STATUS run: /run/service/dbus/: (pid 1419) 602s; run: log: (pid 118) 691s
+H   696.79 CH t=690.6 STATUS run: /run/service/driftwm/: (pid 9412) 28s; run: log: (pid 125) 690s
+H   696.79 CH t=690.6 STATUS run: /run/service/guard/: (pid 134) 690s
+H   696.79 CH t=690.6 STATUS run: /run/service/hubd/: (pid 9440) 27s; run: log: (pid 128) 690s
+H   696.79 CH t=690.6 STATUS run: /run/service/seatd/: (pid 9397) 29s; run: log: (pid 124) 690s
+H   696.80 CH t=690.6 STATUS run: /run/service/udevd/: (pid 1366) 607s; run: log: (pid 127) 690s
+H   696.80 CH t=690.6 STATUS run: /run/service/waybar/: (pid 9586) 16s; run: log: (pid 119) 691s
+H   697.27 CH t=691.1 EV ev=29 fault=disk-full target=waybar rec=0.18 ok=1 fixed=0 ok_during=18/19 all_alive_at_end=1
+H   700.27 CH t=694.1 STEP 30 fDisk
+H   700.31 CH t=694.1 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   706.08 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   709.09 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   712.09 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   715.09 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   716.99 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H   717.59 svlogd: pausing: unable to write to current: /var/log/udevd: out of disk space
+H   718.10 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   719.99 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H   720.60 svlogd: pausing: unable to write to current: /var/log/udevd: out of disk space
+H   721.10 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   721.31 CH t=715.1 STATUS run: /run/service/dbus/: (pid 1419) 626s; run: log: (pid 118) 715s
+H   721.31 CH t=715.1 STATUS run: /run/service/driftwm/: (pid 9412) 52s; run: log: (pid 125) 714s
+H   721.32 CH t=715.1 STATUS run: /run/service/guard/: (pid 134) 714s
+H   721.32 CH t=715.1 STATUS run: /run/service/hubd/: (pid 9440) 51s; run: log: (pid 128) 714s
+H   721.32 CH t=715.1 STATUS run: /run/service/seatd/: (pid 9397) 53s; run: log: (pid 124) 714s
+H   721.32 CH t=715.1 STATUS run: /run/service/udevd/: (pid 1366) 631s; run: log: (pid 127) 714s
+H   721.32 CH t=715.1 STATUS run: /run/service/waybar/: (pid 9875) 14s; run: log: (pid 119) 715s
+H   721.79 CH t=715.6 EV ev=30 fault=disk-full target=waybar rec=0.17 ok=1 fixed=0 ok_during=16/19 all_alive_at_end=1
+H   724.79 CH t=718.6 STEP 31 fSupKill
+H   726.15 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   726.15 svlogd: fatal: no functional log directories.
+H   727.26 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   727.26 svlogd: fatal: no functional log directories.
+H   728.34 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   728.35 svlogd: fatal: no functional log directories.
+H   729.45 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   729.45 svlogd: fatal: no functional log directories.
+H   730.03 CH t=723.8 EV ev=31 fault=supervisor-killed target=driftwm rec=3.51 ok=1 fixed=0 child_kept_running=0
+H   730.52 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   730.52 svlogd: fatal: no functional log directories.
+H   731.61 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   731.62 svlogd: fatal: no functional log directories.
+H   732.38 CH t=726.2 EV ev=32 fault=after-supervisor-killed target=driftwm rec=0.14 ok=1 fixed=0 supervisor_back=1
+H   732.69 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   732.69 svlogd: fatal: no functional log directories.
+H   733.78 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   733.78 svlogd: fatal: no functional log directories.
+H   734.85 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   734.85 svlogd: fatal: no functional log directories.
+H   735.39 CH t=729.2 STEP 32 fSupKill
+H   735.91 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   735.91 svlogd: fatal: no functional log directories.
+H   736.30 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   736.30 svlogd: fatal: no functional log directories.
+H   737.07 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   737.08 svlogd: fatal: no functional log directories.
+H   737.34 CH t=731.1 EV ev=33 fault=supervisor-killed target=waybar rec=0.23 ok=1 fixed=0 child_kept_running=1
+H   737.58 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   737.58 svlogd: fatal: no functional log directories.
+H   738.17 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   738.18 svlogd: fatal: no functional log directories.
+H   738.69 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   738.69 svlogd: fatal: no functional log directories.
+H   739.25 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   739.25 svlogd: fatal: no functional log directories.
+H   740.32 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   740.32 svlogd: fatal: no functional log directories.
+H   741.28 CH t=735.1 EV ev=34 fault=after-supervisor-killed target=waybar rec=1.70 ok=1 fixed=0 supervisor_back=1
+H   741.41 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   741.41 svlogd: fatal: no functional log directories.
+H   742.47 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   742.47 svlogd: fatal: no functional log directories.
+H   743.54 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   743.55 svlogd: fatal: no functional log directories.
+H   744.29 CH t=738.1 STEP 33 fSupKill
+H   746.11 CH t=739.9 EV ev=35 fault=supervisor-killed target=driftwm rec=0.09 ok=1 fixed=0 child_kept_running=0
+H   746.23 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   746.23 svlogd: fatal: no functional log directories.
+H   747.30 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   747.30 svlogd: fatal: no functional log directories.
+H   748.36 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   748.37 svlogd: fatal: no functional log directories.
+H   749.43 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   749.43 svlogd: fatal: no functional log directories.
+H   750.49 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   750.49 svlogd: fatal: no functional log directories.
+H   751.62 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   751.62 svlogd: fatal: no functional log directories.
+H   752.43 CH t=746.2 EV ev=36 fault=after-supervisor-killed target=driftwm rec=4.10 ok=1 fixed=0 supervisor_back=1
+H   752.69 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   752.69 svlogd: fatal: no functional log directories.
+H   753.77 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   753.77 svlogd: fatal: no functional log directories.
+H   754.82 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   754.83 svlogd: fatal: no functional log directories.
+H   755.43 CH t=749.2 STEP 34 fSupKill
+H   755.89 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   755.89 svlogd: fatal: no functional log directories.
+H   756.36 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   756.36 svlogd: fatal: no functional log directories.
+H   756.96 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   756.96 svlogd: fatal: no functional log directories.
+H   757.26 CH t=751.1 EV ev=37 fault=supervisor-killed target=waybar rec=0.11 ok=1 fixed=0 child_kept_running=1
+H   757.44 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   757.45 svlogd: fatal: no functional log directories.
+H   758.02 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   758.02 svlogd: fatal: no functional log directories.
+H   758.51 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   758.51 svlogd: fatal: no functional log directories.
+H   759.09 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   759.09 svlogd: fatal: no functional log directories.
+H   759.88 CH t=753.7 EV ev=38 fault=after-supervisor-killed target=waybar rec=0.40 ok=1 fixed=0 supervisor_back=1
+H   760.15 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   760.15 svlogd: fatal: no functional log directories.
+H   761.22 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   761.22 svlogd: fatal: no functional log directories.
+H   762.29 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   762.29 svlogd: fatal: no functional log directories.
+H   762.89 CH t=756.7 STEP 35 fSupKill
+H   764.72 CH t=758.5 EV ev=39 fault=supervisor-killed target=driftwm rec=0.10 ok=1 fixed=0 child_kept_running=0
+H   766.33 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   766.33 svlogd: fatal: no functional log directories.
+H   767.06 CH t=760.9 EV ev=40 fault=after-supervisor-killed target=driftwm rec=0.11 ok=1 fixed=0 supervisor_back=1
+H   767.42 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   767.42 svlogd: fatal: no functional log directories.
+H   768.48 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   768.48 svlogd: fatal: no functional log directories.
+H   769.57 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   769.57 svlogd: fatal: no functional log directories.
+H   770.06 CH t=763.9 STEP 36 fSupKill
+H   770.65 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   770.65 svlogd: fatal: no functional log directories.
+H   771.37 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   771.37 svlogd: fatal: no functional log directories.
+H   771.72 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   771.72 svlogd: fatal: no functional log directories.
+H   771.89 CH t=765.7 EV ev=41 fault=supervisor-killed target=waybar rec=0.11 ok=1 fixed=0 child_kept_running=1
+H   772.51 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   772.51 svlogd: fatal: no functional log directories.
+H   772.78 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   772.79 svlogd: fatal: no functional log directories.
+H   773.61 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   773.61 svlogd: fatal: no functional log directories.
+H   773.84 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   773.84 svlogd: fatal: no functional log directories.
+H   775.03 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   775.03 svlogd: fatal: no functional log directories.
+H   775.23 CH t=769.0 EV ev=42 fault=after-supervisor-killed target=waybar rec=1.10 ok=1 fixed=0 supervisor_back=1
+H   776.13 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   776.13 svlogd: fatal: no functional log directories.
+H   777.26 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   777.26 svlogd: fatal: no functional log directories.
+H   778.23 CH t=772.0 STEP 37 fScanKill
+H   778.26 Killed
+H   778.27 - runit: warning: child failed: /etc/runit/2
+H   778.27 - runit: warning: killing all processes in stage 2...
+H   778.29 [  775.923530] watchdog: watchdog0: watchdog did not stop!
+H   783.28 - runit: warning: restarting.
+H   783.29 - runit: enter stage: /etc/runit/2
+H   788.97 CH t=782.8 EV ev=43 fault=scanner-killed target=runsvdir rec=8.98 ok=1 fixed=0 child_kept_running=0 scanner_back=0
+H   791.02 CH t=784.8 EV ev=44 fault=after-scanner-killed target=hubd rec=1.83 ok=1 fixed=0 
+H   794.02 CH t=787.8 STEP 38 fBrainKill
+H   797.03 CH t=790.8 STEP 39 fBrainKill
+H   800.03 CH t=793.8 STEP 40 fClock
+H   804.48 runsvdir /run/service: warning: time warp: resetting time stamp.
+H   805.35 CH t=799.2 EV ev=45 fault=clock-3600 target=driftwm rec=5.11 ok=1 fixed=0 
+H   808.32 CH t=802.1 EV ev=46 fault=after-clock-3600 target=hubd rec=1.77 ok=1 fixed=0 
+H   811.33 CH t=805.1 STEP 41 fClock
+H   814.99 CH t=808.8 EV ev=47 fault=clock+86400 target=driftwm rec=3.46 ok=1 fixed=0 
+H   818.95 CH t=812.8 EV ev=48 fault=after-clock+86400 target=hubd rec=2.75 ok=1 fixed=0 
+H   819.56 runsvdir /run/service: warning: time warp: resetting time stamp.
+H   821.95 CH t=815.8 STEP 42 fOOM
+H   822.02 CH t=815.8 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   830.75 CH t=824.5 EV ev=49 fault=oom target=hog rec=0.13 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   833.75 CH t=827.6 STEP 43 fOOM
+H   833.84 CH t=827.6 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   839.86 CH t=833.7 EV ev=50 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   839.86 CH t=833.7 SUITE-DONE
+H   841.87 [  839.497568] reboot: Power down
+H# vm exit code 0 after 842s, loadavg ['0.55', '0.67', '0.54']
+H# end wall=841.9s launches=1 suite_done=True

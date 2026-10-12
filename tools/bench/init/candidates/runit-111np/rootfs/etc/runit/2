@@ -1,0 +1,5 @@
+#!/bin/sh
+# Same as candidates/runit-111 except that runsvdir is started WITHOUT -P (so each runsv stays in stage 2's process group and dies
+# with it when runit kills that group before it restarts stage 2). Everything else is unchanged.
+runsvdir /run/service
+exit 111

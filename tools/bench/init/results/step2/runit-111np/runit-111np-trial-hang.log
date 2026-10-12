@@ -1,0 +1,23 @@
+H# start 2026-10-12 16:15:25 cand=runit-111np suite=trial cpus_seen=4 loadavg_at_start=['0.52', '0.43', '0.29']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-111np.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=132 hub.reps=5 hub.skip=0 hub.trial=hang hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     6.50 Booting from ROM..c[?7l[2JCH STAGE1 up=4.30
+H     6.57 CH CAND runit pid1=runit stage2=runsvdir
+H     6.64 CH SUP-START up=4.44
+H     6.71 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     6.72 - runit: enter stage: /etc/runit/1
+H     6.74 - runit: leave stage: /etc/runit/1
+H     6.74 - runit: enter stage: /etc/runit/2
+H     6.79 CH t=0.1 CHAOS start cand=runit suite=trial seed=132 cpus=2
+H    16.48 CH t=9.8 TRIAL-INJECT driftwm stopped (wedged)
+H    27.50 CH t=20.8 TRIAL CONFIRMED scenario=hang after=20.7s true_state="driftwm stopped"
+H    27.83 CH t=21.1 STATUS run: /run/service/dbus/: (pid 134) 20s; run: log: (pid 126) 20s
+H    27.83 CH t=21.1 STATUS run: /run/service/driftwm/: (pid 135) 20s; run: log: (pid 125) 20s
+H    27.84 CH t=21.1 STATUS run: /run/service/guard/: (pid 124) 20s
+H    27.84 CH t=21.1 STATUS run: /run/service/hubd/: (pid 140) 20s; run: log: (pid 136) 20s
+H    27.84 CH t=21.1 STATUS run: /run/service/seatd/: (pid 121) 20s; run: log: (pid 118) 20s
+H    27.84 CH t=21.1 STATUS run: /run/service/udevd/: (pid 120) 20s; run: log: (pid 119) 20s
+H    27.85 CH t=21.1 STATUS run: /run/service/waybar/: (pid 137) 21s; run: log: (pid 131) 21s
+H# trial finished
+H# vm exit code -9 after 48s, loadavg ['0.42', '0.43', '0.30']
+H# end wall=47.9s launches=1 suite_done=True
