@@ -787,6 +787,9 @@ func soak(rng *rand.Rand, dur time.Duration) {
 	go func() {
 		for t0 := time.Now(); ; time.Sleep(60 * time.Second) {
 			say("SOAKMEM t=%.0f restarts=%d faults=%d", time.Since(t0).Seconds(), atomic.LoadInt64(&restarts), atomic.LoadInt64(&faults))
+			if cfg["brain"] == "brain" && cfg["gcstats"] != "" { // item 8: the brain's own counters after a forced collection, BEFORE the PSS is read
+				say("BRAINSTAT %s", strings.TrimSpace(sh("hubsim ctl /run/hubos/brain.sock gcstats")))
+			}
 			memReport()
 		}
 	}()
