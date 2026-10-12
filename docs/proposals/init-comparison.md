@@ -1,4 +1,14 @@
-# STATUS: PAUSED, INCOMPLETE (2026-10-05, by the coordinator's order; owner: not vital yet)
+# STATUS: MEASUREMENTS DONE AS FAR AS THEY CAN BE DONE HERE; THE OWNER DECIDES NEXT (updated 2026-10-12)
+
+**What is done (TESTED unless marked):** the scorecard (section 1, committed before any measurement); the harness (`tools/bench/init/`); an elimination round by fault injection over about 19 candidate setups (s6 plain, s6+s6-rc, runit in three setups, dinit in five, OpenRC in four, the Go and Elixir brains over s6-rc, the Go brain over s6-svscan alone); a 4-hour soak for the candidates that had no stuck state (s6plain, s6rc-par, runit, runit-111, b-go, openrc-doc); hang-rule data and a test watcher run under s6rc-par and runit-111. Sections 2, 3, 4, 5 and 6 below are now written from the run log (`init-comparison-run.md`), as data only. **No init was written. No candidate is recommended or ranked. Whether s6 stays the hub's init is not decided here.**
+
+**What waits for the owner:** the open questions in section 6 (among them: does "needs a person after a killed supervisor" count as passed for OpenRC; which place the hang rule lives in; whether more soak or another seed is wanted). The scorecard points (section 1) were not computed: several ratings need an owner decision first (for example what "2 = with a script" means for a test watcher), and the plan says the owner reads the data before any total is made.
+
+**What was not done / cannot be done here:** real hardware and KVM timing, the real driftwm, waybar and hubd, real power loss, runs longer than 4 hours, the hang rule inside the product (it is not built), c-go and c-elixir soaks (both were stopped early for a stuck state), a soak of dinit (no setup passed the elimination round).
+
+**How to resume / rebuild:** `W=<empty dir outside the repo> bash tools/bench/init/fetch-and-build.sh`, then `mkrootfs.sh CAND` and `run-qemu.py CAND faults|soak ...` (see `tools/bench/init/` and `init-comparison-run.md`; the scripts used for the numbers are `report.py`, `event_counts.py`, `needed_person.py`, `soak_ci.py`). Results: `tools/bench/init/results/step2/`.
+
+**Security:** no core, dump, environment or credential files are in this branch; every push was checked with `tools/check-push.sh`; runs used `ulimit -c 0` and ran outside the repository.
 
 ## Owner decisions (2026-10-05, round 5)
 
@@ -9,17 +19,6 @@ These are the owner's decisions, recorded by the lead agent from the owner's mes
 - The owner's action on a degraded service is a bar button and a command.
 - The confirm step asks the init for health.
 - No machine runs systemd (the owner's correction of 2026-10-05); the init would be exclusive to the hub.
-
-
-**Done:** (1) the scorecard (section 1 below, committed before any measurement). (3) the harness in `tools/bench/init/` (stand-in services, fault injector with kill, hang, crash storm, slow/failed dependency, full disk, supervisor killed, PID 1 killed or wedged, out of memory, clock jumps, update trial boot, policy-bug test; a chaos soak mode; eight candidates: s6 plain, s6+s6-rc, runit, dinit, OpenRC, and architecture C with a Go brain, C with an Elixir/OTP brain, B approximated). Prototypes of the escalation ladder and health probe in Go and Elixir (unit tests pass). Static PID 1 language stubs measured (`results/pid1-stubs.txt`). Host-side checks (`results/graph-checks.txt`, `credentials-test.txt`, `sizes.txt`).
-
-**Not done:** the measurement campaign over all candidates (only s6plain was run: boots, PID 1 killed/wedged, three trial boots, and 36 of about 60 steps of the fault suite, in `results/partial-s6plain/`; its supervisor-killed, storm, dependency, disk-full, clock and OOM results do not exist); no chaos soak ran at all (so no soak hours to report); sections 2 and 4 to 6 of the task (comparison text, the data summary, the custom-init design and the owner questions) are not written, only drafts of some tables in `results/drafts/`. **No conclusion about s6 versus a custom init has been drawn.**
-
-**Partial findings (TESTED in QEMU 8.2.2 without KVM, host loaded, 4 CPUs seen):** today's s6 recovers a killed service in a median 3.1 s (worst 7.4 s, 30 kills); a wedged driftwm (SIGSTOP or busy loop) is never noticed (6 of 6 needed a person); in a trial boot a wedged driftwm is CONFIRMED (false confirmation, 19.8 s) because s6 only sees that the process exists; a driftwm that cannot start leads to a rollback at 60 s with the watchdog guard still feeding; PID 1 killed: machine back in 20 to 23 s; PID 1 wedged (ptrace stop): the guard stops feeding and the machine is back in 49 s. Go brain over s6: hung driftwm recovered in about 12 to 17 s by probe, crash storm ended in "degraded + alert" with the rest running (debug run, not in the campaign).
-
-**How to resume:** the work directory and all downloads were deleted to free disk. Rebuild with `W=<empty dir outside the repo> bash tools/bench/init/fetch-and-build.sh` (about 30 min; NOT re-run as one script after it was assembled), then use the scripts in `tools/bench/init/resume/` (`env.sh` holds the paths: edit W and REPO; `campaign1.sh` runs boot, PID 1, trial and fault suites for all candidates one VM at a time; `bugtest.sh`; `rep.sh` or `python3 tools/bench/init/report.py RUNDIR [SOAKDIR]` makes the tables). Soak: `python3 tools/bench/init/run-qemu.py CAND soak --dur 2700 --seed 1 --out RUNDIR/CAND-soak-1.log` (build the rootfs first with `bash tools/bench/init/mkrootfs.sh CAND`). The `gen_*.py` and `patch*.py` files in `resume/` are the generators and edits already applied to the candidates (kept only for the record). Known harness facts: s6-rc needs `/opt/s6` paths mirrored at the host build prefix; `select{}` in the PID-1 wedge helper is a deadlock; the Elixir brain must be started with `-eval "'Elixir.Brain':main()."`; dinit's `boot` must use `waits-for`, otherwise a failed service stops `boot`.
-
-**Security:** no core, dump, environment or credential files are in this branch (checked by `find`); runs used `ulimit -c 0` and ran outside the repository.
 
 ---
 
@@ -109,3 +108,76 @@ Boot progress screen with plain-words status and errors; boot timeline history w
 ### 1.8 Low-weight criteria (5 points in all)
 
 Boot time to the last service ready (2), PID 1 and supervisor memory (1), idle CPU (1), code size (1). Measured and reported; they decide nothing on their own.
+
+---
+
+# RESULTS (written 2026-10-12 from `init-comparison-run.md` and `tools/bench/init/results/step2/`; data only)
+
+Labels as in section 0. Every number below is in the run log; where I give a number without a label it is TESTED in the harness named in section 2. The raw tables of the elimination round are in `tools/bench/init/results/step2/FINAL-TABLES.md`. There is no ranking and no recommendation in this part, by the owner's order.
+
+## 2. What was tested, and how
+
+- **The machine.** QEMU 8.2.2 without KVM, 2 vCPU, 1 GB, Ubuntu 24.04 kernel 6.8, one virtual machine at a time. Timings are therefore slower and noisier than on real hardware; ratios between candidates measured the same way are the useful part.
+- **The services.** Six stand-ins (seatd, udevd, dbus, driftwm, waybar, hubd) written for the test: one small Go program that behaves like each real one for what an init can see (start order, readiness, a socket that answers `state`, exit when the compositor's socket goes away, injectable faults). The real compositor, bar and hub daemon were not run. Waybar and hubd are started through the image's `follow-driftwm` wrapper (the "parity rules") in every candidate that was given them.
+- **The candidates.** s6 plain (what the image has), s6 with s6-rc (`s6rc`, then `s6rc-par` with the same wait and follow rules), runit (stock; `runit-111` with the documented exit-111 restart; `runit-111np` without `-P`), dinit (default, `-par`, `-sm` smooth-recovery, `-ms` milestone dependencies, `-wf` waits-for), OpenRC (`openrc`, `-par`, `-doc` with documented options only, `-doc2` with a different confirm hook), architecture C (s6-rc plus a policy brain in Go, `c-go`, or in Elixir, `c-elixir`) and architecture B approximated (`b-go`: s6-svscan as PID 1 and the Go brain starting and watching the services itself). The first setups of `s6rc`, `dinit` and `openrc` were not equal to s6 plain in their wait and follow rules; they were re-run and the first results are kept and marked.
+- **The elimination round (per candidate).** 3 boots; PID 1 killed twice; PID 1 wedged once (a hardware-watchdog stand-in fed by a minimal guard); 3 trial (update) boots: healthy, driftwm that cannot start, driftwm wedged 2 s after it first worked; the fault suite. The fault suite has 43 steps: 18 kills (3 per service), 6 hangs of driftwm (3 SIGSTOP, 3 busy loop), 2 crash storms (40 s), a slow and a failing seatd, 2 full-disk, 12 supervisor-kill events, 2 scanner-kill events, 2 brain kills, 4 clock jumps (+1 day, -1 hour), 2 out-of-memory. Which steps give events depends on what the candidate has (a supervisor, a scanner, a brain): 36 events are common to all, the others only to those who have the part (run log, follow-up 2, item 1).
+- **Two counts that are easy to misread.** "Stuck" = a state only a reboot clears. "Needed a person" = nothing recovered within 60 s and the harness then ran the candidate's own restart command (what the owner would type); it is not a stuck state.
+- **The soak.** Random faults every 5 to 20 s for 2 x 2 hours with a new seed per chunk (after a 30-minute pilot), memory of PID 1, scanner, supervisors and brain read every 60 s, restarts counted in the VM, slope of memory against restarts with a 95 % interval. Only candidates without a stuck state in the elimination round were soaked (the owner's rule), plus two that were stopped early.
+- **Extra checks.** The hung compositor on every surviving candidate; the runit source reading; the OpenRC and dinit documented-options tries; a sharper memory measurement for the Go brain; the hang-rule data and the test watcher (see the run log, follow-up 3).
+
+## 3. What could not be tested
+
+Real hardware, real watchdog behaviour, KVM-speed timing; the real driftwm, waybar, hubd and viewers; real power loss and disk damage; the services' own memory (only the init side was measured); runs longer than 4 hours; leaks smaller than each interval (about 20 bytes per restart for s6rc-par, 200 bytes for the Go brain); the c-go brain's counters; a soak of c-go and c-elixir (stopped early with a stuck state), of dinit (no setup passed) and of the first setups; whether dinit has a setting that retries a failed start (three setups tried and recorded: `depends-on`, `depends-ms`, `waits-for`; the owner stopped further variants); the hang rule in the product (not built); anything about the custom designs A and B beyond the one approximation of B.
+
+## 4. Results per candidate (elimination round; soak where it ran)
+
+| Candidate | Elimination: events ran (needed a person), stuck | Soak (4 h): events, needed a person, stuck, self-reboots; slope per 1000 restarts [95 %] | What stands out (TESTED) |
+|---|---|---|---|
+| s6plain | 48 (3), 0 | 595, 54, 1, 0; +20.9 [+1.7, +40.0] | hung compositor never noticed; the first run once looped on logger lock errors (not reproduced in the full repeat) |
+| s6rc (first setup) | 19 of 48 (3), 8 | not run | stuck because the setup lacked the follow rule; withdrawn by `s6rc-par` |
+| s6rc-par | 48 (5), 0 | 663, 50, 0, 0; -8.6 [-19.5, +2.2] | hung compositor never noticed (SIGSTOP 3 of 3, busy loop 2 of 3) |
+| runit (stock) | 48 of 50 (4), 0 | 779, 43, 0, 29; -70.4 [-168.9, +28.1] (one usable chunk) | a kill of `runsvdir` makes runit leave stage 2 and reboot the machine (29 times in the soak) |
+| runit-111 | 50 (7), 0 | 647, 55, 0, 0; +0.2 [-29.3, +29.7] | no reboot at a scanner kill; the restarted stage 2 produces lock-error lines (7831 in 4 h) |
+| runit-111np | 50 (6), 0 | not run | 0 stuck, 0 self-reboots, 53 lock-error lines (below the soak rule: 0 lock lines) |
+| b-go (B approximated) | 38 (0), 0 | 702, 0, 0, 0; +99.9 [-1084, +1284]; with forced collection and counters (b-go-stats) -37.2 [-274, +199] | hung compositor noticed 10.6 to 15.1 s; one process holds every service |
+| c-go (C with Go brain) | 48 of 50 (2), 1 | stopped after 14 min: 2 stuck (supervisor of driftwm killed) | hung compositor noticed 9.3 to 13.7 s; the supervisor-killed driftwm step ends at the brain's give-up (alert) and a stuck state |
+| c-elixir | 47 of 50 (2), 2 | stopped: 1 stuck, then a logger-lock loop | hung compositor noticed 14.1 to 15.4 s; same weak step as c-go |
+| dinit (default, -par, -sm, -ms, -wf) | 20 / 20 / 13 / 31 / 33 of 36, stuck 8 / 8 / 8 / 5 / 3 | not run | a service that fails to start (crash storm, failing seatd) stays down; none of the three documented relationships (`depends-on`, `depends-ms`, `waits-for`) fixed all of it |
+| openrc (first setup) | 46 of 48 (20), 2 | not run | not equal to s6 plain in its rules |
+| openrc-par | 48 (12), 0 | not run | killed `supervise-daemon` never restarted; SIGSTOP never noticed (stop schedule TERM only) |
+| openrc-doc | 48 (6), 0 | 569, 53, 0, 0; +33.5 [-50.2, +117.2] | hung compositor noticed 19.4 to 20.2 s; killed supervisor not restarted (all 6 and 53 "needed a person" events are that) |
+
+## 5. What each part of the scorecard shows (no points, no total)
+
+The scorecard weights reliability (45) and integration (40) most; boot speed, memory, idle CPU and code size least (5 together). Only the parts the harness measured are shown. A dash means the harness has no data for that candidate.
+
+| Scorecard part | What the data show, per candidate |
+|---|---|
+| **R1 service killed (5)** | All 18 plain kills recovered by themselves in s6plain (median 2.8 s, worst 6.5), s6rc-par (1.9, 5.0), runit (1.9, 4.2), runit-111 (1.8, 4.2), b-go (3.6, 6.7), c-go (3.1, 8.9), c-elixir (2.8, 11.1; one stuck at a kill of driftwm), openrc-doc (2.8, 17.7), dinit-wf (1.8, 4.0). dinit-par and dinit-sm left services down after kills (5 and 6 times). |
+| **R2 hung but alive (6)** | Noticed by itself: b-go (10.6 to 15.1 s), c-go (9.3 to 13.7), c-elixir (14.1 to 15.4), openrc-doc (19.4 to 20.2). Not noticed (SIGSTOP 3 of 3, supervisor shows "up"): s6plain, s6rc-par, runit, runit-111, every dinit setup, openrc-par. |
+| **R3 crash storm (6)** | Services running again after the 40-s storm without a person: s6, runit, b-go, openrc-doc (none of these raise an alert; they restart without limit, 18 to 39 starts in 40 s). c-go and c-elixir give up on purpose and raise the alert (the owner's wording: "degraded and alert"); a person's `retry` ends it. Dinit (all) and openrc-par leave the failed service down (stuck, or a person). |
+| **R4 slow or failed dependency (5)** | Slow seatd: dependents recovered in 18.8 to 22.6 s in the s6, runit, b-go, c-go, c-elixir, openrc-doc, dinit-wf candidates (dinit-par 33.9, dinit 32.9); the s6, runit and OpenRC candidates start dependents 2 to 12 times while waiting (the polling of `follow-driftwm`), b-go 1 time each, the brains 1 to 19. Failing seatd: recovered in s6, runit, b-go, c-go, c-elixir, openrc-doc; stuck or a person in dinit (all), openrc-par. |
+| **R5 disk full (4)** | No candidate stalled or lost a service; recovery 0.1 to 0.2 s (openrc-par 3.4 s). |
+| **R6 supervisor killed (5)** | s6plain, s6rc-par, runit, runit-111: the scanner restarts the supervisor, the service keeps running (0.1 to 18 s). b-go, dinit: no separate supervisors (not applicable). c-go, c-elixir: 1 of 5 each ended stuck (supervisor-killed driftwm). OpenRC: nothing restarts `supervise-daemon`; the service keeps running, but the next kill of the service needs a person (6 of 12 supervisor events in openrc-par and in openrc-doc). Scanner killed: stock runit reboots the machine; runit-111 and runit-111np restart stage 2 (5 s) with lock-error lines. |
+| **R7 PID 1 killed or wedged (6)** | PID 1 killed: machine back in 15 to 27 s in every candidate. Wedged: guard noticed within 0 to 2 s (where logged), machine back in 45 to 52 s in every candidate. The harness's guard and the reset path are the same for all, so this part shows little difference. |
+| **R8 out of memory (4)** | The memory hog was killed and no service was lost in every candidate (0.1 to 0.2 s). The stand-in's protection came from the `policy` wrapper or native keys; not compared separately. |
+| **R9 clock jumps (4)** | All candidates recovered from +1 day and -1 hour in 0.1 to 7.3 s, except: openrc (first setup) needed a person for both, runit-111 had one event with waybar missing after -1 hour. |
+| **I1 trial-boot confirm tied to health (5)** | A driftwm wedged 2 s after it worked was confirmed falsely in s6plain, s6rc-par, runit, runit-111, dinit (all), openrc-doc2; the brain candidates did not confirm falsely (32.6 to 41.7 s, b-go 37.5). A driftwm that cannot start: rolled back at 60 s everywhere except stock runit and runit-111 (confirmed falsely with a service missing). OpenRC's own hook rolled back every trial including the healthy one; the cause was my test hook (six slow `rc-service` calls), fixed in `openrc-doc2`. |
+| **I3 ladder that ends in an alert (6)** | Only c-go and c-elixir (alert file after the limit; storm on driftwm and a supervisor kill reached it). b-go has a ladder in its source (give up after 6 failures in 60 s) but in the 40-s storms the harness found no alert (`alert=no`; the reason was not examined: UNKNOWN). The others have no limit and no alert. |
+| **I4 no service-failure reboot (4)** | Stock runit reboots at a scanner kill (29 times in the soak). No other candidate rebooted itself because of a service fault. |
+| **I5 dependents follow (4)** | All candidates with the follow rule: yes (polling script `follow-driftwm`, the owner's own); the brains did it by their graph (start counts of 1 to 2 for hubd while the compositor restarted). |
+| **Low weight: boot, memory, idle CPU** | Supervisor start to desktop (median s): dinit 5.0 to 6.2, s6plain 5.8, runit 6.1, s6rc 6.4, c-go 6.4, c-elixir 6.3, b-go 7.3, s6rc-par 7.9, openrc 8.4 to 10.2. PSS of PID 1 plus supervisors plus layer (kB): runit 1880, dinit 2096, s6plain 2466, s6rc-par 2674, openrc-doc 3056, b-go 5028, c-go 10962, c-elixir 35574. Init-side idle CPU in 30 s (ticks): 0 to 13 for the plain inits, 29 (b-go), 234 to 267 (c-go, c-elixir). Code size was not measured here. |
+| **Memory over 4 h** | No slope was distinguishable from zero except s6plain (+21 kB per 1000 restarts, interval +1.7 to +40.0, i.e. 2 to 40 bytes per restart); b-go's interval is wide (±1.2 MB per 1000 restarts; ±240 kB with forced collections). |
+| **The hang rule (owner's decision)** | See the run log, follow-up 3: the test watcher run under s6rc-par and runit-111, and the costs per init. |
+
+Not in this table because the harness did not measure them: I2 (native probe: the brains and OpenRC have one; the others none), I6 to I10, and the ten candidate features of 1.7. Their ratings, if the owner wants them, come from reading the init's documentation (SOURCE), not from these runs.
+
+## 6. Open questions for the owner
+
+1. OpenRC (`openrc-doc`): 0 stuck, 0 self-reboots, but a killed `supervise-daemon` is not restarted (no documented option). The owner's decision of 2026-10-12 records it as passing the elimination rules but not recovering by itself; is that enough, or is a restart of the supervisor required?
+2. runit: runit-111np (no `-P`) has 0 stuck and 0 self-reboots but still produced 53 lock-error lines in one run; runit-111 produced 7831 in 4 h. Is a lock-error loop that does not stop services acceptable, or must it be 0?
+3. The hang rule: with the stand-in the hubd probe keeps answering while the compositor is frozen, so a literal "both probes failing" never fires (run log, follow-up 3). What should the second probe be in the product?
+4. The brains (c-go, c-elixir) and b-go notice a hang by themselves; the owner's decision was a separate watcher. Is a brain still wanted for anything else (crash-storm alert, trial-boot confirm)?
+5. Should the c-go brain get the same counters as b-go (4.5 hours), and should c-go or c-elixir be soaked again after the supervisor-killed step is understood?
+6. Which scorecard ratings should be computed (points), now that the data exist, and who decides what "2 = a helper we write" means for the watcher?
+7. Real hardware: is a run on a real machine (KVM speed, real watchdog) wanted before any decision?

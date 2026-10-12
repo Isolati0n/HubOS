@@ -1,0 +1,98 @@
+H# start 2026-10-12 17:38:25 cand=runit-wdc suite=pid1wedge cpus_seen=4 loadavg_at_start=['0.77', '0.59', '0.57']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-wdc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1wedge hub.dur=600 hub.seed=120 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir hub.watcher=watcher hub.wmode=compositor
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.80 Booting from ROM..c[?7l[2JCH STAGE1 up=2.38
+H     4.86 CH CAND runit pid1=runit stage2=runsvdir
+H     4.92 CH SUP-START up=2.50
+H     4.97 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.98 - runit: enter stage: /etc/runit/1
+H     4.99 - runit: leave stage: /etc/runit/1
+H     5.00 - runit: enter stage: /etc/runit/2
+H     5.03 CH t=0.0 CHAOS start cand=runit suite=pid1wedge seed=120 cpus=2
+H     6.08 watcher: started pid=131 mode=compositor (TEST STAND-IN, not the product watcher)
+H     7.15 watcher: round 1 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H     8.09 watcher: round 2 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H     9.09 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    10.09 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    10.95 CH t=6.0 BOOT-OK up=8.52 ok=1 (seconds since kernel start; waited 5.7)
+H    11.09 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    12.09 watcher: round 6 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    13.09 watcher: round 7 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    14.10 watcher: round 8 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    15.09 watcher: round 9 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    15.96 CH t=11.0 INJECT pid1-wedge (held stopped by ptrace)
+H    15.99 PID 1 held stopped
+H    16.09 watcher: round 10 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    17.09 watcher: round 11 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    17.99 guard: PID 1 check failed (1)
+H    18.09 watcher: round 12 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    19.10 watcher: round 13 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    20.09 watcher: round 14 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    20.98 CH t=16.0 PID1-STATE t guard=S watchdog_dev=true
+H    20.99 guard: PID 1 check failed (2)
+H    21.09 watcher: round 15 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    22.09 watcher: round 16 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    23.09 watcher: round 17 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    24.00 guard: PID 1 check failed (3)
+H    24.09 watcher: round 18 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    25.09 watcher: round 19 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    25.99 CH t=21.0 PID1-STATE t guard=S watchdog_dev=true
+H    26.09 watcher: round 20 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    27.00 guard: PID 1 check failed (4)
+H    27.10 watcher: round 21 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    28.09 watcher: round 22 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    29.09 watcher: round 23 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    30.01 guard: PID 1 check failed (5)
+H    30.09 watcher: round 24 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    31.00 CH t=26.0 PID1-STATE t guard=S watchdog_dev=true
+H    31.10 watcher: round 25 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    32.09 watcher: round 26 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    33.01 guard: PID 1 check failed (6)
+H    33.09 watcher: round 27 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    34.09 watcher: round 28 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    35.10 watcher: round 29 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    36.02 guard: PID 1 check failed (7)
+H    36.02 CH t=31.1 PID1-STATE t guard=S watchdog_dev=true
+H    36.09 watcher: round 30 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    37.09 watcher: round 31 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    38.09 watcher: round 32 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    39.02 guard: PID 1 check failed (8)
+H    39.09 watcher: round 33 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    40.09 watcher: round 34 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    41.03 CH t=36.1 PID1-STATE t guard=S watchdog_dev=true
+H    41.09 watcher: round 35 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    42.03 guard: PID 1 check failed (9)
+H    42.09 watcher: round 36 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    43.09 watcher: round 37 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    44.09 watcher: round 38 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    45.03 guard: PID 1 check failed (10)
+H    45.10 watcher: round 39 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    46.04 CH t=41.1 PID1-STATE t guard=S watchdog_dev=true
+H    46.09 watcher: round 40 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    47.09 watcher: round 41 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    48.04 guard: PID 1 check failed (11)
+H    48.09 watcher: round 42 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    49.10 watcher: round 43 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    50.10 watcher: round 44 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    51.04 guard: PID 1 check failed (12)
+H    51.06 CH t=46.1 PID1-STATE t guard=S watchdog_dev=true
+H    51.09 watcher: round 45 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    51.33 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    56.05 Booting from ROM..c[?7l[2JCH STAGE1 up=3.10
+H    56.11 CH CAND runit pid1=runit stage2=runsvdir
+H    56.16 CH SUP-START up=3.22
+H    56.23 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H    56.24 - runit: enter stage: /etc/runit/1
+H    56.26 - runit: leave stage: /etc/runit/1
+H    56.27 - runit: enter stage: /etc/runit/2
+H    56.29 CH t=0.1 CHAOS start cand=runit suite=pid1wedge seed=120 cpus=2
+H    57.29 watcher: started pid=133 mode=compositor (TEST STAND-IN, not the product watcher)
+H    58.31 watcher: round 1 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    59.30 watcher: round 2 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    60.31 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    61.34 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    62.32 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    62.36 CH t=6.1 BOOT-OK up=9.41 ok=1 (seconds since kernel start; waited 5.9)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 62s, loadavg ['0.70', '0.60', '0.57']
+H# end wall=62.4s launches=1 suite_done=True

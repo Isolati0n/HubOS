@@ -1,0 +1,11 @@
+16:54:31 boot --timeout 150 --seed 101 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-boot-1.log
+16:55:30 boot --timeout 150 --seed 102 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-boot-2.log
+16:56:28 boot --timeout 150 --seed 103 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-boot-3.log
+16:57:27 pid1crash --timeout 300 --seed 111 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-pid1crash-1.log
+16:58:01 pid1crash --timeout 300 --seed 112 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-pid1crash-2.log
+16:58:33 pid1wedge --timeout 400 --seed 120 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-pid1wedge-1.log
+16:59:35 trial --trial healthy --timeout 250 --seed 130 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-trial-healthy.log
+17:00:21 trial --trial crash --preflag driftwm.crash --timeout 250 --seed 131 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-trial-crash.log
+17:01:07 trial --trial hang --timeout 250 --seed 132 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-trial-hang.log
+17:01:53 faults --reps 3 --timeout 4500 --seed 200 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/runit-wd/runit-wd-faults-1.log
+finished 17:14:49
