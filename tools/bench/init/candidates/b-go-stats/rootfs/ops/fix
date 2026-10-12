@@ -1,0 +1,2 @@
+#!/bin/sh
+hubsim ctl /run/hubos/brain.sock "retry $1" 2>/dev/null
