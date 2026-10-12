@@ -31,7 +31,7 @@ for c in $cands; do
     cd $REPO && git add -A tools/bench/init/results/step2/soak && git commit -q -m "Step 2 soak: $c ${PREFIX:-chunk} $k ${stopped}
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01Kb6L66wDxnkQ4pMAxMZR4E" && git fetch -q origin && tools/check-push.sh && git push -q origin init-comparison-step2 && echo "chunk $n pushed, $(date -u +%T)" >> $W/runs/soakq.progress
+Claude-Session: https://claude.ai/code/session_014eDKni7z8VkkvoLh3h3vmu" && git fetch -q origin && CHECK_PUSH_BASE=origin/init-comparison-step2 bash tools/check-push.sh && git push -q origin init-comparison-step2 && echo "chunk $n pushed, $(date -u +%T)" >> $W/runs/soakq.progress
     [ -n "$stopped" ] && break
   done
 done

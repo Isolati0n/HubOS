@@ -502,6 +502,8 @@ Recorded from the owner's message (no change by me):
 
 # Follow-up 3 (2026-10-12): data only
 
+> **Correction added in follow-up 4.** The "rule as written" rows of this section paired a compositor probe with a **hubd** probe and required both to fail. That is not the owner's rule: `hub-stability.md` section 9.1 ("Two probes, and both must fail") pairs two probes that are **both aimed at the compositor** (driftwm's socket `state` request and a Wayland `wl_display.sync` round trip), both answered by the compositor's single event-loop thread. So the rows `s6rc-par-wd` and `runit-wd` are relabelled "compositor + hubd probes (not the owner's rule)" and the `-wdc` rows "one compositor probe only (not the owner's rule)". The numbers are unchanged and kept as measured. The rows for the owner's rule are in "Follow-up 4" below. The program used here is kept unchanged in `tools/bench/init/prototypes/watcher-fu3/`.
+
 Order from the owner: items 1 to 5. No init written, no winner named, whether s6 stays is not decided. Parked items (focus core, session layer, backlog) were not started. The only new program is the test watcher, a **TEST STAND-IN, not the product watcher; the hang rule is not built** (`tools/bench/init/prototypes/watcher/`). One virtual machine at a time throughout; no packages installed; no result was taken while another VM ran. Logs: `tools/bench/init/results/step2/<candidate>/` (spam `SAMPLE` lines stripped); tables: `results/step2/FINAL-TABLES.md`.
 
 ## Item 1: runit-111np (`candidates/runit-111np/`, logs `results/step2/runit-111np/`)
@@ -529,7 +531,7 @@ See "Updated final table (follow-up 3)" below: new column "restarts a killed sup
 **Setup.** `candidates/s6rc-par-wd/` (s6rc-par plus an s6-rc long-run service `watcher` that depends on `hubd`, listed in `top`) and `candidates/runit-wd/` (runit-111 plus `/etc/sv/watcher/run` and a log service). `*-wdc` uses the same images with the watcher in `-mode compositor` (see below). The fault suite is the same plus steps 44 and 45: kill the watcher with SIGKILL; the init must start it again (EV `watcher-killed`).
 **What I found before the runs (TESTED in the first boots): the owner's rule as worded cannot fire for a frozen stand-in compositor.** The stand-in hubd keeps answering `ping` while the compositor is stopped (its "connected" flag only drops when the compositor's socket closes). A frozen compositor therefore gives "compositor fails, hubd ok", not "both fail". I ran the rule **as written** first (`-wd`) and, as a clearly labelled variation, the same program acting on the compositor probe alone (`-wdc`, still 4 rounds, 30 s, 3 kills in 10 minutes). The `-wdc` variation is not the owner's rule; it is there to show what the init does once a kill happens. What the product's second probe should be is a question for the owner.
 
-| | s6rc-par-wd (rule as written) | runit-wd (rule as written) | s6rc-par-wdc (compositor probe alone) | runit-wdc (compositor probe alone) |
+| | s6rc-par-wd (compositor + hubd probes, not the owner's rule) | runit-wd (compositor + hubd probes, not the owner's rule) | s6rc-par-wdc (one compositor probe only, not the owner's rule) | runit-wdc (one compositor probe only, not the owner's rule) |
 |---|---|---|---|---|
 | Events defined / ran | 50 / 50 | 52 / 52 | 50 / 50 | 52 / 52 |
 | Stuck states | 0 | 0 | 0 | 0 |
@@ -565,7 +567,7 @@ See "Updated final table (follow-up 3)" below: new column "restarts a killed sup
 | Probe | a shell function per service in its init script (`healthcheck_timer=2`, `healthcheck_delay=10`); here `hubsim probe` with a 1-s timeout | a program, two probes per round |
 | Rounds before it acts | none: the first failed check stops and respawns (SOURCE lines 724 to 745) | 4 failed rounds and 30 s (unit-tested; run in `-wdc`) |
 | Kill budget | health-check restarts count toward `respawn_max`/`respawn_period` (SOURCE lines 765 to 785); past the limit `supervise-daemon` exits and the service stays down | 3 kills in 10 minutes, logged `CAP`; the compositor is left as it is |
-| Time fault to desktop | 19.4 to 20.2 s (TESTED, SIGSTOP) | 35.8 to 38.0 s (TESTED, `-wdc`); the rule as written did not fire |
+| Time fault to desktop | 19.4 to 20.2 s (TESTED, SIGSTOP) | 35.8 to 38.0 s (TESTED, `-wdc`); the compositor + hubd pairing (not the owner's rule) did not fire |
 | Works while | `supervise-daemon` of that service lives (a killed supervisor: nothing restarts it, TESTED 6 of 6 follow-up kills needed a person) | the watcher lives (killed: restarted by the init in 0.2 to 1.1 s, 8 of 8) |
 | A check that hangs | holds the supervisor (SOURCE `rc_waitpid`, lines 729 to 731) | the probe has a 1-s timeout; a hung watcher is not probed by anything here (the conductor would) |
 | One place for the counting | no: one function per service plus a state file | yes, one program for every init |
@@ -591,10 +593,10 @@ New column: **restarts a killed supervisor by itself** (yes / no / not applicabl
 | openrc (first setup) | 48 / 46 | 2 | 20 | not noticed | **no** (the 6 follow-up kills of the service after its supervisor was killed: 6 of 6 needed a person) | not run |
 | openrc-par | 48 / 48 | 0 | 12 | not noticed | **no** (6 of 6, steps 31 to 36) | not run |
 | openrc-doc | 48 / 48 | 0 | 6 | noticed, 19.4 to 20.2 s | **no** (6 of 6, steps 31 to 36; no documented option exists) | 569, 53, 0, 0; 2988 to 2977 kB; +33.5 [-50.2, +117.2] |
-| s6rc-par-wd (watcher, rule as written) | 50 / 50 | 0 | 5 | not noticed (watcher did not fire) | **yes** (12 of 12 ok) | not run |
-| runit-wd (watcher, rule as written) | 52 / 52 | 0 | 5 | not noticed (one false kill in a crash storm) | **yes** (14 of 14 ok, includes scanner events) | not run |
-| s6rc-par-wdc (watcher, compositor probe alone) | 50 / 50 | 0 | 1 | noticed after 3 kills, 36.5 to 38.0 s; the 4th hang capped | **yes** (12 of 12 ok) | not run |
-| runit-wdc (watcher, compositor probe alone) | 52 / 52 | 0 | 3 | noticed after 3 kills, 35.8 to 36.9 s; the 4th to 6th capped | **yes** (14 of 14 ok) | not run |
+| s6rc-par-wd (compositor + hubd probes, not the owner's rule) | 50 / 50 | 0 | 5 | not noticed (watcher did not fire) | **yes** (12 of 12 ok) | not run |
+| runit-wd (compositor + hubd probes, not the owner's rule) | 52 / 52 | 0 | 5 | not noticed (one false kill in a crash storm) | **yes** (14 of 14 ok, includes scanner events) | not run |
+| s6rc-par-wdc (one compositor probe only, not the owner's rule) | 50 / 50 | 0 | 1 | noticed after 3 kills, 36.5 to 38.0 s; the 4th hang capped | **yes** (12 of 12 ok) | not run |
+| runit-wdc (one compositor probe only, not the owner's rule) | 52 / 52 | 0 | 3 | noticed after 3 kills, 35.8 to 36.9 s; the 4th to 6th capped | **yes** (14 of 14 ok) | not run |
 
 ## What I could not test (follow-up 3)
 Real hardware and KVM timing; the real compositor, viewers and hubd (stand-ins only; the hubd stand-in answers while the compositor is frozen, which the real hubd may or may not do: UNKNOWN); a real second probe for the hang rule; the watcher under OpenRC and under b-go (not run, by the instruction: s6rc-par and runit only); a soak with the watcher; the kill budget returning after 10 minutes in a VM; the watcher and the conductor probing each other; a watcher killed while a hang is in progress; the 53 `svlogd` lock lines' cause; why OOM step 49 of `runit-wd` lost driftwm and hubd.

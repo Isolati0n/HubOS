@@ -8,9 +8,9 @@ and the script goes on at the next step). A run also ends when the driver has re
 Usage example: event_counts.py runit=a.log,b.log,c.log   (the logs of one candidate are merged by step number)"""
 import re, sys, collections
 FEAT = {  # which features each candidate has (from hub.sup / hub.scan / hub.brain in its cmdline file)
- "sup":  {"s6plain","s6rc","s6rc-par","s6rc-par-wd","s6rc-par-wdc","runit","runit-111","runit-111np","runit-wd","runit-wdc","c-go","c-elixir","openrc","openrc-par","openrc-doc"},
- "scan": {"runit","runit-111","runit-111np","runit-wd","runit-wdc"},
- "watcher": {"s6rc-par-wd","s6rc-par-wdc","runit-wd","runit-wdc"},  # steps 44-45 (follow-up 3): kill the test watcher; the init must restart it
+ "sup":  {"s6plain","s6rc","s6rc-par","s6rc-par-wd","s6rc-par-wdc","s6rc-par-wd2","runit","runit-111","runit-111np","runit-wd","runit-wdc","runit-111-wd2","c-go","c-elixir","openrc","openrc-par","openrc-doc"},
+ "scan": {"runit","runit-111","runit-111np","runit-wd","runit-wdc","runit-111-wd2"},
+ "watcher": {"s6rc-par-wd","s6rc-par-wdc","s6rc-par-wd2","runit-wd","runit-wdc","runit-111-wd2"},  # steps 44-45 (follow-up 3): kill the test watcher; the init must restart it
  "brain":{"b-go","c-go","c-elixir"},
 }
 def expect(step, c):
