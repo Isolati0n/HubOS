@@ -380,3 +380,110 @@ and `src/wait.h` lines 11 to 13: `#define wait_crashed(w) ((w) & 127)`, `#define
 
 ## Item 6: the mirror fix (PR #79, commits on branch `tools-source-mirror`)
 A repeat `fetch` of a stored entry with a different expected hash now only **reports**: `mirror: demo 1.0 a.txt: hash mismatch: stored file has sha256 ..., expected ...; stored file and its state left untouched` (exit 1). It writes no `.corrupt` marker, downloads nothing, changes neither the file nor its meta file; `path` and `verify` still say ok; the right hash afterwards still says "present". A file that is **downloaded** with the wrong hash was already never stored (it is deleted, "nothing placed"); I kept that: there is no quarantine folder (only the empty lock file stays). New test `TestRepeatFetchWithWrongHashOnlyReports`. Both files are now `gofmt`-clean (they were not before; only whitespace). TESTED: `go test ./tools/mirror/` 11 of 11 pass; `go test -p 1 ./...` all packages ok (56 s); and by hand with a local server: wrong-hash repeat fetch exit 1 and the entry intact, `path` exit 0, `verify` exit 0, wrong-hash download exit 1 with nothing stored.
+
+
+## Memory counter fix (found during item 7; applies to OpenRC only)
+The soak driver finds the init-side processes by name (`/proc/PID/comm`). The kernel cuts a process name at 15 characters, so OpenRC's `supervise-daemon` (16 characters) was never found: every OpenRC memory figure I had given before held **PID 1 (`openrc-init`) only**. This is a measurement defect of mine; the figures were `openrc` 664 kB, `openrc-par` 586 kB and `openrc-doc` 548 kB in the boot tables. Fixed in `hubsim/chaos.go` (`supGroup` also matches the command line). Re-measured with the fixed driver (3 boots each, `results/step2/openrc-remeasure/`): **`openrc-par` 3036 kB and `openrc-doc` 3056 kB** (PID 1 about 700 kB plus six supervisors of about 400 kB each). The first openrc-doc pilot (30 minutes) was run before the fix, its memory columns are void and it is kept as `INVALID-openrc-doc-pilot1.*` (fault and restart data valid); the pilot was repeated with new seeds. Every other candidate's processes have names of 15 characters or fewer (`s6-supervise`, `runsv`, `runsvdir`, `brain`, `beam.smp`); for c-elixir the two small Erlang helper processes (`erl_child_setup`, `inet_gethost`) are not in the figure.
+
+## Item 7: the soak queue (candidates that passed the elimination round: openrc-doc, runit-111; dinit-wf did not pass and was not soaked)
+**Method.** The same as before (`soakq.sh`, `soak_analyze.py`, `soak_ci.py`): a 30-minute pilot first, then 2 chunks of 2 hours, a new seed for every run, PSS of PID 1 + scanner + all supervisors + brain every 60 s, restarts counted inside the VM, first 600 s of each boot left out, slope with a 95 % interval (standard error widened for the correlation of neighbouring samples), result files committed after every chunk (`results/step2/soak/`). The pilots measured the noise: openrc-doc total PSS noise 71 kB on 3 MB (it varies with the number of supervisor processes), runit-111 18 kB on 1.9 MB; both are small against 2-hour chunks of 800 to 900 restarts, so 2-hour chunks were kept. **Events** in the tables are the injector's EV lines of the soak (a random fault every 5 to 20 s); **needed a person** = EV lines with ok=0 (item 2 explains the term); stuck = a state only a reboot clears; self-reboot = the machine rebooted itself.
+
+| | openrc-doc | runit-111 |
+|---|---|---|
+| Soak length | 2 x 2 h (+ 30 min pilot, not counted) | 2 x 2 h (+ 30 min pilot, not counted) |
+| Injected events | 569 | 647 |
+| Restarts counted (stretches used) | 1624 | 1573 |
+| PSS of the init side, start, end | 2988 kB, 2977 kB | 1896 kB, 1841 kB |
+| **Slope, kB per 1000 restarts** | **+33.5, 95 % interval [-50.2, +117.2]** | **+0.2, 95 % interval [-29.3, +29.7]** |
+| Noise (sd around the line) | 126 kB | 23 kB |
+| Stuck states | 0 | 0 |
+| Self-reboots | 0 | 0 (the original runit rebooted itself 29 times in the same fault mix) |
+| Events that needed a person | 53 of 569: all of one kind, a service killed after its `supervise-daemon` had been killed (driftwm 11, hubd 18, seatd 16, waybar 8) | 55 of 647: 38 SIGSTOP and 16 busy-loop hangs of driftwm, 1 supervisor-killed driftwm |
+| Other | the hung compositor is noticed by the health check (about 20 s) | 6 scanner kills in 4 h, each `runit: warning: child failed: /etc/runit/2`, `restarting.`, no reboot; **7831 lines `unable to lock supervise/lock` / `svlogd: unable to lock directory`** (2757 in chunk 1, 5074 in chunk 2: the restarted stage 2 keeps trying to start `runsv` and `svlogd` while the old ones hold the locks, item 5) |
+Per process, runit-111's `runsvdir` moved +38 kB per 1000 restarts in chunk 1 and -45 in chunk 2 (standard errors about 3), i.e. no consistent direction; `runsv` +47 (chunk 2) with standard error 10. OpenRC's `supervise-daemon` (six processes together) +47 [standard error 48]. No leak is visible in either at this length; a leak under about 50 kB per 1000 restarts (OpenRC) or 30 kB (runit-111) would not be seen. 4 hours is the horizon of the test.
+
+**Earlier soaks, same method, for the table below:** s6plain (2 x 2 h; 1228 restarts; 2457 to 2464 kB; slope +20.9 [+1.7, +40.0]; noise 3.6 kB; 595 events, 54 needed a person (hang class), 1 stuck state after a hung driftwm, 0 self-reboots), s6rc-par (1357; 2687 to 2681; -8.6 [-19.5, +2.2]; 4.9 kB; 663 events, 50 needed a person, 0 stuck, 0 self-reboots), runit (646 restarts in the one usable chunk; 1900 to 1879; -70.4 [-168.9, +28.1]; 24 kB; 779 events, 43 needed a person, 0 stuck, 29 self-reboots), b-go (1644; the Go brain moves by 1 MB; +99.9 [-1084, +1284]; 702 events, 0 needed a person, 0 stuck). c-go and c-elixir were stopped early (item 1 of the first follow-up).
+
+## Item 8: a sharper memory measurement for b-go (`candidates/b-go-stats/`, logs `results/step2/soak/b-go-stats-*`, script `brain_counters.py`)
+**What I added (and only this).** (1) In the brain (`prototypes/go/main.go`): one new command on its status socket, `gcstats`. It calls `debug.FreeOSMemory()` (a forced garbage collection followed by returning freed memory to the operating system), then prints `runtime.MemStats` `HeapInuse`, `HeapAlloc`, `HeapSys`, `HeapReleased`, `NumGC`, `runtime.NumGoroutine()` and the number of open file descriptors (`/proc/self/fd`, which includes the one descriptor the listing itself holds). Nothing the brain decides depends on it. The brain binary of `b-go-stats` is that program; `b-go` itself is unchanged. (2) In the soak driver (`hubsim/chaos.go`): when the kernel command line has `hub.gcstats=1`, every 60 s, right before the PSS is read, it sends `gcstats` and logs one `BRAINSTAT` line next to the restart count. So **the PSS of the brain in this run is read just after a forced collection**, which changes what is measured (the heap is trimmed every minute); this is the point of the measurement, and it also means the new brain PSS values are lower and quieter than those of the earlier b-go soak. The same mix of faults and 60-second sampling as before; 2 x 2 h with new seeds after a 30-minute pilot.
+**Result (TESTED; 1542 restarts counted, 220 samples, 0 stuck states, 0 self-reboots, 0 events that needed a person).**
+
+| counter | start, end (mean of first and last 5 samples) | slope per 1000 restarts | 95 % interval | noise (sd) |
+|---|---|---|---|---|
+| brain PSS (smaps_rollup) | 4140 kB, 4274 kB | -37.2 kB | [-273.9, +199.4] kB | 277 kB |
+| HeapInuse | 589 005 B, 619 315 B | +7 158 B | [-24 076, +38 391] B | 46 036 B |
+| HeapAlloc | 118 821 B, 135 336 B | +4 648 B | [-11 662, +20 957] B | 19 604 B |
+| HeapSys | 3 627 418 B, 3 545 498 B | -33 320 B | [-132 028, +65 389] B | 119 812 B |
+| HeapReleased | 3 038 413 B, 2 926 182 B | -47 279 B | [-171 820, +77 263] B | 159 840 B |
+| goroutines | 11, 14 | +2.0 | [-0.6, +4.6] | 3.9 |
+| open file descriptors | 15, 16 | +1.7 | [-0.6, +4.1] | 3.6 |
+
+Reading (no pick): the 95 % interval of the brain's PSS slope is now 473 kB wide, against 2368 kB before (5 times narrower; s6rc-par's is 22 kB wide, so the Go brain is still about 20 times wider). At 95 %, a leak of more than about 200 kB per 1000 restarts (200 bytes per restart) in the brain's PSS is excluded, and in the Go heap in use more than about 38 bytes per restart and in the live allocations more than about 21 bytes per restart. Goroutines and descriptors rose by two over 1500 restarts; the interval includes zero, so it is not shown to be a trend, and it is not shown to be none (UNKNOWN: a drift of about one goroutine per 500 restarts cannot be told from none in this run). The Go runtime's counters are about ten times quieter than the PSS, which still holds the noise of the C library and the kernel's accounting. The c-go brain was **not** measured (the instruction: only if time allows after everything else; I stopped here).
+
+## Item 9: hang rule data (no pick)
+The owner's decision (2026-10-12): the hang rule is a tiny separate watcher that probes the compositor and hubd and kills a frozen one; the watcher and the conductor probe each other. The open question is only whether any init's own built-in check is worth using instead. Facts, per candidate that survived the elimination round (no stuck state: s6plain, s6rc-par, runit, runit-111, b-go, openrc-doc; c-go and c-elixir are included because they only had the by-design give-up). The dinit variants did not survive and are left out. "Lacks" means: lacks in the configuration I tested.
+
+| Candidate | (a) supervise the watcher (restart it when it dies) | (b) kill a frozen service | (c) restart it, with "after 4 failed rounds and 30 s with both probes failing, at most 3 kills in 10 minutes" | What it lacks |
+|---|---|---|---|---|
+| s6plain, s6rc-par | Add one service folder with a `run` script; `s6-supervise` restarts the watcher at once (1-second pause, TESTED for all services). s6rc-par also needs the folder compiled into the s6-rc database (`s6-rc-compile`). | `s6-svc -k` sends SIGKILL to the supervised process (SOURCE, s6 pages; used by the harness's fix command); the pid is in `s6-svstat`. A frozen (SIGSTOP) process dies to SIGKILL. | After the kill `s6-supervise` starts the service again after at most 1 s (TESTED, 18 kills, median 2 to 3 s to a working desktop). No limit exists in s6, so the 4 rounds, the 30 s and the 3-in-10-minutes count would all live in the watcher. | A rate limit or a count of kills; a way to tell the init "give up and show a message" (the harness's alert is its own file). |
+| runit, runit-111 | One service folder; `runsv` restarts the watcher. | `sv kill` or `sv force-restart` (SOURCE, `sv(8)`; the harness's fix uses `force-restart`); the harness's fix uses `force-restart`. | `runsv` restarts after the kill (TESTED, kills median 1.9 s). No limit built in; all counting in the watcher. | The same. Additionally runit's scanner (`runsvdir`) kill is a machine reboot in the stock setup (item 3) or a degraded restart in runit-111 (item 5): the watcher's supervisor tree is not stable under that fault. |
+| b-go (brain over s6-svscan, direct mode) | The brain starts and watches the services itself. The watcher would be a seventh entry in the brain's graph (a Go table in the source, `mk(...)` calls in `main.go`) or a separate s6 service next to the brain (`s6-svscan` is PID 1 and supervises the brain and the watchdog feeder). Needs a source change or a new service folder. | `Kill(name)` exists in the brain's backend (SIGKILL in direct mode, `s6-svc -k` in s6 mode); the watcher could also kill by itself. | The brain already does probe, kill and restart for driftwm (TESTED 10.6 to 15.1 s) with a ladder: restart, pause, restart dependents, give up (bench values: failures in a 60-second window, give up after 6). The rule's 10-minute window and 3 kills would be a change of the ladder's numbers; the 4 rounds and 30 s do not exist (see the table below). | A second probe, a 30-second condition, a ten-minute window; probing the brain itself (nothing probes it: a killed brain is restarted by `s6-svscan`, TESTED 0.1 s, services untouched). |
+| c-go, c-elixir | Same brain; the watcher is an s6-rc service (source folder + database) or the brain's graph. | Same brain backend (`s6-svc -k`). | Same ladder. Measured: storm on driftwm and a killed supervisor ended in the by-design give-up (alert file, `retry` by a person). | Same as b-go. |
+| openrc-doc | Init script with `supervisor=supervise-daemon`: restarts the watcher if it dies. If `supervise-daemon` itself is killed, nothing restarts it (class S in item 2, no documented option). | `supervise-daemon NAME --signal KILL` (SOURCE `supervise-daemon.8`, option `-s/--signal`: tell a supervisor to signal the process it supervises; not tested), or `rc-service X restart`, which stops by the `retry` schedule (here TERM, 5 s, KILL, 5 s), or the watcher kills the pid itself. | OpenRC's own health check already does probe, stop and respawn (below). `respawn_max=3`, `respawn_period=600` would approximate "3 in 10 minutes" but counts crashes too; past the limit `supervise-daemon` exits and leaves the service down. | The 4 rounds and 30 s (the first failed check acts); a kill-only count; the supervisor-of-the-supervisor. |
+
+**OpenRC's documented health check and retry schedule against a separate watcher (cost, SOURCE `supervise-daemon.c`, `supervise-daemon-guide.md`, TESTED in openrc-doc):**
+- Per service a `healthcheck()` shell function plus `healthcheck_timer`, `healthcheck_delay`, `retry=...` in the service's script: for the owner's two probes (compositor and hubd) that is two functions in two scripts; the rule's counting (4 rounds, 30 s, kill budget) would have to be kept in a state file written by the function, because `supervise-daemon` keeps no count of failed checks (one failed check = stop and respawn, lines 724 to 745).
+- The check runs as a child that `supervise-daemon` waits for before it does anything else (`rc_waitpid`, lines 729 to 731): a check that hangs holds the supervisor; the stand-in's probe has a 1-second timeout, a different probe program would need its own.
+- Health-check restarts count as respawns toward `respawn_max`/`respawn_period` (lines 765 to 785); after the limit the supervisor exits and the service stays down.
+- Measured recovery of a SIGSTOP'ed compositor: 19.4 to 20.2 s (check every 2 s after a 10 s delay, TERM wait 5 s, KILL, respawn 1 s) against 9.3 to 15.4 s for the brains and "not noticed" for the others. These timings are bench values for both.
+- It works only while `supervise-daemon` lives; the separate watcher is itself supervised by something, and in OpenRC that something is the same program.
+- A separate watcher: one program for all inits, the counting in one place, mutual probing with the conductor possible; it needs (a) to (c) above from whatever init the candidate is.
+
+**How the brain prototypes' probing differs from the owner's rule (so nobody reads their 10 to 15 s as the rule working):**
+
+| | Owner's rule (HUB-OS.md, hub stability decisions) | Brain prototypes (`prototypes/go/probe.go`, `ladder.go`, `main.go`; Elixir: `prototypes/elixir/brain.ex`) |
+|---|---|---|
+| What is probed | the compositor and hubd; "both probes" failing | driftwm only: one question ("state") on `/run/dw/wayland-1`, must answer "ok..." within 1 s |
+| Rounds | 4 failed rounds and 30 s | 3 failed probes in a row (`Need: 3`), one probe per 1-second tick; 8 s grace after a start |
+| Earliest kill | after 30 s | after about 3 s of failures (plus the 8 s grace after a start) |
+| Time to a working desktop after SIGSTOP | not measured (rule not built) | 9.3 to 15.4 s (kill, restart, wait for the socket, restart hubd and waybar) |
+| Kill budget | at most 3 kills in 10 minutes | ladder over a 60-second window: pause after 2 failures, restart dependents after 4, give up after 6 (bench numbers), then "degraded", alert file, and only the owner's `retry` resumes |
+| After the budget | stop restarting the compositor, fixed message, hubd and recovery terminal stay up | degraded + alert file (no fixed message, no terminal) |
+| Probing the prober | the watcher and the conductor probe each other | nobody probes the brain; s6 restarts it if it dies (TESTED 0.1 to 0.2 s) |
+The brains therefore detect a freeze about ten times sooner than the rule would and have a different budget; their timings measure the prototype's bench values, not the rule.
+
+
+## Updated final table (all candidates; no ranking; explanation of the counts in item 1, of "needed a person" in item 2)
+"Stuck" is counted in the elimination round. "Needed a person" counts EV lines with ok=0 in the elimination round. "Soak" is 2 x 2 h unless said otherwise; the leak slope is in kB per 1000 restarts with its 95 % interval (item 3 and item 7).
+
+| Candidate | Events the script defines / ran | Stuck states | Needed a person | SIGSTOP of the compositor | Soak (4 h): events, needed a person, stuck, self-reboots; PSS start to end; slope [95 % interval] |
+|---|---|---|---|---|---|
+| s6plain (full repeat) | 48 / 48 | 0 | 3 | not noticed | 595, 54, 1, 0; 2457 to 2464 kB; +20.9 [+1.7, +40.0] |
+| s6rc (first setup, not equal) | 48 / 19 | 8 | 3 | - | not run |
+| s6rc-par | 48 / 48 | 0 | 5 | not noticed | 663, 50, 0, 0; 2687 to 2681 kB; -8.6 [-19.5, +2.2] |
+| runit | 50 / 48 (2 lost to the self-reboot at the scanner kill) | 0 | 4 | not noticed | 779, 43, 0, 29; 1900 to 1879 kB (one usable chunk); -70.4 [-168.9, +28.1] |
+| runit-111 | 50 / 50 | 0 | 7 | not noticed | 647, 55, 0, 0; 1896 to 1841 kB; +0.2 [-29.3, +29.7]; 7831 lock-error lines |
+| b-go | 38 / 38 | 0 | 0 | noticed, 10.6 to 15.1 s | 702, 0, 0, 0; brain PSS 6242 to 6948 kB; +99.9 [-1084, +1284] |
+| b-go-stats (b-go + counters, forced collection) | not run as elimination | - | - | - | 700, 0, 0, 0; brain PSS 4140 to 4274 kB; -37.2 [-274, +199] |
+| c-go | 50 / 48 | 1 | 2 | noticed, 9.3 to 13.7 s | stopped after 14 minutes: 2 stuck states |
+| c-elixir | 50 / 47 | 2 | 2 | noticed, 14.1 to 15.4 s | stopped: 1 stuck state, then a logger loop |
+| dinit (first setup) | 36 / 20 (relaunch limit) | 8 | 6 | not noticed | not run |
+| dinit-par | 36 / 20 (relaunch limit) | 8 | 4 | not noticed | not run |
+| dinit-sm | 36 / 13 (relaunch limit) | 8 | 0 | not noticed | not run |
+| dinit-ms | 36 / 31 | 5 | 3 | not noticed | not run |
+| dinit-wf | 36 / 33 | 3 | 3 | not noticed | not run |
+| openrc (first setup) | 48 / 46 | 2 | 20 | not noticed | not run |
+| openrc-par | 48 / 48 | 0 | 12 | not noticed | not run |
+| openrc-doc | 48 / 48 | 0 | 6 | noticed, 19.4 to 20.2 s | 569, 53, 0, 0; 2988 to 2977 kB; +33.5 [-50.2, +117.2] |
+
+Boot (supervisor start to desktop), PID 1 killed (back in), PSS at idle, trial boots: see `results/step2/FINAL-TABLES.md`; the OpenRC PSS there is the corrected one.
+
+## What I could not test (follow-up 2)
+Real hardware and KVM timing; the real compositor, viewers and hubd (stand-ins only); `waits-for` together with a dinit service that does not report readiness (so a failed start cannot occur: not run, one attempt only); runit-111 without `-P` (would let the old `runsv` die with the stage-2 process group); the c-go brain's counters; leaks smaller than the intervals above; anything longer than 4 hours; the hang rule itself.
+
+## Questions for the owner (follow-up 2)
+1. dinit: the pages name no property that retries a failed start; the nearest is not giving the service a readiness notification (then it cannot "fail to start" by dying early). Run that as one more variant (`waits-for` without `ready-notification`)? It changes the definition (the s6 candidates use the readiness descriptor).
+2. runit-111 passes your rule (0 stuck, no self-reboot) but its restarted stage 2 loops on lock errors (7831 lines in 4 h) because `runsvdir -P` puts each `runsv` in its own session. Run a variant without `-P`?
+3. openrc-doc: 0 stuck, no self-reboot, but a killed `supervise-daemon` still needs a person (53 times in 4 h). Is that "passed"?
+4. Should the c-go brain get the same counters (4.5 h)?
+5. The hang rule data (item 9) is complete; which init, if any, do you want costed in more detail for the separate watcher?
