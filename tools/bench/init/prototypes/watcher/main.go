@@ -1,27 +1,31 @@
 // TEST STAND-IN. NOT the product watcher. The hang rule is not built.
 //
-// A tiny watcher for the init comparison (follow-up 3, item 3). It implements ONLY the owner's rule of 2026-10-12:
-// probe the stand-in compositor and the stand-in hubd every round; after 4 failed rounds AND 30 seconds since the first failed
-// round of the streak, with BOTH probes failing, kill the compositor; at most 3 kills in 10 minutes; never reboot anything.
-// It restarts nothing: the init restarts what it killed. It has no restart ladder, no alert and no conductor. It writes one
-// line per probe round and one per kill, with timestamps, to its standard error and to the serial console.
+// A tiny watcher for the init comparison (follow-up 4). It implements the owner's rule of docs/proposals/hub-stability.md
+// section 9.1: two probes, BOTH aimed at the compositor and both answered by its single event-loop thread (driftwm's socket
+// "state" request, and a Wayland wl_display.sync round trip). A round fails only when BOTH probes fail. After 4 failed rounds
+// in a row AND at least 30 seconds since the first failed round of the streak, the compositor is killed; at most 3 kills in
+// 10 minutes; nothing is ever rebooted. It restarts nothing: the init restarts what it killed. It has no restart ladder, no
+// alert and no conductor. The hubd ping is logged for information only and takes no part in the decision. It writes one line
+// per probe round and one per kill, with timestamps, to its standard error and to the serial console.
 package main
 
 import (
 	"bufio"
+	"encoding/binary"
 	"flag"
 	"fmt"
 	"net"
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"syscall"
 	"time"
 )
 
 // Probe is copied unchanged from ../go/probe.go (the brain prototype): ask a service a question on a unix socket and want an
-// answer starting with "ok" within a second. The brain uses it for the compositor ("state"); the same function is used here
-// for hubd with the request "ping" that the benchmark harness already sends to hubd (hubsim/chaos.go, why()).
+// answer starting with "ok" within a second. Used here for the compositor's "state" request (probe 1) and for the hubd "ping"
+// that is only logged (information, no part in the decision).
 func Probe(sock, request string) bool {
 	c, err := net.DialTimeout("unix", sock, time.Second)
 	if err != nil {
@@ -36,13 +40,66 @@ func Probe(sock, request string) bool {
 	return err == nil && strings.HasPrefix(line, "ok")
 }
 
+// ProbeSync is probe 2: a Wayland wl_display.sync round trip on the compositor's Wayland socket (hub-stability.md 9.1: connect,
+// send wl_display.sync, wait for the wl_callback.done event). It speaks the Wayland wire format by hand: a message is
+// object id (u32), then (size << 16 | opcode) (u32), then the arguments, all little-endian. wl_display is object 1, its
+// request sync is opcode 0 with one argument, the new object id for the callback (we use 2); the answer is the event done
+// (opcode 0) on object 2. Limit: 1 s (the same as the other probe; the document names 2 s, a setting).
+func ProbeSync(sock string) bool {
+	c, err := net.DialTimeout("unix", sock, time.Second)
+	if err != nil {
+		return false
+	}
+	defer c.Close()
+	c.SetDeadline(time.Now().Add(time.Second))
+	var req [12]byte
+	binary.LittleEndian.PutUint32(req[0:], 1)        // object: wl_display
+	binary.LittleEndian.PutUint32(req[4:], 12<<16|0) // size 12, opcode 0 = sync
+	binary.LittleEndian.PutUint32(req[8:], 2)        // new_id of the callback
+	if _, err := c.Write(req[:]); err != nil {
+		return false
+	}
+	r := bufio.NewReader(c)
+	for i := 0; i < 8; i++ { // events before done (for example delete_id) are skipped
+		var h [8]byte
+		if _, err := readFull(r, h[:]); err != nil {
+			return false
+		}
+		obj, w := binary.LittleEndian.Uint32(h[0:]), binary.LittleEndian.Uint32(h[4:])
+		size, op := int(w>>16), int(w&0xffff)
+		if size < 8 || size > 4096 {
+			return false
+		}
+		if size > 8 {
+			if _, err := readFull(r, make([]byte, size-8)); err != nil {
+				return false
+			}
+		}
+		if obj == 2 && op == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func readFull(r *bufio.Reader, b []byte) (int, error) {
+	n := 0
+	for n < len(b) {
+		m, err := r.Read(b[n:])
+		n += m
+		if err != nil {
+			return n, err
+		}
+	}
+	return n, nil
+}
+
 // Rule holds the owner's numbers and the state of the current failure streak and of the kills made.
 type Rule struct {
 	Rounds   int           // failed rounds in a row before a kill (4)
 	Window   time.Duration // time since the first failed round of the streak before a kill (30 s)
 	MaxKills int           // kills allowed ... (3)
 	Per      time.Duration // ... in this period (10 min)
-	Both     bool          // true: a round fails only if BOTH probes fail; false: it fails if the compositor probe fails
 	streak   int
 	first    time.Time
 	kills    []time.Time
@@ -57,12 +114,10 @@ const (
 	Capped           // would kill, but 3 kills in the last 10 minutes were already made
 )
 
-// Round records one probe round at time now (comp = compositor probe ok, hubd = hubd probe ok) and returns the decision.
-func (r *Rule) Round(now time.Time, comp, hubd bool) (failed bool, d Decision) {
-	failed = !comp && !hubd
-	if !r.Both {
-		failed = !comp
-	}
+// Round records one probe round at time now (state = the "state" probe answered, sync = the wl_display.sync probe answered)
+// and returns the decision. A round fails only when BOTH probes fail.
+func (r *Rule) Round(now time.Time, state, sync bool) (failed bool, d Decision) {
+	failed = !state && !sync
 	if !failed {
 		r.streak = 0
 		return false, Nothing
@@ -109,10 +164,9 @@ func pidsNamed(name string) []int {
 }
 
 func main() {
-	comp := flag.String("comp", "/run/dw/wayland-1", "compositor socket")
-	hubd := flag.String("hubd", "/run/hubos/hubd.sock", "hubd socket")
+	comp := flag.String("comp", "/run/dw/wayland-1", "compositor socket (the \"state\" request and the Wayland sync both go here in the test image)")
+	hubd := flag.String("hubd", "/run/hubos/hubd.sock", "hubd socket (ping, logged for information only)")
 	round := flag.Duration("round", time.Second, "time between rounds")
-	mode := flag.String("mode", "both", "both: a round fails when BOTH probes fail (the owner's wording); compositor: when the compositor probe fails (a variation, see the README)")
 	target := flag.String("target", "driftwm", "process name of the compositor to kill")
 	console := flag.String("console", "/dev/console", "also write the log here (empty: standard error only)")
 	flag.Parse()
@@ -127,25 +181,35 @@ func main() {
 			cons.WriteString(l)
 		}
 	}
-	r := &Rule{Rounds: 4, Window: 30 * time.Second, MaxKills: 3, Per: 10 * time.Minute, Both: *mode == "both"}
-	logf("started pid=%d mode=%s (TEST STAND-IN, not the product watcher)", os.Getpid(), *mode)
+	r := &Rule{Rounds: 4, Window: 30 * time.Second, MaxKills: 3, Per: 10 * time.Minute}
+	logf("started pid=%d probes=state+wl_display.sync, hubd ping is information only (TEST STAND-IN, not the product watcher)", os.Getpid())
 	n := 0
 	for range time.Tick(*round) {
 		n++
 		now := time.Now()
-		c, h := Probe(*comp, "state"), Probe(*hubd, "ping")
-		failed, d := r.Round(now, c, h)
+		var st, sy, hb bool
+		var wg sync.WaitGroup
+		wg.Add(3)
+		go func() { defer wg.Done(); st = Probe(*comp, "state") }()
+		go func() { defer wg.Done(); sy = ProbeSync(*comp) }()
+		go func() { defer wg.Done(); hb = Probe(*hubd, "ping") }()
+		wg.Wait()
+		failed, d := r.Round(now, st, sy)
 		s, first := r.Streak()
 		since := 0.0
 		if s > 0 {
 			since = now.Sub(first).Seconds()
 		}
-		logf("round %d comp=%s hubd=%s failed_round=%v streak=%d since_first=%.1fs", n, ok(c), ok(h), failed, s, since)
+		logf("round %d state=%s sync=%s hubd(info only)=%s failed_round=%v streak=%d since_first=%.1fs", n, ok(st), ok(sy), ok(hb), failed, s, since)
 		switch d {
 		case Kill:
-			for _, p := range pidsNamed(*target) {
+			pids := pidsNamed(*target)
+			for _, p := range pids {
 				err := syscall.Kill(p, syscall.SIGKILL)
 				logf("KILL %s pid=%d err=%v", *target, p, err)
+			}
+			if len(pids) == 0 {
+				logf("KILL %s: no process of that name exists at this moment (the kill counts against the budget)", *target)
 			}
 		case Capped:
 			logf("CAP: would kill %s, but 3 kills in the last 10 minutes were already made; not killing", *target)

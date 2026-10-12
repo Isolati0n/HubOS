@@ -1,11 +1,15 @@
 # watcher: TEST STAND-IN. NOT the product watcher. The hang rule is not built.
 
-A small Go program (`go build -trimpath -ldflags="-s -w"`, static) used only by the init comparison (`docs/proposals/init-comparison-run.md`, follow-up 3, item 3) to measure what an init does for a hung compositor once a separate watcher exists. It is **not** the product watcher and decides nothing about where the product's hang rule lives.
+A small Go program (`go build -trimpath -ldflags="-s -w"`, static) used only by the init comparison (`docs/proposals/init-comparison-run.md`, follow-up 4) to measure what an init does for a hung compositor once a separate watcher exists. It is **not** the product watcher and decides nothing about where the product's hang rule lives.
 
-**What it does (and nothing else).** Every second it asks the stand-in compositor (`/run/dw/wayland-1`, request `state`) and the stand-in hubd (`/run/hubos/hubd.sock`, request `ping`) and logs one line per round. After **4 failed rounds in a row and at least 30 seconds since the first failed round**, with **both** probes failing, it sends SIGKILL to the compositor process (found by its `comm` name). At most **3 kills in 10 minutes**; the fourth is logged as `CAP` and not made. It never reboots anything and restarts nothing: the init restarts what it killed. It has no restart ladder, no alert and no conductor. It is supervised by the init like any other service.
+**Probes and rule (one line):** it probes the compositor twice per round, with driftwm's socket `state` request and with a Wayland `wl_display.sync` round trip, and applies the owner's rule of `docs/proposals/hub-stability.md` section 9.1 (a round fails only when BOTH probes fail; kill after 4 failed rounds in a row and at least 30 s since the first failed round; at most 3 kills in 10 minutes; never reboot anything).
 
-**The probes** are not new: `Probe` is copied unchanged from `../go/probe.go` (the brain prototype). The brain asks the compositor with it; for hubd the same function is used with the request `ping` that the benchmark harness already sends to hubd (`hubsim/chaos.go`, `why()`).
+**Other things it does.**
+- The hubd `ping` is still sent every round and is written in the log as `hubd(info only)`; it takes no part in the decision.
+- It restarts nothing: the init restarts what it killed. It has no restart ladder, no alert and no conductor.
+- `Probe` (the `state` request) is copied unchanged from `../go/probe.go`; `ProbeSync` speaks the Wayland wire format by hand (see its comment).
+- The kill budget and the "capped" state file: see the second half of this README (added with follow-up 4, item 2).
 
-**`-mode`.** `both` (default, the owner's wording): a round fails only when both probes fail. `compositor`: a round fails when the compositor probe fails, whatever hubd says. The second mode is a variation that exists only because of a property of the stand-ins (see the run log): the stand-in hubd keeps answering `ping` while the compositor is frozen, so "both fail" never happens for a frozen stand-in compositor.
+`go test ./tools/bench/init/prototypes/watcher/` tests the rule (4 rounds and 30 s, both probes must fail and one failing is not enough, an answer resets the streak, 3 kills in 10 minutes and the budget coming back) and the sync probe against a fake server.
 
-`go test ./tools/bench/init/prototypes/watcher/` tests the rule (4 rounds and 30 s, both probes, answer resets the streak, 3 kills in 10 minutes and the budget coming back).
+The program of follow-up 3 (rule "compositor and hubd probes", and the `-mode compositor` variation) is kept unchanged in `../watcher-fu3/`; the rows `s6rc-par-wd`, `runit-wd`, `s6rc-par-wdc`, `runit-wdc` were measured with it.

@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"encoding/binary"
 	"flag"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"sort"
@@ -113,6 +115,11 @@ func runService(name string, args []string) {
 		t := time.NewTicker(time.Second / time.Duration(max(*rate, 1)))
 		for range t.C {
 			logf(name, "heartbeat")
+			if exists(faultDir+"/"+name+".deadlock") && !hung.get() { // follow-up 4: a hang with no CPU use (a deadlock), State S
+				hung.set()
+				os.Remove(faultDir + "/" + name + ".deadlock")
+				logf(name, "fault: deadlock, no longer answers")
+			}
 			if exists(faultDir+"/"+name+".spin") && !hung.get() {
 				hung.set()
 				os.Remove(faultDir + "/" + name + ".spin") // one-shot: it belongs to this process only
@@ -216,6 +223,33 @@ func compositor(name string, nfd int, hung *hangState) {
 			defer func() { mu.Lock(); delete(clients, c); mu.Unlock(); c.Close() }()
 			r := bufio.NewReader(c)
 			for {
+				// STAND-IN CHANGE (follow-up 4, item 1a): answer a Wayland wl_display.sync on this same socket and in this same
+				// handler as "state", behind the same hung check, so that anything that freezes or hangs the "state" handler
+				// (SIGSTOP, the busy loop, the deadlock fault) freezes the sync answer too. Only this one request is understood;
+				// the stand-in speaks no other Wayland. A Wayland message starts with the object id (1 = wl_display, first byte
+				// 0x01); the text requests start with a letter, so the two cannot be confused.
+				if b, err := r.Peek(1); err != nil {
+					return
+				} else if b[0] == 1 {
+					var m [12]byte
+					if _, err := io.ReadFull(r, m[:]); err != nil {
+						return
+					}
+					if hung.get() {
+						select {} // alive but not answering
+					}
+					if binary.LittleEndian.Uint32(m[4:8])&0xffff == 0 { // opcode 0 = sync; m[8:12] is the callback's new id
+						var out [24]byte
+						binary.LittleEndian.PutUint32(out[0:], 1) // wl_display.delete_id(callback id)
+						binary.LittleEndian.PutUint32(out[4:], 12<<16|1)
+						copy(out[8:12], m[8:12])
+						copy(out[12:16], m[8:12]) // wl_callback.done(serial) on the callback object
+						binary.LittleEndian.PutUint32(out[16:], 12<<16|0)
+						binary.LittleEndian.PutUint32(out[20:], 1)
+						c.Write(out[:])
+					}
+					continue
+				}
 				line, err := r.ReadString('\n')
 				if err != nil {
 					return

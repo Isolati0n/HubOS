@@ -8,4 +8,4 @@ mkdir -p "$R/etc/s6-rc"
 "$W/skel/bin/s6-rc-compile" "$R/etc/s6-rc/compiled" "$HERE/candidates/s6rc-par-wd/source"
 # parity with s6plain (added 2026-10-10): the image's follow-driftwm wrapper
 cp "$HERE/../../../image/machines/hub/rootfs/usr/lib/hubos/follow-driftwm" "$R/bin/follow-driftwm"; chmod +x "$R/bin/follow-driftwm"
-cp "$W/watcher" "$R/bin/watcher"   # the test watcher (prototypes/watcher), follow-up 3 item 3
+cp "$W/watcher-fu3" "$R/bin/watcher"   # the test watcher (prototypes/watcher-fu3, the follow-up 3 program, unchanged), follow-up 3 item 3

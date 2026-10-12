@@ -336,19 +336,78 @@ func fKill(s string) result {
 	return settle("kill", s, "")
 }
 
-func fHang(mode string) result {
+func fHang(mode string) result { return fHangAfter(mode, 0) }
+
+// fHangAfter injects a hang of the compositor after a pause (so that the fault falls at a random point of the watcher's
+// one-second round) and times it (follow-up 4): fault to kill (the compositor's pid changes or disappears), fault to desktop
+// back (the whole invariant holds twice in a row, with waybar and hubd registered again at the new compositor), and whether a
+// person was needed (the harness's 60-s rule in settle). The line HANG carries the numbers; the EV line is the old one.
+func fHangAfter(mode string, pause time.Duration) result {
 	if !begin("fHang") {
 		return result{ok: true}
 	}
 	p := pidOf("driftwm")
-	if mode == "stop" {
+	time.Sleep(pause)
+	t0 := time.Now()
+	killAt := make(chan time.Time, 1)
+	go func() {
+		for end := time.Now().Add(130 * time.Second); time.Now().Before(end); time.Sleep(50 * time.Millisecond) {
+			if q := pidOf("driftwm"); q != p {
+				killAt <- time.Now()
+				return
+			}
+		}
+		killAt <- time.Time{}
+	}()
+	switch mode {
+	case "stop":
 		syscall.Kill(p, syscall.SIGSTOP)
-	} else {
+	case "deadlock":
+		os.WriteFile(faultDir+"/driftwm.deadlock", nil, 0o644)
+	default:
 		os.WriteFile(faultDir+"/driftwm.spin", nil, 0o644)
 	}
+	// The busy-loop and deadlock faults are armed by the stand-in's heartbeat tick (every 500 ms): it consumes the fault file
+	// and then stops answering. Until then the desktop still answers and settle would return at once (follow-up 3 had such
+	// 0.11-s "recoveries", steps 22 of s6rc-par-wd and 20 of runit-wd: the fault was not yet in effect). Wait for the fault to
+	// take effect; the times below count from that moment, and the arming delay is printed.
+	arm := 0.0
+	if mode != "stop" {
+		for exists(faultDir+"/driftwm.spin") || exists(faultDir+"/driftwm.deadlock") {
+			time.Sleep(10 * time.Millisecond)
+			if time.Since(t0) > 5*time.Second {
+				break
+			}
+		}
+		arm = time.Since(t0).Seconds()
+		t0 = time.Now()
+	}
+	wst := ""
 	r := settle("hang-"+mode, "driftwm", "")
 	os.Remove(faultDir + "/driftwm.spin")
+	os.Remove(faultDir + "/driftwm.deadlock")
+	k := -1.0
+	select {
+	case at := <-killAt:
+		if !at.IsZero() {
+			k = at.Sub(t0).Seconds()
+		}
+	default:
+	}
+	wst = watcherFiles()
+	note := ""
+	if !r.ok {
+		note = "person=1"
+	}
+	say("HANG n=%d mode=%s arm_delay=%.2f old_pid=%d new_pid=%d fault_to_pidchange=%.2f fault_to_desktop=%.2f windows_back=%d needed_person=%d %s", evn, mode, arm, p, pidOf("driftwm"), k, r.rec, b2i(r.ok || r.fixed), b2i(!r.ok), wst+" "+note)
 	return r
+}
+
+// watcherFiles: the kill budget and the state file of the test watcher (follow-up 4, item 2), for the log.
+func watcherFiles() string {
+	st, _ := os.ReadFile("/run/hubos/watcher.state")
+	bg, _ := os.ReadFile("/run/hubos/watcher.budget")
+	return fmt.Sprintf("watcher_state=%q budget_lines=%d", strings.TrimSpace(string(st)), strings.Count(string(bg), "\n"))
 }
 
 func fStorm(s string, dur time.Duration) result {
@@ -682,6 +741,18 @@ func chaos(args []string) {
 		}
 	case "faults":
 		faultSuite(cfgInt("reps", 5))
+	case "hangs":
+		hangSuite(rng, cfgInt("reps", 9))
+	case "oom":
+		for i := 0; i < cfgInt("reps", 3); i++ {
+			fOOM()
+			between()
+		}
+	case "storm":
+		for i := 0; i < cfgInt("reps", 3); i++ {
+			fStorm("driftwm", 40*time.Second)
+			between()
+		}
 	case "soak":
 		soak(rng, time.Duration(cfgInt("dur", 600))*time.Second)
 	}
@@ -692,6 +763,31 @@ func chaos(args []string) {
 }
 
 func between() { time.Sleep(3 * time.Second) }
+
+// hangSuite (follow-up 4, item 3): n hangs of the compositor, in shuffled groups of three shapes (SIGSTOP, busy loop, deadlock),
+// each after a random pause of up to one second (so the fault falls at a random point of the watcher's round). The kill budget
+// (3 in 10 minutes) is respected on purpose: before the first hang of each further group of three the harness waits until
+// 10 minutes and 15 seconds after the first fault of the previous group, so every hang finds a full budget. (The capped case is
+// the "budget" suite.)
+func hangSuite(rng *rand.Rand, n int) {
+	modes := []string{"stop", "spin", "deadlock"}
+	var groupStart float64
+	for i := 0; i < n; i++ {
+		if i%3 == 0 {
+			rng.Shuffle(len(modes), func(a, b int) { modes[a], modes[b] = modes[b], modes[a] })
+			if i > 0 {
+				for uptime() < groupStart+615 {
+					fmt.Printf("CH t=%.1f waiting for the kill budget (group %d)\n", time.Since(t0).Seconds(), i/3)
+					time.Sleep(30 * time.Second)
+				}
+			}
+			groupStart = uptime()
+		}
+		pause := time.Duration(rng.Intn(1000)) * time.Millisecond
+		fHangAfter(modes[i%3], pause)
+		between()
+	}
+}
 
 func faultSuite(reps int) {
 	for i := 0; i < reps; i++ {
