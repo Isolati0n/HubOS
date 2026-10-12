@@ -10,7 +10,7 @@ n=0
 for c in $cands; do
   for k in $(seq 1 $chunks); do
     n=$((n+1)); seed=$((seed+10))
-    raw=$W/runs/soak-$c-$k.raw.log
+    raw=$W/runs/soak-$c-${PREFIX:-chunk}$k.raw.log
     python3 $REPO/tools/bench/init/run-qemu.py $c soak --dur $len --seed $seed --timeout $((len+900)) --out $raw > /dev/null 2>&1 &
     pid=$!
     stopped=""
@@ -24,11 +24,11 @@ for c in $cands; do
       fi
     done
     wait $pid 2>/dev/null
-    out=$R/$c-chunk$k.log
+    out=$R/$c-${PREFIX:-chunk}$k.log
     { echo "H# chunk $k of candidate $c, seed $seed, planned $len s ${stopped:+- $stopped}"; grep -v ' SAMPLE ' $raw; } > $out
-    python3 -I $REPO/tools/bench/init/soak_analyze.py $out > $R/$c-chunk$k.analysis.txt 2>&1
-    echo "STUCK states in chunk: $(grep -c ' STUCK ' $out); SOAK-END lines: $(grep -c 'SOAK-END' $out); launches: $(grep -c '^H# launch' $out)" >> $R/$c-chunk$k.analysis.txt
-    cd $REPO && git add -A tools/bench/init/results/step2/soak && git commit -q -m "Step 2 soak: $c chunk $k ${stopped}
+    python3 -I $REPO/tools/bench/init/soak_analyze.py $out > $R/$c-${PREFIX:-chunk}$k.analysis.txt 2>&1
+    echo "STUCK states in chunk: $(grep -c ' STUCK ' $out); SOAK-END lines: $(grep -c 'SOAK-END' $out); launches: $(grep -c '^H# launch' $out); self-reboots (reboot: Restarting system): $(grep -c 'reboot: Restarting system' $out); events that needed a person (ok=0): $(grep ' EV ev=' $out | grep -c 'ok=0'); UNRECOVERED lines: $(grep -c ' UNRECOVERED ' $out)" >> $R/$c-${PREFIX:-chunk}$k.analysis.txt
+    cd $REPO && git add -A tools/bench/init/results/step2/soak && git commit -q -m "Step 2 soak: $c ${PREFIX:-chunk} $k ${stopped}
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01Kb6L66wDxnkQ4pMAxMZR4E" && git fetch -q origin && tools/check-push.sh && git push -q origin init-comparison-step2 && echo "chunk $n pushed, $(date -u +%T)" >> $W/runs/soakq.progress
