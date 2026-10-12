@@ -407,7 +407,7 @@ func fHangAfter(mode string, pause time.Duration) result {
 func watcherFiles() string {
 	st, _ := os.ReadFile("/run/hubos/watcher.state")
 	bg, _ := os.ReadFile("/run/hubos/watcher.budget")
-	return fmt.Sprintf("watcher_state=%q budget_lines=%d", strings.TrimSpace(string(st)), strings.Count(string(bg), "\n"))
+	return fmt.Sprintf("watcher_state=%q budget_entries=%d", strings.TrimSpace(string(st)), strings.Count(string(bg), "kill "))
 }
 
 func fStorm(s string, dur time.Duration) result {
@@ -743,6 +743,10 @@ func chaos(args []string) {
 		faultSuite(cfgInt("reps", 5))
 	case "hangs":
 		hangSuite(rng, cfgInt("reps", 9))
+	case "budget":
+		budgetSuite()
+	case "lockprobe":
+		lockProbeSuite(cfgInt("reps", 3))
 	case "oom":
 		for i := 0; i < cfgInt("reps", 3); i++ {
 			fOOM()
@@ -1125,4 +1129,160 @@ func fPolicyBug() result {
 		}
 	}
 	return settle("policy-bug", "brain", fmt.Sprintf("brain_answers_again_after=%.1f services_kept_running=%d brain_process_replaced=%d udevd_restart_count_before=%d after=%d", back, kept, b2i(pidOf(cfg["brain"]) != b0), r0, r1))
+}
+
+// ---------- follow-up 4, item 2d: the kill budget across a restart of the watcher and across 10 minutes ----------
+
+func readFile(p string) string { b, _ := os.ReadFile(p); return strings.TrimSpace(string(b)) }
+
+func stateOf(pid int) string {
+	b, _ := os.ReadFile(fmt.Sprintf("/proc/%d/status", pid))
+	for _, l := range strings.Split(string(b), "\n") {
+		if strings.HasPrefix(l, "State:") {
+			return strings.TrimSpace(strings.TrimPrefix(l, "State:"))
+		}
+	}
+	return "gone"
+}
+
+// budgetSuite: 3 hangs, each killed by the watcher, and the WATCHER killed after each of them (the init restarts it; the new
+// watcher must read the kill budget from the file). A 4th hang: it must be capped (state file "capped ...", the compositor stays
+// frozen; the watcher is killed once more during the cap and the file and the cap must hold). Nobody helps. Then the budget
+// returns 10 minutes after the first kill: the frozen compositor is killed, the state file is removed. Then, more than 10
+// minutes after the last kill, one more hang must be killed again at the normal time with no cap.
+func budgetSuite() {
+	modes := []string{"stop", "spin", "deadlock"}
+	for i := 0; i < 3; i++ {
+		fHangAfter(modes[i], 0)
+		say("BUDGET-TEST after hang %d killed: %s", i+1, watcherFiles())
+		between()
+		fWatcherKill()
+		time.Sleep(4 * time.Second)
+		say("BUDGET-TEST after the watcher was killed and restarted (%d): %s", i+1, watcherFiles())
+		between()
+	}
+	say("BUDGET-TEST budget file now: %q", strings.ReplaceAll(readFile("/run/hubos/watcher.budget"), "\n", " | "))
+	// hang 4
+	if !begin("fHangCapped") {
+		return
+	}
+	evn++
+	p := pidOf("driftwm")
+	t0 := time.Now()
+	syscall.Kill(p, syscall.SIGSTOP)
+	say("BUDGET-TEST hang 4 injected (SIGSTOP of driftwm pid=%d); no help from the harness", p)
+	for time.Since(t0) < 150*time.Second && !exists("/run/hubos/watcher.state") {
+		time.Sleep(500 * time.Millisecond)
+	}
+	say("BUDGET-TEST state file after %.1fs: %q (driftwm pid=%d State: %s)", time.Since(t0).Seconds(), readFile("/run/hubos/watcher.state"), pidOf("driftwm"), stateOf(pidOf("driftwm")))
+	time.Sleep(20 * time.Second)
+	say("BUDGET-TEST 20 s later: pid=%d State: %s state=%q", pidOf("driftwm"), stateOf(pidOf("driftwm")), readFile("/run/hubos/watcher.state"))
+	fWatcherKill()
+	time.Sleep(4 * time.Second)
+	say("BUDGET-TEST after the watcher was killed during the cap: %s budget=%q", watcherFiles(), strings.ReplaceAll(readFile("/run/hubos/watcher.budget"), "\n", " | "))
+	k4 := -1.0
+	for time.Since(t0) < 900*time.Second {
+		time.Sleep(time.Second)
+		if q := pidOf("driftwm"); q != p {
+			k4 = time.Since(t0).Seconds()
+			break
+		}
+		if int(time.Since(t0).Seconds())%30 == 0 {
+			fmt.Printf("CH t=%.1f BUDGET-TEST waiting for the budget to return: driftwm pid=%d State: %s state=%q uptime=%.0f\n", time.Since(t0).Seconds(), pidOf("driftwm"), stateOf(pidOf("driftwm")), readFile("/run/hubos/watcher.state"), uptime())
+		}
+	}
+	say("BUDGET-TEST the frozen compositor was replaced after %.1fs (uptime %.0f); state file now: %q", k4, uptime(), readFile("/run/hubos/watcher.state"))
+	rec, ok := waitOK(60 * time.Second)
+	gone := false
+	for i := 0; i < 20 && !gone; i++ {
+		gone = !exists("/run/hubos/watcher.state")
+		time.Sleep(250 * time.Millisecond)
+	}
+	say("BUDGET-TEST desktop back=%v (%.1fs after the replacement), state file removed=%v, budget=%q", ok, rec, gone, strings.ReplaceAll(readFile("/run/hubos/watcher.budget"), "\n", " | "))
+	say("EV ev=%d fault=hang-capped target=driftwm rec=%.2f ok=%d fixed=0 k4=%.1f", evn, k4+rec, b2i(ok), k4)
+	// more than 10 minutes after the last kill: a further hang must be killed again
+	lastKill := uptime()
+	for uptime() < lastKill+615 {
+		fmt.Printf("CH t=%.1f BUDGET-TEST waiting 10 minutes after the last kill: uptime=%.0f budget_entries=%d\n", time.Since(t0).Seconds(), uptime(), strings.Count(readFile("/run/hubos/watcher.budget"), "kill "))
+		time.Sleep(30 * time.Second)
+	}
+	say("BUDGET-TEST 10 minutes after the last kill: state file=%q", readFile("/run/hubos/watcher.state"))
+	fHangAfter("deadlock", 0)
+	say("BUDGET-TEST after the further hang: %s", watcherFiles())
+}
+
+// ---------- follow-up 4, item 4: the svlogd "unable to lock directory" lines (runit) ----------
+
+// lockSnapshot: the runsv and svlogd processes of one service (pid, parent, state), who holds the flock on its log directory's
+// lock file (from /proc/locks, by inode), and the service's own pids. One line.
+func lockSnapshot(svc string) string {
+	var rs, ls, sv []string
+	for _, p := range procs() {
+		c := comm(p)
+		cl := cmdline(p)
+		switch {
+		case c == "runsv" && strings.HasSuffix(cl, " "+svc):
+			rs = append(rs, fmt.Sprintf("%d", p))
+		case c == "svlogd" && strings.Contains(cl, "/var/log/"+svc):
+			ls = append(ls, fmt.Sprintf("%d(%c)", p, state(p)))
+		case c == svc:
+			sv = append(sv, fmt.Sprintf("%d(%c)", p, state(p)))
+		}
+	}
+	holder := "-"
+	if st, err := os.Stat("/var/log/" + svc + "/lock"); err == nil {
+		ino := st.Sys().(*syscall.Stat_t).Ino
+		b, _ := os.ReadFile("/proc/locks")
+		for _, l := range strings.Split(string(b), "\n") {
+			if strings.HasSuffix(l, fmt.Sprintf(":%d", ino)) || strings.Contains(l, fmt.Sprintf(":%d ", ino)) {
+				f := strings.Fields(l)
+				if len(f) > 4 {
+					holder = f[4]
+					break
+				}
+			}
+		}
+	}
+	return fmt.Sprintf("runsv=%v svlogd=%v lock_holder=%s service=%v", rs, ls, holder, sv)
+}
+
+// lockProbeSuite: for each of the supervisor-kill steps (the same as fSupKill: kill the per-service supervisor, then the service),
+// sample the processes and the lock holder every 100 ms and print a line whenever anything changed; then dump the service's log
+// files to the console so the host can count lost or doubled lines (the stand-in numbers its heartbeat lines: pid and seq).
+func lockProbeSuite(reps int) {
+	for i := 0; i < reps; i++ {
+		for _, svc := range []string{"driftwm", "waybar"} {
+			stop := make(chan bool)
+			done := make(chan bool)
+			go func() {
+				last := ""
+				st := time.Now()
+				for {
+					select {
+					case <-stop:
+						done <- true
+						return
+					default:
+					}
+					if s := lockSnapshot(svc); s != last {
+						say("LOCKPROBE svc=%s t=%.2f %s", svc, time.Since(st).Seconds(), s)
+						last = s
+					}
+					time.Sleep(100 * time.Millisecond)
+				}
+			}()
+			say("LOCKPROBE-STEP rep=%d svc=%s begin", i+1, svc)
+			fSupKill(svc)
+			time.Sleep(3 * time.Second)
+			close(stop)
+			<-done
+			say("LOCKPROBE-STEP rep=%d svc=%s end", i+1, svc)
+			between()
+		}
+	}
+	for _, svc := range []string{"driftwm", "waybar"} {
+		for _, l := range strings.Split(sh("ls /var/log/"+svc+"/ 2>&1; for f in /var/log/"+svc+"/@* /var/log/"+svc+"/current; do [ -f $f ] && cat $f; done"), "\n") {
+			fmt.Printf("LOGDUMP %s %s\n", svc, l)
+		}
+	}
 }

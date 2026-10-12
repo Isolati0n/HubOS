@@ -113,8 +113,12 @@ func runService(name string, args []string) {
 	hung := &hangState{}
 	go func() { // heartbeat log lines, and the spin fault
 		t := time.NewTicker(time.Second / time.Duration(max(*rate, 1)))
+		seq := 0
 		for range t.C {
-			logf(name, "heartbeat")
+			seq++
+			// STAND-IN CHANGE (follow-up 4, item 4): pid and sequence number in the log line, so that a lost or doubled
+			// line in the log service can be counted. Nothing else about the heartbeat changed.
+			logf(name, "heartbeat pid=%d seq=%d", os.Getpid(), seq)
 			if exists(faultDir+"/"+name+".deadlock") && !hung.get() { // follow-up 4: a hang with no CPU use (a deadlock), State S
 				hung.set()
 				os.Remove(faultDir + "/" + name + ".deadlock")

@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -94,15 +95,14 @@ func readFull(r *bufio.Reader, b []byte) (int, error) {
 	return n, nil
 }
 
-// Rule holds the owner's numbers and the state of the current failure streak and of the kills made.
+// Rule holds the owner's numbers and the state of the current failure streak. The kills made live in the Budget (a file).
+// All times are BootClock readings.
 type Rule struct {
-	Rounds   int           // failed rounds in a row before a kill (4)
-	Window   time.Duration // time since the first failed round of the streak before a kill (30 s)
-	MaxKills int           // kills allowed ... (3)
-	Per      time.Duration // ... in this period (10 min)
-	streak   int
-	first    time.Time
-	kills    []time.Time
+	Rounds int           // failed rounds in a row before a kill (4)
+	Window time.Duration // time since the first failed round of the streak before a kill (30 s)
+	B      *Budget       // 3 kills in 10 minutes
+	streak int
+	first  time.Duration
 }
 
 // Decision is what Round tells the caller.
@@ -110,13 +110,13 @@ type Decision int
 
 const (
 	Nothing Decision = iota
-	Kill             // kill the compositor now
+	Kill             // kill the compositor now (the kill is already written into the budget)
 	Capped           // would kill, but 3 kills in the last 10 minutes were already made
 )
 
 // Round records one probe round at time now (state = the "state" probe answered, sync = the wl_display.sync probe answered)
 // and returns the decision. A round fails only when BOTH probes fail.
-func (r *Rule) Round(now time.Time, state, sync bool) (failed bool, d Decision) {
+func (r *Rule) Round(now time.Duration, state, sync bool) (failed bool, d Decision) {
 	failed = !state && !sync
 	if !failed {
 		r.streak = 0
@@ -126,25 +126,18 @@ func (r *Rule) Round(now time.Time, state, sync bool) (failed bool, d Decision) 
 		r.first = now
 	}
 	r.streak++
-	if r.streak < r.Rounds || now.Sub(r.first) < r.Window {
+	if r.streak < r.Rounds || now-r.first < r.Window {
 		return true, Nothing
 	}
-	keep := r.kills[:0]
-	for _, t := range r.kills {
-		if now.Sub(t) < r.Per {
-			keep = append(keep, t)
-		}
-	}
-	r.kills = keep
-	if len(r.kills) >= r.MaxKills {
+	if r.B.Full(now) {
 		return true, Capped
 	}
-	r.kills = append(r.kills, now)
+	r.B.Add(now)
 	r.streak = 0
 	return true, Kill
 }
 
-func (r *Rule) Streak() (int, time.Time) { return r.streak, r.first }
+func (r *Rule) Streak() (int, time.Duration) { return r.streak, r.first }
 
 // pidsNamed: processes whose /proc/PID/comm is name.
 func pidsNamed(name string) []int {
@@ -168,6 +161,8 @@ func main() {
 	hubd := flag.String("hubd", "/run/hubos/hubd.sock", "hubd socket (ping, logged for information only)")
 	round := flag.Duration("round", time.Second, "time between rounds")
 	target := flag.String("target", "driftwm", "process name of the compositor to kill")
+	budgetPath := flag.String("budget", "/run/hubos/watcher.budget", "file with the kill times (in the in-memory /run, so a restarted watcher keeps its budget)")
+	statePath := flag.String("state", "/run/hubos/watcher.state", "one-line state file: \"capped <time>\" while the cap blocks a kill (the hook a bar would read)")
 	console := flag.String("console", "/dev/console", "also write the log here (empty: standard error only)")
 	flag.Parse()
 	var cons *os.File
@@ -181,12 +176,32 @@ func main() {
 			cons.WriteString(l)
 		}
 	}
-	r := &Rule{Rounds: 4, Window: 30 * time.Second, MaxKills: 3, Per: 10 * time.Minute}
+	os.MkdirAll(filepath.Dir(*budgetPath), 0o755)
+	bud, note := LoadBudget(*budgetPath, BootClock(), 3, 10*time.Minute)
+	r := &Rule{Rounds: 4, Window: 30 * time.Second, B: bud}
+	sf := StateFile{Path: *statePath}
 	logf("started pid=%d probes=state+wl_display.sync, hubd ping is information only (TEST STAND-IN, not the product watcher)", os.Getpid())
+	logf("%s (%s)", note, *budgetPath)
+	capped := sf.Exists()
+	if capped && !bud.Full(BootClock()) {
+		sf.Clear()
+		capped = false
+		logf("state file %s was left over and the budget has room: removed", *statePath)
+	}
+	if capped {
+		logf("state file %s exists and the budget is full: kept", *statePath)
+	}
 	n := 0
 	for range time.Tick(*round) {
 		n++
-		now := time.Now()
+		now := BootClock()
+		if capped && !bud.Full(now) { // kills are allowed again: the state file goes (before this round's decision)
+			if err := sf.Clear(); err != nil {
+				logf("state file not removed: %v", err)
+			}
+			capped = false
+			logf("STATE kills are allowed again: removed %s", *statePath)
+		}
 		var st, sy, hb bool
 		var wg sync.WaitGroup
 		wg.Add(3)
@@ -198,11 +213,15 @@ func main() {
 		s, first := r.Streak()
 		since := 0.0
 		if s > 0 {
-			since = now.Sub(first).Seconds()
+			since = (now - first).Seconds()
 		}
 		logf("round %d state=%s sync=%s hubd(info only)=%s failed_round=%v streak=%d since_first=%.1fs", n, ok(st), ok(sy), ok(hb), failed, s, since)
 		switch d {
 		case Kill:
+			if bud.SaveErr != nil {
+				logf("budget file not written: %v (the kill still counts in memory)", bud.SaveErr)
+			}
+			logf("BUDGET kill %d of %d in the last 10 minutes recorded in %s", bud.Len(), bud.Max, *budgetPath)
 			pids := pidsNamed(*target)
 			for _, p := range pids {
 				err := syscall.Kill(p, syscall.SIGKILL)
@@ -213,6 +232,13 @@ func main() {
 			}
 		case Capped:
 			logf("CAP: would kill %s, but 3 kills in the last 10 minutes were already made; not killing", *target)
+			if !capped {
+				if err := sf.SetCapped(time.Now()); err != nil {
+					logf("state file not written: %v", err)
+				}
+				capped = true
+				logf("STATE wrote %s (capped)", *statePath)
+			}
 		}
 	}
 }
