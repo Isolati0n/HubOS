@@ -135,7 +135,14 @@ func supGroup() []int { // PID 1, scanner, all supervisors, brain: the init side
 	g := []int{1}
 	for _, n := range []string{cfg["sup"], cfg["scan"], cfg["brain"]} {
 		if n != "" {
-			g = append(g, pidsNamed(n)...)
+			// The kernel cuts a process name at 15 characters, so "supervise-daemon" (OpenRC) is "supervise-daemo" in
+			// /proc/PID/comm and an exact name match finds nothing; the command line is matched as well (follow-up 2: until then
+			// the OpenRC memory numbers held PID 1 only).
+			for _, p := range procs() {
+				if c := comm(p); c == n || (len(n) > 15 && c == n[:15]) || strings.HasPrefix(cmdline(p), n+" ") || cmdline(p) == n {
+					g = append(g, p)
+				}
+			}
 		}
 	}
 	return g
