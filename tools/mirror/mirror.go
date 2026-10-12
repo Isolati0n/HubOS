@@ -33,9 +33,9 @@ type Meta struct {
 	Version        string `toml:"version"`
 	UpstreamURL    string `toml:"upstream_url"`
 	SHA256         string `toml:"sha256"`
-	Signature      string `toml:"signature,omitempty"`        // file name of the upstream signature, stored beside the file
-	SignatureKey   string `toml:"signature_key,omitempty"`    // key id; the keyring is <root>/keys/<key>.gpg
-	SignatureState string `toml:"signature_state,omitempty"`  // "ok", "none upstream" or "unchecked" (no way to check here)
+	Signature      string `toml:"signature,omitempty"`       // file name of the upstream signature, stored beside the file
+	SignatureKey   string `toml:"signature_key,omitempty"`   // key id; the keyring is <root>/keys/<key>.gpg
+	SignatureState string `toml:"signature_state,omitempty"` // "ok", "none upstream" or "unchecked" (no way to check here)
 	FetchedAt      string `toml:"fetched_at"`
 }
 
@@ -137,6 +137,10 @@ type FetchOpts struct {
 	SignatureKey string
 }
 
+// ErrHashMismatch is returned by Fetch when an entry is already stored and the hash given now differs from the stored file's.
+// It changes nothing in the mirror.
+var ErrHashMismatch = errors.New("hash mismatch")
+
 // ErrCorrupt is returned when an entry is marked corrupt: it is never downloaded again.
 var ErrCorrupt = errors.New("entry is marked corrupt; not downloading again")
 
@@ -176,11 +180,10 @@ func (m *Mirror) Fetch(name, version, url, sha string, o FetchOpts) (string, err
 				return "present", nil
 			}
 		} else {
-			// A file with another hash is already stored: never overwrite it silently.
-			if err := os.WriteFile(dst+".corrupt", []byte(fmt.Sprintf("expected %s got %s at %s\n", sha, got, m.Now().UTC().Format(time.RFC3339))), 0o644); err != nil {
-				return "", err
-			}
-			return "", fmt.Errorf("%s %s %s: stored file has sha256 %s, expected %s: marked corrupt", name, version, file, got, sha)
+			// A file with another hash than the one given now is already stored. Only REPORT it (owner decision, 2026-10-12): the
+			// stored file, its meta file and its state are left untouched, nothing is downloaded and nothing is marked corrupt.
+			// Whether the stored file itself is damaged is what `verify` finds out (it re-hashes against the meta file).
+			return "", fmt.Errorf("%s %s %s: %w: stored file has sha256 %s, expected %s; stored file and its state left untouched", name, version, file, ErrHashMismatch, got, sha)
 		}
 	}
 

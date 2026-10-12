@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -46,7 +47,9 @@ func sum(s string) string { h := sha256.Sum256([]byte(s)); return hex.EncodeToSt
 
 func newMirror(t *testing.T) *Mirror { t.Helper(); return New(t.TempDir()) }
 
-func stored(m *Mirror, name, version, file string) string { return filepath.Join(m.dir(name, version), file) }
+func stored(m *Mirror, name, version, file string) string {
+	return filepath.Join(m.dir(name, version), file)
+}
 
 // 1. fetch a file: placed, .meta.toml correct.
 func TestFetchPlacesFileAndMeta(t *testing.T) {
@@ -256,6 +259,51 @@ func TestFetchHashMismatchPlacesNothing(t *testing.T) {
 	}
 	if _, err := m.Path("a", "1", ""); err == nil {
 		t.Errorf("the input is present after a mismatch")
+	}
+}
+
+// 11. (owner decision 2026-10-12) a repeat fetch of a stored entry with a different expected hash only REPORTS the mismatch: the
+// stored file, its meta file and its state are untouched, nothing is marked corrupt, nothing is downloaded, and `path` still works.
+func TestRepeatFetchWithWrongHashOnlyReports(t *testing.T) {
+	srv := newServer(t, map[string]string{"/a.tar": "alpha"})
+	m := newMirror(t)
+	if _, err := m.Fetch("alpha", "1", srv.URL+"/a.tar", sum("alpha"), FetchOpts{}); err != nil {
+		t.Fatal(err)
+	}
+	p := stored(m, "alpha", "1", "a.tar")
+	before, _ := os.ReadFile(p)
+	metaBefore, _ := os.ReadFile(p + ".meta.toml")
+	hits := srv.hits.Load()
+
+	res, err := m.Fetch("alpha", "1", srv.URL+"/a.tar", sum("a typo"), FetchOpts{})
+	if err == nil || !errors.Is(err, ErrHashMismatch) || res != "" {
+		t.Fatalf("expected a reported mismatch, got %q %v", res, err)
+	}
+	if !strings.Contains(err.Error(), sum("alpha")) || !strings.Contains(err.Error(), sum("a typo")) {
+		t.Errorf("the message should name both hashes: %v", err)
+	}
+	if after, _ := os.ReadFile(p); string(after) != string(before) {
+		t.Errorf("stored file changed")
+	}
+	if mb, _ := os.ReadFile(p + ".meta.toml"); string(mb) != string(metaBefore) {
+		t.Errorf("meta file changed")
+	}
+	if _, err := os.Stat(p + ".corrupt"); err == nil {
+		t.Errorf("the stored file was marked corrupt")
+	}
+	if srv.hits.Load() != hits {
+		t.Errorf("a repeat fetch with a wrong hash downloaded something")
+	}
+	if got, err := m.Path("alpha", "1", ""); err != nil || got != p {
+		t.Errorf("path after the mismatch: %q %v", got, err)
+	}
+	// and the right hash afterwards is still "present"
+	if res, err := m.Fetch("alpha", "1", srv.URL+"/a.tar", sum("alpha"), FetchOpts{}); err != nil || res != "present" {
+		t.Errorf("fetch with the right hash afterwards: %q %v", res, err)
+	}
+	es, ok, err := m.Verify()
+	if err != nil || !ok || len(es) != 1 || es[0].State != StateOK {
+		t.Errorf("verify after the mismatch: %+v %v %v", es, ok, err)
 	}
 }
 

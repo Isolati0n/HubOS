@@ -14,6 +14,8 @@ const usage = `usage: mirror [--root DIR] COMMAND ...
 
   fetch   NAME VERSION URL SHA256 [--file F] [--signature-url URL --signature-key ID]
           download into the mirror; the hash is given by you, never taken from the download
+          an entry already stored is never touched: the same hash says "present"; another hash only REPORTS a mismatch (exit 1)
+          and leaves the stored file and its state as they are (a download with the wrong hash is thrown away, nothing is stored)
   verify  [NAME ...]   re-hash stored files, mark mismatches corrupt, write ROOT/status.json; exit 1 if anything is not ok
   status               list entries (no re-hashing)
   path    NAME VERSION [FILE]   the lookup a build uses: prints the path, never downloads; exit 1 and a message if missing or corrupt
