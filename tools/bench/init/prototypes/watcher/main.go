@@ -156,6 +156,28 @@ func pidsNamed(name string) []int {
 	return out
 }
 
+// evidence: what /proc says about the process that is about to be killed: State, wchan, CPU ticks (user+system), and its age. The
+// age tells a process that has just been started (a crash loop) from one that has been hung for a long time.
+func evidence(pid int) string {
+	st, _ := os.ReadFile(fmt.Sprintf("/proc/%d/stat", pid))
+	str := string(st)
+	i := strings.LastIndex(str, ")")
+	if i < 0 || len(str) < i+3 {
+		return fmt.Sprintf("pid=%d (no /proc entry)", pid)
+	}
+	f := strings.Fields(str[i+2:])
+	state, ticks, age := f[0], 0, -1.0
+	if len(f) > 19 {
+		u, _ := strconv.Atoi(f[11])
+		k, _ := strconv.Atoi(f[12])
+		ticks = u + k
+		start, _ := strconv.ParseFloat(f[19], 64) // clock ticks since boot (100 per second)
+		age = BootClock().Seconds() - start/100
+	}
+	wchan, _ := os.ReadFile(fmt.Sprintf("/proc/%d/wchan", pid))
+	return fmt.Sprintf("pid=%d state=%s wchan=%s cpu_ticks=%d age=%.2fs", pid, state, strings.TrimSpace(string(wchan)), ticks, age)
+}
+
 func main() {
 	comp := flag.String("comp", "/run/dw/wayland-1", "compositor socket (the \"state\" request and the Wayland sync both go here in the test image)")
 	hubd := flag.String("hubd", "/run/hubos/hubd.sock", "hubd socket (ping, logged for information only)")
@@ -224,6 +246,7 @@ func main() {
 			logf("BUDGET kill %d of %d in the last 10 minutes recorded in %s", bud.Len(), bud.Max, *budgetPath)
 			pids := pidsNamed(*target)
 			for _, p := range pids {
+				logf("EVIDENCE %s", evidence(p)) // before the kill (hub-stability.md 9.1: log every kill with the evidence)
 				err := syscall.Kill(p, syscall.SIGKILL)
 				logf("KILL %s pid=%d err=%v", *target, p, err)
 			}
