@@ -1,0 +1,6 @@
+== /home/user/HubOS/tools/bench/init/results/step2/soak/runit-111-pilot1.log: 1 launch(es), first 600 s of each left out
+TOTAL          slope  -885.11 kB per 1000 restarts (std.err 102.29)  noise sd   17.8 kB  range 1821..1916 kB  samples 21  restarts covered 132
+runit          slope  -102.33 kB per 1000 restarts (std.err  35.18)  noise sd    6.1 kB  range 207..229 kB  samples 21  restarts covered 132
+runsv          slope  -606.34 kB per 1000 restarts (std.err  93.85)  noise sd   16.4 kB  range 1403..1489 kB  samples 21  restarts covered 132
+runsvdir       slope  -176.44 kB per 1000 restarts (std.err  42.71)  noise sd    7.4 kB  range 205..236 kB  samples 21  restarts covered 132
+STUCK states in chunk: 0; SOAK-END lines: 1; launches: 1; self-reboots (reboot: Restarting system): 0; events that needed a person (ok=0): 2; UNRECOVERED lines: 2
