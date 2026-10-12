@@ -138,7 +138,7 @@ Real hardware, real watchdog behaviour, KVM-speed timing; the real driftwm, wayb
 | s6rc-par | 48 (5), 0 | 663, 50, 0, 0; -8.6 [-19.5, +2.2] | hung compositor never noticed (SIGSTOP 3 of 3, busy loop 2 of 3) |
 | runit (stock) | 48 of 50 (4), 0 | 779, 43, 0, 29; -70.4 [-168.9, +28.1] (one usable chunk) | a kill of `runsvdir` makes runit leave stage 2 and reboot the machine (29 times in the soak) |
 | runit-111 | 50 (7), 0 | 647, 55, 0, 0; +0.2 [-29.3, +29.7] | no reboot at a scanner kill; the restarted stage 2 produces lock-error lines (7831 in 4 h) |
-| runit-111np | 50 (6), 0 | not run | 0 stuck, 0 self-reboots, 53 lock-error lines (below the soak rule: 0 lock lines) |
+| runit-111np | 50 (6), 0 | not run | 0 stuck, 0 self-reboots, 53 lock-error lines (the soak rule asked for 0) |
 | b-go (B approximated) | 38 (0), 0 | 702, 0, 0, 0; +99.9 [-1084, +1284]; with forced collection and counters (b-go-stats) -37.2 [-274, +199] | hung compositor noticed 10.6 to 15.1 s; one process holds every service |
 | c-go (C with Go brain) | 48 of 50 (2), 1 | stopped after 14 min: 2 stuck (supervisor of driftwm killed) | hung compositor noticed 9.3 to 13.7 s; the supervisor-killed driftwm step ends at the brain's give-up (alert) and a stuck state |
 | c-elixir | 47 of 50 (2), 2 | stopped: 1 stuck, then a logger-lock loop | hung compositor noticed 14.1 to 15.4 s; same weak step as c-go |

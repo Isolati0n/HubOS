@@ -487,3 +487,121 @@ Real hardware and KVM timing; the real compositor, viewers and hubd (stand-ins o
 3. openrc-doc: 0 stuck, no self-reboot, but a killed `supervise-daemon` still needs a person (53 times in 4 h). Is that "passed"?
 4. Should the c-go brain get the same counters (4.5 h)?
 5. The hang rule data (item 9) is complete; which init, if any, do you want costed in more detail for the separate watcher?
+
+
+---
+
+# Owner decisions of 2026-10-12
+
+Recorded from the owner's message (no change by me):
+- **dinit:** no further variants. Three documented setups were tried (`depends-on`: dinit-par and dinit-sm; `depends-ms`: dinit-ms; `waits-for`: dinit-wf); the results are recorded and dinit goes no further.
+- **openrc-doc:** recorded as passing the elimination rules (0 stuck states, 0 self-reboots) but **not** recovering by itself from a killed supervisor (class S events). It is not called passed or failed overall.
+- **Hang rule architecture:** a tiny separate watcher probes the compositor and hubd and kills a frozen one (after 4 failed rounds and 30 s with both probes failing, at most 3 kills in 10 minutes, never a reboot); the init only supervises and restarts. The hang rule is still not built in the product; where it lives is what Part 6 informs.
+
+---
+
+# Follow-up 3 (2026-10-12): data only
+
+Order from the owner: items 1 to 5. No init written, no winner named, whether s6 stays is not decided. Parked items (focus core, session layer, backlog) were not started. The only new program is the test watcher, a **TEST STAND-IN, not the product watcher; the hang rule is not built** (`tools/bench/init/prototypes/watcher/`). One virtual machine at a time throughout; no packages installed; no result was taken while another VM ran. Logs: `tools/bench/init/results/step2/<candidate>/` (spam `SAMPLE` lines stripped); tables: `results/step2/FINAL-TABLES.md`.
+
+## Item 1: runit-111np (`candidates/runit-111np/`, logs `results/step2/runit-111np/`)
+**Definition.** `candidates/runit-111` with exactly one change: stage 2 is `runsvdir /run/service` followed by `exit 111`, **without `-P`**. The exit-111 restart and the reboot hook are unchanged.
+**Result (TESTED), elimination round, one launch, suite finished:**
+
+| | runit-111np |
+|---|---|
+| Boots / PID 1 killed / PID 1 wedged | 6.6 s (6.5 to 6.6); back in 17 and 16 s; back in 47 s |
+| Trial boots | healthy CONFIRMED 20.7 s; driftwm cannot start CONFIRMED 21.0 s (FALSE: waybar not running); driftwm wedged CONFIRMED 20.7 s (FALSE: driftwm stopped) (same as runit and runit-111) |
+| Events (defined / ran) | 50 / 50 |
+| Stuck states | 0 |
+| Self-reboots | 0 (one launch; the scanner kill: `child failed: /etc/runit/2`, `killing all processes in stage 2`, `restarting`, services back) |
+| Events that needed a person, by class | 6, all class H (3 SIGSTOP and 3 busy-loop hangs of driftwm, steps 19 to 24); none of class S, R, D, B or T (runit-111 had one extra, class T, after a clock jump) |
+| Lines `unable to lock` | **53** (all `svlogd: warning: unable to lock directory: /var/log/driftwm` (44) or `/var/log/waybar` (9)); **0** `runsv ... unable to lock supervise/lock` lines (runit-111 had those after the stage-2 restart) |
+
+Where the 53 lines come from (TESTED, per step): only steps 31 to 36 (killing the per-service supervisor `runsv`: 9, 11, 9, 10, 4, 10 lines); none after the scanner kill (step 37) or later. runit-111 had lock lines at steps 31 to 36 as well (11, 10, 4, 10, 5, 10), plus 20 at step 37 and 146 at step 40 and later. The stock `runit` rerun of steps 31 to 43 has 0 such lines in its log (UNKNOWN why; not examined). BELIEVED, not tested: after `runsv` is killed, its log process `svlogd` keeps the log directory lock and the new `runsv` starts a second `svlogd` that cannot take it, and exits; the services themselves kept running in all these events.
+**Soak: not run.** The owner's rule was 0 stuck, 0 self-reboots **and** 0 lock-error lines; there are 53 lock-error lines. runit-111np removes the `runsv`/stage-2 lock errors (runit-111: 292 in its elimination round) but not these. Whether 53 lines of `svlogd` at supervisor kills is acceptable is the owner's question (below).
+
+## Item 2: final table and the new column
+See "Updated final table (follow-up 3)" below: new column "restarts a killed supervisor by itself", from the supervisor-kill steps 31 to 36 (the supervisor of driftwm or waybar killed, then the service killed) and the scanner step 37.
+
+## Item 3: the test watcher with s6rc-par and runit-111
+**What the program is (SOURCE: `prototypes/watcher/main.go`, 161 lines, static Go).** Probes copied from the brain prototype (`Probe(sock, request)` of `prototypes/go/probe.go`; no new probe): the stand-in compositor's `state` on `/run/dw/wayland-1` and the stand-in hubd's `ping` on `/run/hubos/hubd.sock`, once per second. A round fails when **both** probes fail. After 4 failed rounds **and** 30 s since the first failed round of the streak it sends SIGKILL to the process named `driftwm` and starts a new streak; at most 3 kills in 10 minutes (the 4th and later are logged as `CAP: would kill ... not killing`); it never reboots; it restarts nothing (the init does); it logs every probe round and every kill with a timestamp to stderr and the console; no ladder, alert or conductor. The rule is unit-tested (`go test ./tools/bench/init/prototypes/watcher/`: 4 tests pass: needs 4 rounds and 30 s, both probes must fail, an answer resets the streak, 3 kills in 10 minutes then allowed again after the budget returns). Its memory (the rule's counters) lives in the process: a watcher that is killed starts with empty counters (SOURCE; not tested separately).
+**Setup.** `candidates/s6rc-par-wd/` (s6rc-par plus an s6-rc long-run service `watcher` that depends on `hubd`, listed in `top`) and `candidates/runit-wd/` (runit-111 plus `/etc/sv/watcher/run` and a log service). `*-wdc` uses the same images with the watcher in `-mode compositor` (see below). The fault suite is the same plus steps 44 and 45: kill the watcher with SIGKILL; the init must start it again (EV `watcher-killed`).
+**What I found before the runs (TESTED in the first boots): the owner's rule as worded cannot fire for a frozen stand-in compositor.** The stand-in hubd keeps answering `ping` while the compositor is stopped (its "connected" flag only drops when the compositor's socket closes). A frozen compositor therefore gives "compositor fails, hubd ok", not "both fail". I ran the rule **as written** first (`-wd`) and, as a clearly labelled variation, the same program acting on the compositor probe alone (`-wdc`, still 4 rounds, 30 s, 3 kills in 10 minutes). The `-wdc` variation is not the owner's rule; it is there to show what the init does once a kill happens. What the product's second probe should be is a question for the owner.
+
+| | s6rc-par-wd (rule as written) | runit-wd (rule as written) | s6rc-par-wdc (compositor probe alone) | runit-wdc (compositor probe alone) |
+|---|---|---|---|---|
+| Events defined / ran | 50 / 50 | 52 / 52 | 50 / 50 | 52 / 52 |
+| Stuck states | 0 | 0 | 0 | 0 |
+| Self-reboots | 0 | 0 | 0 | 0 |
+| Needed a person (steps) | 5: 19, 20, 21, 23, 24 (class H; step 22 answered by itself in 0.11 s) | 5: 19, 21, 22, 23, 24 (class H; step 20 answered in 0.12 s) | 1: 23 (class H, cap reached) | 3: 22, 23, 24 (class H, cap reached) |
+| Hang steps 19 to 24: watcher kills | **0 of 6 hangs covered**: no kill | **0 of 6 covered**: no kill | **3 kills** (steps 19, 20, 21), then the cap | **3 kills** (19, 20, 21), then the cap |
+| Fault to desktop answering again, for the hangs that were killed | - | - | 36.5, 38.0, 36.5 s | 36.8, 35.8, 36.9 s |
+| Cap at work (lines `CAP: would kill`) | none | none | step 23: 42 lines (the 4th hang: harness fixed it at 65 s, needed a person); step 26 (driftwm crash storm): 14 lines | steps 22, 23, 24: 34 lines each; step 26: 13 lines |
+| Kills outside a hang | none (longest streak of both-failing rounds 30 rounds = 29.0 s, in the driftwm crash storm, step 26: one second short of the 30 s condition) | **1 kill, at step 26 (driftwm crash storm, 31 failed rounds = 30.0 s): a compositor that was crash-looping, not hung** | none (kills only at 19 to 21; in the step 26 storm the cap refused 14 times) | none (same) |
+| Watcher killed (steps 44 and 45): init restarted it | yes, 2 of 2: new pid after 1.07 and 1.08 s | yes, 2 of 2: new pid after 0.21 and 0.21 s | yes, 2 of 2: 1.15 and 1.10 s | yes, 2 of 2: 0.21 and 0.21 s |
+| Other differences noticed | - | the OOM step 49 lost driftwm and hubd, step 50 driftwm (restarted, `rec` 0.17 and 0.15 s); not seen in the same image in the `-wdc` run (UNKNOWN: random order of kills by the out-of-memory killer, not examined) | - | - |
+| Lock lines `unable to lock` | n/a | 154 (steps 31 to 36 and 37 on, as runit-111) | n/a | 100 |
+
+**Against the owner's rule and against b-go (TESTED).** The rule's own timing is 30 s plus the restart. Measured fault-to-desktop with a kill: **35.8 to 38.0 s** (s6rc-par and runit alike), against **10.6 to 15.1 s** for b-go (brain with its own 3-failure probe). The restart after the kill took 3.8 to 5.8 s of that (the driftwm stand-in waits for seatd and udev sockets and the dependents follow). Up to the cap the watcher was reliable in the `-wdc` variation: 6 of 6 kills at steps 19, 20, 21 recovered without a person; at the 4th the cap refused as designed (steps 22 to 24 and the storm lines) and the harness fixed the hang by its own command after 64 to 65 s.
+**What the watcher did when killed.** Both inits restarted it (1.1 s s6, 0.2 s runit; new pid; in `-wd` and `-wdc`, 8 of 8 watcher kills). A killed watcher forgets its streak and its kill budget (SOURCE: counters in memory); whether that matters is not tested (no fault in the suite kills the watcher during a hang).
+**Not tested:** the rule with a real second probe; the budget returning after 10 minutes in a VM run (only the unit test covers it); the watcher probing the conductor and the conductor probing it; a soak with the watcher.
+**Do I need a soak?** I did not run one (instruction). A reason to consider one: the rule's false kill in the runit-wd crash storm (a compositor restarting at every start for 30 s is "both probes failing" for 30 s) shows the rule interacts with crash storms; the soak's 5 % storms would show how often.
+
+## Item 4: what the separate watcher costs per init (data only; no pick)
+"Evidence" = the commands/files of Item 3 or an earlier TESTED result. A dash = not run with the watcher.
+
+| | (a) supervise the watcher | (b) the watcher kills a service and the init restarts it | (c) alert after N restarts in a minute |
+|---|---|---|---|
+| **s6rc-par** | A directory `source/watcher/` with `type` (`longrun`), `run` (3 lines: reads `hub.wmode` from `/proc/cmdline`, `exec watcher`), `dependencies.d/hubd`; one line `watcher` in `source/top/contents`; `s6-rc-compile` at build; the binary is copied into the image. 4 small files and 1 build line. Evidence: `candidates/s6rc-par-wd/`; watcher killed twice, restarted in 1.07 and 1.08 s. | None beyond the watcher itself: the watcher sends SIGKILL to the pid (pid found by name in `/proc`); `s6-supervise` starts the service again. Alternative with the init's own command: `s6-svc -k /run/service/driftwm` (used by the harness's fix command, TESTED). Evidence: steps 19 to 21 of `s6rc-par-wdc`: killed, desktop answering again 36.5 to 38.0 s after the fault. | **Missing.** s6 has no count of restarts and no alert; `s6-supervise` restarts forever with a 1-second pause (TESTED: 18 to 26 starts in a 40-s storm, `alert=no`). The count and the alert would be in the watcher (a counter on observed pid changes) or in a second program. |
+| **runit (runit-111 / runit-111np)** | A directory `/etc/sv/watcher/` with `run` (3 lines) and `log/run` (3 lines), copied to `/run/service` at boot by `boot.sh`; `runsv` supervises it. 2 small files and 1 build line. Evidence: `candidates/runit-wd/`; watcher killed twice, restarted in 0.21 s each. Not stable under a scanner kill (runit-111: stage 2 restarts, 5 s, all services restarted; stock runit: reboot). | None beyond the watcher itself (SIGKILL by pid); `runsv` restarts the service. With the init's own command: `sv kill driftwm` / `sv force-restart` (the harness's fix command, TESTED). Evidence: steps 19 to 21 of `runit-wdc`: 35.8 to 36.9 s fault to desktop. | **Missing.** `runsv` restarts forever with a 1-second pause and keeps no count (TESTED: 26 to 33 starts in a 40-s storm, `alert=no`). `sv status` shows only the time since the last start. Same remedy as s6: counter in the watcher or another program. |
+| **openrc-doc** | An init script `/etc/init.d/watcher` (about 12 lines, like `hubd`: `supervisor=supervise-daemon`, `command=...`, `respawn_delay=1`, `respawn_max=0`, `depend() { need hubd }`) and a symlink in `/etc/runlevels/default`. Evidence: the same pattern for the six stand-ins (TESTED: a service killed after its supervisor was killed is **not** restarted; the supervisor of the watcher itself is not supervised by anything). - (not run with the watcher) | The watcher sends SIGKILL by pid; `supervise-daemon` respawns after `respawn_delay` (TESTED for plain kills of the six services: median 2.8 s, worst 17.7 s). Alternative with OpenRC's own command: `supervise-daemon driftwm --signal KILL` (SOURCE `supervise-daemon.8`, not tested). - (not run with the watcher) | **Partly.** `respawn_max`/`respawn_period` give up after N respawns in a period (SOURCE `supervise-daemon.8`); the supervisor then exits and the service stays down (a give-up, not an alert; with `respawn_max=0` there is no limit, TESTED in `openrc-doc`). No alert is shown. |
+| **b-go** | The watcher would be a seventh entry in the brain's table (`mk("watcher", "hubd")`, Go source change and rebuild) or a separate s6 service folder next to the brain (`s6-svscan` is PID 1 and restarts the brain). TESTED earlier: brain killed, restarted by `s6-svscan` in 0.1 s, services untouched. - (not run with the watcher) | The brain already restarts a killed service (TESTED: 38 events; kills median 3.6 s, worst 6.7 s); a watcher kill is a normal death to it. - (not run with the watcher) | **Already there in part:** the ladder counts failures in a 60-second window and gives up after 6 (bench value) with the alert file; the harness found `alert=no` in the 40-s storms (UNKNOWN why, not examined). The number and window are source constants. |
+
+**OpenRC's documented health check beside the separate watcher** (SOURCE `supervise-daemon.c`, `supervise-daemon-guide.md`; TESTED in `openrc-doc`; the watcher side is TESTED in Item 3):
+
+| | OpenRC `healthcheck()` + `retry` | Separate watcher (Item 3) |
+|---|---|---|
+| Probe | a shell function per service in its init script (`healthcheck_timer=2`, `healthcheck_delay=10`); here `hubsim probe` with a 1-s timeout | a program, two probes per round |
+| Rounds before it acts | none: the first failed check stops and respawns (SOURCE lines 724 to 745) | 4 failed rounds and 30 s (unit-tested; run in `-wdc`) |
+| Kill budget | health-check restarts count toward `respawn_max`/`respawn_period` (SOURCE lines 765 to 785); past the limit `supervise-daemon` exits and the service stays down | 3 kills in 10 minutes, logged `CAP`; the compositor is left as it is |
+| Time fault to desktop | 19.4 to 20.2 s (TESTED, SIGSTOP) | 35.8 to 38.0 s (TESTED, `-wdc`); the rule as written did not fire |
+| Works while | `supervise-daemon` of that service lives (a killed supervisor: nothing restarts it, TESTED 6 of 6 follow-up kills needed a person) | the watcher lives (killed: restarted by the init in 0.2 to 1.1 s, 8 of 8) |
+| A check that hangs | holds the supervisor (SOURCE `rc_waitpid`, lines 729 to 731) | the probe has a 1-s timeout; a hung watcher is not probed by anything here (the conductor would) |
+| One place for the counting | no: one function per service plus a state file | yes, one program for every init |
+
+## Updated final table (follow-up 3; no ranking; counts explained in follow-up 2, items 1 and 2)
+New column: **restarts a killed supervisor by itself** (yes / no / not applicable), from the supervisor-kill steps 31 to 36 (12 events per candidate that has the part: the supervisor of driftwm or waybar is killed with `kill -9`, then the service is killed) and, for runit, step 37 (kill of the scanner).
+
+| Candidate | Events defined / ran | Stuck | Needed a person | SIGSTOP of the compositor | Restarts a killed supervisor by itself | Soak (4 h): events, needed a person, stuck, self-reboots; PSS start to end; slope [95 %] |
+|---|---|---|---|---|---|---|
+| s6plain (full repeat) | 48 / 48 | 0 | 3 | not noticed | **yes** (steps 31 to 36: 12 of 12 events ok; `s6-svscan` restarts `s6-supervise`, the service kept running) | 595, 54, 1, 0; 2457 to 2464 kB; +20.9 [+1.7, +40.0] |
+| s6rc (first setup) | 48 / 19 | 8 | 3 | - | not tested (run ended at step 27) | not run |
+| s6rc-par | 48 / 48 | 0 | 5 | not noticed | **yes** (steps 31 to 36: 12 of 12 ok) | 663, 50, 0, 0; 2687 to 2681 kB; -8.6 [-19.5, +2.2] |
+| runit | 50 / 48 | 0 | 4 | not noticed | **yes** (steps 31 to 36: 12 of 12 ok; `runsvdir` restarts `runsv`). The scanner `runsvdir` itself is not restarted: step 37 reboots the machine | 779, 43, 0, 29; 1900 to 1879 kB (one usable chunk); -70.4 [-168.9, +28.1] |
+| runit-111 | 50 / 50 | 0 | 7 | not noticed | **yes** (12 of 12 ok); step 37: stage 2 restarted by runit, `runsvdir` and all `runsv` come back | 647, 55, 0, 0; 1896 to 1841 kB; +0.2 [-29.3, +29.7]; 7831 lock-error lines |
+| runit-111np | 50 / 50 | 0 | 6 | not noticed | **yes** (12 of 12 ok); step 37 as runit-111 | not run (53 lock-error lines) |
+| b-go | 38 / 38 | 0 | 0 | noticed, 10.6 to 15.1 s | not applicable (no separate supervisors; the brain starts the services) | 702, 0, 0, 0; brain PSS 6242 to 6948 kB; +99.9 [-1084, +1284] |
+| b-go-stats | not run as elimination | - | - | - | not applicable | 700, 0, 0, 0; 4140 to 4274 kB; -37.2 [-274, +199] |
+| c-go | 50 / 48 | 1 | 2 | noticed, 9.3 to 13.7 s | **yes, as s6** (`s6-svscan` restarts `s6-supervise`); 1 of the supervisor-kill events ended at the brain's give-up and a stuck state (step 33) | stopped after 14 minutes: 2 stuck states |
+| c-elixir | 50 / 47 | 2 | 2 | noticed, 14.1 to 15.4 s | **yes, as s6**; same 1 event ended at the give-up (step 33) | stopped: 1 stuck state, then a logger loop |
+| dinit (first setup) | 36 / 20 | 8 | 6 | not noticed | not applicable (no separate supervisors) | not run |
+| dinit-par / dinit-sm | 36 / 20, 36 / 13 | 8 / 8 | 4 / 0 | not noticed | not applicable | not run |
+| dinit-ms / dinit-wf | 36 / 31, 36 / 33 | 5 / 3 | 3 / 3 | not noticed | not applicable | not run |
+| openrc (first setup) | 48 / 46 | 2 | 20 | not noticed | **no** (the 6 follow-up kills of the service after its supervisor was killed: 6 of 6 needed a person) | not run |
+| openrc-par | 48 / 48 | 0 | 12 | not noticed | **no** (6 of 6, steps 31 to 36) | not run |
+| openrc-doc | 48 / 48 | 0 | 6 | noticed, 19.4 to 20.2 s | **no** (6 of 6, steps 31 to 36; no documented option exists) | 569, 53, 0, 0; 2988 to 2977 kB; +33.5 [-50.2, +117.2] |
+| s6rc-par-wd (watcher, rule as written) | 50 / 50 | 0 | 5 | not noticed (watcher did not fire) | **yes** (12 of 12 ok) | not run |
+| runit-wd (watcher, rule as written) | 52 / 52 | 0 | 5 | not noticed (one false kill in a crash storm) | **yes** (14 of 14 ok, includes scanner events) | not run |
+| s6rc-par-wdc (watcher, compositor probe alone) | 50 / 50 | 0 | 1 | noticed after 3 kills, 36.5 to 38.0 s; the 4th hang capped | **yes** (12 of 12 ok) | not run |
+| runit-wdc (watcher, compositor probe alone) | 52 / 52 | 0 | 3 | noticed after 3 kills, 35.8 to 36.9 s; the 4th to 6th capped | **yes** (14 of 14 ok) | not run |
+
+## What I could not test (follow-up 3)
+Real hardware and KVM timing; the real compositor, viewers and hubd (stand-ins only; the hubd stand-in answers while the compositor is frozen, which the real hubd may or may not do: UNKNOWN); a real second probe for the hang rule; the watcher under OpenRC and under b-go (not run, by the instruction: s6rc-par and runit only); a soak with the watcher; the kill budget returning after 10 minutes in a VM; the watcher and the conductor probing each other; a watcher killed while a hang is in progress; the 53 `svlogd` lock lines' cause; why OOM step 49 of `runit-wd` lost driftwm and hubd.
+
+## Questions for the owner (follow-up 3)
+1. The rule says "both probes failing". With the stand-ins a frozen compositor leaves the hubd probe answering, so the rule as written never fired (0 of 6 hangs); one crash storm made both probes fail for 30 s and the watcher killed a crash-looping compositor. Which should the product probe, and should the rule also fire when only the compositor probe fails (the `-wdc` variation)?
+2. runit-111np has 0 stuck, 0 self-reboots and 53 `svlogd` lock lines at supervisor kills (none at the scanner kill). Does that count as clean enough to soak, or must it be 0 lines?
+3. When the cap (3 kills in 10 minutes) is reached the compositor stays frozen until a person acts (it did: 65 s in the harness). Is that the intended end state, with the fixed message and recovery terminal as in HUB-OS.md?
+4. A restarted watcher forgets its streak and its kill budget. Should the budget be kept outside the process (a file)? It changes what a killed watcher can do to the cap.
+5. Should I run the watcher under OpenRC and under b-go too, to complete Item 4's "- (not run)" cells?
