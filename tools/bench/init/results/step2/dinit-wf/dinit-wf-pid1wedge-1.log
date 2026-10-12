@@ -1,0 +1,42 @@
+H# start 2026-10-12 00:36:16 cand=dinit-wf suite=pid1wedge cpus_seen=4 loadavg_at_start=['0.95', '0.46', '0.18']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-wf.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1wedge hub.dur=600 hub.seed=120 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=dinit
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.29 Booting from ROM..c[?7l[2JCH STAGE1 up=2.69
+H     4.34 CH CAND dinit pid1=dinit
+H     4.34 CH SUP-START up=2.75
+H     4.48 [  OK  ] guard
+H     4.55 [  OK  ] seatd
+H     4.58 CH t=0.1 CHAOS start cand=dinit suite=pid1wedge seed=120 cpus=2
+H     4.58 [  OK  ] dbus
+H     6.07 [  OK  ] udevd
+H     8.37 [  OK  ] driftwm
+H    10.05 [  OK  ] waybar
+H    10.17 [  OK  ] hubd
+H    10.17 [  OK  ] boot
+H    10.52 CH t=6.1 BOOT-OK up=8.92 ok=1 (seconds since kernel start; waited 5.7)
+H    15.53 CH t=11.1 INJECT pid1-wedge (held stopped by ptrace)
+H    15.56 PID 1 held stopped
+H    20.54 CH t=16.1 PID1-STATE t guard=S watchdog_dev=true
+H    25.55 CH t=21.1 PID1-STATE t guard=S watchdog_dev=true
+H    30.56 CH t=26.1 PID1-STATE t guard=S watchdog_dev=true
+H    35.56 CH t=31.1 PID1-STATE t guard=S watchdog_dev=true
+H    40.57 CH t=36.1 PID1-STATE t guard=S watchdog_dev=true
+H    45.58 CH t=41.1 PID1-STATE t guard=S watchdog_dev=true
+H    50.10 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    50.10 Booting from ROM...
+H    54.70 c[?7l[2JCH STAGE1 up=2.44
+H    54.75 CH CAND dinit pid1=dinit
+H    54.75 CH SUP-START up=2.50
+H    54.90 [  OK  ] guard
+H    54.96 CH t=0.1 CHAOS start cand=dinit suite=pid1wedge seed=120 cpus=2
+H    55.01 [  OK  ] dbus
+H    55.02 [  OK  ] seatd
+H    56.48 [  OK  ] udevd
+H    58.57 [  OK  ] driftwm
+H    60.37 [  OK  ] waybar
+H    60.46 [  OK  ] hubd
+H    60.46 [  OK  ] boot
+H    60.77 CH t=5.9 BOOT-OK up=8.52 ok=1 (seconds since kernel start; waited 5.6)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 61s, loadavg ['0.52', '0.42', '0.18']
+H# end wall=60.8s launches=1 suite_done=True

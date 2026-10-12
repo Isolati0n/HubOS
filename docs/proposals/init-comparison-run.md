@@ -215,3 +215,168 @@ Real hardware and KVM timing; the real compositor and viewers (stand-ins only); 
 3. runit: should a variant with a stage-2 script that exits 111 (or runit under another supervision) be run, given that the stock stage 2 turns a `runsvdir` death into a reboot?
 4. The hang rule: which of the placements above do you want me to cost out further?
 5. Mirror tool: should a repeat `fetch` with a different hash really mark the stored file corrupt, or only report a mismatch?
+
+
+---
+
+# Follow-up 2 (2026-10-12): data only
+
+Order from the owner: items 1 to 9. No init written, no winner named, whether s6 stays is not decided. New scripts (all under `tools/bench/init/`): `event_counts.py` (item 1), `needed_person.py` (item 2), `soak_ci.py` (intervals), and `report.py` now merges the logs of one candidate and counts a step once (see item 1).
+
+## Item 1: why the event counts differ (no rerun; computed from the logs by `event_counts.py`)
+**What the script is (SOURCE `hubsim/chaos.go`, `faultSuite`).** 43 numbered steps: 1 to 18 plain kills (3 x 6 services), 19 to 24 hangs (SIGSTOP and busy loop, 3 each), 25 to 26 crash storms, 27 to 28 slow and failing seatd, 29 to 30 full disk, 31 to 36 supervisor kills (2 events each), 37 scanner kill (2 events), 38 to 39 brain kills, 40 to 41 clock jumps (2 events each), 42 to 43 out of memory. **The event list is not the same for every candidate, by design:** a step that needs something the candidate does not have gives no event. Supervisor kills (12 events) exist only for candidates with a separate supervisor process per service (s6, runit, OpenRC; not dinit, not b-go, whose brain starts the services itself). The scanner kill (2) exists only for runit (`runsvdir`). The brain kills (2) exist only where there is a brain (b-go, c-go, c-elixir). So the full script gives **36 events to dinit, 38 to b-go, 48 to s6plain, s6rc and OpenRC, 50 to c-go, c-elixir and runit.** The 48s are not "most candidates are right and the others are short": they are the ones with supervisors and no scanner or brain.
+**Why a run ended early or lost events (the table):** a step that ends in a stuck state gives no event (the machine is rebooted and the run goes on at the next step), so each stuck state costs the events of its step; the driver relaunches the machine at most 8 times, so a run with 8 stuck states stops there and the later steps are never reached (dinit, dinit-par, dinit-sm, s6rc: stopped by the relaunch limit at step 21 to 28); one run (the first s6plain) stopped in the supervisor-kill step in the unexplained loop and ran into its time limit (step 34, 10 events never reached; superseded by the full repeat); runit's counts need a note (below). No driver crash and no infrastructure failure ended a run in this table, except runit's first run, where the driver itself crashed (a Go panic in `supOf`, fixed, item "runit" in the older sections).
+**runit.** Its raw logs held more events than the script defines (73, then 183 when merged) because the machine rebooted itself (the scanner kill, step 37) and the driver started again from step 1 or from the same skip value, so steps repeated. `event_counts.py` and `report.py` now count a step once, from the first cycle in which it appears. Result: 50 defined, 48 ran; the 2 missing are the two events of step 37 (scanner kill) in the original runit: the machine rebooted before the harness could log them. The "9 events that needed a person" in my last message were counted over the repeated cycles; the correct number is 4. The same repair was applied to every table below.
+**Are the counts comparable?** Not as totals. The 36 events every candidate has (steps 1 to 30 and 40 to 43) are comparable; the last column gives, for each candidate, how many of them ran, how many needed a person and how many ended in a stuck state. For the other 2 to 14 events (supervisor, scanner, brain) only the candidates that have the part can be compared with each other.
+
+| candidate | events the script defines for it | events that ran (EV lines) | lost to stuck states | never reached | other difference | stuck steps (fault) | last step reached | launches | script finished | of the 36 common events: ran / needed a person / stuck |
+|---|---|---|---|---|---|---|---|---|---|---|
+| s6plain | 48 | 48 | 0 | 0 | 0 | - | 43 | 1 | yes | 36 / 3 / 0 |
+| s6rc-par | 48 | 48 | 0 | 0 | 0 | - | 43 | 1 | yes | 36 / 5 / 0 |
+| runit | 50 | 48 | 0 | 0 | 2 | - | 43 | 3 | yes | 36 / 4 / 0 |
+| runit-111 | 50 | 50 | 0 | 0 | 0 | - | 43 | 1 | yes | 36 / 7 / 0 |
+| b-go | 38 | 38 | 0 | 0 | 0 | - | 43 | 1 | yes | 36 / 0 / 0 |
+| c-go | 50 | 48 | 2 | 0 | 0 | 33 (supervisor-killed) | 43 | 2 | yes | 36 / 1 / 0 |
+| c-elixir | 50 | 47 | 3 | 0 | 0 | 10 (kill), 33 (supervisor-killed) | 43 | 3 | yes | 35 / 1 / 1 |
+| dinit-par | 36 | 20 | 8 | 8 | 0 | 4 (kill), 8 (kill), 10 (kill), 14 (kill), 16 (kill), 25 (storm), 26 (storm), 28 (dep-fail) | 28 | 8 | no | 20 / 4 / 8 |
+| dinit-sm | 36 | 13 | 8 | 15 | 0 | 1 (kill), 4 (kill), 7 (kill), 10 (kill), 13 (kill), 16 (kill), 19 (hang-stop), 21 (hang-stop) | 21 | 8 | no | 13 / 0 / 8 |
+| dinit-ms | 36 | 31 | 5 | 0 | 0 | 20 (hang-spin), 25 (storm), 26 (storm), 27 (dep-slow), 28 (dep-fail) | 43 | 6 | yes | 31 / 3 / 5 |
+| dinit-wf | 36 | 33 | 3 | 0 | 0 | 25 (storm), 26 (storm), 28 (dep-fail) | 43 | 4 | yes | 33 / 3 / 3 |
+| openrc-par | 48 | 48 | 0 | 0 | 0 | - | 43 | 1 | yes | 36 / 6 / 0 |
+| openrc-doc | 48 | 48 | 0 | 0 | 0 | - | 43 | 1 | yes | 36 / 0 / 0 |
+| s6rc@first | 48 | 19 | 8 | 21 | 0 | 4 (kill), 7 (kill), 13 (kill), 19 (hang-stop), 21 (hang-stop), 23 (hang-stop), 26 (storm), 27 (dep-slow) | 27 | 8 | no | 19 / 3 / 8 |
+| dinit@first | 36 | 20 | 8 | 8 | 0 | 3 (kill), 8 (kill), 10 (kill), 14 (kill), 16 (kill), 25 (storm), 26 (storm), 28 (dep-fail) | 28 | 8 | no | 20 / 6 / 8 |
+| openrc@first | 48 | 46 | 2 | 0 | 0 | 26 (storm), 28 (dep-fail) | 43 | 3 | yes | 34 / 14 / 2 |
+| s6plain@first | 48 | 37 | 0 | 10 | 1 | - | 34 | 1 | no | 30 / 6 / 0 |
+
+(`@first` = the first run of a candidate whose setup I later changed; kept for the record. "Lost to stuck states" = events of steps that ended in a stuck state. Negative or non-zero "other difference" is explained in the paragraph on runit.)
+
+## Item 2: what "needed a person" means (computed by `needed_person.py`)
+An event is counted as "needed a person" when the machine had not recovered by itself 60 seconds after the fault and the harness then did, in the person's place, the action in the second table (the candidate's `ops/fix`, a command the owner would type), after which the harness recorded `fixed=1`. It is **not** a stuck state (a state only a reboot clears): every row below was cleared by that one command. A stuck state is a different, worse class and is listed in item 1. The tables give every event of every candidate that has such events (s6plain = the full repeat; runit = canonical cycles).
+
+| candidate | step | fault | target | state at 60 s | alert file (1 = the policy layer gave up on purpose) | other facts from the log |
+|---|---|---|---|---|---|---|
+| s6plain | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| s6plain | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| s6plain | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| s6rc-par | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| s6rc-par | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| s6rc-par | 22 | hang-spin | driftwm | driftwm does not answer (no answer) | 0 | fixed=1 |
+| s6rc-par | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| s6rc-par | 24 | hang-spin | driftwm | driftwm does not answer (no answer) | 0 | fixed=1 |
+| runit | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| runit | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| runit | 22 | hang-spin | driftwm | driftwm does not answer (no answer) | 0 | fixed=1 |
+| runit | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| runit-111 | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| runit-111 | 20 | hang-spin | driftwm | driftwm does not answer (no answer) | 0 | fixed=1 |
+| runit-111 | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| runit-111 | 22 | hang-spin | driftwm | driftwm does not answer (no answer) | 0 | fixed=1 |
+| runit-111 | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| runit-111 | 24 | hang-spin | driftwm | driftwm does not answer (no answer) | 0 | fixed=1 |
+| runit-111 | 40 | after-clock-3600 | hubd | clients missing: ok clients=waybar | 0 | fixed=1 |
+| c-go | 26 | storm | driftwm | driftwm not running | 1 | fixed=1 starts=11 last10=2 cpu=318 bar-down |
+| c-go | 31 | supervisor-killed | driftwm | waybar not running | 1 | fixed=1 child_kept_running=1 |
+| c-elixir | 26 | storm | driftwm | driftwm not running | 1 | fixed=1 starts=10 last10=1 cpu=338 bar-down |
+| c-elixir | 31 | supervisor-killed | driftwm | waybar not running | 1 | fixed=1 child_kept_running=1 |
+| dinit-par | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-par | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-par | 22 | hang-spin | driftwm | driftwm does not answer (no answer) | 0 | fixed=1 |
+| dinit-par | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-ms | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-ms | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-ms | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-wf | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-wf | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| dinit-wf | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| openrc-par | 19 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| openrc-par | 21 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| openrc-par | 23 | hang-stop | driftwm | driftwm stopped | 0 | fixed=1 |
+| openrc-par | 25 | storm | hubd | hubd not running | 0 | fixed=1 starts=8 last10=0 cpu=1 bar-up |
+| openrc-par | 26 | storm | driftwm | driftwm not running | 0 | fixed=1 starts=11 last10=0 cpu=2 bar-down |
+| openrc-par | 28 | dep-fail | seatd | seatd not running | 0 | fixed=1 |
+| openrc-par | 31 | after-supervisor-killed | driftwm | driftwm not running | 0 | fixed=1 supervisor_back=1 |
+| openrc-par | 32 | after-supervisor-killed | waybar | waybar not running | 0 | fixed=1 supervisor_back=0 |
+| openrc-par | 33 | after-supervisor-killed | driftwm | driftwm not running | 0 | fixed=1 supervisor_back=1 |
+| openrc-par | 34 | after-supervisor-killed | waybar | waybar not running | 0 | fixed=1 supervisor_back=0 |
+| openrc-par | 35 | after-supervisor-killed | driftwm | driftwm not running | 0 | fixed=1 supervisor_back=1 |
+| openrc-par | 36 | after-supervisor-killed | waybar | waybar not running | 0 | fixed=1 supervisor_back=0 |
+| openrc-doc | 31 | after-supervisor-killed | driftwm | driftwm not running | 0 | fixed=1 supervisor_back=1 |
+| openrc-doc | 32 | after-supervisor-killed | waybar | waybar not running | 0 | fixed=1 supervisor_back=0 |
+| openrc-doc | 33 | after-supervisor-killed | driftwm | waybar not running | 0 | fixed=1 supervisor_back=1 |
+| openrc-doc | 34 | after-supervisor-killed | waybar | waybar not running | 0 | fixed=1 supervisor_back=0 |
+| openrc-doc | 35 | after-supervisor-killed | driftwm | driftwm not running | 0 | fixed=1 supervisor_back=1 |
+| openrc-doc | 36 | after-supervisor-killed | waybar | waybar not running | 0 | fixed=1 supervisor_back=0 |
+
+What the harness did in the person's place (same for all rows of a candidate):
+
+| candidate | command |
+|---|---|
+| s6plain | `s6-svc -u /run/service/$1 2>/dev/null; s6-svc -k /run/service/$1 2>/dev/null` |
+| s6rc-par | `s6-rc -l /run/s6-rc -u change top 2>/dev/null; s6-svc -u /run/service/$1 2>/dev/null; s6-svc -r /run/service/$1 2>/dev/null` |
+| runit | `sv -w 3 force-restart /run/service/$1 2>/dev/null; sv up /run/service/$1` |
+| runit-111 | `sv -w 3 force-restart /run/service/$1 2>/dev/null; sv up /run/service/$1` |
+| c-go | `hubsim ctl /run/hubos/brain.sock "retry $1" 2>/dev/null; s6-rc -l /run/s6-rc -u change top 2>/dev/null; s6-svc -u /run/service/$1 2>/dev/null` |
+| c-elixir | `hubsim ctl /run/hubos/brain.sock "retry $1" 2>/dev/null; s6-rc -l /run/s6-rc -u change top 2>/dev/null; s6-svc -u /run/service/$1 2>/dev/null` |
+| dinit-par | `/opt/dinit/bin/dinitctl start boot 2>/dev/null; /opt/dinit/bin/dinitctl restart $1 2>/dev/null` |
+| dinit-ms | `/opt/dinit/bin/dinitctl start boot 2>/dev/null; /opt/dinit/bin/dinitctl restart $1 2>/dev/null` |
+| dinit-wf | `/opt/dinit/bin/dinitctl start boot 2>/dev/null; /opt/dinit/bin/dinitctl restart $1 2>/dev/null` |
+| openrc-par | `rc-service $1 restart 2>/dev/null; openrc default 2>/dev/null` |
+| openrc-doc | `rc-service $1 restart 2>/dev/null; openrc default 2>/dev/null` |
+
+**Classes, and which candidates share them (TESTED):**
+- **H, a frozen compositor whose supervisor still says "up" (SIGSTOP, or a busy loop that stops answering):** s6plain 3 (all SIGSTOP), s6rc-par 5, runit 4, runit-111 6, dinit-par 4, dinit-ms 3, dinit-wf 3, openrc-par 3 (SIGSTOP). Same class, same machine state afterwards: the compositor process is in state T (or loops), the supervisor lists it as up, hubd and waybar keep running against a frozen picture; a person would run the restart command above. OpenRC with a stop schedule that ends in SIGKILL (openrc-doc) has none of these. The three brain candidates have none (the brain's probe restarts it).
+- **S, the supervisor process itself was killed, then its service was killed:** openrc-par 6 and openrc-doc 6 (the "supervisor_back=0/1" facts). Nothing restarts `supervise-daemon`, so the service stays down until `rc-service restart`. No other candidate has this class as "needed a person": s6 and runit supervisors are restarted by their scanner (`s6-svscan`, `runsvdir`) within a second.
+- **B, the policy layer gave up on purpose and raised the bar alert (alert file = 1):** c-go 2 and c-elixir 2 (a crash storm on driftwm; a supervisor-killed driftwm). This is the designed ladder end ("stop retrying, show an alert, the owner acts"); the person's command is the brain's `retry`.
+- **R/D, a service that crashes at every start (storm) or fails to start (seatd) left down:** openrc-par 3 (storm on hubd, storm on driftwm, failing seatd). The same faults are **stuck states** (not "needed a person") in dinit, dinit-ms and dinit-wf; they are recovered by themselves in s6, runit, b-go and openrc-doc.
+- **T, an odd one:** runit-111, after a clock jump of -3600 s, waybar missing (`clients missing: ok clients=waybar`); once; BELIEVED a consequence of the lock errors described in item 5, not examined further.
+- **Unknown: none.**
+
+## Item 3: the runit claim, checked against the source
+**Version and source.** The image runs the Ubuntu 24.04 package `runit 2.1.2-59ubuntu1` (unpacked with `dpkg -x`; its boot message prints `$Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $`). The source I read is the **upstream tarball runit-2.1.2** downloaded for reading from https://smarden.org/runit/runit-2.1.2.tar.gz (file `admin/runit-2.1.2/src/runit.c`); its `runit.c` carries the **same `$Id`**, so the revision of that file is the same. I did not read Ubuntu's patch set: the changes I know of from the binary are the paths (`strings` on `/sbin/runit` shows `/run/runit.reboot` and `/run/runit.stopit`; upstream `runit.h` line 3 has `#define REBOOT "/etc/runit/reboot"`). So the claim is SOURCE for upstream and BELIEVED for the Ubuntu binary in the lines below; the log (`runit: leave stage: /etc/runit/2`, then stage 3, without "child crashed") matches it.
+**The lines (`src/runit.c` 175 to 199, verbatim):**
+```
+        if (wait_exitcode(wstat) != 0) {
+          if (wait_crashed(wstat))
+            strerr_warn3(WARNING, "child crashed: ", stage[st], 0);
+          else
+            strerr_warn3(WARNING, "child failed: ", stage[st], 0);
+          if (st == 0)
+            /* this is stage 1 */
+            if (wait_crashed(wstat) || (wait_exitcode(wstat) == 100)) {
+              strerr_warn3(INFO, "leave stage: ", stage[st], 0);
+              strerr_warn2(WARNING, "skipping stage 2...", 0);
+              st++;
+              break;
+            }
+          if (st == 1)
+            /* this is stage 2 */
+            if (wait_crashed(wstat) || (wait_exitcode(wstat) == 111)) {
+              strerr_warn2(WARNING, "killing all processes in stage 2...", 0);
+              kill(-pid, 9);
+              sleep(5);
+              strerr_warn2(WARNING, "restarting.", 0);
+              st--;
+              break;
+            }
+        }
+        strerr_warn3(INFO, "leave stage: ", stage[st], 0);
+        break;
+```
+and `src/wait.h` lines 11 to 13: `#define wait_crashed(w) ((w) & 127)`, `#define wait_exitcode(w) ((w) >> 8)`. For a process killed by a signal the status word is the signal number (here 9), so `(w) >> 8` is 0: the outer `if (wait_exitcode(wstat) != 0)` is false, the whole block, including the "crashed" and the "111" cases, is skipped, and the code falls to `leave stage` and then stage 3. (Reading of the code; matches the logs of the original runit.)
+**What the manual says** (https://smarden.org/runit/runit.8.html, fetched 2026-10-12): "STAGE 2: runit runs /etc/runit/2, which should not return until system shutdown; if it crashes, or exits 111, it will be restarted." "STAGE 3: If runit is told to shutdown the system, or stage 2 returns, it terminates stage 2 if it is running, and runs /etc/runit/3. [...] If stage 3 returns, runit checks if the file /etc/runit/reboot exists and has the execute by owner permission set. If so, the system is rebooted, it's halted otherwise." The Ubuntu package's own page (`runit(8)`, in the image tree) says the same with `/run/runit.reboot` and `/run/runit.stopit`.
+**Is the test image's `/run/runit.reboot` the documented `/etc/runit/reboot`?** The same mechanism under a different path: neither a symlink nor a different mechanism. The upstream manual names `/etc/runit/reboot`; the Ubuntu build moved the flag files to `/run` (binary strings and the package's manual page). The test image creates the file in `candidates/runit/rootfs/cand/boot.sh` (`touch /run/runit.reboot; chmod +x`). A machine reached by `kill -9 runsvdir` therefore reboots **because** stage 2 returned (runit.c, as above) **and** that flag exists; without the flag the same event powers the machine off. The manual's "crashes" wording describes the case the code does not reach for a death by signal; I read this as a discrepancy between the page and the code, not as a documented behaviour. Nothing in runit's definition was changed for this item.
+
+## Item 4: dinit with waits-for (`candidates/dinit-wf/`, logs `results/step2/dinit-wf/`)
+**Definition.** `dinit-ms` with every `depends-ms` replaced by `waits-for` (the 5 edges: driftwm after seatd and udevd; hubd after driftwm; waybar after driftwm and dbus), nothing else: the same commands, `-wait` arguments, `follow-driftwm` wrapper, `restart-limit-count = 0`, `restart-delay = 1.0`. The pages (`dinit-service(5)`, `dinit(8)`) name nothing else that is needed for the follow rule. For a restart after a failed start the pages name **no** property; the nearest statement is `ready-notification` ("If not specified, a process service is considered started as soon as it has begun execution"), i.e. a service without readiness notification cannot fail to start by dying early. That is a change of definition (the s6 candidates use the readiness file descriptor as well), so I did **not** apply it, and ask in the questions.
+**Result (TESTED).** Boots 6.1 to 6.3 s; PID 1 killed back in 16 and 18 s; wedged 45 s; trial boots: healthy confirmed 21.1 s, driftwm cannot start rolled back at 60 s, driftwm wedged CONFIRMED after 20.9 s (false: driftwm stopped). Fault suite: 4 launches, finished, 33 of 36 events, **3 stuck states: steps 25 (crash storm on hubd), 26 (crash storm on driftwm), 28 (seatd fails to start)**. Against dinit-ms (5 stuck states) the slow-seatd step and the hung-driftwm busy loop are now recovered. All 18 kills recover (median 1.8 s, worst 4.0 s). SIGSTOP of driftwm: not noticed, 3 of 3 needed a person.
+**Cause as far as the log shows (TESTED, BELIEVED for the general rule):** step 25 log: `[STOPPD] hubd`, `[FAILED] hubd` within 1.2 s, then `hubd (exit status: 0)` and nothing more after the 40 s storm ended. The storm makes the service exit at every start, before it reports readiness; dinit then marks the start as FAILED and does not start it again (`dinit(8)`: a service that fails to start is not run again by itself; `restart` is about a service that stops after it started). With `waits-for` the dependents are no longer dragged down, but the failed service itself stays down. Step 28 is the same for seatd. Did not pass, so it is not soaked.
+
+## Item 5: runit with the documented exit-111 restart (`candidates/runit-111/`, logs `results/step2/runit-111/`)
+**Definition.** Only `/etc/runit/2` differs from `candidates/runit`: instead of `exec runsvdir -P /run/service` it is `runsvdir -P /run/service` followed by `exit 111` (the manual: "if it crashes, or exits 111, it will be restarted"). The reboot hook (`/run/runit.reboot`) is unchanged.
+**Result (TESTED).** Boots 5.9 to 6.2 s; PID 1 killed back in 17 and 16 s; wedged 47 s; trial boots like runit. Fault suite: 1 launch, finished, 50 of 50 events, **0 stuck states, 0 self-reboots** (the original runit rebooted itself at every scanner kill). Scanner kill: `runit: warning: child failed: /etc/runit/2`, `killing all processes in stage 2...`, 5 s later `restarting.` and `enter stage: /etc/runit/2`. **Events that needed a person: 7** (3 SIGSTOP and 3 busy-loop hangs of driftwm, as in runit; and 1 after a clock jump: waybar missing).
+**But the restarted stage 2 does not take over cleanly (TESTED, log):** after the restart every new `runsv` prints `runsv NAME: fatal: unable to lock supervise/lock: temporary failure` and every `svlogd` prints `unable to lock directory ...`; 292 such lines until the end of the run (about one per service per second), zombies grew from 0 to 8 and the process count from 88 to 95. The services kept running. **Cause (SOURCE for the code, BELIEVED for the effect):** `runsvdir.c` line 73 `if (pgrp) setsid();` and the stage-2 script passes `-P`, so each `runsv` is in its own session; the `kill(-pid, 9)` of `runit.c` (stage 2's process group) therefore does not reach the old `runsv` and `svlogd` processes, they keep their locks, the new `runsv` cannot take them, and `runsvdir` starts them again every second. That is configuration I did not change (instruction). A variant without `-P` is a question below.
+**Passes the owner's rule (0 stuck states, no self-reboot), so it goes into the soak queue.**
+
+## Item 6: the mirror fix (PR #79, commits on branch `tools-source-mirror`)
+A repeat `fetch` of a stored entry with a different expected hash now only **reports**: `mirror: demo 1.0 a.txt: hash mismatch: stored file has sha256 ..., expected ...; stored file and its state left untouched` (exit 1). It writes no `.corrupt` marker, downloads nothing, changes neither the file nor its meta file; `path` and `verify` still say ok; the right hash afterwards still says "present". A file that is **downloaded** with the wrong hash was already never stored (it is deleted, "nothing placed"); I kept that: there is no quarantine folder (only the empty lock file stays). New test `TestRepeatFetchWithWrongHashOnlyReports`. Both files are now `gofmt`-clean (they were not before; only whitespace). TESTED: `go test ./tools/mirror/` 11 of 11 pass; `go test -p 1 ./...` all packages ok (56 s); and by hand with a local server: wrong-hash repeat fetch exit 1 and the entry intact, `path` exit 0, `verify` exit 0, wrong-hash download exit 1 with nothing stored.

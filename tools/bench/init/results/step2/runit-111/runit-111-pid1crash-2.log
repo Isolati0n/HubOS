@@ -1,0 +1,58 @@
+H# start 2026-10-12 01:03:36 cand=runit-111 suite=pid1crash cpus_seen=4 loadavg_at_start=['0.57', '0.43', '0.33']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-111.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1crash hub.dur=600 hub.seed=112 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir
+H     0.16 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     4.52 c[?7l[2JCH STAGE1 up=2.76
+H     4.58 CH CAND runit pid1=runit stage2=runsvdir
+H     4.63 CH SUP-START up=2.88
+H     4.70 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.71 - runit: enter stage: /etc/runit/1
+H     4.71 - runit: leave stage: /etc/runit/1
+H     4.72 - runit: enter stage: /etc/runit/2
+H     4.77 CH t=0.1 CHAOS start cand=runit suite=pid1crash seed=112 cpus=2
+H    10.95 CH t=6.2 BOOT-OK up=9.20 ok=1 (seconds since kernel start; waited 6.0)
+H    15.96 CH t=11.3 INJECT pid1-segv
+H    16.00 [   14.320609] runit[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffd5fab9678 error 15 likely on CPU 0 (core 0, socket 0)
+H    16.00 [   14.326163] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.00 [   14.328971] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    16.00 [   14.329128] CPU: 0 PID: 1 Comm: runit Not tainted 6.8.0-146-generic #146-Ubuntu
+H    16.00 [   14.329128] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    16.00 [   14.329128] Call Trace:
+H    16.00 [   14.329128]  <TASK>
+H    16.00 [   14.329128]  dump_stack_lvl+0x27/0xa0
+H    16.00 [   14.329128]  dump_stack+0x10/0x20
+H    16.00 [   14.329128]  panic+0x366/0x3c0
+H    16.00 [   14.329128]  do_exit+0x513/0x530
+H    16.00 [   14.329128]  do_group_exit+0x35/0x90
+H    16.00 [   14.329128]  get_signal+0x96e/0x9b0
+H    16.00 [   14.329128]  ? native_load_gs_index.part.0+0x20/0x50
+H    16.00 [   14.329128]  arch_do_signal_or_restart+0x42/0x210
+H    16.00 [   14.329128]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    16.00 [   14.329128]  irqentry_exit+0x43/0x50
+H    16.00 [   14.329128]  exc_page_fault+0x94/0x1b0
+H    16.01 [   14.329128]  asm_exc_page_fault+0x27/0x30
+H    16.01 [   14.329128] RIP: 0033:0xfffffffffffffffe
+H    16.01 [   14.329128] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.01 [   14.329128] RSP: 002b:00007ffd5fab9678 EFLAGS: 00000202
+H    16.01 [   14.329128] RAX: 00000000000000db RBX: 00007ffd5fab96a3 RCX: 00007c1b531354c4
+H    16.01 [   14.329128] RDX: 00000000000036b0 RSI: 0000000000000001 RDI: 00007ffd5fab96a8
+H    16.01 [   14.329128] RBP: 00007ffd5fab9820 R08: 0000000000000002 R09: 00007c1b53233380
+H    16.01 [   14.329128] R10: 0000000000000008 R11: 0000000000000202 R12: 0000000000000069
+H    16.01 [   14.329128] R13: 00007ffd5fab96a4 R14: 000055e3da9d5190 R15: 00007ffd5fab9750
+H    16.01 [   14.329128]  </TASK>
+H    16.01 [   14.329128] Kernel Offset: 0x29800000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    16.01 [   14.329128] Rebooting in 5 seconds..
+H    21.16 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    21.17 Booting from ROM...
+H    25.70 c[?7l[2JCH STAGE1 up=3.08
+H    25.78 CH CAND runit pid1=runit stage2=runsvdir
+H    25.85 CH SUP-START up=3.23
+H    25.96 CH t=0.1 CHAOS start cand=runit suite=pid1crash seed=112 cpus=2
+H    25.96 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H    25.99 - runit: enter stage: /etc/runit/1
+H    26.00 - runit: leave stage: /etc/runit/1
+H    26.01 - runit: enter stage: /etc/runit/2
+H    31.85 CH t=6.0 BOOT-OK up=9.23 ok=1 (seconds since kernel start; waited 5.7)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 32s, loadavg ['0.98', '0.55', '0.37']
+H# end wall=31.9s launches=1 suite_done=True

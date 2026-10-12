@@ -1,0 +1,424 @@
+H# start 2026-10-12 00:39:59 cand=dinit-wf suite=faults cpus_seen=4 loadavg_at_start=['0.44', '0.44', '0.22']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-wf.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=600 hub.seed=200 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=dinit
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     4.72 c[?7l[2JCH STAGE1 up=3.01
+H     4.76 CH CAND dinit pid1=dinit
+H     4.77 CH SUP-START up=3.06
+H     4.90 [  OK  ] guard
+H     5.00 CH t=0.1 CHAOS start cand=dinit suite=faults seed=200 cpus=2
+H     5.02 [  OK  ] seatd
+H     5.03 [  OK  ] dbus
+H     6.49 [  OK  ] udevd
+H     8.76 [  OK  ] driftwm
+H    10.40 [  OK  ] waybar
+H    10.47 [  OK  ] hubd
+H    10.47 [  OK  ] boot
+H    10.74 CH t=5.9 BOOT-OK up=9.02 ok=1 (seconds since kernel start; waited 5.5)
+H    15.74 CH t=10.9 STEP 1 fKill
+H    15.77 dinit: Service seatd terminated due to signal 9
+H    15.77 [STOPPD] seatd
+H    15.81 [  OK  ] seatd
+H    15.83 dinit: Service driftwm process terminated with exit code 1
+H    15.83 [STOPPD] driftwm
+H    15.83 [STOPPD] waybar
+H    16.32 [STOPPD] hubd
+H    17.80 [  OK  ] driftwm
+H    19.43 [  OK  ] waybar
+H    19.47 [  OK  ] hubd
+H    19.80 CH t=14.9 EV ev=1 fault=kill target=seatd rec=3.85 ok=1 fixed=0 
+H    22.80 CH t=17.9 STEP 2 fKill
+H    22.81 dinit: Service udevd terminated due to signal 9
+H    22.82 [STOPPD] udevd
+H    24.34 [  OK  ] udevd
+H    24.74 CH t=19.9 EV ev=2 fault=kill target=udevd rec=1.74 ok=1 fixed=0 
+H    27.75 CH t=22.9 STEP 3 fKill
+H    27.76 dinit: Service dbus terminated due to signal 9
+H    27.76 [STOPPD] dbus
+H    27.79 [  OK  ] dbus
+H    28.05 CH t=23.2 EV ev=3 fault=kill target=dbus rec=0.10 ok=1 fixed=0 
+H    31.05 CH t=26.2 STEP 4 fKill
+H    31.12 dinit: Service driftwm terminated due to signal 9
+H    31.12 [STOPPD] driftwm
+H    31.12 [STOPPD] waybar
+H    31.66 [STOPPD] hubd
+H    33.09 [  OK  ] driftwm
+H    34.68 [  OK  ] waybar
+H    34.79 [  OK  ] hubd
+H    35.26 CH t=30.4 EV ev=4 fault=kill target=driftwm rec=4.00 ok=1 fixed=0 
+H    38.26 CH t=33.4 STEP 5 fKill
+H    38.29 [STOPPD] waybar
+H    39.77 CH t=34.9 EV ev=5 fault=kill target=waybar rec=1.30 ok=1 fixed=0 
+H    39.88 [  OK  ] waybar
+H    42.78 CH t=37.9 STEP 6 fKill
+H    42.80 [STOPPD] hubd
+H    44.43 [  OK  ] hubd
+H    44.87 CH t=40.0 EV ev=6 fault=kill target=hubd rec=1.88 ok=1 fixed=0 
+H    47.87 CH t=43.0 STEP 7 fKill
+H    47.89 dinit: Service seatd terminated due to signal 9
+H    47.90 [STOPPD] seatd
+H    47.92 [  OK  ] seatd
+H    47.94 dinit: Service driftwm process terminated with exit code 1
+H    47.94 [STOPPD] driftwm
+H    47.94 [STOPPD] waybar
+H    48.14 [STOPPD] hubd
+H    49.89 [  OK  ] driftwm
+H    51.54 [  OK  ] waybar
+H    51.64 [  OK  ] hubd
+H    51.96 CH t=47.1 EV ev=7 fault=kill target=seatd rec=3.88 ok=1 fixed=0 
+H    54.97 CH t=50.1 STEP 8 fKill
+H    54.98 dinit: Service udevd terminated due to signal 9
+H    54.99 [STOPPD] udevd
+H    56.54 [  OK  ] udevd
+H    56.90 CH t=52.0 EV ev=8 fault=kill target=udevd rec=1.72 ok=1 fixed=0 
+H    59.90 CH t=55.0 STEP 9 fKill
+H    59.92 dinit: Service dbus terminated due to signal 9
+H    59.92 [STOPPD] dbus
+H    59.95 [  OK  ] dbus
+H    60.25 CH t=55.4 EV ev=9 fault=kill target=dbus rec=0.14 ok=1 fixed=0 
+H    63.25 CH t=58.4 STEP 10 fKill
+H    63.32 dinit: Service driftwm terminated due to signal 9
+H    63.32 [STOPPD] driftwm
+H    63.33 [STOPPD] waybar
+H    63.71 [STOPPD] hubd
+H    65.26 [  OK  ] driftwm
+H    66.94 [  OK  ] waybar
+H    66.99 [  OK  ] hubd
+H    67.50 CH t=62.6 EV ev=10 fault=kill target=driftwm rec=4.03 ok=1 fixed=0 
+H    70.51 CH t=65.6 STEP 11 fKill
+H    70.53 [STOPPD] waybar
+H    72.10 CH t=67.2 EV ev=11 fault=kill target=waybar rec=1.38 ok=1 fixed=0 
+H    72.12 [  OK  ] waybar
+H    75.10 CH t=70.2 STEP 12 fKill
+H    75.13 [STOPPD] hubd
+H    76.78 [  OK  ] hubd
+H    77.31 CH t=72.4 EV ev=12 fault=kill target=hubd rec=2.00 ok=1 fixed=0 
+H    80.32 CH t=75.4 STEP 13 fKill
+H    80.33 dinit: Service seatd terminated due to signal 9
+H    80.34 [STOPPD] seatd
+H    80.35 [  OK  ] seatd
+H    80.38 dinit: Service driftwm process terminated with exit code 1
+H    80.38 [STOPPD] driftwm
+H    80.39 [STOPPD] waybar
+H    80.50 [STOPPD] hubd
+H    82.24 [  OK  ] driftwm
+H    83.84 [  OK  ] waybar
+H    83.94 [  OK  ] hubd
+H    84.40 CH t=79.5 EV ev=13 fault=kill target=seatd rec=3.88 ok=1 fixed=0 
+H    87.40 CH t=82.5 STEP 14 fKill
+H    87.42 dinit: Service udevd terminated due to signal 9
+H    87.43 [STOPPD] udevd
+H    88.96 [  OK  ] udevd
+H    89.24 CH t=84.4 EV ev=14 fault=kill target=udevd rec=1.63 ok=1 fixed=0 
+H    92.24 CH t=87.4 STEP 15 fKill
+H    92.26 dinit: Service dbus terminated due to signal 9
+H    92.27 [STOPPD] dbus
+H    92.29 [  OK  ] dbus
+H    92.72 CH t=87.8 EV ev=15 fault=kill target=dbus rec=0.26 ok=1 fixed=0 
+H    95.72 CH t=90.8 STEP 16 fKill
+H    95.77 dinit: Service driftwm terminated due to signal 9
+H    95.78 [STOPPD] driftwm
+H    95.78 [STOPPD] waybar
+H    96.04 [STOPPD] hubd
+H    97.65 [  OK  ] driftwm
+H    99.26 [  OK  ] waybar
+H    99.32 [  OK  ] hubd
+H    99.57 CH t=94.7 EV ev=16 fault=kill target=driftwm rec=3.64 ok=1 fixed=0 
+H   102.57 CH t=97.7 STEP 17 fKill
+H   102.59 [STOPPD] waybar
+H   103.95 CH t=99.1 EV ev=17 fault=kill target=waybar rec=1.17 ok=1 fixed=0 
+H   104.17 [  OK  ] waybar
+H   106.95 CH t=102.1 STEP 18 fKill
+H   106.97 [STOPPD] hubd
+H   108.60 [  OK  ] hubd
+H   108.99 CH t=104.1 EV ev=18 fault=kill target=hubd rec=1.83 ok=1 fixed=0 
+H   111.99 CH t=107.1 STEP 19 fHang
+H   172.19 CH t=167.3 UNRECOVERED ev=19 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   172.25 CH t=167.4 STATUS [[+]     ] boot
+H   172.25 CH t=167.4 STATUS [{+}     ] guard (pid: 101)
+H   172.26 CH t=167.4 STATUS [{+}     ] seatd (pid: 1020)
+H   172.26 CH t=167.4 STATUS [{+}     ] udevd (pid: 1115)
+H   172.26 CH t=167.4 STATUS [{+}     ] dbus (pid: 1168)
+H   172.26 CH t=167.4 STATUS [{+}     ] driftwm (pid: 1205)
+H   172.26 CH t=167.4 STATUS [{+}     ] waybar (pid: 1294)
+H   172.26 CH t=167.4 STATUS [{+}     ] hubd (pid: 1344)
+H   172.28 CH t=167.4 operator-action target=driftwm why="driftwm stopped"
+H   172.31 Service (already) started.
+H   172.34 Service 'driftwm' stopped.
+H   172.34 [STOPPD] driftwm
+H   172.37 [STOPPD] waybar
+H   172.77 [STOPPD] hubd
+H   174.18 Service 'driftwm' started.
+H   174.19 [  OK  ] driftwm
+H   175.84 [  OK  ] waybar
+H   175.92 [  OK  ] hubd
+H   176.30 CH t=171.4 EV ev=19 fault=hang-stop target=driftwm rec=61.92 ok=0 fixed=1 
+H   179.30 CH t=174.4 STEP 20 fHang
+H   179.57 CH t=174.7 EV ev=20 fault=hang-spin target=driftwm rec=0.06 ok=1 fixed=0 
+H   182.57 CH t=177.7 STEP 21 fHang
+H   242.66 CH t=237.8 UNRECOVERED ev=21 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   242.69 CH t=237.8 STATUS [[+]     ] boot
+H   242.69 CH t=237.8 STATUS [{+}     ] guard (pid: 101)
+H   242.69 CH t=237.8 STATUS [{+}     ] seatd (pid: 1020)
+H   242.69 CH t=237.8 STATUS [{+}     ] udevd (pid: 1115)
+H   242.69 CH t=237.8 STATUS [{+}     ] dbus (pid: 1168)
+H   242.69 CH t=237.8 STATUS [{+}     ] driftwm (pid: 2061)
+H   242.69 CH t=237.8 STATUS [{+}     ] waybar (pid: 2070)
+H   242.69 CH t=237.8 STATUS [{+}     ] hubd (pid: 2069)
+H   242.72 CH t=237.8 operator-action target=driftwm why="driftwm stopped"
+H   242.76 Service (already) started.
+H   242.77 dinit: Service driftwm terminated due to signal 9
+H   242.77 [STOPPD] driftwm
+H   242.77 [STOPPD] waybar
+H   243.76 [STOPPD] hubd
+H   244.64 [  OK  ] driftwm
+H   246.27 [  OK  ] waybar
+H   246.33 [  OK  ] hubd
+H   246.72 CH t=241.8 EV ev=21 fault=hang-stop target=driftwm rec=63.74 ok=0 fixed=1 
+H   249.72 CH t=244.8 STEP 22 fHang
+H   249.99 CH t=245.1 EV ev=22 fault=hang-spin target=driftwm rec=0.07 ok=1 fixed=0 
+H   253.00 CH t=248.1 STEP 23 fHang
+H   313.22 CH t=308.3 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   313.25 CH t=308.4 STATUS [[+]     ] boot
+H   313.25 CH t=308.4 STATUS [{+}     ] guard (pid: 101)
+H   313.25 CH t=308.4 STATUS [{+}     ] seatd (pid: 1020)
+H   313.25 CH t=308.4 STATUS [{+}     ] udevd (pid: 1115)
+H   313.26 CH t=308.4 STATUS [{+}     ] dbus (pid: 1168)
+H   313.26 CH t=308.4 STATUS [{+}     ] driftwm (pid: 2831)
+H   313.26 CH t=308.4 STATUS [{+}     ] waybar (pid: 2841)
+H   313.26 CH t=308.4 STATUS [{+}     ] hubd (pid: 2840)
+H   313.29 CH t=308.4 operator-action target=driftwm why="driftwm stopped"
+H   313.32 Service (already) started.
+H   313.35 Service 'driftwm' stopped.
+H   313.35 [STOPPD] driftwm
+H   313.36 [STOPPD] waybar
+H   314.13 [STOPPD] hubd
+H   315.25 Service 'driftwm' started.
+H   315.25 [  OK  ] driftwm
+H   316.91 [  OK  ] waybar
+H   317.00 [  OK  ] hubd
+H   317.43 CH t=312.5 EV ev=23 fault=hang-stop target=driftwm rec=61.98 ok=0 fixed=1 
+H   320.43 CH t=315.6 STEP 24 fHang
+H   320.70 CH t=315.8 EV ev=24 fault=hang-spin target=driftwm rec=0.06 ok=1 fixed=0 
+H   323.71 CH t=318.8 STEP 25 fStorm
+H   323.73 [STOPPD] hubd
+H   324.94 [FAILED] hubd
+H   363.77 CH t=358.9 STATUS [[+]     ] boot
+H   363.77 CH t=358.9 STATUS [{+}     ] guard (pid: 101)
+H   363.77 CH t=358.9 STATUS [{+}     ] seatd (pid: 1020)
+H   363.78 CH t=358.9 STATUS [{+}     ] udevd (pid: 1115)
+H   363.78 CH t=358.9 STATUS [{+}     ] dbus (pid: 1168)
+H   363.78 CH t=358.9 STATUS [{+}     ] driftwm (pid: 3599)
+H   363.78 CH t=358.9 STATUS [{+}     ] waybar (pid: 3619)
+H   363.78 CH t=358.9 STATUS [     {-}] hubd (exit status: 0)
+H   363.78 CH t=358.9 STORM target=hubd dur=40 starts=1 starts_last10s=0 cpu_ticks_init_side=16 bar-up
+H   423.98 CH t=419.1 UNRECOVERED ev=25 fault=storm target=hubd alert=0 why="hubd not running"
+H   424.01 CH t=419.1 STATUS [[+]     ] boot
+H   424.01 CH t=419.1 STATUS [{+}     ] guard (pid: 101)
+H   424.01 CH t=419.1 STATUS [{+}     ] seatd (pid: 1020)
+H   424.01 CH t=419.1 STATUS [{+}     ] udevd (pid: 1115)
+H   424.01 CH t=419.1 STATUS [{+}     ] dbus (pid: 1168)
+H   424.01 CH t=419.1 STATUS [{+}     ] driftwm (pid: 3599)
+H   424.02 CH t=419.1 STATUS [{+}     ] waybar (pid: 3619)
+H   424.02 CH t=419.1 STATUS [     {-}] hubd (exit status: 0)
+H   424.06 CH t=419.2 operator-action target=hubd why="hubd not running"
+H   424.09 Service (already) started.
+H   484.29 CH t=479.4 STUCK ev=25 step=25 fault=storm target=hubd why="hubd not running" (a reboot is the only way out; the host restarts the machine)
+H   485.30 [  483.627485] reboot: Power down
+H# vm exit code 0 after 485s, loadavg ['0.42', '0.43', '0.30']
+H# launch 2 skip=25 dur=115 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-wf.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=115 hub.seed=201 hub.reps=3 hub.skip=25 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   485.45 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   490.22 Booting from ROM..c[?7l[2JCH STAGE1 up=3.05
+H   490.28 CH CAND dinit pid1=dinit
+H   490.29 CH SUP-START up=3.12
+H   490.43 [  OK  ] guard
+H   490.53 [  OK  ] seatd
+H   490.55 [  OK  ] dbus
+H   490.56 CH t=0.1 CHAOS start cand=dinit suite=faults seed=201 cpus=2
+H   492.01 [  OK  ] udevd
+H   494.31 [  OK  ] driftwm
+H   495.96 [  OK  ] waybar
+H   496.03 [  OK  ] hubd
+H   496.03 [  OK  ] boot
+H   496.31 CH t=5.9 BOOT-OK up=9.14 ok=1 (seconds since kernel start; waited 5.5)
+H   576.36 CH t=85.9 STEP 26 fStorm
+H   576.42 dinit: Service driftwm terminated due to signal 9
+H   576.42 [STOPPD] driftwm
+H   576.43 [STOPPD] waybar
+H   576.89 dinit: Service driftwm process terminated with exit code 1
+H   576.89 [FAILED] driftwm
+H   577.37 [STOPPD] hubd
+H   616.47 CH t=126.0 STATUS [[+]     ] boot
+H   616.47 CH t=126.0 STATUS [{+}     ] guard (pid: 101)
+H   616.47 CH t=126.0 STATUS [{+}     ] seatd (pid: 102)
+H   616.47 CH t=126.0 STATUS [{+}     ] udevd (pid: 103)
+H   616.48 CH t=126.1 STATUS [{+}     ] dbus (pid: 104)
+H   616.48 CH t=126.1 STATUS [     {X}] driftwm
+H   616.48 CH t=126.1 STATUS [{ }<<   ] waybar (pid: 1036)
+H   616.48 CH t=126.1 STATUS [{ }<<   ] hubd
+H   616.48 CH t=126.1 STORM target=driftwm dur=40 starts=1 starts_last10s=0 cpu_ticks_init_side=8 bar-down
+H   636.89 dinit: Service waybar with pid 1036 exceeded allowed start time; cancelling.
+H   636.90 dinit: Interrupting start of service waybar with pid 1036 (with SIGINT).
+H   636.90 [FAILED] waybar
+H   676.57 CH t=186.1 UNRECOVERED ev=1 fault=storm target=driftwm alert=0 why="driftwm not running"
+H   676.60 CH t=186.2 STATUS [[+]     ] boot
+H   676.60 CH t=186.2 STATUS [{+}     ] guard (pid: 101)
+H   676.60 CH t=186.2 STATUS [{+}     ] seatd (pid: 102)
+H   676.60 CH t=186.2 STATUS [{+}     ] udevd (pid: 103)
+H   676.60 CH t=186.2 STATUS [{+}     ] dbus (pid: 104)
+H   676.60 CH t=186.2 STATUS [     {X}] driftwm
+H   676.61 CH t=186.2 STATUS [     {X}] waybar
+H   676.61 CH t=186.2 STATUS [{ }<<   ] hubd
+H   676.64 CH t=186.2 operator-action target=driftwm why="driftwm not running"
+H   676.66 Service (already) started.
+H   736.85 CH t=246.4 STUCK ev=1 step=26 fault=storm target=driftwm why="driftwm not running" (a reboot is the only way out; the host restarts the machine)
+H   737.86 [  250.749391] reboot: Power down
+H# vm exit code 0 after 253s, loadavg ['0.11', '0.27', '0.26']
+H# launch 3 skip=26 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-wf.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=60 hub.seed=202 hub.reps=3 hub.skip=26 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   738.00 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   742.47 Booting from ROM..c[?7l[2JCH STAGE1 up=2.88
+H   742.53 CH CAND dinit pid1=dinit
+H   742.53 CH SUP-START up=2.95
+H   742.65 [  OK  ] guard
+H   742.77 CH t=0.1 CHAOS start cand=dinit suite=faults seed=202 cpus=2
+H   742.77 [  OK  ] dbus
+H   742.77 [  OK  ] seatd
+H   744.25 [  OK  ] udevd
+H   746.46 [  OK  ] driftwm
+H   748.13 [  OK  ] waybar
+H   748.17 [  OK  ] hubd
+H   748.17 [  OK  ] boot
+H   748.45 CH t=5.8 BOOT-OK up=8.86 ok=1 (seconds since kernel start; waited 5.5)
+H   831.53 CH t=88.9 STEP 27 fDep
+H   831.55 dinit: Service seatd terminated due to signal 9
+H   831.55 [STOPPD] seatd
+H   831.59 dinit: Service driftwm process terminated with exit code 1
+H   831.60 [STOPPD] driftwm
+H   831.60 [STOPPD] waybar
+H   831.83 [STOPPD] hubd
+H   846.58 [  OK  ] seatd
+H   848.58 [  OK  ] driftwm
+H   850.18 [  OK  ] waybar
+H   850.30 [  OK  ] hubd
+H   850.66 CH t=108.0 EV ev=1 fault=dep-slow target=seatd rec=18.93 ok=1 fixed=0 
+H   850.66 CH t=108.0 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H   853.66 CH t=111.0 STEP 28 fDep
+H   853.67 dinit: Service seatd terminated due to signal 9
+H   853.68 [STOPPD] seatd
+H   853.71 dinit: Service driftwm process terminated with exit code 1
+H   853.72 [STOPPD] driftwm
+H   853.72 [STOPPD] waybar
+H   853.77 [FAILED] seatd
+H   854.02 [STOPPD] hubd
+H   854.22 dinit: Service driftwm process terminated with exit code 1
+H   854.22 [FAILED] driftwm
+H   914.22 dinit: Service hubd with pid 1201 exceeded allowed start time; cancelling.
+H   914.22 dinit: Interrupting start of service hubd with pid 1201 (with SIGINT).
+H   914.22 [FAILED] hubd
+H   914.22 dinit: Service waybar with pid 1202 exceeded allowed start time; cancelling.
+H   914.22 dinit: Interrupting start of service waybar with pid 1202 (with SIGINT).
+H   914.22 [FAILED] waybar
+H   933.81 CH t=191.2 UNRECOVERED ev=2 fault=dep-fail target=seatd alert=0 why="seatd not running"
+H   933.88 CH t=191.2 STATUS [[+]     ] boot
+H   933.88 CH t=191.2 STATUS [{+}     ] guard (pid: 101)
+H   933.89 CH t=191.2 STATUS [     {X}] seatd (exit status: 1)
+H   933.89 CH t=191.2 STATUS [{+}     ] udevd (pid: 103)
+H   933.89 CH t=191.2 STATUS [{+}     ] dbus (pid: 104)
+H   933.89 CH t=191.2 STATUS [     {X}] driftwm
+H   933.89 CH t=191.2 STATUS [     {X}] waybar
+H   933.89 CH t=191.2 STATUS [     {X}] hubd
+H   933.92 CH t=191.3 operator-action target=seatd why="seatd not running"
+H   933.95 Service (already) started.
+H   993.99 CH t=251.3 STUCK ev=2 step=28 fault=dep-fail target=seatd why="seatd not running" (a reboot is the only way out; the host restarts the machine)
+H   995.00 [  255.449282] reboot: Power down
+H# vm exit code 0 after 257s, loadavg ['0.10', '0.29', '0.28']
+H# launch 4 skip=28 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-wf.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=60 hub.seed=203 hub.reps=3 hub.skip=28 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   995.16 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   999.54 Booting from ROM..c[?7l[2JCH STAGE1 up=2.87
+H   999.59 CH CAND dinit pid1=dinit
+H   999.59 CH SUP-START up=2.93
+H   999.72 [  OK  ] guard
+H   999.80 CH t=0.1 CHAOS start cand=dinit suite=faults seed=203 cpus=2
+H   999.84 [  OK  ] seatd
+H   999.84 [  OK  ] dbus
+H  1001.32 [  OK  ] udevd
+H  1003.59 [  OK  ] driftwm
+H  1005.24 [  OK  ] waybar
+H  1005.30 [  OK  ] hubd
+H  1005.30 [  OK  ] boot
+H  1005.60 CH t=5.9 BOOT-OK up=8.94 ok=1 (seconds since kernel start; waited 5.6)
+H  1094.66 CH t=95.0 STEP 29 fDisk
+H  1094.70 CH t=95.0 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1099.84 [STOPPD] waybar
+H  1101.42 [  OK  ] waybar
+H  1115.32 CH t=115.6 STATUS [[+]     ] boot
+H  1115.32 CH t=115.6 STATUS [{+}     ] guard (pid: 101)
+H  1115.32 CH t=115.6 STATUS [{+}     ] seatd (pid: 102)
+H  1115.32 CH t=115.6 STATUS [{+}     ] udevd (pid: 103)
+H  1115.32 CH t=115.6 STATUS [{+}     ] dbus (pid: 104)
+H  1115.32 CH t=115.6 STATUS [{+}     ] driftwm (pid: 130)
+H  1115.32 CH t=115.6 STATUS [{+}     ] waybar (pid: 1185)
+H  1115.32 CH t=115.6 STATUS [{+}     ] hubd (pid: 144)
+H  1115.58 CH t=115.9 EV ev=1 fault=disk-full target=waybar rec=0.04 ok=1 fixed=0 ok_during=18/20 all_alive_at_end=1
+H  1118.58 CH t=118.9 STEP 30 fDisk
+H  1118.64 CH t=119.0 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1123.81 [STOPPD] waybar
+H  1125.40 [  OK  ] waybar
+H  1139.22 CH t=139.5 STATUS [[+]     ] boot
+H  1139.23 CH t=139.5 STATUS [{+}     ] guard (pid: 101)
+H  1139.23 CH t=139.5 STATUS [{+}     ] seatd (pid: 102)
+H  1139.23 CH t=139.5 STATUS [{+}     ] udevd (pid: 103)
+H  1139.23 CH t=139.5 STATUS [{+}     ] dbus (pid: 104)
+H  1139.23 CH t=139.5 STATUS [{+}     ] driftwm (pid: 130)
+H  1139.23 CH t=139.5 STATUS [{+}     ] waybar (pid: 1449)
+H  1139.23 CH t=139.5 STATUS [{+}     ] hubd (pid: 144)
+H  1139.52 CH t=139.8 EV ev=2 fault=disk-full target=waybar rec=0.07 ok=1 fixed=0 ok_during=18/20 all_alive_at_end=1
+H  1142.54 CH t=142.8 STEP 31 fSupKill
+H  1142.54 CH t=142.8 skip supkill driftwm: no per-service supervisor
+H  1145.54 CH t=145.9 STEP 32 fSupKill
+H  1145.54 CH t=145.9 skip supkill waybar: no per-service supervisor
+H  1148.55 CH t=148.9 STEP 33 fSupKill
+H  1148.55 CH t=148.9 skip supkill driftwm: no per-service supervisor
+H  1151.55 CH t=151.9 STEP 34 fSupKill
+H  1151.55 CH t=151.9 skip supkill waybar: no per-service supervisor
+H  1154.56 CH t=154.9 STEP 35 fSupKill
+H  1154.56 CH t=154.9 skip supkill driftwm: no per-service supervisor
+H  1157.56 CH t=157.9 STEP 36 fSupKill
+H  1157.56 CH t=157.9 skip supkill waybar: no per-service supervisor
+H  1160.56 CH t=160.9 STEP 37 fScanKill
+H  1163.57 CH t=163.9 STEP 38 fBrainKill
+H  1166.57 CH t=166.9 STEP 39 fBrainKill
+H  1169.57 CH t=169.9 STEP 40 fClock
+H  1169.63 dinit: Service driftwm terminated due to signal 9
+H  1169.63 [STOPPD] driftwm
+H  1169.63 [STOPPD] waybar
+H  1169.97 [STOPPD] hubd
+H  1171.53 [  OK  ] driftwm
+H  1173.14 [  OK  ] waybar
+H  1173.19 [  OK  ] hubd
+H  1173.47 CH t=173.8 EV ev=3 fault=clock-3600 target=driftwm rec=3.69 ok=1 fixed=0 
+H  1174.49 [STOPPD] hubd
+H  1176.13 [  OK  ] hubd
+H  1176.57 CH t=176.9 EV ev=4 fault=after-clock-3600 target=hubd rec=1.89 ok=1 fixed=0 
+H  1179.57 CH t=179.9 STEP 41 fClock
+H  1179.64 dinit: Service driftwm terminated due to signal 9
+H  1179.82 [STOPPD] driftwm
+H  1179.82 [STOPPD] waybar
+H  1179.82 [STOPPD] hubd
+H  1181.53 [  OK  ] driftwm
+H  1183.15 [  OK  ] waybar
+H  1183.23 [  OK  ] hubd
+H  1183.65 CH t=184.0 EV ev=5 fault=clock+86400 target=driftwm rec=3.87 ok=1 fixed=0 
+H  1184.67 [STOPPD] hubd
+H  1186.28 [  OK  ] hubd
+H  1186.72 CH t=187.0 EV ev=6 fault=after-clock+86400 target=hubd rec=1.86 ok=1 fixed=0 
+H  1189.72 CH t=190.0 STEP 42 fOOM
+H  1189.78 CH t=190.1 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  1198.14 CH t=198.5 EV ev=7 fault=oom target=hog rec=0.05 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1201.15 CH t=201.5 STEP 43 fOOM
+H  1201.21 CH t=201.5 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  1206.35 CH t=206.7 EV ev=8 fault=oom target=hog rec=0.05 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1206.35 CH t=206.7 SUITE-DONE
+H  1208.35 [  211.728223] reboot: Power down
+H# vm exit code 0 after 213s, loadavg ['0.54', '0.33', '0.29']
+H# end wall=1208.4s launches=4 suite_done=True

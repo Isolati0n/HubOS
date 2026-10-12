@@ -33,9 +33,10 @@ def rows(c, paths):
             if m: cur = int(m[1])
             m = re.search(r" UNRECOVERED ev=(\d+) fault=(\S+) target=(\S+) alert=(\d) why=\"([^\"]*)\"", l)
             if m: pend[(m[1], cycle)] = (m[2], m[3], m[4], m[5])
+            m0 = re.search(r" EV ev=", l)
+            if m0 and cur and first.setdefault(cur, cycle) != cycle: continue     # same rule as event_counts.py: first cycle with any event of the step
             m = re.search(r" EV ev=(\d+) fault=(\S+) target=(\S+) rec=([\d.]+) ok=0 (.*)", l)
             if m and cur:
-                if first.setdefault(cur, cycle) != cycle: continue
                 u = pend.get((m[1], cycle), (m[2], m[3], "?", "?"))
                 out.append((cur, m[2], m[3], u[3], u[2], m[5].strip()))
     return out
