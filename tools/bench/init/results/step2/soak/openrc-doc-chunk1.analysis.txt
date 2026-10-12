@@ -1,0 +1,5 @@
+== /home/user/HubOS/tools/bench/init/results/step2/soak/openrc-doc-chunk1.log: 1 launch(es), first 600 s of each left out
+TOTAL          slope   +25.44 kB per 1000 restarts (std.err  51.09)  noise sd  123.4 kB  range 2264..3079 kB  samples 110  restarts covered 786
+openrc-init    slope   -16.11 kB per 1000 restarts (std.err  12.77)  noise sd   30.9 kB  range 433..646 kB  samples 110  restarts covered 786
+supervise-daemo slope   +41.56 kB per 1000 restarts (std.err  56.13)  noise sd  135.6 kB  range 1737..2586 kB  samples 110  restarts covered 786
+STUCK states in chunk: 0; SOAK-END lines: 1; launches: 1; self-reboots (reboot: Restarting system): 0; events that needed a person (ok=0): 25; UNRECOVERED lines: 25
