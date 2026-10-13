@@ -228,6 +228,7 @@ func main() {
 	statePath := flag.String("state", "/run/hubos/watcher.state", "one-line state file: \"capped <time>\" while the rule wants a kill and the latch blocks it (the hook a bar would read)")
 	stateLimit := flag.Duration("state-limit", StateLimit, "deadline of the \"state\" probe")
 	syncLimit := flag.Duration("sync-limit", SyncLimit, "limit of the wl_display.sync probe")
+	clearAfter := flag.Duration("latch-clear-after", 3600*time.Second, "the latch is removed by itself after this long with BOTH probes answering in every round (0 = never; the timer is in memory only)")
 	console := flag.String("console", "/dev/console", "also write the log here (empty: standard error only)")
 	flag.Parse()
 	var cons *os.File
@@ -249,9 +250,9 @@ func main() {
 		Find:     func() []Proc { return findProcs(*target) },
 		Kill:     killProc,
 		Evidence: func(p Proc) string { return evidence(p.PID) },
-		Wall:     time.Now, Log: logf, Target: *target,
+		Wall:     time.Now, Log: logf, Target: *target, ClearAfter: *clearAfter,
 	}
-	logf("started pid=%d probes=state(%v)+wl_display.sync(%v), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version)", os.Getpid(), *stateLimit, *syncLimit)
+	logf("started pid=%d probes=state(%v)+wl_display.sync(%v), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version + auto-clear after %v)", os.Getpid(), *stateLimit, *syncLimit, *clearAfter)
 	logf("%s (%s)", note, *budgetPath)
 	if l, dmg := w.Latch.State(); l {
 		logf("LATCH is set at start (%s): nothing is killed until a person clears it %s", *latchPath, dmg)

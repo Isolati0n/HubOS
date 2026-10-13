@@ -70,8 +70,15 @@ type Watcher struct {
 	Log      func(format string, a ...any)
 	Target   string
 
+	// ClearAfter (follow-up 6, Part B): the latch is removed by itself when EVERY round for this long had BOTH probes answering. Zero
+	// means off (the old tests). The timer is kept in memory only: a restarted watcher starts it again.
+	ClearAfter time.Duration
+
 	ident     Proc   // the compositor process at the first failed round of the streak
 	lastDamge string // the last latch damage text logged
+
+	healthy   bool          // the latch is set and every round since healthyAt had both probes answering
+	healthyAt time.Duration // boot-clock time of the first round of that healthy stretch
 }
 
 // Result is what Step did, for the log and the tests.
@@ -118,9 +125,43 @@ func (w *Watcher) refresh(now time.Duration) (latched bool) {
 	return latched
 }
 
+// autoClear is the follow-up 6 (Part B) timer. While the latch is set it counts the healthy stretch: the rounds in a row in which
+// BOTH probes answered. A round in which even one probe fails (or both) restarts the count, a round with no latch stops it (a
+// `reset`), so a latched compositor that is still failing is never cleared. When the stretch has lasted ClearAfter the latch file is
+// removed and a line is logged. The budget is not touched (it ages out by itself). The stretch is measured from the first healthy
+// round the watcher saw, also for a latch file left by a previous process (a restarted watcher starts again from zero).
+func (w *Watcher) autoClear(now time.Duration, latched, healthy bool) bool {
+	if !latched || w.ClearAfter <= 0 {
+		w.healthy = false
+		return latched
+	}
+	if !healthy {
+		if w.healthy {
+			w.Log("LATCH healthy stretch broken after %.0fs (a probe failed): the %v timer starts again", (now - w.healthyAt).Seconds(), w.ClearAfter)
+		}
+		w.healthy = false
+		return latched
+	}
+	if !w.healthy {
+		w.healthy, w.healthyAt = true, now
+		w.Log("LATCH healthy stretch starts: latch clears by itself after %v of rounds with both probes answering", w.ClearAfter)
+	}
+	if now-w.healthyAt < w.ClearAfter {
+		return latched
+	}
+	if err := w.Latch.Clear(); err != nil {
+		w.Log("LATCH not cleared: %v (tries again next round)", err)
+		return latched
+	}
+	w.Log("LATCH CLEARED by itself: every round for %.0fs had both probes answering (budget untouched: %d kills still counted)", (now - w.healthyAt).Seconds(), w.B.Len())
+	w.healthy = false
+	return false
+}
+
 // Step handles one probe round at boot-clock time now. state and sync tell whether the two compositor probes answered.
 func (w *Watcher) Step(now time.Duration, state, sync bool) Result {
 	latched := w.refresh(now)
+	latched = w.autoClear(now, latched, state && sync)
 	if state && sync { // both answer: the streak ends, and the "capped" message goes away (the latch stays)
 		w.R.Reset()
 		w.ident = Proc{}
