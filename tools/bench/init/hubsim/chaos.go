@@ -1767,6 +1767,7 @@ func stormC(s string, extra time.Duration) {
 	os.Remove(faultDir + "/" + s + ".crash")
 	say("STORM-C %s after 40 s: starts=%d (at the stop: %d); stop time %.2fs; alert=%q; svc: %s", s, starts(s)-s0, startsAtStop, tAlert, alertText(s), sh("s6-svstat /run/service/"+s))
 	say("STORM-C %s pids now: %s; others kept their process: %s; why()=%q; watcher files: %s", s, allPids(), keptList(before), why(), watcherFiles())
+	say("STORM-C %s s6-svstat of every service: %s", s, svstatAll())
 	say("STORM-C %s s6-svdt: %s", s, strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/"+s), "\n", " | "))
 	time.Sleep(extra)
 	say("STORM-C %s after %.0f s more (service still stopped): svstat=%q; watcher cpu ticks used %d (1 tick = 10 ms) in %.0f s; state file=%q latch=%v; budget=%q; alert still=%q", s, extra.Seconds(), sh("s6-svstat /run/service/"+s), cpuTicks([]int{pidOf(cfg["watcher"])})-wTicks0, time.Since(t).Seconds(), readFile(wState), exists(wLatch), strings.ReplaceAll(readFile(wBudget), "\n", " | "), alertText(s))
