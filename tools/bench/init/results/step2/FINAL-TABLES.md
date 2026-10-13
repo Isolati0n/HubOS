@@ -1,4 +1,4 @@
-# Final tables of the elimination round (all candidates), regenerated 2026-10-12 (follow-up 3) with tools/bench/init/report.py Follow-up 4 (2026-10-13): the rows for `s6rc-par-wd2` and `runit-111-wd2` and the hang tables are appended at the end of this file (generated with report.py, event_counts.py and hangtable.py; the earlier tables above are unchanged, the rows of `s6rc-par-wd`, `runit-wd`, `s6rc-par-wdc`, `runit-wdc` are the "compositor + hubd probes" and "one compositor probe only" runs, not the owner's rule).
+# Final tables of the elimination round (all candidates), regenerated 2026-10-12 (follow-up 3) with tools/bench/init/report.py Follow-up 4 (2026-10-13): the rows for `s6rc-par-wd2` and `runit-111-wd2` and the hang tables are appended at the end of this file (generated with report.py, event_counts.py and hangtable.py; the earlier tables above are unchanged, the rows of `s6rc-par-wd`, `runit-wd`, `s6rc-par-wdc`, `runit-wdc` are the "compositor + hubd probes" and "one compositor probe only" runs, not the owner's rule). Follow-up 5 (2026-10-13): the rows for `s6rc-par-wd3` and `runit-111-wd3` (latch version) are appended at the very end; everything above is unchanged.
 
 Notes: (1) a step that appears in several cycles because the machine rebooted itself (runit) is counted once, from its first cycle; runit's logs are merged (first run, rerun from step 31, rerun from step 38). (2) s6plain is the full repeat run (`s6plain-repeat/`). (3) The boot rows of openrc-par and openrc-doc are the re-measurement (`openrc-remeasure/`) made after the memory counter was fixed; the earlier OpenRC memory figures (586, 548 and, for the first openrc run, 664 kB) held PID 1 only. (4) `openrc-doc2` has only trial boots. (5) For the event counts of each column and why they differ, see the run log (follow-up 2, item 1). (6) "alert=yes/no" in the storm rows is the harness's own alert file. (7) Added in follow-up 3: `runit-111np` (runit-111 without -P); `s6rc-par-wd` and `runit-wd` (s6rc-par and runit-111 plus the TEST STAND-IN watcher in its literal 'both probes failing' mode; two more events, steps 44-45: kill the watcher); `s6rc-par-wdc` and `runit-wdc` (the same images; the watcher acts on the compositor probe alone: a labelled variation, not the owner's rule). The watcher candidates' fault tables count the harness's steps 1-45; their boot, memory and CPU figures do not include the watcher in the init-side PSS.
 
@@ -304,4 +304,298 @@ runit          slope    -1.89 kB per 1000 restarts (std.err   2.30)  noise sd   
 runsv          slope   -58.09 kB per 1000 restarts (std.err  21.03)  noise sd   46.9 kB  range 1349..1878 kB  samples 110  restarts covered 749
 runsvdir       slope   -36.70 kB per 1000 restarts (std.err   2.83)  noise sd    6.3 kB  range 211..281 kB  samples 110  restarts covered 749
 STUCK states in chunk: 1; SOAK-END lines: 1; launches: 2; self-reboots (reboot: Restarting system): 0; events that needed a person (ok=0): 34; UNRECOVERED lines: 35
+```
+
+# Follow-up 5 rows (2026-10-13): latch version of the test watcher (`s6rc-par-wd3`, `runit-111-wd3`). TEST STAND-IN watcher, not the product watcher.
+
+Rule and decisions: see the run log, follow-up 5. Probes: driftwm `state` (5 s) and Wayland `wl_display.sync` (2 s), both must fail; 4 rounds and 30 s; 3 kills in 10 minutes; at the 4th wanted kill the watcher latches until a person clears it; it kills only the process it recorded at the first failed round. Source logs: the 3-repetition full suites `s6rc-par-wd3/s6rc-par-wd3-faults-106.log` and `runit-111-wd3/runit-111-wd3-faults-116.log`. Boot rows, PID 1 killed or wedged and trial boots were **not run** for these two candidates (same init and boot path as `s6rc-par` and `runit-111`). The `-wd2` rows above are unchanged (window version).
+
+### Fault injection
+
+| fault: median recovery s (worst) | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| kill (any of 6) | 1.9 (max 4.7) | 1.8 (max 4.1) |
+| hang-stop | 40.6 (max 41.4); 1/3 needed a person | 39.8 (max 40.0); 1/3 needed a person |
+| hang-spin | 40.9 (max 40.9); 2/3 needed a person | 39.0 (max 39.0); 2/3 needed a person |
+| dep-slow | 20.7 (max 20.7) | 19.6 (max 19.6) |
+| dep-fail | 5.5 (max 5.5) | 4.1 (max 4.1) |
+| disk-full | 0.2 (max 0.2) | 0.1 (max 0.2) |
+| supervisor-killed | 0.2 (max 14.4) | 0.2 (max 3.0) |
+| scanner-killed | n/a | 0.2 (max 0.2) |
+| brain-killed | n/a | n/a |
+| clock-3600 | 5.6 (max 5.6) | 4.3 (max 4.3) |
+| clock+86400 | 4.6 (max 4.6) | 4.1 (max 4.1) |
+| oom | 0.1 (max 0.1) | 0.1 (max 0.1) |
+
+| measure | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| crash storm on hubd, 40 s | 18 starts; 5 in last 10 s; alert=no | 33 starts; 8 in last 10 s; alert=no |
+| crash storm on driftwm, 40 s | 26 starts; 7 in last 10 s; alert=no | 26 starts; 6 in last 10 s; alert=no |
+| seatd slow: starts of driftwm / waybar / hubd while waiting | 11 / 7 / 3 | 11 / 9 / 3 |
+| seatd fail: starts of driftwm / waybar / hubd while waiting | 14 / 7 / 2 | 15 / 12 / 2 |
+
+| unrecovered by itself, count | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| hang-spin (alert=0) | 2 | 2 |
+| hang-stop (alert=0) | 1 | 1 |
+
+### Events defined / ran, of the 3-repetition full suites (event_counts.py)
+
+| candidate | events the script defines for it | events that ran (EV lines) | lost to stuck states | never reached | other difference | stuck steps (fault) | last step reached | launches | script finished | of the 36 common events: ran / needed a person / stuck |
+|---|---|---|---|---|---|---|---|---|---|---|
+| s6rc-par-wd3 | 50 | 50 | 0 | 0 | 0 | - | 45 | 1 | yes | 36 / 3 / 0 |
+| runit-111-wd3 | 52 | 52 | 0 | 0 | 0 | - | 45 | 1 | yes | 36 / 3 / 0 |
+
+### Hangs: one table per log (hangtable.py)
+
+#### results/step2/s6rc-par-wd3/s6rc-par-wd3-faults-106.log
+
+| n | shape | arm delay s | fault to kill s | fault to desktop s | windows back | needed a person | watcher state file at the end |
+|---|---|---|---|---|---|---|---|
+| 19 | stop | 0.00 | 36.17 | 41.40 | yes | no | - |
+| 20 | spin | 0.06 | 35.82 | 40.87 | yes | no | - |
+| 21 | stop | 0.00 | 35.37 | 39.72 | yes | no | - |
+| 22 | spin | 0.36 | 63.78 | 64.63 | yes | YES | - |
+| 23 | stop | 0.00 | 60.80 | 64.68 | yes | YES | - |
+| 24 | spin | 0.23 | 63.54 | 65.62 | yes | YES | - |
+    CH t=308.2 UNRECOVERED ev=22 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+    CH t=377.6 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+    CH t=448.2 UNRECOVERED ev=24 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+    CH t=499.2 STORM target=hubd dur=40 starts=18 starts_last10s=5 cpu_ticks_init_side=17 bar-up
+    CH t=544.5 STORM target=driftwm dur=40 starts=26 starts_last10s=7 cpu_ticks_init_side=44 bar-down
+    CH t=775.6 EV ev=47 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+    CH t=783.3 EV ev=48 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+
+#### results/step2/s6rc-par-wd3/s6rc-par-wd3-hangsP-104.log
+
+| n | shape | arm delay s | fault to kill s | fault to desktop s | windows back | needed a person | watcher state file at the end |
+|---|---|---|---|---|---|---|---|
+| 1 | deadlock | 0.32 | 36.22 | 40.83 | yes | no | - |
+| 2 | spin | 0.24 | 36.25 | 40.85 | yes | no | - |
+| 3 | stop | 0.00 | 35.52 | 40.44 | yes | no | - |
+| 4 | spin | 0.28 | 36.02 | 41.43 | yes | no | - |
+| 5 | stop | 0.00 | 36.21 | 40.50 | yes | no | - |
+| 6 | deadlock | 0.26 | 35.32 | 39.99 | yes | no | - |
+| 7 | spin | 0.28 | 36.08 | 40.48 | yes | no | - |
+| 8 | deadlock | 0.20 | 35.46 | 40.09 | yes | no | - |
+| 9 | stop | 0.00 | 35.52 | 39.89 | yes | no | - |
+
+#### results/step2/s6rc-par-wd3/s6rc-par-wd3-storm3-105.log
+
+| n | shape | arm delay s | fault to kill s | fault to desktop s | windows back | needed a person | watcher state file at the end |
+|---|---|---|---|---|---|---|---|
+| 4 | stop | 0.00 | 35.45 | 40.74 | yes | no | - |
+| 5 | spin | 0.07 | 35.49 | 40.47 | yes | no | - |
+| 7 | deadlock | 0.38 | 36.03 | 41.06 | yes | no | - |
+    CH t=52.8 STORM target=driftwm dur=40 starts=26 starts_last10s=7 cpu_ticks_init_side=44 bar-down
+    CH t=105.7 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=44 bar-down
+    CH t=156.5 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=39 bar-down
+    CH t=296.1 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=42 bar-down
+
+#### results/step2/runit-111-wd3/runit-111-wd3-faults-116.log
+
+| n | shape | arm delay s | fault to kill s | fault to desktop s | windows back | needed a person | watcher state file at the end |
+|---|---|---|---|---|---|---|---|
+| 19 | stop | 0.00 | 36.21 | 39.98 | yes | no | - |
+| 20 | spin | 0.41 | 35.61 | 39.01 | yes | no | - |
+| 21 | stop | 0.00 | 35.39 | 39.61 | yes | no | - |
+| 22 | spin | 0.08 | 64.14 | 64.41 | yes | YES | - |
+| 23 | stop | 0.00 | 60.81 | 64.61 | yes | YES | - |
+| 24 | spin | 0.08 | 62.86 | 63.07 | yes | YES | - |
+    CH t=298.3 UNRECOVERED ev=22 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+    CH t=368.0 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+    CH t=437.6 UNRECOVERED ev=24 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+    CH t=487.5 STORM target=hubd dur=40 starts=33 starts_last10s=8 cpu_ticks_init_side=19 bar-up
+    CH t=532.0 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=43 bar-down
+    CH t=748.4 EV ev=49 fault=oom target=hog rec=0.13 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+    CH t=757.5 EV ev=50 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+
+#### results/step2/runit-111-wd3/runit-111-wd3-hangsP-114.log
+
+| n | shape | arm delay s | fault to kill s | fault to desktop s | windows back | needed a person | watcher state file at the end |
+|---|---|---|---|---|---|---|---|
+| 1 | stop | 0.00 | 36.01 | 40.18 | yes | no | - |
+| 2 | deadlock | 0.30 | 35.53 | 38.97 | yes | no | - |
+| 3 | spin | 0.47 | 36.23 | 39.80 | yes | no | - |
+| 4 | stop | 0.00 | 35.93 | 39.86 | yes | no | - |
+| 5 | spin | 0.25 | 35.75 | 39.63 | yes | no | - |
+| 6 | deadlock | 0.04 | 35.30 | 38.74 | yes | no | - |
+| 7 | spin | 0.25 | 36.81 | 40.88 | yes | no | - |
+| 8 | deadlock | 0.16 | 35.68 | 39.08 | yes | no | - |
+| 9 | stop | 0.00 | 35.60 | 40.25 | yes | no | - |
+
+#### results/step2/runit-111-wd3/runit-111-wd3-storm3-115.log
+
+| n | shape | arm delay s | fault to kill s | fault to desktop s | windows back | needed a person | watcher state file at the end |
+|---|---|---|---|---|---|---|---|
+| 4 | stop | 0.00 | 35.79 | 39.72 | yes | no | - |
+| 5 | spin | 0.38 | 35.55 | 39.63 | yes | no | - |
+| 7 | deadlock | 0.34 | 36.28 | 40.31 | yes | no | - |
+    CH t=51.5 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=49 bar-down
+    CH t=102.5 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=46 bar-down
+    CH t=153.9 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=46 bar-down
+    CH t=291.5 STORM target=driftwm dur=40 starts=27 starts_last10s=7 cpu_ticks_init_side=42 bar-down
+
+### Key lines of the latch, state-file, storm and slow tests (grep of the logs; duplicates from the console and standard error copies removed)
+
+#### results/step2/s6rc-par-wd3/s6rc-par-wd3-latch-102.log
+
+```
+watcher: KILL driftwm pid=215 start=895
+CH t=53.8 LATCH-TEST after hang 1: watcher_state="" budget_entries=1 latch=0
+watcher: KILL driftwm pid=718 start=5445
+CH t=98.8 LATCH-TEST after hang 2: watcher_state="" budget_entries=2 latch=0
+watcher: KILL driftwm pid=1225 start=9961
+CH t=142.0 LATCH-TEST after hang 3: watcher_state="" budget_entries=3 latch=0
+CH t=145.0 LATCH-TEST hang 4 injected (SIGSTOP of driftwm pid=1721); no help from the harness; watcher_state="" budget_entries=3 latch=0
+watcher: LATCH set: the rule wants a kill but 3 kills were made in the last 10 minutes; stopped until a person clears it
+CH t=180.3 LATCH-TEST state file after 35.3s: "capped 2026-10-13T19:13:13Z"; latch file=true; driftwm pid=1721 State: T (stopped); budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 49351662737 | kill 94408407627 | kill 138346495467 | end 3"
+CH t=306.1 LATCH-TEST (b) init restarted the watcher in 1.08s (ok=true); after: latch="hubos-watcher-latch v1\nboot_ns 181334406587\nutc 2026-10-13T19:13:13Z\nend" state="capped 2026-10-13T19:13:13Z" budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 49351662737 | kill 94408407627 | kill 138346495467 | end 3" frozen=t
+CH t=1140.9 LATCH-TEST (a) held 961s, 475 samples (every 2 s): not frozen in 0, latch missing in 0, state file missing in 0; uptime now 1147
+CH t=1140.9 PERSON-COMMAND *** the harness plays the person: running `watcher reset` (after the hold) ***
+CH t=1140.9 PERSON-COMMAND output: "watcher reset: budget emptied, latch and state file removed"; now watcher_state="" budget_entries=0 latch=0
+watcher: KILL driftwm pid=1721 start=14343
+CH t=1147.7 LATCH-TEST after the person-command: reset to kill 2.13s, reset to desktop back 6.82s (desktop ok=true); state file present=false; watcher_state="" budget_entries=1 latch=0
+```
+
+#### results/step2/s6rc-par-wd3/s6rc-par-wd3-latchc-103.log
+
+```
+watcher: KILL driftwm pid=214 start=860
+CH t=53.0 LATCH-TEST after hang 1: watcher_state="" budget_entries=1 latch=0
+watcher: KILL driftwm pid=719 start=5409
+CH t=97.1 LATCH-TEST after hang 2: watcher_state="" budget_entries=2 latch=0
+watcher: KILL driftwm pid=1210 start=9835
+CH t=141.1 LATCH-TEST after hang 3: watcher_state="" budget_entries=3 latch=0
+CH t=144.1 LATCH-TEST(c) hang 4 injected (SIGSTOP of driftwm pid=1712); no help from the harness; watcher_state="" budget_entries=3 latch=0
+watcher: LATCH set: the rule wants a kill but 3 kills were made in the last 10 minutes; stopped until a person clears it
+CH t=180.1 LATCH-TEST(c) state file after 36.1s: "capped 2026-10-13T19:32:31Z"; latch file=true; driftwm pid=1712 State: T (stopped); budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 48951240189 | kill 93060415069 | kill 136945995589 | end 3"
+CH t=190.2 LATCH-TEST(c) still frozen=true, latch=true, state="capped 2026-10-13T19:32:31Z"
+CH t=190.2 LATCH-TEST(c) SIGCONT sent; state file removed after 0.05s (present now=false); latch still set=true; compositor State: S (sleeping) pid same=true
+CH t=190.5 LATCH-TEST(c) desktop ok=true with the latch still set=true
+CH t=195.5 LATCH-TEST(c) hung AGAIN (SIGSTOP of the same process pid=1712); no help
+CH t=231.1 LATCH-TEST(c) state file came back after 35.6s: "capped 2026-10-13T19:33:22Z"; latch=true
+CH t=317.2 LATCH-TEST(c) 120 s after the second hang: frozen=true (pid same=true, State T (stopped)) state="capped 2026-10-13T19:33:22Z" latch=true; NOT killed=true
+CH t=317.2 PERSON-COMMAND *** the harness plays the person: running `watcher reset` (after the second hang) ***
+CH t=317.3 PERSON-COMMAND output: "watcher reset: budget emptied, latch and state file removed"; now watcher_state="" budget_entries=0 latch=0
+watcher: KILL driftwm pid=1712 start=14202
+CH t=327.2 LATCH-TEST after the person-command: reset to kill 4.59s, reset to desktop back 9.92s (desktop ok=true); state file present=false; watcher_state="" budget_entries=1 latch=0
+CH t=330.2 LATCH-TEST(d) hang injected (SIGSTOP pid=3727); the watcher will be killed 15 s into the streak; watcher_state="" budget_entries=1 latch=0
+CH t=346.3 LATCH-TEST(d) watcher killed at 15.0s after the fault; init restarted it in 1.11s
+watcher: KILL driftwm pid=3727 start=32771
+CH t=387.2 LATCH-TEST(d) from the watcher's restart to the kill: 36.19s (expect about 30 s); fault to kill 52.32s; fault to desktop back 56.99s (ok=true); watcher_state="" budget_entries=2 latch=0
+```
+
+#### results/step2/runit-111-wd3/runit-111-wd3-latch-112.log
+
+```
+watcher: KILL driftwm pid=128 start=304
+CH t=51.6 LATCH-TEST after hang 1: watcher_state="" budget_entries=1 latch=0
+watcher: KILL driftwm pid=694 start=4993
+CH t=95.1 LATCH-TEST after hang 2: watcher_state="" budget_entries=2 latch=0
+watcher: KILL driftwm pid=1191 start=9410
+CH t=138.0 LATCH-TEST after hang 3: watcher_state="" budget_entries=3 latch=0
+CH t=141.0 LATCH-TEST hang 4 injected (SIGSTOP of driftwm pid=1687); no help from the harness; watcher_state="" budget_entries=3 latch=0
+watcher: LATCH set: the rule wants a kill but 3 kills were made in the last 10 minutes; stopped until a person clears it
+CH t=176.3 LATCH-TEST state file after 35.3s: "capped 2026-10-13T20:08:56Z"; latch file=true; driftwm pid=1687 State: T (stopped); budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 44842631280 | kill 88982277170 | kill 131848859610 | end 3"
+CH t=297.0 LATCH-TEST (b) killing the WATCHER (SIGKILL) while latched and frozen; before: latch="hubos-watcher-latch v1\nboot_ns 173861321710\nutc 2026-10-13T20:08:56Z\nend" state="capped 2026-10-13T20:08:56Z" budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 44842631280 | kill 88982277170 | kill 131848859610 | end 3
+CH t=301.2 LATCH-TEST (b) init restarted the watcher in 0.21s (ok=true); after: latch="hubos-watcher-latch v1\nboot_ns 173861321710\nutc 2026-10-13T20:08:56Z\nend" state="capped 2026-10-13T20:08:56Z" budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 44842631280 | kill 88982277170 | kill 131848859610 | end 3" frozen=t
+CH t=1137.7 LATCH-TEST (a) held 961s, 476 samples (every 2 s): not frozen in 0, latch missing in 0, state file missing in 0; uptime now 1140
+CH t=1137.7 PERSON-COMMAND *** the harness plays the person: running `watcher reset` (after the hold) ***
+CH t=1137.8 PERSON-COMMAND output: "watcher reset: budget emptied, latch and state file removed"; now watcher_state="" budget_entries=0 latch=0
+watcher: KILL driftwm pid=1687 start=13692
+CH t=1142.3 LATCH-TEST after the person-command: reset to kill 0.38s, reset to desktop back 4.61s (desktop ok=true); state file present=false; watcher_state="" budget_entries=1 latch=0
+```
+
+#### results/step2/runit-111-wd3/runit-111-wd3-latchc-113.log
+
+```
+watcher: KILL driftwm pid=133 start=361
+CH t=51.0 LATCH-TEST after hang 1: watcher_state="" budget_entries=1 latch=0
+watcher: KILL driftwm pid=699 start=5045
+CH t=94.1 LATCH-TEST after hang 2: watcher_state="" budget_entries=2 latch=0
+watcher: KILL driftwm pid=1178 start=9350
+CH t=137.2 LATCH-TEST after hang 3: watcher_state="" budget_entries=3 latch=0
+CH t=140.2 LATCH-TEST(c) hang 4 injected (SIGSTOP of driftwm pid=1665); no help from the harness; watcher_state="" budget_entries=3 latch=0
+watcher: LATCH set: the rule wants a kill but 3 kills were made in the last 10 minutes; stopped until a person clears it
+CH t=176.2 LATCH-TEST(c) state file after 36.0s: "capped 2026-10-13T20:28:05Z"; latch file=true; driftwm pid=1665 State: T (stopped); budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 45359478609 | kill 88409584359 | kill 131378905829 | end 3"
+CH t=186.3 LATCH-TEST(c) still frozen=true, latch=true, state="capped 2026-10-13T20:28:05Z"
+CH t=186.3 LATCH-TEST(c) SIGCONT sent; state file removed after 0.05s (present now=false); latch still set=true; compositor State: S (sleeping) pid same=true
+CH t=186.6 LATCH-TEST(c) desktop ok=true with the latch still set=true
+CH t=191.6 LATCH-TEST(c) hung AGAIN (SIGSTOP of the same process pid=1665); no help
+CH t=227.3 LATCH-TEST(c) state file came back after 35.6s: "capped 2026-10-13T20:28:56Z"; latch=true
+CH t=313.4 LATCH-TEST(c) 120 s after the second hang: frozen=true (pid same=true, State T (stopped)) state="capped 2026-10-13T20:28:56Z" latch=true; NOT killed=true
+CH t=313.4 PERSON-COMMAND *** the harness plays the person: running `watcher reset` (after the second hang) ***
+CH t=313.4 PERSON-COMMAND output: "watcher reset: budget emptied, latch and state file removed"; now watcher_state="" budget_entries=0 latch=0
+watcher: KILL driftwm pid=1665 start=13647
+CH t=321.6 LATCH-TEST after the person-command: reset to kill 4.44s, reset to desktop back 8.19s (desktop ok=true); state file present=false; watcher_state="" budget_entries=1 latch=0
+CH t=324.6 LATCH-TEST(d) hang injected (SIGSTOP pid=3676); the watcher will be killed 15 s into the streak; watcher_state="" budget_entries=1 latch=0
+CH t=339.7 LATCH-TEST(d) watcher killed at 15.0s after the fault; init restarted it in 0.07s
+watcher: KILL driftwm pid=3676 start=32106
+CH t=379.7 LATCH-TEST(d) from the watcher's restart to the kill: 36.26s (expect about 30 s); fault to kill 51.34s; fault to desktop back 55.17s (ok=true); watcher_state="" budget_entries=2 latch=0
+```
+
+#### results/step2/s6rc-par-wd3/s6rc-par-wd3-slow-101.log
+
+```
+CH t=12.5 SLOW-TEST variant=both start: driftwm pid=214 watcher_state="" budget_entries=0 latch=0
+CH t=72.8 SLOW-TEST variant=both end of the 60 s: driftwm pid=214 (same=true) watcher_state="" budget_entries=0 latch=0
+CH t=83.2 SLOW-TEST variant=both 10 s after the end: pid same=true, desktop ok=true (0.1s) watcher_state="" budget_entries=0 latch=0
+CH t=93.2 SLOW-TEST variant=sync start: driftwm pid=214 watcher_state="" budget_entries=0 latch=0
+CH t=153.6 SLOW-TEST variant=sync end of the 60 s: driftwm pid=214 (same=true) watcher_state="" budget_entries=0 latch=0
+CH t=163.9 SLOW-TEST variant=sync 10 s after the end: pid same=true, desktop ok=true (0.1s) watcher_state="" budget_entries=0 latch=0
+```
+
+#### results/step2/runit-111-wd3/runit-111-wd3-slow-111.log
+
+```
+CH t=10.9 SLOW-TEST variant=both start: driftwm pid=125 watcher_state="" budget_entries=0 latch=0
+CH t=71.2 SLOW-TEST variant=both end of the 60 s: driftwm pid=125 (same=true) watcher_state="" budget_entries=0 latch=0
+CH t=81.5 SLOW-TEST variant=both 10 s after the end: pid same=true, desktop ok=true (0.1s) watcher_state="" budget_entries=0 latch=0
+CH t=91.5 SLOW-TEST variant=sync start: driftwm pid=125 watcher_state="" budget_entries=0 latch=0
+CH t=151.7 SLOW-TEST variant=sync end of the 60 s: driftwm pid=125 (same=true) watcher_state="" budget_entries=0 latch=0
+CH t=162.0 SLOW-TEST variant=sync 10 s after the end: pid same=true, desktop ok=true (0.1s) watcher_state="" budget_entries=0 latch=0
+```
+
+#### results/step2/s6rc-par-wd3/s6rc-par-wd3-storm3-105.log
+
+```
+CH t=12.4 STORM-TEST 1 start: watcher_state="" budget_entries=0 latch=0
+watcher: SKIP: process changed (recorded none, now pid=929 start=5040): no kill, nothing counted, new streak with the new process
+CH t=62.2 STORM-TEST 1 end: watcher_state="" budget_entries=0 latch=0 budget=""
+CH t=65.2 STORM-TEST 2 start: watcher_state="" budget_entries=0 latch=0
+watcher: SKIP: process changed (recorded none, now none): no kill, nothing counted, new streak with the new process
+CH t=113.2 STORM-TEST 2 end: watcher_state="" budget_entries=0 latch=0 budget=""
+CH t=116.2 STORM-TEST 3 start: watcher_state="" budget_entries=0 latch=0
+CH t=165.0 STORM-TEST 3 end: watcher_state="" budget_entries=0 latch=0 budget=""
+CH t=168.0 STORM-TEST two real hangs, then a storm, then a real hang
+watcher: KILL driftwm pid=3074 start=16328
+watcher: KILL driftwm pid=3609 start=21008
+CH t=255.7 STORM-TEST after two real hang kills: watcher_state="" budget_entries=2 latch=0 budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 204928291421 | kill 248945393541 | end 2"
+watcher: SKIP: process changed (recorded pid=4237 start=26253, now none): no kill, nothing counted, new streak with the new process
+CH t=304.1 STORM-TEST storm after two real hang kills, end: watcher_state="" budget_entries=2 latch=0 budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 204928291421 | kill 248945393541 | end 2"
+watcher: KILL driftwm pid=5019 start=30262
+CH t=348.8 STORM-TEST real hang after the storm: watcher_state="" budget_entries=3 latch=0 budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 204928291421 | kill 248945393541 | kill 344988803741 | end 3"
+```
+
+#### results/step2/runit-111-wd3/runit-111-wd3-storm3-115.log
+
+```
+CH t=10.9 STORM-TEST 1 start: watcher_state="" budget_entries=0 latch=0
+watcher: SKIP: process changed (recorded pid=313 start=1453, now pid=1042 start=4535): no kill, nothing counted, new streak with the new process
+CH t=58.9 STORM-TEST 1 end: watcher_state="" budget_entries=0 latch=0 budget=""
+CH t=61.9 STORM-TEST 2 start: watcher_state="" budget_entries=0 latch=0
+watcher: SKIP: process changed (recorded pid=1411 start=6556, now none): no kill, nothing counted, new streak with the new process
+CH t=110.3 STORM-TEST 2 end: watcher_state="" budget_entries=0 latch=0 budget=""
+CH t=113.3 STORM-TEST 3 start: watcher_state="" budget_entries=0 latch=0
+watcher: SKIP: process changed (recorded none, now none): no kill, nothing counted, new streak with the new process
+CH t=161.8 STORM-TEST 3 end: watcher_state="" budget_entries=0 latch=0 budget=""
+CH t=164.8 STORM-TEST two real hangs, then a storm, then a real hang
+watcher: KILL driftwm pid=3474 start=15840
+watcher: KILL driftwm pid=3995 start=20405
+CH t=251.1 STORM-TEST after two real hang kills: watcher_state="" budget_entries=2 latch=0 budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 198916423865 | kill 242047703935 | end 2"
+watcher: SKIP: process changed (recorded pid=4609 start=25462, now pid=5295 start=28450): no kill, nothing counted, new streak with the new process
+CH t=299.0 STORM-TEST storm after two real hang kills, end: watcher_state="" budget_entries=2 latch=0 budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 198916423865 | kill 242047703935 | end 2"
+watcher: KILL driftwm pid=5563 start=29542
+CH t=342.9 STORM-TEST real hang after the storm: watcher_state="" budget_entries=3 latch=0 budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 198916423865 | kill 242047703935 | kill 336972009425 | end 3"
 ```

@@ -804,3 +804,171 @@ The hang rule as the owner stated it for this run: two probes of the compositor,
 
 **Environment of this follow-up (TESTED).** A fresh container; the tools were fetched again: QEMU 8.2.2 (without KVM, as before), kernel 6.8.0-146 (fetched from the `linux-signed` pool of the Ubuntu archive because the package index now points to -147; the -147 image was unpacked too but not used), busybox 1.36.1, runit 2.1.2-59ubuntu1, skalibs 2.15.1.0, execline 2.9.9.2, s6 2.15.1.0, s6-rc 0.7.0.0 (built from the skarnet.org tarballs). Timings come from a different physical host than follow-up 4 (UNKNOWN how much that matters; the VM runs under software emulation either way).
 
+New candidates (TESTED, built and run): `s6rc-par-wd3` (= `s6rc-par` plus the follow-up 5 watcher as an s6-rc long-run service) and `runit-111-wd3` (= `runit-111` plus the same watcher as a runit service). Same images as the `-wd2` ones except for the watcher binary. The `-wd2` candidates, their logs and their rows are unchanged (their images were **not** rebuilt; to rebuild them the watcher folder must be taken from commit f130829, because `build.sh` copies whichever watcher is built from the folder). Seeds (all new): s6: 101 (slow), 102 (latch), 103 (latch c and d), 104 (spaced hangs), 105 (storms), 106 (full suite, 3 repetitions); runit: 111 to 116 in the same order. Logs: `tools/bench/init/results/step2/<candidate>/` (spam `SAMPLE` lines stripped; the watcher's lines appear twice in the logs, once from the console and once from standard error). **No helper agents were used in this follow-up**; every claim below was read or measured by me.
+
+## Item 1: the test watcher (latch version)
+
+**What was built (SOURCE `prototypes/watcher/`: `main.go`, `watcher.go`, `latch.go`, `budget.go`; README updated).**
+- **Latch** (decision 1): when the rule wants a kill and 3 kills were already made in the last 10 minutes, the watcher writes `/run/hubos/watcher.latch` (temporary file, flush, rename) and stops killing for good until a person clears it. It reads the file at start and in every round. A damaged latch file counts as latched and is logged; it never crashes the watcher.
+- **Person-command, test hook only:** `watcher reset` (a subcommand of the same binary) empties the budget file, removes the latch and removes the state file (in that order, so a running watcher never sees "no latch and a full budget"); a running watcher notices within one round. **The product's command is not designed.**
+- **State file** (decisions 1 and 2): `capped <UTC time>` is written when the rule wants a kill and the latch (or a full budget) blocks it, and removed in the first round in which both probes answer, and by `reset`. A round in which only one probe answers does not remove it. The latch stays.
+- **Identity rule** (decision 3): at the first failed round of a streak the process named driftwm is recorded (id and start time, field 22 of `/proc/PID/stat`); at the kill moment the watcher kills only that identical process; otherwise it logs `SKIP: process changed`, kills nothing, counts nothing and starts a new streak with whatever process exists then. A kill that fails because the process is gone is taken back out of the budget. If no process exists at the first failed round, the recorded identity is "none" and the kill moment always ends in a skip (BELIEVED to be the safe side; see question 2).
+- **Probe limits** (decision 4): `state` 5 s, `wl_display.sync` 2 s. The hubd ping (information only) keeps 1 s.
+- **Streak** (decision 5): not kept over a restart (only the budget file and the latch are).
+- The follow-up 4 rule code is kept as the "window" version (`Rule.Round`, with its tests); the program uses the new `Watcher.Step`.
+
+**Stand-in changes (flagged).** (1) Slow but alive compositor, 17 lines in `hubsim/svc.go` (`slowDelay`): while the file `driftwm.slow` exists in the fault folder, an answer to `state` and/or to the sync request is delayed by 3 to 4 s (file content "both" or "sync"); the process keeps running. (2) New harness suites in `hubsim/chaos.go` (`latch`, `latchc`, `hangsP`, `storm3`, `slow`); the HANG log line now also shows `latch=0/1`. (3) `event_counts.py` knows the two new candidates. Everything the harness does as "the person" is marked `PERSON-COMMAND` in the logs.
+
+**Unit tests (TESTED; `go test ./tools/bench/init/prototypes/watcher/`, 22 tests pass; 10 old ones unchanged and passing, 12 new ones; I checked by hand that removing the identity check or the latch check makes the matching tests fail).** Latch set when a 4th kill is wanted; no kill while latched across 40 minutes of failed rounds (the budget has room after 10 minutes, the latch still blocks); latch survives a restart; reset clears latch and budget and the running watcher then kills within one round; state file appears, stays through a round in which only one probe answers, goes in the first round with both answering, comes back, and is removed by reset; identity rule (same id and start time kills; same id with another start time does not; another id does not; none does not; a process among others; none of these counted; the new process gets its own 30 s); a crash storm with a new process every second kills nothing; a kill that finds no process is taken back; the streak is not kept over a restart; a damaged latch file (four kinds, a directory, a 1 MiB file) is latched and logged; slow but alive (one probe answering for 600 rounds) never kills; probe limits (a `state` answer after 4 s counts as answered, a sync answer after 3 s counts as failed; the test takes 9 s). Not unit-tested: the real `killProc` kills with `SIGKILL` only after re-reading the start time; the check and the signal are not atomic (no pidfd), so a reuse of the id between them is possible in theory (SOURCE).
+
+## Item 2: VM tests (TESTED; logs under `results/step2/<candidate>/`)
+
+### 2a, 2b: the latch, and the latch survives a watcher kill (`*-latch-102.log`, `*-latch-112.log`)
+
+Three hangs (SIGSTOP, busy loop, deadlock) each killed by the watcher alone; then a 4th hang (SIGSTOP), nobody helps. The harness sampled the compositor every 2 s for 961 s (about 16 minutes, longer than the 10-minute window of the cap) and checked three things: the same process, State `T` (stopped), the latch file and the state file present. At 120 s into the freeze the watcher was killed (SIGKILL).
+
+| | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| 4th hang: state file appeared after | 35.3 s: `capped ...` | 35.3 s |
+| Latch file / compositor | present / State `T`, same process | present / State `T`, same process |
+| **Stayed frozen the whole time?** | **yes: 475 samples over 961 s, not frozen in 0, latch missing in 0, state file missing in 0** | **yes: 476 samples over 961 s, 0 / 0 / 0** |
+| (b) Watcher killed (SIGKILL) while latched and frozen: init restarted it in | 1.08 s | 0.21 s |
+| After the restart: latch, state file, budget file, frozen state | all byte-for-byte unchanged (the harness compared the strings) | same |
+| Person-command (`watcher reset`, **played by the harness**, marked in the log) | budget emptied, latch and state file removed | same |
+| Reset to kill / reset to desktop back | 2.13 s / 6.82 s | 0.38 s / 4.61 s |
+| After the reset | state file absent, budget file 1 entry (the new kill), latch absent | same |
+
+The window version had killed the frozen compositor at 485 s (s6) and 492 s (runit); here 961 s passed without a kill. The spread of reset-to-kill (0.38 to 4.59 s over four resets) is where the reset falls in the watcher's rounds, which are about 5 s long while the compositor is frozen (see the timing note below).
+
+### 2c: the message goes by itself, the latch stays (`*-latchc-103.log`, `*-latchc-113.log`)
+
+Same set-up (three kills, a 4th hang, latched). After 10 s of freeze the harness resumed the compositor (SIGCONT) **without** reset.
+
+| | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| State file removed after the SIGCONT | **0.05 s** | **0.05 s** |
+| Latch after that / desktop | still set / ok | still set / ok |
+| Same compositor hung again (SIGSTOP of the same process, 5 s later): state file came back after | 35.6 s | 35.6 s |
+| 120 s after the second hang | **not killed**, State `T`, same process, state file and latch present | same |
+| Person-command, then reset to kill / to desktop | 4.59 s / 9.92 s | 4.44 s / 8.19 s |
+
+The state file was gone within 0.05 s because the round that was waiting for the frozen compositor's answer ended at once when the process continued (SOURCE `main.go`: the next round's decision follows the probes). The latch was never touched by the removal of the state file.
+
+### 2d: the streak across a watcher restart (same logs)
+
+After the reset of 2c a new SIGSTOP hang; the watcher was killed 15.0 s into the streak.
+
+| | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| Init restarted the watcher in | 1.11 s | 0.07 s |
+| From the restart to the kill | 36.19 s | 36.26 s |
+| Fault to kill / fault to desktop back | 52.32 s / 56.99 s | 51.34 s / 55.17 s |
+
+The restarted watcher counted its own 30 s (expected about 30 s; the extra 6 s is the round length, see the timing note). Without a restart the same fault takes about 36 s to the kill.
+
+### 2e: spaced hang run (`*-hangsP-104.log`, `*-hangsP-114.log`, 9 hangs each; new seeds; the harness ran the person-command after hangs 3 and 6 so the latch never blocked)
+
+| | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| Hangs killed by the watcher alone | **9 of 9** (SIGSTOP 3, busy loop 3, deadlock 3) | **9 of 9** (3, 3, 3) |
+| Fault to kill | 35.3 to 36.3 s | 35.3 to 36.8 s |
+| Fault to desktop back | 39.9 to 41.4 s | 38.7 to 40.9 s |
+| Stand-in windows (waybar, hubd) back | 9 of 9 | 9 of 9 |
+| Needed a person | 0 of 9 | 0 of 9 |
+| All hangs killed alone in all runs of this follow-up (latch, latch-c, spaced, storm and full-suite hangs) | 21 of 21: kill 35.3 to 36.3 s (median 35.9), desktop 39.7 to 41.4 s (median 40.5) | 21 of 21: kill 35.3 to 36.8 s (median 35.9), desktop 38.7 to 40.9 s (median 39.7) |
+
+**Difference to follow-up 4's 19 of 19 (reported first, as asked):** every hang was killed (no change in the count), but the kill comes **about 3.5 s later**: 35.3 to 36.8 s instead of 31.9 to 33.4 s (s6) and 31.9 to 32.6 s (runit), and the desktop is back 38.7 to 41.4 s instead of 35.6 to 38.9 s. TESTED: the watcher's round log shows rounds about 5.0 s apart while the compositor is frozen (gaps 5.03, 5.05, 5.03 s in `s6rc-par-wd3-latch-102.log`). SOURCE `main.go`: a round waits for its probes, and the `state` probe now waits up to 5 s (follow-up 4: 1 s); the kill is decided after the round's probes end, from the time the round began. BELIEVED: that is the whole difference (not isolated by a run with a 1-s `state` limit; the flag `-state-limit` exists to do that).
+
+### 2f: crash storms with the identity rule (`*-storm3-105.log`, `*-storm3-115.log`; the budget file was empty at the start of each storm)
+
+The step is the one of follow-up 4: a stand-in compositor that crashes at every start for 40 s (the init restarts it 26 times). Three storms, then two real hangs (killed), then a fourth storm, then a real hang.
+
+| | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| Storms run (3 with an empty budget + 1 after two real hang kills) | 4 | 4 |
+| Watcher decided to kill (the rule's 4 rounds and 30 s were reached; `SKIP` line) | 4 of 4 | 4 of 4 |
+| What the identity check found | recorded identity "none" in 3 (no process at the first failed round), a process that was gone in 1 | "none" in 1, a different process (another id and start time) in 2, gone in 1 |
+| **Killed** | **0 of 4** | **0 of 4** |
+| **Kills counted** | **0** (budget file empty after storms 1 to 3; still 2 entries, the two real kills, after storm 4) | **0** (same) |
+| Real hang afterwards (deadlock, third hang kill) | **killed**, fault to kill 36.03 s, desktop back 41.06 s; budget file 3 entries | **killed**, 36.28 s, 40.31 s; 3 entries |
+| Latch / state file after the storms | not set / absent | not set / absent |
+
+(The two real hangs before the fourth storm: s6 35.45 and 35.49 s, runit 35.79 and 35.55 s to the kill, no person.) In follow-up 4 the same step was killed by the rule in 12 of 12 storms (9 of the kills found no process).
+
+### 2g: slow but alive compositor (`*-slow-101.log`, `*-slow-111.log`; new fault, stand-in change of 17 lines, flagged above)
+
+For 60 s every answer is 3 to 4 s late (variant "both": the `state` answer within its 5-s deadline, the sync answer over its 2-s limit; variant "sync": only the sync answer is late). The compositor keeps running.
+
+| | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| Variant "both": rounds in the 60 s | 17 (3.1 to 3.9 s apart): `state` ok 17, sync FAIL 17 | 17 (3.0 to 3.9 s apart): ok 17, FAIL 17 |
+| Variant "sync": rounds | 29 (2.0 s apart): `state` ok 29, sync FAIL 29 | 29: ok 29, FAIL 29 |
+| Failed rounds (both probes failing) | 0 | 0 |
+| **Kills** | **0** (same process before and after, desktop ok 10 s after the end, no state file, no latch, budget empty) | **0** (same) |
+
+TESTED: one probe failing for 60 s (many times the 30 s window) never fails the round and never kills, as the unit test says. Not tested: both probes late (a compositor that needs more than 5 s for `state`), a stall that ends by itself after 10 to 25 s (the case the 30 s window is for), and the real driftwm.
+
+### The earlier cheap checks: the full fault suite, 3 repetitions (`*-faults-106.log`, `*-faults-116.log`)
+
+| | s6rc-par-wd3 | runit-111-wd3 |
+|---|---|---|
+| Events defined / ran | 50 / 50 | 52 / 52 |
+| Stuck states / self-reboots (launches of the VM) | **0 / 0** (1 launch) | **0 / 0** (1 launch) |
+| Needed a person | 3 (steps 22, 23, 24: hangs 4 to 6, latched; fixed by the harness's ordinary 60-s operator action, not by `reset`) | 3 (same steps) |
+| Hangs 19 to 24: killed by the watcher | 3 of 6, then the latch (set once) | 3 of 6, then the latch |
+| Fault to kill / fault to desktop, the 3 killed | 35.4 to 36.2 s / 39.7 to 41.4 s | 35.4 to 36.2 s / 39.0 to 40.0 s |
+| Watcher killed (steps 44, 45): init restarted it in | 1.08 s, 1.08 s | 0.21 s, 0.21 s |
+| Watcher kills in the suite / extra kills by storms | 3 / 0 (4 skips) | 3 / 0 (4 skips) |
+| Out of memory steps: driftwm or hubd lost | none in 2 of 2 | none in 2 of 2 |
+| Lines with "unable to lock" | 0 | 134 (counted with grep, not split by type) |
+
+## Corrected table: the watcher runs side by side, window version (-wd2) against latch version (-wd3) (data only; no ranking)
+
+Rows for `-wd2` are copied from follow-up 4 (measured then); `-wd3` is this follow-up. Same fault suite (3 repetitions; hangs are steps 19 to 24).
+
+| | s6rc-par-wd2 (window) | **s6rc-par-wd3 (latch)** | runit-111-wd2 (window) | **runit-111-wd3 (latch)** |
+|---|---|---|---|---|
+| Probe limits (`state` / sync) | 1 s / 1 s | 5 s / 2 s | 1 s / 1 s | 5 s / 2 s |
+| Events defined / ran | 50 / 50 | 50 / 50 | 52 / 52 | 52 / 52 |
+| Stuck states / self-reboots | 0 / 0 | 0 / 0 | 0 / 0 | 0 / 0 |
+| Needed a person | 3 (steps 22 to 24, capped) | 3 (steps 22 to 24, latched) | 3 | 3 |
+| Hangs 19 to 24 killed by the watcher | 3 of 6, then the cap | 3 of 6, then the latch | 3 of 6 | 3 of 6 |
+| Fault to kill / to desktop, those hangs | 32.4 to 32.7 s / 37.0 to 38.4 s | 35.4 to 36.2 s / 39.7 to 41.4 s | 31.9 to 32.8 s / 35.9 to 36.5 s | 35.4 to 36.2 s / 39.0 to 40.0 s |
+| Spaced hang run (budget room each time) | 9 of 9 (19 of 19 in all runs), 31.9 to 33.4 s / 36.5 to 38.9 s | 9 of 9 (21 of 21 in all runs), 35.3 to 36.3 s / 39.9 to 41.4 s | 9 of 9 (19 of 19), 31.9 to 32.6 s / 35.6 to 37.2 s | 9 of 9 (21 of 21), 35.3 to 36.8 s / 38.7 to 40.9 s |
+| 4th hang with the cap reached | killed again after 485.4 s | **not killed in 961 s; killed 2.1 s after `reset`** | killed again after 492.4 s | **not killed in 961 s; killed 0.4 s after `reset`** |
+| State file | stays until the budget has room (still said capped after the desktop was back) | goes within 0.05 s of the compositor answering; comes back at the next hang | same as s6 | same as s6 |
+| Crash storm (driftwm, 40 s) | kill decided in 12 of 12 (both inits together), 9 of 12 found no process | decided 4 of 4, **killed 0, counted 0** | (see s6 column) | decided 4 of 4, **killed 0, counted 0** |
+| Slow but alive (3 to 4 s late for 60 s) | not tested | no kill (2 variants) | not tested | no kill (2 variants) |
+| Watcher killed during a hang's 30 s | not tested | 15 s in: kill 36.2 s after the restart | not tested | 36.3 s after the restart |
+| Watcher killed (steps 44, 45): init restarted it in | 1.10, 1.09 s | 1.08, 1.08 s | 0.21, 0.21 s | 0.21, 0.21 s |
+| Latch survives a watcher kill | n/a | yes (unchanged) | n/a | yes |
+| Lines with "unable to lock" | 0 | 0 | 111 (18 svlogd, 93 runsv) | 134 (grep count) |
+| Out of memory: driftwm or hubd lost | none in 10 of 10 | none in 2 of 2 | none in 10 of 10 | none in 2 of 2 |
+
+## What changed in behaviour, in plain words (TESTED, from the logs above)
+
+- **The 4th hang.** Window: the frozen compositor was replaced by itself after 485 to 492 s. Latch: it stayed frozen for the whole 961 s that were watched (and would stay so; nothing in the code ends it) and was killed 0.4 to 4.6 s after the person-command.
+- **The message.** The state file now describes a present fault: it appears 35 to 36 s after the hang, stays through a watcher restart, and goes within 0.05 s of the compositor answering again. The latch itself stays after the message is gone; a new hang is then not killed, and the message comes back after about 36 s.
+- **The crash storm.** The rule still wants a kill in every storm (4 of 4), but the identity rule stops it: 0 kills, 0 counted, the budget is untouched, and a real hang afterwards is killed at the normal time.
+- **Time to the kill.** About 3.5 s longer than in follow-up 4 (rounds are 5 s while the compositor is frozen, because of the 5-s `state` deadline). Nothing else about the 4-rounds-and-30-s rule changed.
+- **A restarted watcher** needs its own 30 s (36 s from the restart to the kill, measured).
+
+## What could not be tested (follow-up 5)
+
+- The real driftwm, its two real sockets, and the real hubd (stand-ins only). In the stand-in both probes share one socket and one handler, so **they cannot fail separately**; "one probe failing" was tested only by the stand-in's slow answers (state answers, sync late) and by the unit tests.
+- The person-command as a product feature: the harness runs `watcher reset` as root in the VM; who may run it, from where, and how a bar shows the message are not designed or tested.
+- A damaged latch file in the VM (only unit-tested), a `reset` that falls in the middle of a round (only unit-tested for the file changes), and the latch after a reboot (the file is in `/run`, so a reboot clears it: SOURCE, not tested).
+- A compositor that needs more than 5 s for `state` (both probes late), and a stall of 10 to 25 s that ends by itself.
+- The time-of-check to time-of-use gap between reading the start time and sending the signal (no pidfd; not tested).
+- A run with the follow-up 4 limits (1 s) on the new code, to isolate the 3.5 s: not done (BELIEVED to be the whole cause).
+- Soaks (none run, decision 6), the watcher under OpenRC and b-go, the hang rule inside the product, real hardware and KVM timing (timings come from software emulation on another host than follow-up 4).
+- `-wd2` images were not rebuilt or re-run.
+
+## Questions for the owner (follow-up 5)
+
+Each has my suggestion; a suggestion is my opinion, not a measurement.
+
+1. **A frozen compositor now takes about 3.5 s longer to be killed (35.3 to 36.8 s)** because every round waits up to 5 s for `state`. Accept, or make the rounds a fixed 1-s tick with probes that overlap, or measure the 30 s from the first failed round's end? *Suggestion:* accept; the 30 s is deliberate and 3.5 s is small against it.
+2. **No process at the first failed round gives the identity "none", and a "none" always ends in a skip and a new 30 s.** If the init restarts the compositor and the new one hangs at once, the kill can come up to 30 s later than otherwise (in the storms 3 of 8 recorded "none"). Accept? *Suggestion:* accept; it is the safe side.
+3. **Who runs the person-command and how is it shown?** The test used a subcommand run by the harness. The product needs a design (a hubd command, a bar button, a phone page, a console command). *Suggestion:* decide it when the hang rule's place is decided; this test shows only that one command clears latch, budget and message within one round.
+4. **The latch lives in `/run` and is cleared by a reboot.** The hub never reboots by itself, so that happens only when a person reboots. Is that right? *Suggestion:* yes.
