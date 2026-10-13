@@ -16,6 +16,7 @@ ap.add_argument("--reps", type=int, default=5); ap.add_argument("--timeout", typ
 ap.add_argument("--out", default=None); ap.add_argument("--mem", type=int, default=1024)
 ap.add_argument("--smp", type=int, default=2)
 ap.add_argument("--skip", type=int, default=0)
+ap.add_argument("--extra", default="")  # follow-up 6: extra kernel command line words (for example hub.clearafter=120)
 ap.add_argument("--trial", default="healthy"); ap.add_argument("--preflag", default="")
 a = ap.parse_args()
 W, T, REPO = os.environ["W"], os.environ["T"], os.environ.get("REPO", ".")
@@ -36,7 +37,7 @@ with open(out, "wb") as f:
                "-nographic", "-nodefaults", "-no-user-config", "-display", "none", "-monitor", "none",
                "-serial", "stdio", "-device", "i6300esb", "-watchdog-action", "reset", "-nic", "none",
                "-kernel", f"{T}/boot/vmlinuz-6.8.0-146-generic", "-initrd", f"{W}/rf/{a.cand}.cpio.gz",
-               "-append", f"console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite={a.suite} hub.dur={dur_left} hub.seed={a.seed + launches - 1} hub.reps={a.reps} hub.skip={skip} hub.trial={a.trial} hub.preflag={a.preflag} {extra}"]
+               "-append", f"console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite={a.suite} hub.dur={dur_left} hub.seed={a.seed + launches - 1} hub.reps={a.reps} hub.skip={skip} hub.trial={a.trial} hub.preflag={a.preflag} {a.extra} {extra}"]
         f.write(f"H# launch {launches} skip={skip} dur={dur_left} cmd: {' '.join(cmd)}\n".encode())
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL, preexec_fn=os.setsid)
         t0 = time.monotonic()

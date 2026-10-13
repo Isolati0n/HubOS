@@ -972,3 +972,22 @@ Each has my suggestion; a suggestion is my opinion, not a measurement.
 2. **No process at the first failed round gives the identity "none", and a "none" always ends in a skip and a new 30 s.** If the init restarts the compositor and the new one hangs at once, the kill can come up to 30 s later than otherwise (in the 8 storms, 4 recorded "none"). Accept? *Suggestion:* accept; it is the safe side.
 3. **Who runs the person-command and how is it shown?** The test used a subcommand run by the harness. The product needs a design (a hubd command, a bar button, a phone page, a console command). *Suggestion:* decide it when the hang rule's place is decided; this test shows only that one command clears latch, budget and message within one round.
 4. **The latch lives in `/run` and is cleared by a reboot.** The hub never reboots by itself, so that happens only when a person reboots. Is that right? *Suggestion:* yes.
+
+---
+
+# Follow-up 6
+
+Order from the owner: Parts A to F (A: record the decisions; B: the latch clears itself; C: restart-limit alert; D: strict trial-boot confirm; E: `HUB-OS.md` on its own branch; F: documents). **Data only: no ranking, no scorecard points, no init written; the product watcher, the product alert and the product confirm are NOT built.** Everything here is TEST WORK under `tools/bench/init/` on stand-ins; nothing goes into the image, hubd or the product. Rules kept: a fresh clone, new commits only, `tools/check-push.sh` before every push with `CHECK_PUSH_BASE=origin/init-comparison-step2`, one VM at a time, no package installed (tools unpacked with `dpkg -x` into a scratch folder, the s6 suite built from the same source tarballs), `ulimit -c 0` in every shell, no `kill` with a process id of 0 or less. In this document, strings that look like credentials or device-property lines are described in words. Labels: TESTED (a command was run, the output is in the log named), SOURCE (read in a file named), BELIEVED, UNKNOWN.
+
+## Follow-up 6: owner decisions
+
+The owner's decisions of 2026-10-13, recorded in plain words (also in `init-comparison.md`, "Owner decisions 2026-10-13"):
+
+1. The init plan is s6 with s6-rc (the `s6rc-par` setup, with the parity rules), plus the owner's separate watcher. No custom init and no policy brain.
+2. OpenRC (`openrc-doc`) counts as FAILED: a killed supervisor is not restarted by itself and needs a person.
+3. No brain for anything else: the alert and the trial-boot check go to a small helper and to the confirm step (Parts C and D).
+4. No more soaks of runit, dinit or the brains. No soak at all in this task.
+5. No scorecard points are computed.
+6. No real-hardware run before deciding; December tests the real thing. The init stays swappable.
+7. The latch of the test watcher clears itself after a long healthy stretch (Part B). The owner's wording: "clear the latch after a healthy hour". A persistent hang still waits for a person.
+8. Adopting s6-rc into the image is a LATER task; the image is not touched.

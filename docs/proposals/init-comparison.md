@@ -1,4 +1,6 @@
-# STATUS: MEASUREMENTS DONE AS FAR AS THEY CAN BE DONE HERE; THE OWNER DECIDES NEXT (updated 2026-10-13, after follow-up 5)
+# STATUS: INIT PLAN DECIDED BY THE OWNER 2026-10-13: s6rc-par + SEPARATE WATCHER; REMAINING TEST WORK: PARTS B TO D OF FOLLOW-UP 6 (updated 2026-10-13, follow-up 6 started)
+
+**Init plan decided by the owner 2026-10-13: s6rc-par + separate watcher; remaining test work: Parts B to D of follow-up 6.** The measurements below (follow-ups 1 to 5) are unchanged and are still data only; no number was changed and no ranking or scorecard was written. The decisions are in the section "Owner decisions 2026-10-13" right below the status text.
 
 **What is done (TESTED unless marked):** the scorecard (section 1, committed before any measurement); the harness (`tools/bench/init/`); an elimination round by fault injection over about 19 candidate setups (s6 plain, s6+s6-rc, runit in three setups, dinit in five, OpenRC in four, the Go and Elixir brains over s6-rc, the Go brain over s6-svscan alone); a 4-hour soak for the candidates that had no stuck state (s6plain, s6rc-par, runit, runit-111, b-go, openrc-doc); hang-rule data and a test watcher (a TEST STAND-IN, not the product watcher) run under s6rc-par and runit-111, first with a wrong probe pairing (follow-up 3), then with the owner's rule of `hub-stability.md` section 9.1 (follow-up 4: two compositor probes, the driftwm `state` request and a Wayland `wl_display.sync`, both must fail; 4 rounds and 30 s; at most 3 kills in 10 minutes; the kill budget kept in a file in `/run`; a state file `capped <time>`), with 19 spaced hangs per init, the budget tested across watcher restarts and across 10 minutes, a crash-storm and out-of-memory re-run, the cause of the svlogd lock lines of runit-111np (two `svlogd` on one log directory after a supervisor kill), and one 2-hour soak chunk of runit-111np (decision of the owner). **Follow-up 5** changed the test watcher by the owner's decisions (a latch instead of a window, the "capped" message also goes when both probes answer, kill only the process that was failing at the first failed round, probe limits 5 s for `state` and 2 s for the sync, the 30-s streak not kept over a restart) and ran it as `s6rc-par-wd3` and `runit-111-wd3`: a 4th hang stayed frozen for 961 s and was killed 0.4 to 4.6 s after the person-command (played by the harness); the watcher killed and restarted by the init left latch, message and frozen state unchanged; the message goes within 0.05 s of the compositor answering and the latch stays; 21 of 21 hangs killed by the watcher alone, about 3.5 s later than before (35.3 to 36.8 s); crash storms: the rule wanted a kill in 8 of 8, the identity rule killed 0 and counted 0; a slow but alive compositor (one probe late for 60 s) was not killed. Sections 2, 3, 4, 5 and 6 below are now written from the run log (`init-comparison-run.md`), as data only. **No init was written. No candidate is recommended or ranked. Whether s6 stays the hub's init is not decided here.**
 
@@ -9,6 +11,21 @@
 **How to resume / rebuild:** `W=<empty dir outside the repo> bash tools/bench/init/fetch-and-build.sh`, then `mkrootfs.sh CAND` and `run-qemu.py CAND faults|soak ...` (see `tools/bench/init/` and `init-comparison-run.md`; the scripts used for the numbers are `report.py`, `event_counts.py`, `needed_person.py`, `soak_ci.py`). Results: `tools/bench/init/results/step2/`.
 
 **Security:** no core, dump, environment or credential files are in this branch; every push was checked with `tools/check-push.sh`; runs used `ulimit -c 0` and ran outside the repository.
+
+## Owner decisions 2026-10-13
+
+Recorded by the lead agent from the owner's message of 2026-10-13, in plain words. They are decisions of the owner, not results of a measurement. `HUB-OS.md` is changed only by its own pull request (the Change log line says so); this section does not replace it.
+
+1. **The init plan is s6 with s6-rc** (the `s6rc-par` setup, with the parity rules), **plus the owner's separate watcher.** No custom init and no policy brain.
+2. **OpenRC (`openrc-doc`) counts as FAILED:** a killed supervisor is not restarted by itself and needs a person.
+3. **No brain for anything else.** The alert for a service that keeps crashing and the trial-boot check go to a small helper and to the confirm step (follow-up 6, Parts C and D).
+4. **No more soaks** of runit, dinit or the brains. No soak at all in follow-up 6.
+5. **No scorecard points are computed.**
+6. **No real-hardware run before deciding.** December tests the real thing. The init stays swappable.
+7. **The latch of the test watcher clears itself after a long healthy stretch** (the owner's words: "clear the latch after a healthy hour"). A persistent hang still waits for a person (follow-up 6, Part B).
+8. **Adopting s6-rc into the image is a LATER task.** The image is not touched here.
+
+---
 
 ## Owner decisions (2026-10-05, round 5)
 

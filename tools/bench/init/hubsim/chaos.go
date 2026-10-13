@@ -755,6 +755,10 @@ func chaos(args []string) {
 		storm3Suite(cfgInt("reps", 3))
 	case "slow":
 		slowSuite()
+	case "clear":
+		clearSuite(cfg["case"])
+	case "alert":
+		alertSuite(cfg["case"])
 	case "lockprobe":
 		lockProbeSuite(cfgInt("reps", 3))
 	case "oom":
@@ -1054,33 +1058,78 @@ func trial(scn string) {
 	iters, slowest := 0, time.Duration(0)
 	hung := false
 	sawOK := time.Time{}
+	// Follow-up 6, Part D: hang = the compositor is stopped 2 s after the desktop first worked (the old scenario); hangN = N s after.
+	// hub.strict=1 (candidate s6rc-par-confirm): the confirm also needs 5 consecutive rounds, 1 s apart, in which BOTH compositor probes
+	// answer (the "state" request within 5 s and the wl_display.sync round trip within 2 s). The rounds start when the old condition
+	// (15 good health checks in a row) is met; a failed round restarts the count of 5; a health check that fails restarts everything.
+	hangAfter := time.Duration(-1)
+	if strings.HasPrefix(scn, "hang") {
+		n := 2
+		if len(scn) > 4 {
+			n, _ = strconv.Atoi(scn[4:])
+		}
+		hangAfter = time.Duration(n) * time.Second
+	}
+	strict := cfg["strict"] == "1"
+	var plainAt time.Time
+	probeGood, probeRounds := 0, 0
+	inject := func() {
+		killp(pidOf("driftwm"), syscall.SIGSTOP)
+		hung = true
+		say("TRIAL-INJECT driftwm stopped (wedged) %.1fs after the desktop first worked", time.Since(sawOK).Seconds())
+	}
 	for time.Since(start) < 60*time.Second {
 		if why() == "" && sawOK.IsZero() {
 			sawOK = time.Now()
 		}
-		if scn == "hang" && !hung && !sawOK.IsZero() && time.Since(sawOK) > 2*time.Second {
-			killp(pidOf("driftwm"), syscall.SIGSTOP)
-			hung = true
-			say("TRIAL-INJECT driftwm stopped (wedged)")
+		if hangAfter >= 0 && !hung && !sawOK.IsZero() && time.Since(sawOK) > hangAfter {
+			inject()
 		}
 		t0 := time.Now()
 		if _, err := os.Stat("/ops/healthy"); err == nil && exec.Command("/bin/sh", "/ops/healthy").Run() == nil {
 			good++
 		} else {
-			good = 0
+			good, probeGood = 0, 0
 		}
 		iters++
 		if d := time.Since(t0); d > slowest {
 			slowest = d
 		}
-		if good >= 15 {
-			say("TRIAL CONFIRMED scenario=%s after=%.1fs true_state=%q", scn, time.Since(start).Seconds(), why())
+		if good >= 15 && plainAt.IsZero() {
+			plainAt = time.Now()
+		}
+		if good >= 15 && strict {
+			probeRounds++
+			_, st := probe(waySock, "state", 5*time.Second)
+			sy := probeSyncRound(waySock, 2*time.Second)
+			if st && sy {
+				probeGood++
+			} else {
+				probeGood = 0
+			}
+			say("TRIAL-PROBE round %d: state=%v sync=%v consecutive=%d (5 needed)", probeRounds, st, sy, probeGood)
+		}
+		if good >= 15 && (!strict || probeGood >= 5) {
+			added := 0.0
+			if strict {
+				added = time.Since(plainAt).Seconds()
+			}
+			say("TRIAL CONFIRMED scenario=%s after=%.1fs plain_condition_met_at=%.1fs strict_added=%.1fs strict=%v true_state=%q", scn, time.Since(start).Seconds(), plainAt.Sub(start).Seconds(), added, strict, why())
 			status()
+			// a wedge that is planned for LATER than the confirm still happens, so that the log shows the machine's true state
+			for hangAfter >= 0 && !hung && time.Since(start) < 55*time.Second {
+				if time.Since(sawOK) > hangAfter {
+					inject()
+					time.Sleep(3 * time.Second)
+					say("TRIAL-AFTER-CONFIRM the verdict was CONFIRMED; 3 s after the wedge the true state is %q", why())
+				}
+				time.Sleep(200 * time.Millisecond)
+			}
 			return
 		}
 		time.Sleep(time.Second)
 	}
-	say("TRIAL ROLLBACK scenario=%s after=60s true_state=%q guard_still_feeding=%v health_checks_run=%d slowest_check=%.1fs consecutive_good=%d (15 needed)", scn, why(), guardState() != '-', iters, slowest.Seconds(), good)
+	say("TRIAL ROLLBACK scenario=%s after=60s strict=%v true_state=%q guard_still_feeding=%v health_checks_run=%d slowest_check=%.1fs consecutive_good=%d (15 needed) probe_rounds=%d consecutive_probe_good=%d (5 needed)", scn, strict, why(), guardState() != '-', iters, slowest.Seconds(), good, probeRounds, probeGood)
 	status()
 	time.Sleep(time.Second)
 	syscall.Sync()
@@ -1550,5 +1599,274 @@ func slowSuite() {
 		rec, ok := waitOK(30 * time.Second)
 		say("SLOW-TEST variant=%s 10 s after the end: pid same=%v, desktop ok=%v (%.1fs) %s", v, pidOf("driftwm") == p, ok, rec, watcherFiles())
 		time.Sleep(10 * time.Second)
+	}
+}
+
+// ---------- follow-up 6, Part B: the latch clears by itself after a healthy stretch ----------
+
+// clearSuite: cases i, ii, iii, iv (the setting hub.clearafter=120 on the kernel command line) and "full" (the default 3600 s). Each
+// case starts the same way: three hangs killed by the watcher, then a 4th hang (SIGSTOP) that is latched. The harness resumes the
+// frozen process (SIGCONT) in cases i, ii, iii and full; it plays no person (no reset) until a case says so.
+func clearSuite(kase string) {
+	budgetStart := uptime()
+	fillBudget()
+	if !begin("fClear-" + kase) {
+		return
+	}
+	evn++
+	p, d4, got := freeze4("CLEAR-TEST(" + kase + ")")
+	if !got {
+		say("CLEAR-TEST(%s) NO STATE FILE after 150 s", kase)
+	}
+	_ = d4
+	tag := "CLEAR-TEST(" + kase + ")"
+	switch kase {
+	case "iv": // latched and still frozen: not cleared after 300 s
+		t := time.Now()
+		missing := 0
+		for time.Since(t) < 300*time.Second {
+			time.Sleep(2 * time.Second)
+			if !exists(wLatch) {
+				missing++
+				say("%s LATCH MISSING at %.0fs", tag, time.Since(t).Seconds())
+			}
+			if int(time.Since(t).Seconds())%60 < 2 {
+				say("%s frozen %.0fs: frozen=%v latch=%v state=%q", tag, time.Since(t).Seconds(), frozen(p), exists(wLatch), readFile(wState))
+			}
+		}
+		say("%s after 300 s frozen: latch present=%v (missing in %d samples), frozen=%v, state=%q", tag, exists(wLatch), missing, frozen(p), readFile(wState))
+		personReset("end of case iv")
+		timeToKill(p, time.Now())
+		return
+	}
+	time.Sleep(10 * time.Second)
+	say("%s frozen for 10 s more: frozen=%v latch=%v", tag, frozen(p), exists(wLatch))
+	tc := time.Now()
+	killp(p, syscall.SIGCONT)
+	say("%s SIGCONT sent to pid %d (the harness resumes the compositor; no person-command)", tag, p)
+	var tState, tLatch float64 = -1, -1
+	var slowOn, slowOff time.Time
+	killedW := false
+	limit := 400 * time.Second
+	if kase == "full" {
+		limit = 4000 * time.Second
+	}
+	last := time.Now()
+	for time.Since(tc) < limit {
+		time.Sleep(200 * time.Millisecond)
+		el := time.Since(tc).Seconds()
+		if tState < 0 && !exists(wState) {
+			tState = el
+			say("%s state file gone after %.2fs; latch present=%v; desktop why=%q", tag, el, exists(wLatch), why())
+		}
+		if tLatch < 0 && !exists(wLatch) {
+			tLatch = el
+			say("%s LATCH CLEARED %.2fs after SIGCONT (slow window %v..%v)", tag, el, offs(slowOn, tc), offs(slowOff, tc))
+			break
+		}
+		switch kase {
+		case "ii": // 50 s into the healthy stretch: the sync answer is 3 to 4 s late for 10 s (one probe fails, the process stays alive)
+			if slowOn.IsZero() && el > 50 {
+				slowOn = time.Now()
+				os.WriteFile(faultDir+"/driftwm.slow", []byte("sync"), 0o644)
+				say("%s slow-but-alive started at %.1fs after SIGCONT (sync late for 10 s); latch=%v", tag, el, exists(wLatch))
+			}
+			if !slowOn.IsZero() && slowOff.IsZero() && time.Since(slowOn) > 10*time.Second {
+				slowOff = time.Now()
+				os.Remove(faultDir + "/driftwm.slow")
+				say("%s slow-but-alive ended at %.1fs after SIGCONT; latch=%v", tag, el, exists(wLatch))
+			}
+		case "iii": // 60 s into the healthy stretch the watcher is killed; the init restarts it
+			if !killedW && el > 60 {
+				killedW = true
+				tw := time.Now()
+				r := fWatcherKill()
+				say("%s watcher killed at %.1fs after SIGCONT; the init restarted it in %.2fs (restart at %.1fs); latch present=%v", tag, el, r.rec, tw.Sub(tc).Seconds()+r.rec, exists(wLatch))
+			}
+		}
+		if time.Since(last) > 60*time.Second {
+			last = time.Now()
+			say("%s %.0fs after SIGCONT: latch=%v state=%q desktop why=%q", tag, el, exists(wLatch), readFile(wState), why())
+		}
+	}
+	if tLatch < 0 {
+		say("%s LATCH NOT CLEARED within %.0fs; latch=%v", tag, limit.Seconds(), exists(wLatch))
+		personReset("the latch did not clear in " + kase)
+		return
+	}
+	_, ok := waitOK(30 * time.Second)
+	say("%s desktop ok=%v after the clear; same compositor pid=%v; %s", tag, ok, pidOf("driftwm") == p, watcherFiles())
+	if kase == "i" {
+		// a new hang is killed at the normal time, once the budget has room (the clear does not touch the budget: the three kills
+		// age out 10 minutes after they were made)
+		for uptime() < budgetStart+620 {
+			time.Sleep(5 * time.Second)
+		}
+		say("%s waited for the budget to have room (uptime %.0f, first kill of the group about uptime %.0f): %s budget=%q", tag, uptime(), budgetStart, watcherFiles(), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+		fHangAfter("stop", 0)
+		say("%s after the new hang: %s budget=%q", tag, watcherFiles(), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+	}
+}
+
+func offs(t, base time.Time) string {
+	if t.IsZero() {
+		return "-"
+	}
+	return fmt.Sprintf("%.1fs", t.Sub(base).Seconds())
+}
+
+// ---------- follow-up 6, Part C: restart-limit alert on s6rc-par-wd4a ----------
+
+const alertDir = "/run/hubos/alerts"
+
+func allPids() string {
+	var out []string
+	for _, s := range allSvc {
+		out = append(out, fmt.Sprintf("%s=%d", s, pidOf(s)))
+	}
+	out = append(out, fmt.Sprintf("watcher=%d", pidOf(cfg["watcher"])))
+	return strings.Join(out, " ")
+}
+
+func svstatAll() string {
+	var out []string
+	for _, s := range allSvc {
+		out = append(out, s+": "+sh("s6-svstat /run/service/"+s))
+	}
+	return strings.Join(out, " | ")
+}
+
+func alertText(s string) string { return readFile(alertDir + "/" + s) }
+
+// stormC: the 40-s crash storm of service s (the fault file makes every start crash; the running process is killed first), watched for
+// the restart limit. Logged: starts before the stop, time to the stop (the alert file appears), alert text, which of the other
+// services kept their process, the watcher's files; then the harness plays the person: hub-retry s.
+func stormC(s string, extra time.Duration) {
+	if !begin("stormC-" + s) {
+		return
+	}
+	evn++
+	before := allPids()
+	s0 := starts(s)
+	w := pidOf(cfg["watcher"])
+	wTicks0 := cpuTicks([]int{w})
+	say("STORM-C %s start: pids %s; alert=%q; %s", s, before, alertText(s), watcherFiles())
+	os.WriteFile(faultDir+"/"+s+".crash", nil, 0o644)
+	t := time.Now()
+	killp(pidOf(s), syscall.SIGKILL)
+	tAlert := -1.0
+	var startsAtStop int
+	for time.Since(t) < 40*time.Second {
+		time.Sleep(50 * time.Millisecond)
+		if tAlert < 0 && exists(alertDir+"/"+s) {
+			tAlert = time.Since(t).Seconds()
+			startsAtStop = starts(s) - s0
+			say("STORM-C %s ALERT after %.2fs: starts since the kill=%d; text=%q", s, tAlert, startsAtStop, alertText(s))
+		}
+	}
+	os.Remove(faultDir + "/" + s + ".crash")
+	say("STORM-C %s after 40 s: starts=%d (at the stop: %d); stop time %.2fs; alert=%q; svc: %s", s, starts(s)-s0, startsAtStop, tAlert, alertText(s), sh("s6-svstat /run/service/"+s))
+	say("STORM-C %s pids now: %s; others kept their process: %s; why()=%q; watcher files: %s", s, allPids(), keptList(before), why(), watcherFiles())
+	say("STORM-C %s s6-svdt: %s", s, strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/"+s), "\n", " | "))
+	time.Sleep(extra)
+	say("STORM-C %s after %.0f s more (service still stopped): svstat=%q; watcher cpu ticks used %d (1 tick = 10 ms) in %.0f s; state file=%q latch=%v; budget=%q; alert still=%q", s, extra.Seconds(), sh("s6-svstat /run/service/"+s), cpuTicks([]int{pidOf(cfg["watcher"])})-wTicks0, time.Since(t).Seconds(), readFile(wState), exists(wLatch), strings.ReplaceAll(readFile(wBudget), "\n", " | "), alertText(s))
+	pre := allPids()
+	tr := time.Now()
+	say("PERSON-COMMAND *** the harness plays the person: hub-retry %s ***", s)
+	out := sh("/bin/hub-retry " + s + " 2>&1")
+	rec, ok := waitOK(60 * time.Second)
+	say("STORM-C %s hub-retry output=%q: alert now=%q (exists=%v); desktop ok=%v after %.2fs; svstat=%q; pids before %s / after %s; kept=%s", s, out, alertText(s), exists(alertDir+"/"+s), ok, time.Since(tr).Seconds(), sh("s6-svstat /run/service/"+s), pre, allPids(), keptList(pre))
+	_ = rec
+	if !ok {
+		say("STORM-C %s DESKTOP NOT BACK after hub-retry: %s", s, why())
+		operator(s)
+		waitOK(60 * time.Second)
+	}
+	say("EV ev=%d fault=stormC-%s target=%s rec=%.2f ok=%d fixed=0", evn, s, s, time.Since(tr).Seconds(), b2i(ok))
+}
+
+// keptList: for each service, whether it still has the process it had in the snapshot (the "name=pid" list)
+func keptList(snap string) string {
+	var out []string
+	for _, f := range strings.Fields(snap) {
+		kv := strings.SplitN(f, "=", 2)
+		var now int
+		if kv[0] == cfg["watcher"] {
+			now = pidOf(cfg["watcher"])
+		} else {
+			now = pidOf(kv[0])
+		}
+		old, _ := strconv.Atoi(kv[1])
+		out = append(out, fmt.Sprintf("%s:%v", kv[0], old == now && now != 0))
+	}
+	return strings.Join(out, ",")
+}
+
+// crashN: kill service s once and let it crash on start until it has crashed n times in all (the kill counts as the first death), then
+// let it run. Used for "4 crashes in 60 s must not stop it".
+func crashN(s string, n int) {
+	if !begin("crashN-" + s) {
+		return
+	}
+	evn++
+	s0 := starts(s)
+	os.WriteFile(faultDir+"/"+s+".crash", nil, 0o644)
+	t := time.Now()
+	killp(pidOf(s), syscall.SIGKILL)
+	for starts(s)-s0 < n-1 && time.Since(t) < 30*time.Second {
+		time.Sleep(10 * time.Millisecond)
+	}
+	os.Remove(faultDir + "/" + s + ".crash")
+	say("MUSTNOT %s: %d deaths (1 kill + %d crashing starts) in %.1fs; the crash fault removed; starts since=%d", s, n, n-1, time.Since(t).Seconds(), starts(s)-s0)
+	rec, ok := waitOK(60 * time.Second)
+	time.Sleep(5 * time.Second)
+	say("MUSTNOT %s 4-deaths result: alert exists=%v text=%q; svstat=%q; desktop ok=%v after %.1fs; svdt: %s", s, exists(alertDir+"/"+s), alertText(s), sh("s6-svstat /run/service/"+s), ok, rec, strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/"+s), "\n", " | "))
+	say("EV ev=%d fault=crash%d-%s target=%s rec=%.2f ok=%d fixed=0", evn, n, s, s, rec, b2i(ok))
+}
+
+// spread: n plain kills of service s, gap seconds apart (each time waiting for the desktop to be back first)
+func spread(s string, n int, gap time.Duration) {
+	for i := 0; i < n; i++ {
+		if !begin("spread-" + s) {
+			continue
+		}
+		evn++
+		t := time.Now()
+		killp(pidOf(s), syscall.SIGKILL)
+		rec, ok := waitOK(60 * time.Second)
+		say("MUSTNOT spread %d of %d: killed %s, desktop back ok=%v after %.1fs; alert exists=%v", i+1, n, s, ok, rec, exists(alertDir+"/"+s))
+		if i < n-1 {
+			time.Sleep(gap - time.Since(t))
+		}
+	}
+	time.Sleep(3 * time.Second)
+	say("MUSTNOT spread result: alert exists=%v svstat=%q svdt: %s", exists(alertDir+"/"+s), sh("s6-svstat /run/service/"+s), strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/"+s), "\n", " | "))
+}
+
+func alertSuite(kase string) {
+	switch kase {
+	case "storm-driftwm":
+		stormC("driftwm", 100*time.Second)
+	case "storm-waybar":
+		stormC("waybar", 15*time.Second)
+	case "storm-hubd":
+		stormC("hubd", 15*time.Second)
+	case "storm-seatd":
+		stormC("seatd", 30*time.Second)
+	case "mustnot":
+		say("MUSTNOT part 1: three watcher kills (hangs) inside 10 minutes")
+		t := time.Now()
+		for _, m := range []string{"stop", "spin", "deadlock"} {
+			fHangAfter(m, 0)
+			say("MUSTNOT hang kill: alert driftwm exists=%v", exists(alertDir+"/driftwm"))
+			between()
+		}
+		say("MUSTNOT part 1 result after %.0fs: alert exists=%v; svdt driftwm: %s; budget=%q", time.Since(t).Seconds(), exists(alertDir+"/driftwm"), strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/driftwm"), "\n", " | "), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+		personReset("so that later parts start with an empty budget")
+		say("MUSTNOT part 2: a service that crashes 4 times in 60 s (driftwm)")
+		crashN("driftwm", 4)
+		time.Sleep(10 * time.Second)
+		say("MUSTNOT part 3: 5 crashes spread over 5 minutes (driftwm, a kill every 70 s)")
+		spread("driftwm", 5, 70*time.Second)
 	}
 }
