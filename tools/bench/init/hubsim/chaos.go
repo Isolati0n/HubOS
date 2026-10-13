@@ -227,7 +227,7 @@ func operator(target string) {
 	say("operator-action target=%s why=%q", target, w)
 	kill := func(n string) {
 		if p := pidOf(n); p != 0 {
-			syscall.Kill(p, syscall.SIGKILL)
+			killp(p, syscall.SIGKILL)
 		}
 	}
 	switch {
@@ -332,7 +332,7 @@ func fKill(s string) result {
 		return result{ok: true}
 	}
 	old := pidOf(s)
-	syscall.Kill(old, syscall.SIGKILL)
+	killp(old, syscall.SIGKILL)
 	return settle("kill", s, "")
 }
 
@@ -361,7 +361,7 @@ func fHangAfter(mode string, pause time.Duration) result {
 	}()
 	switch mode {
 	case "stop":
-		syscall.Kill(p, syscall.SIGSTOP)
+		killp(p, syscall.SIGSTOP)
 	case "deadlock":
 		os.WriteFile(faultDir+"/driftwm.deadlock", nil, 0o644)
 	default:
@@ -417,7 +417,7 @@ func fStorm(s string, dur time.Duration) result {
 	g := supGroup()
 	c0, s0 := cpuTicks(g), starts(s)
 	os.WriteFile(faultDir+"/"+s+".crash", nil, 0o644)
-	syscall.Kill(pidOf(s), syscall.SIGKILL)
+	killp(pidOf(s), syscall.SIGKILL)
 	time.Sleep(dur - 10*time.Second)
 	m := starts(s)
 	time.Sleep(10 * time.Second)
@@ -446,7 +446,7 @@ func fDep(mode string) result {
 	} else {
 		os.WriteFile(faultDir+"/seatd.crash", nil, 0o644)
 	}
-	syscall.Kill(pidOf("seatd"), syscall.SIGKILL)
+	killp(pidOf("seatd"), syscall.SIGKILL)
 	if mode == "fail" {
 		time.Sleep(20 * time.Second)
 		os.Remove(faultDir + "/seatd.crash")
@@ -480,7 +480,7 @@ func fDisk(dur time.Duration) result {
 	killed := false
 	for time.Now().Before(end) {
 		if !killed && time.Until(end) < dur-5*time.Second {
-			syscall.Kill(pidOf("waybar"), syscall.SIGKILL) // a restart while the disk is full
+			killp(pidOf("waybar"), syscall.SIGKILL) // a restart while the disk is full
 			killed = true
 		}
 		n++
@@ -512,14 +512,14 @@ func fSupKill(s string) result {
 		return result{ok: true}
 	}
 	old := pidOf(s)
-	syscall.Kill(sp, syscall.SIGKILL)
+	killp(sp, syscall.SIGKILL)
 	time.Sleep(1500 * time.Millisecond)
 	kept := pidOf(s) == old
 	r1 := settle("supervisor-killed", s, fmt.Sprintf("child_kept_running=%d", b2i(kept)))
 	time.Sleep(2 * time.Second)
 	back := supOf(s) != 0
 	// does anybody notice the service now? kill it and see
-	syscall.Kill(pidOf(s), syscall.SIGKILL)
+	killp(pidOf(s), syscall.SIGKILL)
 	r2 := settle("after-supervisor-killed", s, fmt.Sprintf("supervisor_back=%d", b2i(back)))
 	_ = r1
 	return r2
@@ -535,13 +535,13 @@ func fScanKill() result {
 	}
 	old := pidOf("driftwm")
 	for _, p := range pidsNamed(n) {
-		syscall.Kill(p, syscall.SIGKILL)
+		killp(p, syscall.SIGKILL)
 	}
 	time.Sleep(1500 * time.Millisecond)
 	kept := pidOf("driftwm") == old
 	back := pidOf(n) != 0
 	r := settle("scanner-killed", n, fmt.Sprintf("child_kept_running=%d scanner_back=%d", b2i(kept), b2i(back)))
-	syscall.Kill(pidOf("hubd"), syscall.SIGKILL)
+	killp(pidOf("hubd"), syscall.SIGKILL)
 	settle("after-scanner-killed", "hubd", "")
 	return r
 }
@@ -558,7 +558,7 @@ func fBrainKill() result {
 	oldBar := pidOf("waybar")
 	st := time.Now()
 	for _, p := range pidsNamed(n) {
-		syscall.Kill(p, syscall.SIGKILL)
+		killp(p, syscall.SIGKILL)
 	}
 	back := 0.0
 	for time.Since(st) < 30*time.Second {
@@ -578,13 +578,13 @@ func fClock(delta int64) result {
 		return result{ok: true}
 	}
 	old := pidOf("driftwm")
-	syscall.Kill(old, syscall.SIGKILL)
+	killp(old, syscall.SIGKILL)
 	setClock(delta)
 	r := settle(fmt.Sprintf("clock%+d", delta), "driftwm", "")
 	setClock(-delta)
 	time.Sleep(time.Second)
 	// after the clock is put back: is the supervisor still sane?
-	syscall.Kill(pidOf("hubd"), syscall.SIGKILL)
+	killp(pidOf("hubd"), syscall.SIGKILL)
 	r2 := settle(fmt.Sprintf("after-clock%+d", delta), "hubd", "")
 	_ = r2
 	return r
@@ -732,7 +732,7 @@ func chaos(args []string) {
 			time.Sleep(time.Second)
 		}
 		say("BRAIN-READY after %.1fs from BOOT-OK", time.Since(bs).Seconds())
-		syscall.Kill(pidOf("udevd"), syscall.SIGKILL)
+		killp(pidOf("udevd"), syscall.SIGKILL)
 		waitOK(60 * time.Second)
 		time.Sleep(5 * time.Second)
 		for i := 0; i < 5; i++ {
@@ -859,7 +859,7 @@ func fWatcherKill() result {
 	}
 	evn++
 	st := time.Now()
-	syscall.Kill(old, syscall.SIGKILL)
+	killp(old, syscall.SIGKILL)
 	wait := func(max time.Duration) (float64, bool) {
 		for time.Since(st) < max {
 			time.Sleep(200 * time.Millisecond)
@@ -1049,7 +1049,7 @@ func trial(scn string) {
 			sawOK = time.Now()
 		}
 		if scn == "hang" && !hung && !sawOK.IsZero() && time.Since(sawOK) > 2*time.Second {
-			syscall.Kill(pidOf("driftwm"), syscall.SIGSTOP)
+			killp(pidOf("driftwm"), syscall.SIGSTOP)
 			hung = true
 			say("TRIAL-INJECT driftwm stopped (wedged)")
 		}
@@ -1169,7 +1169,7 @@ func budgetSuite() {
 	evn++
 	p := pidOf("driftwm")
 	t0 := time.Now()
-	syscall.Kill(p, syscall.SIGSTOP)
+	killp(p, syscall.SIGSTOP)
 	say("BUDGET-TEST hang 4 injected (SIGSTOP of driftwm pid=%d); no help from the harness", p)
 	for time.Since(t0) < 150*time.Second && !exists("/run/hubos/watcher.state") {
 		time.Sleep(500 * time.Millisecond)
@@ -1285,4 +1285,15 @@ func lockProbeSuite(reps int) {
 			fmt.Printf("LOGDUMP %s %s\n", svc, l)
 		}
 	}
+}
+
+// killp sends a signal to one process. A pid of 0 or below is ignored: kill(0, sig) signals the sender's whole process group, kill(-1, sig) every
+// process, and pidOf returns 0 when the service has no process at that instant. Follow-up 4: a SIGKILL sent that way ended the injector itself and
+// everything in its group in one 3-rep run of s6rc-par-wd2 (the suite stopped at step 36); every earlier run in this follow-up had finished its suite.
+func killp(pid int, sig syscall.Signal) {
+	if pid <= 0 {
+		say("KILLP skipped: no process (pid %d) to send signal %d to", pid, int(sig))
+		return
+	}
+	syscall.Kill(pid, sig)
 }
