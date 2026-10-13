@@ -786,3 +786,21 @@ Each has my suggestion; a suggestion is my opinion, not a measurement, and none 
 4. **Probe limit.** `hub-stability.md` 9.1 names 2 s for the sync and 5 s for `state` (hubd's own deadline); the watcher uses 1 s for both. Keep 1 s or take the document's numbers? *Suggestion:* the document's numbers, since a loaded hub is slower than this VM.
 5. **Should the 30-second streak survive a watcher restart?** Now only the budget does. *Suggestion:* no (counting the 30 s again is the safe side).
 6. **runit-111np:** its 2-hour soak had 1 stuck state and a long lock-line period linked to a full `/var` I did not explain (UNKNOWN). Soak it again? *Suggestion:* first one run with a larger stand-in `/var` and a `du` printed at the end, to see whether the full-disk state and the stuck state come from the stand-in's size; no further soak before that.
+
+# Follow-up 5
+
+Order from the owner: items 1 to 3. **Data only: no recommendation, no ranking, no init written, the product watcher is not built.** Everything about the watcher is a **TEST STAND-IN, not the product watcher** (`tools/bench/init/prototypes/watcher/`). Rules kept: a separate clone of the repository, new commits only, `tools/check-push.sh` before every push with `CHECK_PUSH_BASE=origin/init-comparison-step2`, one VM at a time, no package installed (tools unpacked with `dpkg -x` into a scratch folder, the s6 suite rebuilt from the same source versions), `ulimit -c 0` in every shell, no `kill` with a process id of 0 or less (the harness helper from follow-up 4 stays). In this document, strings that look like credentials or device-property lines are described in words. Labels: TESTED (a command was run, the output is in the log named), SOURCE (read in a file named), BELIEVED, UNKNOWN.
+
+## Follow-up 5: owner decisions
+
+1. **Latch, not a window.** When the cap is reached and the rule wants a 4th kill, the watcher stops killing and stays stopped until a person clears it with one command. The hub still never reboots. A message is shown while the compositor is failing (the state file, as in follow-up 4). The measured follow-up 4 behaviour (killed again after about 485 to 492 s) was the window version; those numbers stay as measured and that version is labelled "window".
+2. The "capped" message (the state file) also goes away by itself in the first round in which both probes answer again. The latch itself stays until the person clears it.
+3. **Kill only the same process that was failing.** At the first failed round of a streak the watcher records the identity of the compositor process (process id AND start time from `/proc/PID/stat`, so a reused id is not mistaken for the same process). At the kill moment it kills only if that identical process is still there. If the process is gone or is a different one (the init already restarted it), the watcher does NOT kill, does NOT count a kill, logs "SKIP: process changed", and starts a new streak with the new process's identity (the new process gets its own 30 s). A kill that finds no process is never counted.
+4. Probe limits follow `hub-stability.md` section 9.1: the driftwm "state" request has a 5 s deadline, the Wayland `wl_display.sync` round trip has a 2 s limit (the follow-up 4 watcher used 1 s for both). The rule (4 rounds and 30 s) is unchanged.
+5. The 30-second streak does NOT survive a watcher restart (only the budget file and the latch do).
+6. `runit-111np` is NOT soaked again now. No soak was run in this follow-up.
+
+The hang rule as the owner stated it for this run: two probes of the compositor, both must fail; 4 failed rounds in a row and at least 30 s since the first failed round; at most 3 kills in 10 minutes; never a reboot; the init restarts what the watcher kills.
+
+**Environment of this follow-up (TESTED).** A fresh container; the tools were fetched again: QEMU 8.2.2 (without KVM, as before), kernel 6.8.0-146 (fetched from the `linux-signed` pool of the Ubuntu archive because the package index now points to -147; the -147 image was unpacked too but not used), busybox 1.36.1, runit 2.1.2-59ubuntu1, skalibs 2.15.1.0, execline 2.9.9.2, s6 2.15.1.0, s6-rc 0.7.0.0 (built from the skarnet.org tarballs). Timings come from a different physical host than follow-up 4 (UNKNOWN how much that matters; the VM runs under software emulation either way).
+
