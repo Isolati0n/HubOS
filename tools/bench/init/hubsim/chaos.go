@@ -407,7 +407,7 @@ func fHangAfter(mode string, pause time.Duration) result {
 func watcherFiles() string {
 	st, _ := os.ReadFile("/run/hubos/watcher.state")
 	bg, _ := os.ReadFile("/run/hubos/watcher.budget")
-	return fmt.Sprintf("watcher_state=%q budget_entries=%d", strings.TrimSpace(string(st)), strings.Count(string(bg), "kill "))
+	return fmt.Sprintf("watcher_state=%q budget_entries=%d latch=%d", strings.TrimSpace(string(st)), strings.Count(string(bg), "kill "), b2i(exists("/run/hubos/watcher.latch")))
 }
 
 func fStorm(s string, dur time.Duration) result {
@@ -745,6 +745,16 @@ func chaos(args []string) {
 		hangSuite(rng, cfgInt("reps", 9))
 	case "budget":
 		budgetSuite()
+	case "latch":
+		latchSuite(cfgInt("hold", 960))
+	case "latchc":
+		latchCSuite()
+	case "hangsP":
+		hangSuiteP(rng, cfgInt("reps", 9))
+	case "storm3":
+		storm3Suite(cfgInt("reps", 3))
+	case "slow":
+		slowSuite()
 	case "lockprobe":
 		lockProbeSuite(cfgInt("reps", 3))
 	case "oom":
@@ -1296,4 +1306,249 @@ func killp(pid int, sig syscall.Signal) {
 		return
 	}
 	syscall.Kill(pid, sig)
+}
+
+// ---------- follow-up 5: the latch version of the test watcher ----------
+
+const (
+	wBudget = "/run/hubos/watcher.budget"
+	wLatch  = "/run/hubos/watcher.latch"
+	wState  = "/run/hubos/watcher.state"
+)
+
+// personReset: THE HARNESS PLAYS THE PERSON. It runs the one command that clears the latch (the test's hook `watcher reset`; the
+// product's command is not designed). Every call is marked in the log.
+func personReset(why string) {
+	say("PERSON-COMMAND *** the harness plays the person: running `watcher reset` (%s) ***", why)
+	out := sh("/bin/watcher reset 2>&1")
+	say("PERSON-COMMAND output: %q; now %s", out, watcherFiles())
+}
+
+// fillBudget: three hangs (SIGSTOP, busy loop, deadlock), each killed by the watcher alone.
+func fillBudget() {
+	for i, m := range []string{"stop", "spin", "deadlock"} {
+		fHangAfter(m, 0)
+		say("LATCH-TEST after hang %d: %s", i+1, watcherFiles())
+		between()
+	}
+}
+
+// frozen: the compositor process p is still the same one and in State T (stopped)
+func frozen(p int) bool { return pidOf("driftwm") == p && strings.HasPrefix(stateOf(p), "T") }
+
+// freeze4: inject the 4th hang (SIGSTOP) and wait for the state file; returns the pid and the seconds until the file appeared.
+func freeze4(tag string) (int, float64, bool) {
+	p := pidOf("driftwm")
+	t := time.Now()
+	killp(p, syscall.SIGSTOP)
+	say("%s hang 4 injected (SIGSTOP of driftwm pid=%d); no help from the harness; %s", tag, p, watcherFiles())
+	for time.Since(t) < 150*time.Second && !exists(wState) {
+		time.Sleep(200 * time.Millisecond)
+	}
+	d := time.Since(t).Seconds()
+	say("%s state file after %.1fs: %q; latch file=%v; driftwm pid=%d State: %s; budget=%q", tag, d, readFile(wState), exists(wLatch), pidOf("driftwm"), stateOf(p), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+	return p, d, exists(wState)
+}
+
+// timeToKill: after the person-command, wait for the compositor to be replaced, then for the desktop to be back.
+func timeToKill(p int, from time.Time) {
+	k := -1.0
+	for time.Since(from) < 120*time.Second {
+		if q := pidOf("driftwm"); q != p {
+			k = time.Since(from).Seconds()
+			break
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	rec, ok := waitOK(60 * time.Second)
+	say("LATCH-TEST after the person-command: reset to kill %.2fs, reset to desktop back %.2fs (desktop ok=%v); state file present=%v; %s", k, time.Since(from).Seconds(), ok, exists(wState), watcherFiles())
+	_ = rec
+}
+
+// latchSuite (item 2a and 2b): three hangs killed; a 4th (SIGSTOP) is latched and must stay frozen for `hold` seconds (the window version
+// replaced it after about 490 s); the watcher is killed (SIGKILL) two minutes into the freeze and the latch, the state file and the
+// frozen state must be unchanged; then the harness plays the person: reset; time from reset to kill and to desktop back.
+func latchSuite(hold int) {
+	fillBudget()
+	if !begin("fHangLatched") {
+		return
+	}
+	evn++
+	p, _, got := freeze4("LATCH-TEST")
+	if !got {
+		say("LATCH-TEST NO STATE FILE after 150 s")
+	}
+	t := time.Now()
+	samples, notFrozen, noLatch, noState := 0, 0, 0, 0
+	killed := false
+	for time.Since(t) < time.Duration(hold)*time.Second {
+		time.Sleep(2 * time.Second)
+		samples++
+		if !frozen(p) {
+			notFrozen++
+			say("LATCH-TEST NOT FROZEN at %.0fs: pid now %d State %s", time.Since(t).Seconds(), pidOf("driftwm"), stateOf(p))
+		}
+		if !exists(wLatch) {
+			noLatch++
+		}
+		if !exists(wState) {
+			noState++
+		}
+		if int(time.Since(t).Seconds())%60 < 2 {
+			fmt.Printf("CH t=%.1f LATCH-TEST held %.0fs of %d: frozen=%v latch=%v state=%q uptime=%.0f\n", time.Since(t0).Seconds(), time.Since(t).Seconds(), hold, frozen(p), exists(wLatch), readFile(wState), uptime())
+		}
+		if !killed && time.Since(t) > 120*time.Second {
+			killed = true
+			before := fmt.Sprintf("latch=%q state=%q budget=%q frozen=%v", readFile(wLatch), readFile(wState), strings.ReplaceAll(readFile(wBudget), "\n", " | "), frozen(p))
+			say("LATCH-TEST (b) killing the WATCHER (SIGKILL) while latched and frozen; before: %s", before)
+			r := fWatcherKill()
+			time.Sleep(4 * time.Second)
+			after := fmt.Sprintf("latch=%q state=%q budget=%q frozen=%v", readFile(wLatch), readFile(wState), strings.ReplaceAll(readFile(wBudget), "\n", " | "), frozen(p))
+			say("LATCH-TEST (b) init restarted the watcher in %.2fs (ok=%v); after: %s; unchanged=%v", r.rec, r.ok, after, before == after)
+		}
+	}
+	say("LATCH-TEST (a) held %.0fs, %d samples (every 2 s): not frozen in %d, latch missing in %d, state file missing in %d; uptime now %.0f", time.Since(t).Seconds(), samples, notFrozen, noLatch, noState, uptime())
+	tr := time.Now()
+	personReset("after the hold")
+	timeToKill(p, tr)
+	say("EV ev=%d fault=hang-latched target=driftwm rec=%.2f ok=1 fixed=0", evn, time.Since(tr).Seconds())
+}
+
+// latchCSuite (item 2c and 2d): a latched, frozen compositor is resumed (SIGCONT) WITHOUT reset: the state file must go within one
+// round, the latch must stay; hung again it must NOT be killed, the state file must come back and it must stay frozen; then
+// reset. Then (2d): a hang, the watcher killed about 15 s into its streak: time from the restart to the kill and from the fault
+// to the desktop.
+func latchCSuite() {
+	fillBudget()
+	if !begin("fHangLatchedC") {
+		return
+	}
+	evn++
+	p, _, _ := freeze4("LATCH-TEST(c)")
+	time.Sleep(10 * time.Second)
+	say("LATCH-TEST(c) still frozen=%v, latch=%v, state=%q", frozen(p), exists(wLatch), readFile(wState))
+	tc := time.Now()
+	killp(p, syscall.SIGCONT)
+	for time.Since(tc) < 30*time.Second && exists(wState) {
+		time.Sleep(50 * time.Millisecond)
+	}
+	say("LATCH-TEST(c) SIGCONT sent; state file removed after %.2fs (present now=%v); latch still set=%v; compositor State: %s pid same=%v", time.Since(tc).Seconds(), exists(wState), exists(wLatch), stateOf(p), pidOf("driftwm") == p)
+	_, ok := waitOK(30 * time.Second)
+	say("LATCH-TEST(c) desktop ok=%v with the latch still set=%v", ok, exists(wLatch))
+	time.Sleep(5 * time.Second)
+	th := time.Now()
+	killp(p, syscall.SIGSTOP)
+	say("LATCH-TEST(c) hung AGAIN (SIGSTOP of the same process pid=%d); no help", p)
+	for time.Since(th) < 60*time.Second && !exists(wState) {
+		time.Sleep(100 * time.Millisecond)
+	}
+	say("LATCH-TEST(c) state file came back after %.1fs: %q; latch=%v", time.Since(th).Seconds(), readFile(wState), exists(wLatch))
+	for time.Since(th) < 120*time.Second {
+		time.Sleep(2 * time.Second)
+	}
+	say("LATCH-TEST(c) 120 s after the second hang: frozen=%v (pid same=%v, State %s) state=%q latch=%v; NOT killed=%v", frozen(p), pidOf("driftwm") == p, stateOf(p), readFile(wState), exists(wLatch), pidOf("driftwm") == p)
+	tr := time.Now()
+	personReset("after the second hang")
+	timeToKill(p, tr)
+	say("EV ev=%d fault=hang-latched-c target=driftwm rec=%.2f ok=1 fixed=0", evn, time.Since(tr).Seconds())
+	between()
+	// (d): a watcher restart 15 s into a hang's streak
+	if !begin("fHangRestartStreak") {
+		return
+	}
+	evn++
+	p2 := pidOf("driftwm")
+	tf := time.Now()
+	killp(p2, syscall.SIGSTOP)
+	say("LATCH-TEST(d) hang injected (SIGSTOP pid=%d); the watcher will be killed 15 s into the streak; %s", p2, watcherFiles())
+	time.Sleep(15 * time.Second)
+	w := pidOf(cfg["watcher"])
+	tw := time.Now()
+	killp(w, syscall.SIGKILL)
+	var restart float64
+	for time.Since(tw) < 30*time.Second {
+		time.Sleep(50 * time.Millisecond)
+		if q := pidOf(cfg["watcher"]); q != 0 && q != w {
+			restart = time.Since(tw).Seconds()
+			break
+		}
+	}
+	trs := time.Now()
+	say("LATCH-TEST(d) watcher killed at %.1fs after the fault; init restarted it in %.2fs", tw.Sub(tf).Seconds(), restart)
+	k := -1.0
+	for time.Since(tf) < 150*time.Second {
+		if q := pidOf("driftwm"); q != p2 {
+			k = time.Since(trs).Seconds()
+			break
+		}
+		time.Sleep(50 * time.Millisecond)
+	}
+	kf := time.Since(tf).Seconds()
+	rec, ok2 := waitOK(60 * time.Second)
+	say("LATCH-TEST(d) from the watcher's restart to the kill: %.2fs (expect about 30 s); fault to kill %.2fs; fault to desktop back %.2fs (ok=%v); %s", k, kf, time.Since(tf).Seconds(), ok2, watcherFiles())
+	_ = rec
+	say("EV ev=%d fault=hang-restart-streak target=driftwm rec=%.2f ok=%d fixed=0", evn, time.Since(tf).Seconds(), b2i(ok2))
+}
+
+// hangSuiteP (item 2e): the spaced hang run for the numbers. Same as hangSuite, but after every third hang the harness plays the
+// person (reset) instead of waiting for the 10 minutes, so that the latch never blocks.
+func hangSuiteP(rng *rand.Rand, n int) {
+	modes := []string{"stop", "spin", "deadlock"}
+	for i := 0; i < n; i++ {
+		if i%3 == 0 {
+			rng.Shuffle(len(modes), func(a, b int) { modes[a], modes[b] = modes[b], modes[a] })
+			if i > 0 {
+				personReset(fmt.Sprintf("after hang %d, so that the latch never blocks the next group", i))
+				time.Sleep(2 * time.Second)
+			}
+		}
+		pause := time.Duration(rng.Intn(1000)) * time.Millisecond
+		fHangAfter(modes[i%3], pause)
+		between()
+	}
+}
+
+// storm3Suite (item 2f): crash storms with an empty budget at the start of each; the watcher's SKIP/KILL lines are in the log; here the
+// budget and latch files after each storm. Then once after two real hang kills, and a real hang afterwards.
+func storm3Suite(n int) {
+	for i := 0; i < n; i++ {
+		say("STORM-TEST %d start: %s", i+1, watcherFiles())
+		fStorm("driftwm", 40*time.Second)
+		time.Sleep(3 * time.Second)
+		say("STORM-TEST %d end: %s budget=%q", i+1, watcherFiles(), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+		between()
+	}
+	say("STORM-TEST two real hangs, then a storm, then a real hang")
+	fHangAfter("stop", 0)
+	between()
+	fHangAfter("spin", 0)
+	between()
+	say("STORM-TEST after two real hang kills: %s budget=%q", watcherFiles(), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+	fStorm("driftwm", 40*time.Second)
+	time.Sleep(3 * time.Second)
+	say("STORM-TEST storm after two real hang kills, end: %s budget=%q", watcherFiles(), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+	between()
+	fHangAfter("deadlock", 0)
+	say("STORM-TEST real hang after the storm: %s budget=%q", watcherFiles(), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+}
+
+// slowSuite (item 2g): a slow but alive compositor. Variant 1: every answer (state and sync) 3 to 4 s late for 60 s: state is inside its
+// 5-s deadline, sync is over its 2-s limit, so sync fails and state answers. Variant 2: only the sync answer is late. The watcher must not kill.
+func slowSuite() {
+	for _, v := range []string{"both", "sync"} {
+		p := pidOf("driftwm")
+		say("SLOW-TEST variant=%s start: driftwm pid=%d %s", v, p, watcherFiles())
+		os.WriteFile(faultDir+"/driftwm.slow", []byte(v), 0o644)
+		t := time.Now()
+		for time.Since(t) < 60*time.Second {
+			time.Sleep(5 * time.Second)
+			fmt.Printf("CH t=%.1f SLOW-TEST variant=%s at %.0fs: pid=%d State: %s\n", time.Since(t0).Seconds(), v, time.Since(t).Seconds(), pidOf("driftwm"), stateOf(pidOf("driftwm")))
+		}
+		os.Remove(faultDir + "/driftwm.slow")
+		say("SLOW-TEST variant=%s end of the 60 s: driftwm pid=%d (same=%v) %s", v, pidOf("driftwm"), pidOf("driftwm") == p, watcherFiles())
+		time.Sleep(10 * time.Second)
+		rec, ok := waitOK(30 * time.Second)
+		say("SLOW-TEST variant=%s 10 s after the end: pid same=%v, desktop ok=%v (%.1fs) %s", v, pidOf("driftwm") == p, ok, rec, watcherFiles())
+		time.Sleep(10 * time.Second)
+	}
 }

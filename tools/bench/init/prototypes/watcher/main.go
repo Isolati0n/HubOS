@@ -1,6 +1,6 @@
 // TEST STAND-IN. NOT the product watcher. The hang rule is not built.
 //
-// A tiny watcher for the init comparison (follow-up 4). It implements the owner's rule of docs/proposals/hub-stability.md
+// A tiny watcher for the init comparison (follow-up 4; follow-up 5 added the latch, the identity rule and the probe limits). It implements the owner's rule of docs/proposals/hub-stability.md
 // section 9.1: two probes, BOTH aimed at the compositor and both answered by its single event-loop thread (driftwm's socket
 // "state" request, and a Wayland wl_display.sync round trip). A round fails only when BOTH probes fail. After 4 failed rounds
 // in a row AND at least 30 seconds since the first failed round of the streak, the compositor is killed; at most 3 kills in
@@ -20,20 +20,29 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 )
 
 // Probe is copied unchanged from ../go/probe.go (the brain prototype): ask a service a question on a unix socket and want an
 // answer starting with "ok" within a second. Used here for the compositor's "state" request (probe 1) and for the hubd "ping"
 // that is only logged (information, no part in the decision).
-func Probe(sock, request string) bool {
-	c, err := net.DialTimeout("unix", sock, time.Second)
+func Probe(sock, request string) bool { return ProbeLimit(sock, request, time.Second) }
+
+// Probe limits of the owner's rule (hub-stability.md 9.1; follow-up 5, decision 4): the driftwm "state" request has a 5 s
+// deadline, the Wayland wl_display.sync round trip 2 s. (The follow-up 4 watcher used 1 s for both.)
+const (
+	StateLimit = 5 * time.Second
+	SyncLimit  = 2 * time.Second
+)
+
+// ProbeLimit is Probe with a limit: the connect and the whole question-and-answer must finish within limit.
+func ProbeLimit(sock, request string, limit time.Duration) bool {
+	c, err := net.DialTimeout("unix", sock, limit)
 	if err != nil {
 		return false
 	}
 	defer c.Close()
-	c.SetDeadline(time.Now().Add(time.Second))
+	c.SetDeadline(time.Now().Add(limit))
 	if _, err := c.Write([]byte(request + "\n")); err != nil {
 		return false
 	}
@@ -45,14 +54,17 @@ func Probe(sock, request string) bool {
 // send wl_display.sync, wait for the wl_callback.done event). It speaks the Wayland wire format by hand: a message is
 // object id (u32), then (size << 16 | opcode) (u32), then the arguments, all little-endian. wl_display is object 1, its
 // request sync is opcode 0 with one argument, the new object id for the callback (we use 2); the answer is the event done
-// (opcode 0) on object 2. Limit: 1 s (the same as the other probe; the document names 2 s, a setting).
-func ProbeSync(sock string) bool {
-	c, err := net.DialTimeout("unix", sock, time.Second)
+// (opcode 0) on object 2. Limit: SyncLimit (2 s, as hub-stability.md 9.1 names it).
+func ProbeSync(sock string) bool { return ProbeSyncLimit(sock, SyncLimit) }
+
+// ProbeSyncLimit is ProbeSync with a limit.
+func ProbeSyncLimit(sock string, limit time.Duration) bool {
+	c, err := net.DialTimeout("unix", sock, limit)
 	if err != nil {
 		return false
 	}
 	defer c.Close()
-	c.SetDeadline(time.Now().Add(time.Second))
+	c.SetDeadline(time.Now().Add(limit))
 	var req [12]byte
 	binary.LittleEndian.PutUint32(req[0:], 1)        // object: wl_display
 	binary.LittleEndian.PutUint32(req[4:], 12<<16|0) // size 12, opcode 0 = sync
@@ -114,20 +126,35 @@ const (
 	Capped           // would kill, but 3 kills in the last 10 minutes were already made
 )
 
-// Round records one probe round at time now (state = the "state" probe answered, sync = the wl_display.sync probe answered)
-// and returns the decision. A round fails only when BOTH probes fail.
-func (r *Rule) Round(now time.Duration, state, sync bool) (failed bool, d Decision) {
+// Want records one probe round at time now (state = the "state" probe answered, sync = the wl_display.sync probe answered).
+// A round fails only when BOTH probes fail. want is true when the rule asks for a kill: 4 failed rounds in a row and at least
+// 30 s since the first failed round. It touches no budget and no file (the Watcher of watcher.go decides what follows).
+func (r *Rule) Want(now time.Duration, state, sync bool) (failed, want bool) {
 	failed = !state && !sync
 	if !failed {
 		r.streak = 0
-		return false, Nothing
+		return false, false
 	}
 	if r.streak == 0 {
 		r.first = now
 	}
 	r.streak++
-	if r.streak < r.Rounds || now-r.first < r.Window {
-		return true, Nothing
+	return true, r.streak >= r.Rounds && now-r.first >= r.Window
+}
+
+// Restart begins a new streak whose first failed round is the one at time now.
+func (r *Rule) Restart(now time.Duration) { r.streak, r.first = 1, now }
+
+// Reset ends the streak.
+func (r *Rule) Reset() { r.streak = 0 }
+
+// Round is the follow-up 4 behaviour, the "window" version: Want, then the budget alone decides (3 kills in 10 minutes; when
+// the budget is full the round is Capped, and the first round with room kills). It is kept for the tests of that version and
+// for the record; the program uses Watcher.Step (the latch version).
+func (r *Rule) Round(now time.Duration, state, sync bool) (failed bool, d Decision) {
+	failed, want := r.Want(now, state, sync)
+	if !want {
+		return failed, Nothing
 	}
 	if r.B.Full(now) {
 		return true, Capped
@@ -179,12 +206,28 @@ func evidence(pid int) string {
 }
 
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "reset" { // the person-command of the test (only the hook; the product's is not designed)
+		fs := flag.NewFlagSet("reset", flag.ExitOnError)
+		bp := fs.String("budget", "/run/hubos/watcher.budget", "budget file")
+		lp := fs.String("latch", "/run/hubos/watcher.latch", "latch file")
+		sp := fs.String("state", "/run/hubos/watcher.state", "state file")
+		fs.Parse(os.Args[2:])
+		if err := Reset(*bp, *lp, *sp); err != nil {
+			fmt.Fprintln(os.Stderr, "watcher reset:", err)
+			os.Exit(1)
+		}
+		fmt.Println("watcher reset: budget emptied, latch and state file removed")
+		return
+	}
 	comp := flag.String("comp", "/run/dw/wayland-1", "compositor socket (the \"state\" request and the Wayland sync both go here in the test image)")
 	hubd := flag.String("hubd", "/run/hubos/hubd.sock", "hubd socket (ping, logged for information only)")
 	round := flag.Duration("round", time.Second, "time between rounds")
 	target := flag.String("target", "driftwm", "process name of the compositor to kill")
 	budgetPath := flag.String("budget", "/run/hubos/watcher.budget", "file with the kill times (in the in-memory /run, so a restarted watcher keeps its budget)")
-	statePath := flag.String("state", "/run/hubos/watcher.state", "one-line state file: \"capped <time>\" while the cap blocks a kill (the hook a bar would read)")
+	latchPath := flag.String("latch", "/run/hubos/watcher.latch", "latch file: present while the watcher is stopped until a person clears it (`watcher reset`)")
+	statePath := flag.String("state", "/run/hubos/watcher.state", "one-line state file: \"capped <time>\" while the rule wants a kill and the latch blocks it (the hook a bar would read)")
+	stateLimit := flag.Duration("state-limit", StateLimit, "deadline of the \"state\" probe")
+	syncLimit := flag.Duration("sync-limit", SyncLimit, "limit of the wl_display.sync probe")
 	console := flag.String("console", "/dev/console", "also write the log here (empty: standard error only)")
 	flag.Parse()
 	var cons *os.File
@@ -200,69 +243,40 @@ func main() {
 	}
 	os.MkdirAll(filepath.Dir(*budgetPath), 0o755)
 	bud, note := LoadBudget(*budgetPath, BootClock(), 3, 10*time.Minute)
-	r := &Rule{Rounds: 4, Window: 30 * time.Second, B: bud}
-	sf := StateFile{Path: *statePath}
-	logf("started pid=%d probes=state+wl_display.sync, hubd ping is information only (TEST STAND-IN, not the product watcher)", os.Getpid())
-	logf("%s (%s)", note, *budgetPath)
-	capped := sf.Exists()
-	if capped && !bud.Full(BootClock()) {
-		sf.Clear()
-		capped = false
-		logf("state file %s was left over and the budget has room: removed", *statePath)
+	w := &Watcher{
+		R: &Rule{Rounds: 4, Window: 30 * time.Second, B: bud}, B: bud,
+		Latch: Latch{*latchPath}, State: StateFile{*statePath},
+		Find:     func() []Proc { return findProcs(*target) },
+		Kill:     killProc,
+		Evidence: func(p Proc) string { return evidence(p.PID) },
+		Wall:     time.Now, Log: logf, Target: *target,
 	}
-	if capped {
-		logf("state file %s exists and the budget is full: kept", *statePath)
+	logf("started pid=%d probes=state(%v)+wl_display.sync(%v), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version)", os.Getpid(), *stateLimit, *syncLimit)
+	logf("%s (%s)", note, *budgetPath)
+	if l, dmg := w.Latch.State(); l {
+		logf("LATCH is set at start (%s): nothing is killed until a person clears it %s", *latchPath, dmg)
+	}
+	if w.State.Exists() {
+		logf("state file %s exists at start: kept until both probes answer", *statePath)
 	}
 	n := 0
 	for range time.Tick(*round) {
 		n++
 		now := BootClock()
-		if capped && !bud.Full(now) { // kills are allowed again: the state file goes (before this round's decision)
-			if err := sf.Clear(); err != nil {
-				logf("state file not removed: %v", err)
-			}
-			capped = false
-			logf("STATE kills are allowed again: removed %s", *statePath)
-		}
 		var st, sy, hb bool
 		var wg sync.WaitGroup
 		wg.Add(3)
-		go func() { defer wg.Done(); st = Probe(*comp, "state") }()
-		go func() { defer wg.Done(); sy = ProbeSync(*comp) }()
+		go func() { defer wg.Done(); st = ProbeLimit(*comp, "state", *stateLimit) }()
+		go func() { defer wg.Done(); sy = ProbeSyncLimit(*comp, *syncLimit) }()
 		go func() { defer wg.Done(); hb = Probe(*hubd, "ping") }()
 		wg.Wait()
-		failed, d := r.Round(now, st, sy)
-		s, first := r.Streak()
+		res := w.Step(now, st, sy)
+		s, f1 := w.R.Streak()
 		since := 0.0
 		if s > 0 {
-			since = (now - first).Seconds()
+			since = (now - f1).Seconds()
 		}
-		logf("round %d state=%s sync=%s hubd(info only)=%s failed_round=%v streak=%d since_first=%.1fs", n, ok(st), ok(sy), ok(hb), failed, s, since)
-		switch d {
-		case Kill:
-			if bud.SaveErr != nil {
-				logf("budget file not written: %v (the kill still counts in memory)", bud.SaveErr)
-			}
-			logf("BUDGET kill %d of %d in the last 10 minutes recorded in %s", bud.Len(), bud.Max, *budgetPath)
-			pids := pidsNamed(*target)
-			for _, p := range pids {
-				logf("EVIDENCE %s", evidence(p)) // before the kill (hub-stability.md 9.1: log every kill with the evidence)
-				err := syscall.Kill(p, syscall.SIGKILL)
-				logf("KILL %s pid=%d err=%v", *target, p, err)
-			}
-			if len(pids) == 0 {
-				logf("KILL %s: no process of that name exists at this moment (the kill counts against the budget)", *target)
-			}
-		case Capped:
-			logf("CAP: would kill %s, but 3 kills in the last 10 minutes were already made; not killing", *target)
-			if !capped {
-				if err := sf.SetCapped(time.Now()); err != nil {
-					logf("state file not written: %v", err)
-				}
-				capped = true
-				logf("STATE wrote %s (capped)", *statePath)
-			}
-		}
+		logf("round %d state=%s sync=%s hubd(info only)=%s failed_round=%v streak=%d since_first=%.1fs result=%s", n, ok(st), ok(sy), ok(hb), !st && !sy, s, since, res)
 	}
 }
 

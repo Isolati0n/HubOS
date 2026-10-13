@@ -1,0 +1,4 @@
+#!/bin/sh
+mkdir -p /var/log/driftwm
+printf 's100000\nn5\n' > /var/log/driftwm/config
+exec svlogd -tt /var/log/driftwm

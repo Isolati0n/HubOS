@@ -39,6 +39,7 @@ type Budget struct {
 	kills []time.Duration
 	// SaveErr is the error of the last write (nil when it worked); the kill budget still counts in memory.
 	SaveErr error
+	sig     string // fileSig after our last write or read
 }
 
 // LoadBudget reads the file. now is the current BootClock. A file that is missing or damaged gives an empty budget and a note
@@ -48,6 +49,7 @@ func LoadBudget(path string, now time.Duration, max int, per time.Duration) (*Bu
 	b := &Budget{Path: path, Max: max, Per: per}
 	f, err := os.Open(path)
 	if err != nil {
+		b.sig = b.fileSig()
 		if os.IsNotExist(err) {
 			return b, "budget file missing: starting with an empty budget"
 		}
@@ -55,6 +57,7 @@ func LoadBudget(path string, now time.Duration, max int, per time.Duration) (*Bu
 	}
 	defer f.Close()
 	damaged := func(why string) (*Budget, string) {
+		b.sig = b.fileSig()
 		b.kills = nil
 		return b, "budget file damaged (" + why + "): starting with an empty budget"
 	}
@@ -105,6 +108,7 @@ func LoadBudget(path string, now time.Duration, max int, per time.Duration) (*Bu
 			dropped++
 		}
 	}
+	b.sig = b.fileSig()
 	return b, fmt.Sprintf("budget file read: %d kills in the last %v kept, %d older dropped", len(b.kills), per, dropped)
 }
 
@@ -144,7 +148,9 @@ func (b *Budget) save() error {
 		fmt.Fprintf(&sb, "kill %d\n", int64(t))
 	}
 	fmt.Fprintf(&sb, "end %d\n", len(b.kills))
-	return writeAtomic(b.Path, sb.String())
+	err := writeAtomic(b.Path, sb.String())
+	b.sig = b.fileSig()
+	return err
 }
 
 // writeAtomic: write a temporary file in the same directory, flush it, then rename it over the target.
@@ -200,4 +206,42 @@ func (s StateFile) Exists() bool {
 	}
 	_, err := os.Stat(s.Path)
 	return err == nil
+}
+
+// ---- follow-up 5 additions ----
+
+// Undo takes back the last kill (a kill that found no process is never counted) and writes the file.
+func (b *Budget) Undo() {
+	if len(b.kills) > 0 {
+		b.kills = b.kills[:len(b.kills)-1]
+	}
+	b.SaveErr = b.save()
+}
+
+// fileSig is a cheap signature of the budget file (inode, modification time, size) as it is now; "" when it cannot be read.
+func (b *Budget) fileSig() string {
+	if b.Path == "" {
+		return ""
+	}
+	fi, err := os.Stat(b.Path)
+	if err != nil {
+		return "missing"
+	}
+	st, _ := fi.Sys().(*syscall.Stat_t)
+	if st == nil {
+		return fmt.Sprintf("%d-%d", fi.ModTime().UnixNano(), fi.Size())
+	}
+	return fmt.Sprintf("%d-%d-%d", st.Ino, fi.ModTime().UnixNano(), fi.Size())
+}
+
+// Changed reports whether someone else wrote the file since this process last wrote or read it (the person-command `reset`
+// empties it while the watcher runs). If the last write of this process failed, the memory is kept (no reload).
+func (b *Budget) Changed() bool { return b.SaveErr == nil && b.sig != b.fileSig() }
+
+// Reload reads the file again (same rules as LoadBudget) and returns a note.
+func (b *Budget) Reload(now time.Duration) string {
+	nb, note := LoadBudget(b.Path, now, b.Max, b.Per)
+	b.kills, b.SaveErr = nb.kills, nil
+	b.sig = b.fileSig()
+	return note
 }

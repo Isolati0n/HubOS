@@ -6,6 +6,7 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"math/rand"
 	"net"
 	"os"
 	"sort"
@@ -27,6 +28,20 @@ const (
 var held []byte
 
 func exists(p string) bool { _, err := os.Stat(p); return err == nil }
+
+// STAND-IN CHANGE (follow-up 5, item 2g): a slow but alive compositor. While the file <faultDir>/driftwm.slow exists, an answer
+// is delayed by 3 to 4 seconds: the file says "both" (the "state" answer and the sync answer are late) or "sync" (only the sync
+// answer is late). The process keeps running and every connection has its own goroutine, so a late answer does not block the
+// other probe. Nothing else about the stand-in changes.
+func slowDelay(kind string) {
+	b, err := os.ReadFile(faultDir + "/driftwm.slow")
+	if err != nil {
+		return
+	}
+	if m := strings.TrimSpace(string(b)); m == "both" || m == kind {
+		time.Sleep(3*time.Second + time.Duration(rand.Intn(1000))*time.Millisecond)
+	}
+}
 
 func logf(name, f string, a ...any) {
 	fmt.Printf("%s: %s\n", name, fmt.Sprintf(f, a...))
@@ -242,6 +257,7 @@ func compositor(name string, nfd int, hung *hangState) {
 					if hung.get() {
 						select {} // alive but not answering
 					}
+					slowDelay("sync")
 					if binary.LittleEndian.Uint32(m[4:8])&0xffff == 0 { // opcode 0 = sync; m[8:12] is the callback's new id
 						var out [24]byte
 						binary.LittleEndian.PutUint32(out[0:], 1) // wl_display.delete_id(callback id)
@@ -268,6 +284,7 @@ func compositor(name string, nfd int, hung *hangState) {
 					clients[c] = strings.TrimPrefix(line, "hello ")
 					mu.Unlock()
 				case line == "state":
+					slowDelay("state")
 					mu.Lock()
 					var n []string
 					for _, v := range clients {
