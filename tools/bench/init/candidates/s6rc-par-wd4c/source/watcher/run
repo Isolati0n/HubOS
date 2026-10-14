@@ -1,0 +1,6 @@
+#!/bin/sh
+# TEST STAND-IN watcher (prototypes/watcher), follow-up 6 (latch version with auto-clear). Not the product watcher.
+# hub.clearafter=SECONDS on the kernel command line shortens the auto-clear time for the tests; without it the default (3600 s) is used.
+exec 2>&1
+CA=$(sed -n 's/.*hub\.clearafter=\([0-9]*\).*/\1/p' /proc/cmdline)
+exec watcher ${CA:+-latch-clear-after ${CA}s}
