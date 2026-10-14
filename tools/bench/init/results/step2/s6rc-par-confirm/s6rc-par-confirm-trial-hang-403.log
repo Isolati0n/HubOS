@@ -1,0 +1,40 @@
+H# start 2026-10-14 00:17:06 cand=s6rc-par-confirm suite=trial cpus_seen=4 loadavg_at_start=['0.82', '0.53', '0.43']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/rf/s6rc-par-confirm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=403 hub.reps=5 hub.skip=0 hub.trial=hang hub.preflag=  hub.cand=s6rc hub.sup=s6-supervise hub.strict=1
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     6.68 c[?7l[2JCH STAGE1 up=5.14
+H     6.72 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     6.75 CH SUP-START up=5.21
+H     6.91 CH t=0.1 CHAOS start cand=s6rc suite=trial seed=403 cpus=2
+H    13.14 CH S6RC-UP up=11.61
+H    15.77 CH t=8.9 TRIAL-INJECT driftwm stopped (wedged) 2.3s after the desktop first worked
+H    36.17 CH t=29.3 TRIAL-PROBE round 1: state=false sync=false consecutive=0 (5 needed)
+H    44.27 CH t=37.4 TRIAL-PROBE round 2: state=false sync=false consecutive=0 (5 needed)
+H    52.39 CH t=45.5 TRIAL-PROBE round 3: state=false sync=false consecutive=0 (5 needed)
+H    60.51 CH t=53.7 TRIAL-PROBE round 4: state=false sync=false consecutive=0 (5 needed)
+H    68.62 CH t=61.8 TRIAL-PROBE round 5: state=false sync=false consecutive=0 (5 needed)
+H    69.65 CH t=62.8 TRIAL ROLLBACK scenario=hang after=60s strict=true true_state="driftwm stopped" guard_still_feeding=true health_checks_run=25 slowest_check=0.1s consecutive_good=19 (15 needed) probe_rounds=5 consecutive_probe_good=0 (5 needed)
+H    69.88 CH t=63.0 STATUS dbus-log: up (pid 174 pgid 174) 62 seconds
+H    69.89 CH t=63.0 STATUS dbus: up (pid 189 pgid 189) 62 seconds, ready 61 seconds
+H    69.89 CH t=63.0 STATUS driftwm-log: up (pid 172 pgid 172) 62 seconds
+H    69.89 CH t=63.0 STATUS driftwm: up (pid 226 pgid 226) 60 seconds, ready 58 seconds
+H    69.89 CH t=63.0 STATUS guard-log: up (pid 167 pgid 167) 62 seconds
+H    69.89 CH t=63.0 STATUS guard: up (pid 190 pgid 190) 62 seconds
+H    69.89 CH t=63.0 STATUS hubd-log: up (pid 164 pgid 164) 62 seconds
+H    69.90 CH t=63.0 STATUS hubd: up (pid 269 pgid 269) 58 seconds, ready 56 seconds
+H    69.90 CH t=63.1 STATUS s6rc-fdholder: up (pid 134 pgid 134) 62 seconds, ready 62 seconds
+H    69.90 CH t=63.1 STATUS s6rc-oneshot-runner: down (not started yet) 
+H    69.90 CH t=63.1 STATUS seatd-log: up (pid 154 pgid 154) 62 seconds
+H    69.90 CH t=63.1 STATUS seatd: up (pid 182 pgid 182) 62 seconds, ready 62 seconds
+H    69.90 CH t=63.1 STATUS stage2: up (pid 106 pgid 106) 62 seconds
+H    69.91 CH t=63.1 STATUS udevd-log: up (pid 166 pgid 166) 62 seconds
+H    69.91 CH t=63.1 STATUS udevd: up (pid 185 pgid 185) 62 seconds, ready 60 seconds
+H    69.91 CH t=63.1 STATUS waybar-log: up (pid 157 pgid 157) 62 seconds
+H    69.91 CH t=63.1 STATUS waybar: up (pid 270 pgid 270) 58 seconds, ready 56 seconds
+H    70.92 [   69.415431] reboot: Restarting system
+H    71.02 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    71.05 Booting from ROM...
+H    77.47 c[?7l[2JCH STAGE1 up=5.13
+H# trial finished
+H# vm exit code -9 after 77s, loadavg ['0.69', '0.59', '0.46']
+H# end wall=77.5s launches=1 suite_done=True
