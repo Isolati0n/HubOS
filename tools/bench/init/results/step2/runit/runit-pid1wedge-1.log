@@ -1,0 +1,51 @@
+H# start 2026-10-10 17:50:37 cand=runit suite=pid1wedge cpus_seen=4 loadavg_at_start=['0.60', '0.50', '0.47']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.40 Booting from ROM..c[?7l[2JCH STAGE1 up=2.85
+H     4.47 CH CAND runit pid1=runit stage2=runsvdir
+H     4.53 CH SUP-START up=2.99
+H     4.61 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.62 - runit: enter stage: /etc/runit/1
+H     4.63 - runit: leave stage: /etc/runit/1
+H     4.64 - runit: enter stage: /etc/runit/2
+H     4.66 CH t=0.1 CHAOS start cand=runit suite=pid1wedge seed=120 cpus=2
+H    10.51 CH t=5.9 BOOT-OK up=8.96 ok=1 (seconds since kernel start; waited 5.6)
+H    10.57 CH t=6.0 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13092 memavail_kb=758528 init_side_cpu_ticks=226
+H    15.52 CH t=10.9 INJECT pid1-wedge (held stopped by ptrace)
+H    15.55 PID 1 held stopped
+H    17.56 guard: PID 1 check failed (1)
+H    20.53 CH t=16.0 PID1-STATE t guard=S watchdog_dev=true
+H    20.56 guard: PID 1 check failed (2)
+H    20.64 CH t=16.1 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13092 memavail_kb=757792 init_side_cpu_ticks=228
+H    23.57 guard: PID 1 check failed (3)
+H    25.55 CH t=21.0 PID1-STATE t guard=S watchdog_dev=true
+H    26.57 guard: PID 1 check failed (4)
+H    29.58 guard: PID 1 check failed (5)
+H    30.58 CH t=26.0 PID1-STATE t guard=S watchdog_dev=true
+H    30.78 CH t=26.2 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13092 memavail_kb=757548 init_side_cpu_ticks=229
+H    32.58 guard: PID 1 check failed (6)
+H    35.59 guard: PID 1 check failed (7)
+H    35.59 CH t=31.0 PID1-STATE t guard=S watchdog_dev=true
+H    38.59 guard: PID 1 check failed (8)
+H    40.60 CH t=36.0 PID1-STATE t guard=S watchdog_dev=true
+H    40.85 CH t=36.3 SAMPLE zombies=0 nproc=86 init_side_fds=108 init_side_rss_kb=13092 memavail_kb=757548 init_side_cpu_ticks=229
+H    41.59 guard: PID 1 check failed (9)
+H    44.60 guard: PID 1 check failed (10)
+H    45.63 CH t=41.0 PID1-STATE t guard=S watchdog_dev=true
+H    47.60 guard: PID 1 check failed (11)
+H    50.61 guard: PID 1 check failed (12)
+H    50.64 CH t=46.1 PID1-STATE t guard=S watchdog_dev=true
+H    50.88 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    50.88 Booting from ROM...
+H    57.09 c[?7l[2JCH STAGE1 up=2.49
+H    57.17 CH CAND runit pid1=runit stage2=runsvdir
+H    57.22 CH SUP-START up=2.63
+H    57.32 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H    57.33 - runit: enter stage: /etc/runit/1
+H    57.35 - runit: leave stage: /etc/runit/1
+H    57.35 - runit: enter stage: /etc/runit/2
+H    57.38 CH t=0.1 CHAOS start cand=runit suite=pid1wedge seed=120 cpus=2
+H    63.09 CH t=5.8 BOOT-OK up=8.49 ok=1 (seconds since kernel start; waited 5.5)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 63s, loadavg ['0.64', '0.51', '0.47']
+H# end wall=63.1s launches=1 suite_done=True

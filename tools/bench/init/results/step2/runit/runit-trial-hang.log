@@ -1,0 +1,23 @@
+H# start 2026-10-10 17:53:10 cand=runit suite=trial cpus_seen=4 loadavg_at_start=['0.73', '0.58', '0.50']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.10 Booting from ROM..c[?7l[2JCH STAGE1 up=3.23
+H     5.17 CH CAND runit pid1=runit stage2=runsvdir
+H     5.22 CH SUP-START up=3.36
+H     5.27 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     5.28 - runit: enter stage: /etc/runit/1
+H     5.30 - runit: leave stage: /etc/runit/1
+H     5.30 - runit: enter stage: /etc/runit/2
+H     5.45 CH t=0.1 CHAOS start cand=runit suite=trial seed=132 cpus=2
+H    14.25 CH t=8.9 TRIAL-INJECT driftwm stopped (wedged)
+H    25.14 CH t=19.8 TRIAL CONFIRMED scenario=hang after=19.6s true_state="driftwm stopped"
+H    25.48 CH t=20.2 STATUS run: /run/service/dbus/: (pid 133) 19s; run: log: (pid 116) 19s
+H    25.48 CH t=20.2 STATUS run: /run/service/driftwm/: (pid 122) 19s; run: log: (pid 119) 19s
+H    25.48 CH t=20.2 STATUS run: /run/service/guard/: (pid 131) 19s
+H    25.48 CH t=20.2 STATUS run: /run/service/hubd/: (pid 121) 19s; run: log: (pid 117) 19s
+H    25.49 CH t=20.2 STATUS run: /run/service/seatd/: (pid 134) 19s; run: log: (pid 128) 19s
+H    25.49 CH t=20.2 STATUS run: /run/service/udevd/: (pid 118) 19s; run: log: (pid 115) 19s
+H    25.49 CH t=20.2 STATUS run: /run/service/waybar/: (pid 129) 19s; run: log: (pid 120) 19s
+H# trial finished
+H# vm exit code -9 after 46s, loadavg ['0.58', '0.57', '0.50']
+H# end wall=45.5s launches=1 suite_done=True

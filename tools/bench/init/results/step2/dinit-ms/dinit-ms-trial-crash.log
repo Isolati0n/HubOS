@@ -1,0 +1,31 @@
+H# start 2026-10-11 23:03:11 cand=dinit-ms suite=trial cpus_seen=4 loadavg_at_start=['0.37', '0.40', '0.26']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-ms.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=131 hub.reps=5 hub.skip=0 hub.trial=crash hub.preflag=driftwm.crash hub.cand=dinit
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.88 Booting from ROM..c[?7l[2JCH STAGE1 up=3.21
+H     4.93 CH CAND dinit pid1=dinit
+H     4.94 CH SUP-START up=3.28
+H     5.08 CH t=0.0 CHAOS start cand=dinit suite=trial seed=131 cpus=2
+H     5.16 [  OK  ] guard
+H     5.25 [  OK  ] seatd
+H     5.25 [  OK  ] dbus
+H     6.72 [  OK  ] udevd
+H     7.75 dinit: Service driftwm process terminated with exit code 1
+H     7.75 [FAILED] driftwm
+H     7.75 [FAILED] hubd
+H     7.75 [FAILED] waybar
+H     7.75 [  OK  ] boot
+H    65.77 CH t=60.7 TRIAL ROLLBACK scenario=crash after=60s true_state="driftwm not running" guard_still_feeding=true health_checks_run=56 slowest_check=0.2s consecutive_good=0 (15 needed)
+H    65.81 CH t=60.8 STATUS [[+]     ] boot
+H    65.81 CH t=60.8 STATUS [{+}     ] guard (pid: 105)
+H    65.81 CH t=60.8 STATUS [{+}     ] seatd (pid: 107)
+H    65.81 CH t=60.8 STATUS [{+}     ] udevd (pid: 109)
+H    65.81 CH t=60.8 STATUS [{+}     ] dbus (pid: 110)
+H    65.81 CH t=60.8 STATUS [     {X}] driftwm
+H    65.81 CH t=60.8 STATUS [     {X}] waybar
+H    65.81 CH t=60.8 STATUS [     {X}] hubd
+H    66.82 [   65.195443] reboot: Restarting system
+H    66.96 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    71.61 Booting from ROM..c[?7l[2JCH STAGE1 up=2.62
+H# trial finished
+H# vm exit code -9 after 72s, loadavg ['0.43', '0.43', '0.28']
+H# end wall=71.6s launches=1 suite_done=True

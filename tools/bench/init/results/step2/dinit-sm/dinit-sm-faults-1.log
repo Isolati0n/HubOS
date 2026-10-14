@@ -1,0 +1,393 @@
+H# start 2026-10-11 01:38:50 cand=dinit-sm suite=faults cpus_seen=4 loadavg_at_start=['0.29', '0.43', '0.73']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=600 hub.seed=200 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=dinit
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.43 Booting from ROM..c[?7l[2JCH STAGE1 up=2.86
+H     4.47 CH CAND dinit pid1=dinit
+H     4.48 CH SUP-START up=2.92
+H     4.66 [  OK  ] guard
+H     4.70 CH t=0.1 CHAOS start cand=dinit suite=faults seed=200 cpus=2
+H     4.77 [  OK  ] dbus
+H     4.77 [  OK  ] seatd
+H     6.24 [  OK  ] udevd
+H     8.46 [  OK  ] driftwm
+H    10.16 [  OK  ] waybar
+H    10.21 [  OK  ] hubd
+H    10.53 [  OK  ] boot
+H    10.53 CH t=5.9 BOOT-OK up=8.97 ok=1 (seconds since kernel start; waited 5.6)
+H    15.53 CH t=10.9 STEP 1 fKill
+H    15.55 dinit: Service seatd terminated due to signal 9
+H    15.60 dinit: Service driftwm process terminated with exit code 1
+H    15.61 [STOPPD] waybar
+H    16.02 [STOPPD] hubd
+H    16.77 [FAILED] waybar
+H    17.15 [FAILED] hubd
+H    75.55 dinit: Service seatd with pid 236 exceeded allowed start time; cancelling.
+H    75.56 dinit: Interrupting start of service seatd with pid 236 (with SIGINT).
+H    75.56 [FAILED] seatd
+H    75.57 CH t=71.0 UNRECOVERED ev=1 fault=kill target=seatd alert=0 why="waybar not running"
+H    75.60 dinit: Service driftwm process terminated with exit code 1
+H    75.63 CH t=71.0 STATUS [[+]     ] boot
+H    75.64 CH t=71.0 STATUS [{+}     ] guard (pid: 102)
+H    75.64 CH t=71.0 STATUS [     {X}] seatd
+H    75.64 CH t=71.0 STATUS [{+}     ] udevd (pid: 105)
+H    75.64 CH t=71.0 STATUS [{+}     ] dbus (pid: 106)
+H    75.64 CH t=71.0 STATUS [{+}     ] driftwm (pid: 462)
+H    75.64 CH t=71.0 STATUS [     {X}] waybar
+H    75.64 CH t=71.0 STATUS [     {X}] hubd
+H    75.66 CH t=71.1 operator-action target=seatd why="seatd not running"
+H    75.69 Service (already) started.
+H    76.02 dinit: Service driftwm process terminated with exit code 1
+H    76.39 dinit: Service driftwm process terminated with exit code 1
+H    76.70 dinit: Service driftwm process terminated with exit code 1
+H    76.71 dinit: Service driftwm restarting too quickly; stopping.
+H    76.71 [STOPPD] driftwm
+H   135.74 CH t=131.1 STUCK ev=1 step=1 fault=kill target=seatd why="seatd not running" (a reboot is the only way out; the host restarts the machine)
+H   136.75 [  135.221959] reboot: Power down
+H# vm exit code 0 after 137s, loadavg ['0.46', '0.55', '0.74']
+H# launch 2 skip=1 dur=464 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=464 hub.seed=201 hub.reps=3 hub.skip=1 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   136.89 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   141.28 Booting from ROM..c[?7l[2JCH STAGE1 up=2.87
+H   141.34 CH CAND dinit pid1=dinit
+H   141.34 CH SUP-START up=2.94
+H   141.46 [  OK  ] guard
+H   141.61 CH t=0.1 CHAOS start cand=dinit suite=faults seed=201 cpus=2
+H   141.61 [  OK  ] dbus
+H   141.61 [  OK  ] seatd
+H   143.10 [  OK  ] udevd
+H   145.37 [  OK  ] driftwm
+H   147.06 [  OK  ] waybar
+H   147.11 [  OK  ] hubd
+H   147.11 [  OK  ] boot
+H   147.37 CH t=5.9 BOOT-OK up=8.96 ok=1 (seconds since kernel start; waited 5.6)
+H   155.38 CH t=13.9 STEP 2 fKill
+H   155.39 dinit: Service udevd terminated due to signal 9
+H   157.27 CH t=15.8 EV ev=1 fault=kill target=udevd rec=1.68 ok=1 fixed=0 
+H   160.27 CH t=18.8 STEP 3 fKill
+H   160.28 dinit: Service dbus terminated due to signal 9
+H   160.60 CH t=19.1 EV ev=2 fault=kill target=dbus rec=0.12 ok=1 fixed=0 
+H   163.60 CH t=22.1 STEP 4 fKill
+H   163.65 dinit: Service driftwm terminated due to signal 9
+H   163.65 [STOPPD] waybar
+H   164.61 [STOPPD] hubd
+H   165.74 [FAILED] waybar
+H   166.26 [  OK  ] hubd
+H   215.39 dinit: Service udevd with pid 265 exceeded allowed start time; cancelling.
+H   215.39 dinit: Interrupting start of service udevd with pid 265 (with SIGINT).
+H   215.39 [FAILED] udevd
+H   220.29 dinit: Service dbus with pid 324 exceeded allowed start time; cancelling.
+H   220.29 dinit: Interrupting start of service dbus with pid 324 (with SIGINT).
+H   220.29 [FAILED] dbus
+H   223.65 dinit: Service driftwm with pid 365 exceeded allowed start time; cancelling.
+H   223.65 dinit: Interrupting start of service driftwm with pid 365 (with SIGINT).
+H   223.65 [FAILED] driftwm
+H   223.77 CH t=82.3 UNRECOVERED ev=3 fault=kill target=driftwm alert=0 why="udevd not running"
+H   223.84 CH t=82.4 STATUS [[+]     ] boot
+H   223.85 CH t=82.4 STATUS [{+}     ] guard (pid: 101)
+H   223.85 CH t=82.4 STATUS [{+}     ] seatd (pid: 102)
+H   223.85 CH t=82.4 STATUS [     {X}] udevd
+H   223.85 CH t=82.4 STATUS [     {X}] dbus
+H   223.85 CH t=82.4 STATUS [     {X}] driftwm
+H   223.85 CH t=82.4 STATUS [     {-}] waybar (exit status: 0)
+H   223.85 CH t=82.4 STATUS [{+}     ] hubd (pid: 378)
+H   223.88 CH t=82.4 operator-action target=driftwm why="udevd not running"
+H   223.90 Service (already) started.
+H   224.49 [STOPPD] hubd
+H   284.14 CH t=142.6 STUCK ev=3 step=4 fault=kill target=driftwm why="udevd not running" (a reboot is the only way out; the host restarts the machine)
+H   285.16 [  146.779623] reboot: Power down
+H# vm exit code 0 after 148s, loadavg ['0.20', '0.45', '0.68']
+H# launch 3 skip=4 dur=315 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=315 hub.seed=202 hub.reps=3 hub.skip=4 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   285.31 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   285.32 Booting from ROM...
+H   290.00 c[?7l[2JCH STAGE1 up=3.11
+H   290.05 CH CAND dinit pid1=dinit
+H   290.06 CH SUP-START up=3.17
+H   290.24 [  OK  ] guard
+H   290.41 CH t=0.2 CHAOS start cand=dinit suite=faults seed=202 cpus=2
+H   290.45 [  OK  ] dbus
+H   290.45 [  OK  ] seatd
+H   291.87 [  OK  ] udevd
+H   294.32 [  OK  ] driftwm
+H   295.99 [  OK  ] waybar
+H   296.04 [  OK  ] hubd
+H   296.04 [  OK  ] boot
+H   296.29 CH t=6.1 BOOT-OK up=9.40 ok=1 (seconds since kernel start; waited 5.7)
+H   313.30 CH t=23.1 STEP 5 fKill
+H   314.34 [STOPPD] waybar
+H   315.82 CH t=25.6 EV ev=1 fault=kill target=waybar rec=2.31 ok=1 fixed=0 
+H   315.96 [  OK  ] waybar
+H   318.82 CH t=28.6 STEP 6 fKill
+H   318.85 [STOPPD] hubd
+H   320.50 [  OK  ] hubd
+H   320.76 CH t=30.5 EV ev=2 fault=kill target=hubd rec=1.72 ok=1 fixed=0 
+H   323.76 CH t=33.5 STEP 7 fKill
+H   323.78 dinit: Service seatd terminated due to signal 9
+H   323.88 dinit: Service driftwm process terminated with exit code 1
+H   323.93 [STOPPD] waybar
+H   324.19 [STOPPD] hubd
+H   325.38 [FAILED] hubd
+H   326.15 [FAILED] waybar
+H   383.79 dinit: Service seatd with pid 484 exceeded allowed start time; cancelling.
+H   383.79 dinit: Interrupting start of service seatd with pid 484 (with SIGINT).
+H   383.79 [FAILED] seatd
+H   383.82 CH t=93.6 UNRECOVERED ev=3 fault=kill target=seatd alert=0 why="seatd not running"
+H   383.84 dinit: Service driftwm process terminated with exit code 1
+H   383.90 CH t=93.7 STATUS [[+]     ] boot
+H   383.90 CH t=93.7 STATUS [{+}     ] guard (pid: 101)
+H   383.90 CH t=93.7 STATUS [     {X}] seatd
+H   383.90 CH t=93.7 STATUS [{+}     ] udevd (pid: 104)
+H   383.90 CH t=93.7 STATUS [{+}     ] dbus (pid: 105)
+H   383.90 CH t=93.7 STATUS [{+}     ] driftwm (pid: 714)
+H   383.90 CH t=93.7 STATUS [     {-}] waybar (exit status: 0)
+H   383.91 CH t=93.7 STATUS [     {-}] hubd (exit status: 0)
+H   383.96 CH t=93.7 operator-action target=seatd why="seatd not running"
+H   383.99 Service (already) started.
+H   384.29 dinit: Service driftwm process terminated with exit code 1
+H   384.77 dinit: Service driftwm process terminated with exit code 1
+H   385.27 dinit: Service driftwm process terminated with exit code 1
+H   385.28 dinit: Service driftwm restarting too quickly; stopping.
+H   385.28 [STOPPD] driftwm
+H   444.04 CH t=153.8 STUCK ev=3 step=7 fault=kill target=seatd why="seatd not running" (a reboot is the only way out; the host restarts the machine)
+H   445.05 [  158.192021] reboot: Power down
+H# vm exit code 0 after 160s, loadavg ['0.22', '0.38', '0.61']
+H# launch 4 skip=7 dur=155 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=155 hub.seed=203 hub.reps=3 hub.skip=7 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   445.19 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   449.63 Booting from ROM..c[?7l[2JCH STAGE1 up=2.93
+H   449.70 CH CAND dinit pid1=dinit
+H   449.70 CH SUP-START up=3.00
+H   449.83 [  OK  ] guard
+H   449.99 CH t=0.2 CHAOS start cand=dinit suite=faults seed=203 cpus=2
+H   450.00 [  OK  ] seatd
+H   450.00 [  OK  ] dbus
+H   451.44 [  OK  ] udevd
+H   453.72 [  OK  ] driftwm
+H   455.43 [  OK  ] waybar
+H   455.55 [  OK  ] hubd
+H   455.55 [  OK  ] boot
+H   455.96 CH t=6.2 BOOT-OK up=9.26 ok=1 (seconds since kernel start; waited 5.8)
+H   481.98 CH t=32.2 STEP 8 fKill
+H   481.99 dinit: Service udevd terminated due to signal 9
+H   483.87 CH t=34.1 EV ev=1 fault=kill target=udevd rec=1.68 ok=1 fixed=0 
+H   486.87 CH t=37.1 STEP 9 fKill
+H   486.89 dinit: Service dbus terminated due to signal 9
+H   487.17 CH t=37.4 EV ev=2 fault=kill target=dbus rec=0.09 ok=1 fixed=0 
+H   490.17 CH t=40.4 STEP 10 fKill
+H   490.27 dinit: Service driftwm terminated due to signal 9
+H   490.28 [STOPPD] waybar
+H   490.72 [STOPPD] hubd
+H   491.85 [FAILED] hubd
+H   492.42 [FAILED] waybar
+H   541.99 dinit: Service udevd with pid 458 exceeded allowed start time; cancelling.
+H   541.99 dinit: Interrupting start of service udevd with pid 458 (with SIGINT).
+H   541.99 [FAILED] udevd
+H   546.89 dinit: Service dbus with pid 520 exceeded allowed start time; cancelling.
+H   546.89 dinit: Interrupting start of service dbus with pid 520 (with SIGINT).
+H   546.89 [FAILED] dbus
+H   550.27 dinit: Service driftwm with pid 557 exceeded allowed start time; cancelling.
+H   550.27 dinit: Interrupting start of service driftwm with pid 557 (with SIGINT).
+H   550.27 [FAILED] driftwm
+H   550.33 CH t=100.5 UNRECOVERED ev=3 fault=kill target=driftwm alert=0 why="udevd not running"
+H   550.40 CH t=100.6 STATUS [[+]     ] boot
+H   550.40 CH t=100.6 STATUS [{+}     ] guard (pid: 102)
+H   550.41 CH t=100.6 STATUS [{+}     ] seatd (pid: 103)
+H   550.41 CH t=100.6 STATUS [     {X}] udevd
+H   550.41 CH t=100.6 STATUS [     {X}] dbus
+H   550.41 CH t=100.6 STATUS [     {X}] driftwm
+H   550.42 CH t=100.6 STATUS [     {-}] waybar (exit status: 0)
+H   550.42 CH t=100.6 STATUS [     {-}] hubd (exit status: 0)
+H   550.50 CH t=100.7 operator-action target=driftwm why="udevd not running"
+H   550.55 Service (already) started.
+H   610.79 CH t=161.0 STUCK ev=3 step=10 fault=kill target=driftwm why="udevd not running" (a reboot is the only way out; the host restarts the machine)
+H   611.81 [  165.162586] reboot: Power down
+H# vm exit code 0 after 167s, loadavg ['0.26', '0.35', '0.56']
+H# launch 5 skip=10 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=60 hub.seed=204 hub.reps=3 hub.skip=10 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   611.98 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   611.99 Booting from ROM...
+H   616.63 c[?7l[2JCH STAGE1 up=2.90
+H   616.67 CH CAND dinit pid1=dinit
+H   616.67 CH SUP-START up=2.96
+H   616.81 [  OK  ] guard
+H   616.93 CH t=0.1 CHAOS start cand=dinit suite=faults seed=204 cpus=2
+H   616.94 [  OK  ] dbus
+H   616.95 [  OK  ] seatd
+H   618.40 [  OK  ] udevd
+H   620.68 [  OK  ] driftwm
+H   622.32 [  OK  ] waybar
+H   622.39 [  OK  ] hubd
+H   622.39 [  OK  ] boot
+H   622.64 CH t=5.8 BOOT-OK up=8.93 ok=1 (seconds since kernel start; waited 5.5)
+H   657.66 CH t=40.9 STEP 11 fKill
+H   657.69 [STOPPD] waybar
+H   659.05 CH t=42.2 EV ev=1 fault=kill target=waybar rec=1.18 ok=1 fixed=0 
+H   659.26 [  OK  ] waybar
+H   662.05 CH t=45.2 STEP 12 fKill
+H   662.08 [STOPPD] hubd
+H   663.73 [  OK  ] hubd
+H   663.99 CH t=47.2 EV ev=2 fault=kill target=hubd rec=1.73 ok=1 fixed=0 
+H   666.99 CH t=50.2 STEP 13 fKill
+H   667.02 dinit: Service seatd terminated due to signal 9
+H   667.09 dinit: Service driftwm process terminated with exit code 1
+H   667.10 [STOPPD] waybar
+H   667.49 [STOPPD] hubd
+H   668.21 [FAILED] waybar
+H   668.63 [FAILED] hubd
+H   727.02 dinit: Service seatd with pid 669 exceeded allowed start time; cancelling.
+H   727.02 dinit: Interrupting start of service seatd with pid 669 (with SIGINT).
+H   727.02 [FAILED] seatd
+H   727.06 dinit: Service driftwm process terminated with exit code 1
+H   727.19 CH t=110.4 UNRECOVERED ev=3 fault=kill target=seatd alert=0 why="seatd not running"
+H   727.26 CH t=110.5 STATUS [[+]     ] boot
+H   727.26 CH t=110.5 STATUS [{+}     ] guard (pid: 101)
+H   727.26 CH t=110.5 STATUS [     {X}] seatd
+H   727.26 CH t=110.5 STATUS [{+}     ] udevd (pid: 103)
+H   727.26 CH t=110.5 STATUS [{+}     ] dbus (pid: 104)
+H   727.26 CH t=110.5 STATUS [{+}     ] driftwm (pid: 899)
+H   727.26 CH t=110.5 STATUS [     {X}] waybar
+H   727.26 CH t=110.5 STATUS [     {X}] hubd
+H   727.29 CH t=110.5 operator-action target=seatd why="seatd not running"
+H   727.32 Service (already) started.
+H   727.64 dinit: Service driftwm process terminated with exit code 1
+H   728.04 dinit: Service driftwm process terminated with exit code 1
+H   728.61 dinit: Service driftwm process terminated with exit code 1
+H   728.61 dinit: Service driftwm restarting too quickly; stopping.
+H   728.61 [STOPPD] driftwm
+H   787.47 CH t=170.7 STUCK ev=3 step=13 fault=kill target=seatd why="seatd not running" (a reboot is the only way out; the host restarts the machine)
+H   788.48 [  174.810773] reboot: Power down
+H# vm exit code 0 after 177s, loadavg ['0.29', '0.32', '0.51']
+H# launch 6 skip=13 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=60 hub.seed=205 hub.reps=3 hub.skip=13 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   788.63 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   793.27 Booting from ROM..c[?7l[2JCH STAGE1 up=3.03
+H   793.32 CH CAND dinit pid1=dinit
+H   793.33 CH SUP-START up=3.09
+H   793.47 CH t=0.0 CHAOS start cand=dinit suite=faults seed=205 cpus=2
+H   793.52 [  OK  ] guard
+H   793.62 [  OK  ] dbus
+H   793.63 [  OK  ] seatd
+H   795.09 [  OK  ] udevd
+H   797.33 [  OK  ] driftwm
+H   798.99 [  OK  ] waybar
+H   799.10 [  OK  ] hubd
+H   799.10 [  OK  ] boot
+H   799.46 CH t=6.0 BOOT-OK up=9.23 ok=1 (seconds since kernel start; waited 5.8)
+H   843.49 CH t=50.1 STEP 14 fKill
+H   843.51 dinit: Service udevd terminated due to signal 9
+H   845.34 CH t=51.9 EV ev=1 fault=kill target=udevd rec=1.64 ok=1 fixed=0 
+H   848.34 CH t=54.9 STEP 15 fKill
+H   848.35 dinit: Service dbus terminated due to signal 9
+H   848.62 CH t=55.2 EV ev=2 fault=kill target=dbus rec=0.07 ok=1 fixed=0 
+H   851.62 CH t=58.2 STEP 16 fKill
+H   851.66 dinit: Service driftwm terminated due to signal 9
+H   851.68 [STOPPD] waybar
+H   852.41 [STOPPD] hubd
+H   853.56 [FAILED] hubd
+H   853.78 [FAILED] waybar
+H   903.51 dinit: Service udevd with pid 647 exceeded allowed start time; cancelling.
+H   903.51 dinit: Interrupting start of service udevd with pid 647 (with SIGINT).
+H   903.51 [FAILED] udevd
+H   908.35 dinit: Service dbus with pid 701 exceeded allowed start time; cancelling.
+H   908.36 dinit: Interrupting start of service dbus with pid 701 (with SIGINT).
+H   908.36 [FAILED] dbus
+H   911.65 CH t=118.2 UNRECOVERED ev=3 fault=kill target=driftwm alert=0 why="udevd not running"
+H   911.67 dinit: Service driftwm with pid 747 exceeded allowed start time; cancelling.
+H   911.67 dinit: Interrupting start of service driftwm with pid 747 (with SIGINT).
+H   911.67 [FAILED] driftwm
+H   911.73 CH t=118.3 STATUS [[+]     ] boot
+H   911.74 CH t=118.3 STATUS [{+}     ] guard (pid: 103)
+H   911.74 CH t=118.3 STATUS [{+}     ] seatd (pid: 104)
+H   911.74 CH t=118.3 STATUS [     {X}] udevd
+H   911.74 CH t=118.3 STATUS [     {X}] dbus
+H   911.74 CH t=118.3 STATUS [   >>{ }] driftwm (pid: 747)
+H   911.74 CH t=118.3 STATUS [     {-}] waybar (exit status: 0)
+H   911.74 CH t=118.3 STATUS [     {X}] hubd
+H   911.78 CH t=118.4 operator-action target=driftwm why="udevd not running"
+H   911.81 Service (already) started.
+H   972.03 CH t=178.6 STUCK ev=3 step=16 fault=kill target=driftwm why="udevd not running" (a reboot is the only way out; the host restarts the machine)
+H   973.04 [  182.845945] reboot: Power down
+H# vm exit code 0 after 185s, loadavg ['0.18', '0.31', '0.48']
+H# launch 7 skip=16 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=60 hub.seed=206 hub.reps=3 hub.skip=16 hub.trial=healthy hub.preflag= hub.cand=dinit
+H   973.18 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   977.78 Booting from ROM..c[?7l[2JCH STAGE1 up=2.54
+H   977.82 CH CAND dinit pid1=dinit
+H   977.83 CH SUP-START up=2.60
+H   977.96 [  OK  ] guard
+H   978.06 CH t=0.1 CHAOS start cand=dinit suite=faults seed=206 cpus=2
+H   978.08 [  OK  ] dbus
+H   978.09 [  OK  ] seatd
+H   979.57 [  OK  ] udevd
+H   981.83 [  OK  ] driftwm
+H   983.49 [  OK  ] waybar
+H   983.52 [  OK  ] hubd
+H   983.52 [  OK  ] boot
+H   983.82 CH t=5.9 BOOT-OK up=8.59 ok=1 (seconds since kernel start; waited 5.6)
+H  1036.86 CH t=58.9 STEP 17 fKill
+H  1036.90 [STOPPD] waybar
+H  1038.27 CH t=60.3 EV ev=1 fault=kill target=waybar rec=1.20 ok=1 fixed=0 
+H  1038.49 [  OK  ] waybar
+H  1041.27 CH t=63.3 STEP 18 fKill
+H  1041.29 [STOPPD] hubd
+H  1043.00 [  OK  ] hubd
+H  1043.24 CH t=65.3 EV ev=2 fault=kill target=hubd rec=1.76 ok=1 fixed=0 
+H  1046.24 CH t=68.3 STEP 19 fHang
+H  1106.36 CH t=128.4 UNRECOVERED ev=3 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1106.42 CH t=128.5 STATUS [[+]     ] boot
+H  1106.42 CH t=128.5 STATUS [{+}     ] guard (pid: 102)
+H  1106.42 CH t=128.5 STATUS [{+}     ] seatd (pid: 103)
+H  1106.42 CH t=128.5 STATUS [{+}     ] udevd (pid: 104)
+H  1106.43 CH t=128.5 STATUS [{+}     ] dbus (pid: 105)
+H  1106.43 CH t=128.5 STATUS [{+}     ] driftwm (pid: 130)
+H  1106.43 CH t=128.5 STATUS [{+}     ] waybar (pid: 737)
+H  1106.43 CH t=128.5 STATUS [{+}     ] hubd (pid: 793)
+H  1106.45 CH t=128.5 operator-action target=driftwm why="driftwm stopped"
+H  1106.51 dinit: Service driftwm terminated due to signal 9
+H  1106.51 Service (already) started.
+H  1106.52 [STOPPD] waybar
+H  1107.24 [STOPPD] hubd
+H  1108.69 [FAILED] waybar
+H  1109.44 [FAILED] hubd
+H  1166.51 dinit: Service driftwm with pid 1509 exceeded allowed start time; cancelling.
+H  1166.51 dinit: Interrupting start of service driftwm with pid 1509 (with SIGINT).
+H  1166.51 [FAILED] driftwm
+H  1166.68 CH t=188.8 STUCK ev=3 step=19 fault=hang-stop target=driftwm why="driftwm not running" (a reboot is the only way out; the host restarts the machine)
+H  1167.69 [  192.449022] reboot: Power down
+H# vm exit code 0 after 195s, loadavg ['0.60', '0.42', '0.48']
+H# launch 8 skip=19 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=60 hub.seed=207 hub.reps=3 hub.skip=19 hub.trial=healthy hub.preflag= hub.cand=dinit
+H  1167.82 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1172.29 Booting from ROM..c[?7l[2JCH STAGE1 up=2.42
+H  1172.34 CH CAND dinit pid1=dinit
+H  1172.34 CH SUP-START up=2.48
+H  1172.50 [  OK  ] guard
+H  1172.68 [  OK  ] seatd
+H  1172.68 [  OK  ] dbus
+H  1172.70 CH t=0.1 CHAOS start cand=dinit suite=faults seed=207 cpus=2
+H  1174.15 [  OK  ] udevd
+H  1176.40 [  OK  ] driftwm
+H  1178.03 [  OK  ] waybar
+H  1178.13 [  OK  ] hubd
+H  1178.13 [  OK  ] boot
+H  1178.55 CH t=6.0 BOOT-OK up=8.68 ok=1 (seconds since kernel start; waited 5.6)
+H  1240.59 CH t=68.0 STEP 20 fHang
+H  1240.84 CH t=68.3 EV ev=1 fault=hang-spin target=driftwm rec=0.04 ok=1 fixed=0 
+H  1243.84 CH t=71.3 STEP 21 fHang
+H  1304.01 CH t=131.4 UNRECOVERED ev=2 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1304.06 CH t=131.5 STATUS [[+]     ] boot
+H  1304.06 CH t=131.5 STATUS [{+}     ] guard (pid: 99)
+H  1304.06 CH t=131.5 STATUS [{+}     ] seatd (pid: 101)
+H  1304.06 CH t=131.5 STATUS [{+}     ] udevd (pid: 102)
+H  1304.06 CH t=131.5 STATUS [{+}     ] dbus (pid: 103)
+H  1304.07 CH t=131.5 STATUS [{+}     ] driftwm (pid: 129)
+H  1304.07 CH t=131.5 STATUS [{+}     ] waybar (pid: 143)
+H  1304.07 CH t=131.5 STATUS [{+}     ] hubd (pid: 142)
+H  1304.10 CH t=131.5 operator-action target=driftwm why="driftwm stopped"
+H  1304.13 Service (already) started.
+H  1304.16 dinit: Service driftwm terminated due to signal 9
+H  1304.17 [STOPPD] waybar
+H  1304.99 [STOPPD] hubd
+H  1306.28 [FAILED] waybar
+H  1306.62 [  OK  ] hubd
+H  1364.16 dinit: Service driftwm with pid 1527 exceeded allowed start time; cancelling.
+H  1364.17 dinit: Interrupting start of service driftwm with pid 1527 (with SIGINT).
+H  1364.17 [FAILED] driftwm
+H  1364.31 CH t=191.7 STUCK ev=2 step=21 fault=hang-stop target=driftwm why="driftwm not running" (a reboot is the only way out; the host restarts the machine)
+H  1364.74 [STOPPD] hubd
+H  1365.32 [  195.445167] reboot: Power down
+H# vm exit code 0 after 198s, loadavg ['0.28', '0.37', '0.44']
+H# end wall=1365.3s launches=8 suite_done=False

@@ -1,0 +1,9 @@
+#!/bin/sh
+# hubd started the image's way (follow-driftwm --once, FOLLOW_GAVEUP=run; see s6rc-par-wd4c). With hub.hubdplain=1 on the kernel command
+# line it is started the plain way instead (no --once: hubd then follows the compositor and ends when it goes away), to test a follower hubd.
+exec 2>&1
+if grep -q 'hub.hubdplain=1' /proc/cmdline; then
+  exec follow-driftwm policy hubd -wait /run/dw/wayland-1 -notify 3
+fi
+export FOLLOW_GAVEUP=run
+exec follow-driftwm --once policy hubd -wait /run/dw/wayland-1 -notify 3

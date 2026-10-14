@@ -1,0 +1,28 @@
+H# start 2026-10-11 23:04:23 cand=dinit-ms suite=trial cpus_seen=4 loadavg_at_start=['0.43', '0.43', '0.28']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-ms.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=132 hub.reps=5 hub.skip=0 hub.trial=hang hub.preflag= hub.cand=dinit
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.53 Booting from ROM..c[?7l[2JCH STAGE1 up=2.93
+H     4.59 CH CAND dinit pid1=dinit
+H     4.60 CH SUP-START up=3.00
+H     4.70 [  OK  ] guard
+H     4.82 CH t=0.1 CHAOS start cand=dinit suite=trial seed=132 cpus=2
+H     4.83 [  OK  ] seatd
+H     4.83 [  OK  ] dbus
+H     6.28 [  OK  ] udevd
+H     8.48 [  OK  ] driftwm
+H    10.22 [  OK  ] waybar
+H    10.30 [  OK  ] hubd
+H    10.30 [  OK  ] boot
+H    12.64 CH t=7.9 TRIAL-INJECT driftwm stopped (wedged)
+H    26.02 CH t=21.3 TRIAL CONFIRMED scenario=hang after=21.2s true_state="driftwm stopped"
+H    26.05 CH t=21.3 STATUS [[+]     ] boot
+H    26.05 CH t=21.3 STATUS [{+}     ] guard (pid: 101)
+H    26.05 CH t=21.3 STATUS [{+}     ] seatd (pid: 102)
+H    26.05 CH t=21.3 STATUS [{+}     ] udevd (pid: 103)
+H    26.05 CH t=21.3 STATUS [{+}     ] dbus (pid: 104)
+H    26.05 CH t=21.3 STATUS [{+}     ] driftwm (pid: 137)
+H    26.05 CH t=21.3 STATUS [{+}     ] waybar (pid: 162)
+H    26.05 CH t=21.3 STATUS [{+}     ] hubd (pid: 161)
+H# trial finished
+H# vm exit code -9 after 46s, loadavg ['0.29', '0.40', '0.27']
+H# end wall=46.1s launches=1 suite_done=True

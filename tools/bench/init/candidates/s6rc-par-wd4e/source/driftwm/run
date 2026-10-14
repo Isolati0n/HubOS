@@ -1,0 +1,13 @@
+#!/bin/sh
+exec 2>&1
+# follow-up 9, Part B: a copy of the first lines of the image's driftwm run (etc/s6/sv/driftwm/run lines 11 to 14), extended: started
+# by hand (a plain s6-svc -u) after the restart-limit stop, forget the stop marker AND the helper's history and alert.
+if [ -e /run/hub/driftwm-gave-up ] || [ -e /run/hubos/alerts/driftwm ]; then
+  rm -f /run/hub/driftwm-gave-up /run/hubos/alerts/driftwm /run/hubos/restarts/driftwm
+  echo "driftwm: started by hand after the crash-loop stop; marker, history and alert cleared"
+fi
+# Parity with the image's driftwm run (etc/s6/sv/driftwm/run, the line "rm -f /run/dw/wayland-1 /run/dw/wayland-1.lock" before the exec): the old
+# socket file of the previous compositor is removed at every start, so a follower cannot see a stale socket and start before the new
+# compositor listens (follow-up 9: without this line waybar started too early after a compositor restart, failed, and was counted).
+rm -f /run/dw/wayland-1 /run/dw/wayland-1.lock
+exec policy driftwm --backend udev -mem 100 -wait /run/seatd.sock,/run/udev/ready -notify 3

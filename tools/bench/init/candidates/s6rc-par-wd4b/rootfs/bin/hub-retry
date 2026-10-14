@@ -1,0 +1,55 @@
+#!/bin/sh
+# hub-retry SERVICE : the person's command (TEST HOOK, follow-up 7, Part C; the product's command is not designed).
+# Follow-up 6 version: remove the alert, clear the death tally, s6-svc -u. Follow-up 7 change: the same for every DEPENDENT of SERVICE
+# that has its own restart-limit alert, in dependency order, each started only after the one before it is up and ready. The
+# dependency graph is read from the compiled s6-rc database with s6-rc-db (SOURCE: s6-rc 0.7.0.0 doc/s6-rc-db.html: "dependencies",
+# "all-dependencies", -d for the reverse direction). A service whose own parent (a dependency) is still stopped by the limit is not
+# touched: the command says so and stops (no loop).
+svc=$1; alerts=/run/hubos/alerts; db=/etc/s6-rc/compiled
+[ -n "$svc" ] || { echo "usage: hub-retry SERVICE" >&2; exit 2; }
+s6-rc-db -c $db type "$svc" >/dev/null 2>&1 || { echo "hub-retry: '$svc' is not a service I know"; exit 2; }
+for p in $(s6-rc-db -c $db -u all-dependencies "$svc"); do
+  [ "$p" = "$svc" ] && continue
+  if [ -e "$alerts/$p" ]; then
+    echo "hub-retry: $svc waits for $p, which is stopped: $(cat "$alerts/$p"). Nothing done. Run: hub-retry $p"
+    exit 1
+  fi
+done
+todo=""
+[ -e "$alerts/$svc" ] && todo=$svc
+for d in $(s6-rc-db -c $db -d all-dependencies "$svc"); do
+  [ "$d" = "$svc" ] && continue
+  [ -e "$alerts/$d" ] && todo="$todo $d"
+done
+if [ -z "$todo" ]; then
+  echo "hub-retry: nothing to retry: $svc has no alert and none of its dependents has one. State: $(s6-svstat /run/service/$svc 2>&1)"
+  exit 0
+fi
+pending=$todo; started=""; pass=0
+while [ -n "$pending" ] && [ $pass -lt 10 ]; do
+  pass=$((pass + 1)); rest=""
+  for s in $pending; do
+    ready=1
+    for p in $(s6-rc-db -c $db -u dependencies "$s"); do
+      [ "$p" = "$s" ] && continue
+      case " $pending " in *" $p "*) ready=0 ;; esac
+    done
+    if [ $ready = 1 ]; then
+      echo "hub-retry: starting $s ($(cat "$alerts/$s" 2>/dev/null))"
+      rm -f "$alerts/$s"
+      s6-svdt-clear "/run/service/$s"
+      s6-svc -u "/run/service/$s"
+      s6-svwait -U -t 20000 "/run/service/$s" >/dev/null 2>&1
+      started="$started $s"
+    else
+      rest="$rest $s"
+    fi
+  done
+  pending=$rest
+done
+[ -z "$pending" ] || { echo "hub-retry: could not order these services: $pending"; exit 1; }
+rc=0
+for s in $started; do
+  if [ "$(s6-svstat -o up,ready /run/service/$s)" = "true true" ]; then echo "hub-retry: $s is up"; else echo "hub-retry: $s is still not healthy after the retry: $(s6-svstat /run/service/$s)"; rc=1; fi
+done
+exit $rc

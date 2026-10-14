@@ -1,0 +1,2 @@
+#!/bin/sh
+for s in seatd udevd dbus driftwm waybar hubd; do sv check /run/service/$s >/dev/null || exit 1; done

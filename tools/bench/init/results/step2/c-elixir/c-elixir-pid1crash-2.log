@@ -1,0 +1,53 @@
+H# start 2026-10-10 21:19:59 cand=c-elixir suite=pid1crash cpus_seen=4 loadavg_at_start=['0.97', '0.80', '0.73']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     8.57 c[?7l[2JCH STAGE1 up=6.57
+H     8.63 CH CAND c-elixir pid1=s6-svscan + s6-rc + brain(elixir)
+H     8.68 CH SUP-START up=6.68
+H     8.86 CH t=0.1 CHAOS start cand=c-elixir suite=pid1crash seed=112 cpus=2
+H    14.31 CH S6RC-UP up=12.31
+H    14.83 CH t=6.1 BOOT-OK up=12.83 ok=1 (seconds since kernel start; waited 5.8)
+H    14.94 CH t=6.2 SAMPLE zombies=0 nproc=101 init_side_fds=159 init_side_rss_kb=29688 memavail_kb=590032 init_side_cpu_ticks=274
+H    19.83 CH t=11.1 INJECT pid1-segv
+H    19.86 [   17.901987] s6-svscan[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffcf888e990 error 15 likely on CPU 1 (core 1, socket 0)
+H    19.86 [   17.903742] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    19.86 [   17.905690] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    19.86 [   17.906109] CPU: 1 PID: 1 Comm: s6-svscan Not tainted 6.8.0-146-generic #146-Ubuntu
+H    19.86 [   17.906330] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    19.86 [   17.906330] Call Trace:
+H    19.86 [   17.906330]  <TASK>
+H    19.86 [   17.906330]  dump_stack_lvl+0x27/0xa0
+H    19.86 [   17.906330]  dump_stack+0x10/0x20
+H    19.86 [   17.906330]  panic+0x366/0x3c0
+H    19.86 [   17.906330]  do_exit+0x513/0x530
+H    19.86 [   17.906330]  do_group_exit+0x35/0x90
+H    19.86 [   17.906330]  get_signal+0x96e/0x9b0
+H    19.86 [   17.906330]  ? pick_next_task+0x5b/0xbd0
+H    19.86 [   17.906330]  arch_do_signal_or_restart+0x42/0x210
+H    19.86 [   17.906330]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    19.86 [   17.906330]  irqentry_exit+0x43/0x50
+H    19.86 [   17.906330]  exc_page_fault+0x94/0x1b0
+H    19.86 [   17.906330]  asm_exc_page_fault+0x27/0x30
+H    19.86 [   17.906330] RIP: 0033:0xfffffffffffffffe
+H    19.86 [   17.906330] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    19.86 [   17.906330] RSP: 002b:00007ffcf888e990 EFLAGS: 00000202
+H    19.86 [   17.906330] RAX: 000000000000010f RBX: 00007ffcf88e3bb0 RCX: 00000000004267ed
+H    19.86 [   17.906330] RDX: 00007ffcf888e9b0 RSI: 0000000000000002 RDI: 00007ffcf88e3bb0
+H    19.86 [   17.906330] RBP: 00007ffcf888e9e0 R08: 0000000000000008 R09: 000000000040d440
+H    19.86 [   17.906330] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000002
+H    19.86 [   17.906330] R13: 00007ffcf888e9b0 R14: 00007ffcf888e9f0 R15: 00007ffcf888ea00
+H    19.86 [   17.906330]  </TASK>
+H    19.87 [   17.906330] Kernel Offset: 0x16a00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    19.87 [   17.906330] Rebooting in 5 seconds..
+H    25.06 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    25.09 Booting from ROM...
+H    33.77 c[?7l[2JCH STAGE1 up=6.53
+H    33.85 CH CAND c-elixir pid1=s6-svscan + s6-rc + brain(elixir)
+H    33.91 CH SUP-START up=6.68
+H    34.06 CH t=0.1 CHAOS start cand=c-elixir suite=pid1crash seed=112 cpus=2
+H    41.02 CH S6RC-UP up=13.79
+H    41.49 CH t=7.5 BOOT-OK up=14.26 ok=1 (seconds since kernel start; waited 7.2)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 41s, loadavg ['0.89', '0.81', '0.73']
+H# end wall=41.5s launches=1 suite_done=True

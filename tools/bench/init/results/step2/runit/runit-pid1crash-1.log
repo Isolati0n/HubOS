@@ -1,0 +1,57 @@
+H# start 2026-10-10 17:49:33 cand=runit suite=pid1crash cpus_seen=4 loadavg_at_start=['0.33', '0.43', '0.44']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.70 Booting from ROM..c[?7l[2JCH STAGE1 up=3.08
+H     4.77 CH CAND runit pid1=runit stage2=runsvdir
+H     4.84 CH SUP-START up=3.22
+H     4.89 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.90 - runit: enter stage: /etc/runit/1
+H     4.91 - runit: leave stage: /etc/runit/1
+H     4.91 - runit: enter stage: /etc/runit/2
+H     4.94 CH t=0.1 CHAOS start cand=runit suite=pid1crash seed=111 cpus=2
+H    11.25 CH t=6.4 BOOT-OK up=9.63 ok=1 (seconds since kernel start; waited 6.1)
+H    11.30 CH t=6.4 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13124 memavail_kb=753448 init_side_cpu_ticks=246
+H    16.25 CH t=11.4 INJECT pid1-segv
+H    16.29 [   14.701660] runit[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffd26adf0d8 error 15 likely on CPU 1 (core 1, socket 0)
+H    16.29 [   14.704672] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.29 [   14.707694] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    16.29 [   14.708200] CPU: 1 PID: 1 Comm: runit Not tainted 6.8.0-146-generic #146-Ubuntu
+H    16.29 [   14.708200] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    16.29 [   14.708200] Call Trace:
+H    16.29 [   14.708200]  <TASK>
+H    16.29 [   14.708200]  dump_stack_lvl+0x27/0xa0
+H    16.29 [   14.708200]  dump_stack+0x10/0x20
+H    16.29 [   14.708200]  panic+0x366/0x3c0
+H    16.29 [   14.708200]  do_exit+0x513/0x530
+H    16.29 [   14.708200]  do_group_exit+0x35/0x90
+H    16.30 [   14.708200]  get_signal+0x96e/0x9b0
+H    16.30 [   14.708200]  ? force_sig_info_to_task+0x128/0x1c0
+H    16.30 [   14.708200]  arch_do_signal_or_restart+0x42/0x210
+H    16.30 [   14.708200]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    16.30 [   14.708200]  irqentry_exit+0x43/0x50
+H    16.30 [   14.708200]  exc_page_fault+0x94/0x1b0
+H    16.30 [   14.708200]  asm_exc_page_fault+0x27/0x30
+H    16.30 [   14.708200] RIP: 0033:0xfffffffffffffffe
+H    16.30 [   14.708200] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.30 [   14.708200] RSP: 002b:00007ffd26adf0d8 EFLAGS: 00000202
+H    16.30 [   14.708200] RAX: 00000000000000db RBX: 00007ffd26adf103 RCX: 00007b792927a4c4
+H    16.30 [   14.708200] RDX: 00000000000036b0 RSI: 0000000000000001 RDI: 00007ffd26adf108
+H    16.30 [   14.708200] RBP: 00007ffd26adf280 R08: 0000000000000002 R09: 00007b7929378380
+H    16.30 [   14.708200] R10: 0000000000000008 R11: 0000000000000202 R12: 0000000000000069
+H    16.30 [   14.708200] R13: 00007ffd26adf104 R14: 00005a2641b72190 R15: 00007ffd26adf1b0
+H    16.30 [   14.708200]  </TASK>
+H    16.30 [   14.708200] Kernel Offset: 0x17600000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    16.30 [   14.708200] Rebooting in 5 seconds..
+H    21.54 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    26.08 Booting from ROM..c[?7l[2JCH STAGE1 up=3.15
+H    26.13 CH CAND runit pid1=runit stage2=runsvdir
+H    26.19 CH SUP-START up=3.27
+H    26.25 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H    26.26 - runit: enter stage: /etc/runit/1
+H    26.27 - runit: leave stage: /etc/runit/1
+H    26.28 - runit: enter stage: /etc/runit/2
+H    26.31 CH t=0.1 CHAOS start cand=runit suite=pid1crash seed=111 cpus=2
+H    32.09 CH t=5.8 BOOT-OK up=9.17 ok=1 (seconds since kernel start; waited 5.6)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 32s, loadavg ['0.58', '0.48', '0.46']
+H# end wall=32.1s launches=1 suite_done=True

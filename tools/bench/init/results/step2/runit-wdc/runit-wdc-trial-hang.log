@@ -1,0 +1,62 @@
+H# start 2026-10-12 17:40:58 cand=runit-wdc suite=trial cpus_seen=4 loadavg_at_start=['0.79', '0.66', '0.59']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-wdc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=132 hub.reps=5 hub.skip=0 hub.trial=hang hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir hub.watcher=watcher hub.wmode=compositor
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.07 Booting from ROM..c[?7l[2JCH STAGE1 up=3.16
+H     5.13 CH CAND runit pid1=runit stage2=runsvdir
+H     5.19 CH SUP-START up=3.27
+H     5.25 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     5.26 - runit: enter stage: /etc/runit/1
+H     5.27 - runit: leave stage: /etc/runit/1
+H     5.27 - runit: enter stage: /etc/runit/2
+H     5.33 CH t=0.1 CHAOS start cand=runit suite=trial seed=132 cpus=2
+H     6.41 watcher: started pid=126 mode=compositor (TEST STAND-IN, not the product watcher)
+H     7.49 watcher: round 1 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H     8.42 watcher: round 2 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H     9.43 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    10.45 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    11.44 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    12.42 watcher: round 6 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    13.42 watcher: round 7 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    14.33 CH t=9.1 TRIAL-INJECT driftwm stopped (wedged)
+H    15.43 watcher: round 8 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H    16.44 watcher: round 9 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H    17.45 watcher: round 10 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H    18.46 watcher: round 11 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H    19.47 watcher: round 12 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H    20.48 watcher: round 13 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H    21.49 watcher: round 14 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.1s
+H    22.49 watcher: round 15 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H    23.51 watcher: round 16 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.1s
+H    24.52 watcher: round 17 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.1s
+H    25.08 CH t=19.8 TRIAL CONFIRMED scenario=hang after=19.7s true_state="driftwm stopped"
+H    25.40 CH t=20.1 STATUS run: /run/service/dbus/: (pid 137) 19s; run: log: (pid 133) 19s
+H    25.40 CH t=20.1 STATUS run: /run/service/driftwm/: (pid 138) 19s; run: log: (pid 134) 19s
+H    25.40 CH t=20.1 STATUS run: /run/service/guard/: (pid 129) 19s
+H    25.41 CH t=20.1 STATUS run: /run/service/hubd/: (pid 130) 19s; run: log: (pid 127) 19s
+H    25.41 CH t=20.1 STATUS run: /run/service/seatd/: (pid 125) 19s; run: log: (pid 122) 19s
+H    25.41 CH t=20.1 STATUS run: /run/service/udevd/: (pid 124) 19s; run: log: (pid 121) 19s
+H    25.41 CH t=20.2 STATUS run: /run/service/watcher/: (pid 126) 20s; run: log: (pid 120) 20s
+H    25.41 CH t=20.2 STATUS run: /run/service/waybar/: (pid 144) 20s; run: log: (pid 139) 20s
+H    25.53 watcher: round 18 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.1s
+H    26.54 watcher: round 19 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.1s
+H    27.55 watcher: round 20 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.1s
+H    28.56 watcher: round 21 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.1s
+H    29.58 watcher: round 22 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H    30.58 watcher: round 23 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H    31.59 watcher: round 24 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H    32.61 watcher: round 25 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H    33.62 watcher: round 26 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.2s
+H    34.62 watcher: round 27 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H    35.64 watcher: round 28 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.2s
+H    36.64 watcher: round 29 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.2s
+H    37.66 watcher: round 30 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.2s
+H    38.67 watcher: round 31 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.2s
+H    39.68 watcher: round 32 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H    40.69 watcher: round 33 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H    41.71 watcher: round 34 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.3s
+H    42.72 watcher: round 35 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H    43.73 watcher: round 36 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H    44.74 watcher: round 37 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.3s
+H# trial finished
+H# vm exit code -9 after 46s, loadavg ['0.87', '0.71', '0.61']
+H# end wall=45.8s launches=1 suite_done=True

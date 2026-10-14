@@ -1,0 +1,36 @@
+H# start 2026-10-10 17:47:35 cand=runit suite=boot cpus_seen=4 loadavg_at_start=['0.57', '0.45', '0.45']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     5.54 c[?7l[2JCH STAGE1 up=3.58
+H     5.64 CH CAND runit pid1=runit stage2=runsvdir
+H     5.73 CH SUP-START up=3.77
+H     5.83 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     5.84 - runit: enter stage: /etc/runit/1
+H     5.86 - runit: leave stage: /etc/runit/1
+H     5.87 - runit: enter stage: /etc/runit/2
+H     5.88 CH t=0.1 CHAOS start cand=runit suite=boot seed=102 cpus=2
+H    12.02 CH t=6.2 BOOT-OK up=10.06 ok=1 (seconds since kernel start; waited 5.9)
+H    12.17 CH t=6.4 SAMPLE zombies=0 nproc=87 init_side_fds=108 init_side_rss_kb=13228 memavail_kb=759760 init_side_cpu_ticks=286
+H    22.27 CH t=16.5 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13228 memavail_kb=759288 init_side_cpu_ticks=287
+H    32.33 CH t=26.5 SAMPLE zombies=0 nproc=88 init_side_fds=108 init_side_rss_kb=13228 memavail_kb=758532 init_side_cpu_ticks=287
+H    42.39 CH t=36.6 SAMPLE zombies=0 nproc=85 init_side_fds=108 init_side_rss_kb=13228 memavail_kb=758280 init_side_cpu_ticks=287
+H    52.47 CH t=46.7 SAMPLE zombies=1 nproc=92 init_side_fds=108 init_side_rss_kb=13228 memavail_kb=756520 init_side_cpu_ticks=288
+H    57.12 CH t=51.3 IDLE-CPU window=30s whole_vm_busy_ticks=540 whole_vm_idle_ticks=5323 init_side_ticks=1 (1 tick = 10 ms, 2 vCPUs)
+H    57.15 CH t=51.4 MEM pid=1 comm=runit rss_kb=1432 pss_kb=228
+H    57.16 CH t=51.4 MEM pid=108 comm=runsv rss_kb=1452 pss_kb=193
+H    57.16 CH t=51.4 MEM pid=109 comm=runsv rss_kb=1456 pss_kb=200
+H    57.17 CH t=51.4 MEM pid=110 comm=runsv rss_kb=1456 pss_kb=197
+H    57.17 CH t=51.4 MEM pid=111 comm=runsv rss_kb=1556 pss_kb=236
+H    57.18 CH t=51.4 MEM pid=112 comm=runsv rss_kb=1452 pss_kb=192
+H    57.18 CH t=51.4 MEM pid=113 comm=runsv rss_kb=1460 pss_kb=192
+H    57.19 CH t=51.4 MEM pid=114 comm=runsv rss_kb=1476 pss_kb=203
+H    57.19 CH t=51.4 MEM pid=107 comm=runsvdir rss_kb=1488 pss_kb=239
+H    57.24 CH t=51.4 POLICY driftwm oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    57.29 CH t=51.5 POLICY hubd oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    57.33 CH t=51.5 POLICY waybar oom_score_adj=0 nice=0 cgroup=0::/
+H    57.35 CH t=51.6 LISTEN tcp_listening_sockets=0 epmd_running=false
+H    57.35 CH t=51.6 SUITE-DONE
+H    59.36 [   57.443740] reboot: Power down
+H# vm exit code 0 after 59s, loadavg ['0.60', '0.49', '0.46']
+H# end wall=59.4s launches=1 suite_done=True

@@ -1,0 +1,66 @@
+H# start 2026-10-12 16:35:24 cand=s6rc-par-wd suite=pid1crash cpus_seen=4 loadavg_at_start=['0.50', '0.57', '0.53']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6rc-par-wd.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1crash hub.dur=600 hub.seed=111 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=s6rc hub.sup=s6-supervise hub.watcher=watcher hub.wmode=both
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.18 Booting from ROM...
+H     8.00 c[?7l[2JCH STAGE1 up=6.23
+H     8.07 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     8.10 CH SUP-START up=6.34
+H     8.25 CH t=0.1 CHAOS start cand=s6rc suite=pid1crash seed=111 cpus=2
+H    15.30 CH S6RC-UP up=13.53
+H    15.47 watcher: started pid=271 mode=both (TEST STAND-IN, not the product watcher)
+H    15.47 watcher: started pid=271 mode=both (TEST STAND-IN, not the product watcher)
+H    15.77 CH t=7.6 BOOT-OK up=14.00 ok=1 (seconds since kernel start; waited 7.3)
+H    16.52 watcher: round 1 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    16.52 watcher: round 1 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    17.48 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    17.49 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    18.49 watcher: round 3 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    18.49 watcher: round 3 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    19.49 watcher: round 4 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    19.49 watcher: round 4 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    20.48 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    20.49 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    20.78 CH t=12.6 INJECT pid1-segv
+H    20.81 [   19.101894] s6-svscan[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffd53c0b420 error 15 likely on CPU 0 (core 0, socket 0)
+H    20.81 [   19.105404] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    20.82 [   19.108467] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    20.82 [   19.108731] CPU: 0 PID: 1 Comm: s6-svscan Not tainted 6.8.0-146-generic #146-Ubuntu
+H    20.82 [   19.108731] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    20.82 [   19.108731] Call Trace:
+H    20.82 [   19.108731]  <TASK>
+H    20.82 [   19.108731]  dump_stack_lvl+0x27/0xa0
+H    20.82 [   19.108731]  dump_stack+0x10/0x20
+H    20.82 [   19.108731]  panic+0x366/0x3c0
+H    20.82 [   19.108731]  do_exit+0x513/0x530
+H    20.82 [   19.108731]  do_group_exit+0x35/0x90
+H    20.82 [   19.108731]  get_signal+0x96e/0x9b0
+H    20.82 [   19.108731]  ? native_load_gs_index.part.0+0x20/0x50
+H    20.82 [   19.108731]  arch_do_signal_or_restart+0x42/0x210
+H    20.82 [   19.108731]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    20.82 [   19.108731]  irqentry_exit+0x43/0x50
+H    20.82 [   19.108731]  exc_page_fault+0x94/0x1b0
+H    20.82 [   19.108731]  asm_exc_page_fault+0x27/0x30
+H    20.82 [   19.108731] RIP: 0033:0xfffffffffffffffe
+H    20.82 [   19.108731] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    20.82 [   19.108731] RSP: 002b:00007ffd53c0b420 EFLAGS: 00000202
+H    20.82 [   19.108731] RAX: 000000000000010f RBX: 00007ffd53c60640 RCX: 00000000004267ed
+H    20.82 [   19.108731] RDX: 00007ffd53c0b440 RSI: 0000000000000002 RDI: 00007ffd53c60640
+H    20.82 [   19.108731] RBP: 00007ffd53c0b470 R08: 0000000000000008 R09: 000000000040d440
+H    20.82 [   19.108731] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000002
+H    20.82 [   19.108731] R13: 00007ffd53c0b440 R14: 00007ffd53c0b480 R15: 00007ffd53c0b490
+H    20.82 [   19.108731]  </TASK>
+H    20.82 [   19.108731] Kernel Offset: 0x12600000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    20.82 [   19.108731] Rebooting in 5 seconds..
+H    25.97 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    25.99 Booting from ROM...
+H    35.68 c[?7l[2JCH STAGE1 up=5.56
+H    35.74 CH CAND s6rc pid1=s6-svscan + s6-rc
+H    35.76 CH SUP-START up=5.65
+H    35.92 CH t=0.1 CHAOS start cand=s6rc suite=pid1crash seed=111 cpus=2
+H    42.50 CH S6RC-UP up=12.39
+H    42.58 watcher: started pid=271 mode=both (TEST STAND-IN, not the product watcher)
+H    42.58 watcher: started pid=271 mode=both (TEST STAND-IN, not the product watcher)
+H    42.74 CH t=6.9 BOOT-OK up=12.62 ok=1 (seconds since kernel start; waited 6.6)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 43s, loadavg ['0.51', '0.57', '0.53']
+H# end wall=42.7s launches=1 suite_done=True

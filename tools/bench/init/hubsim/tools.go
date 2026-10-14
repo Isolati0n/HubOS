@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/binary"
 	"errors"
 	"fmt"
+	"io"
 	"net"
 	"os"
 	"os/exec"
@@ -193,4 +195,42 @@ func niceExec(args []string) {
 	}
 	fmt.Println("nice:", errors.Unwrap(err), err)
 	os.Exit(127)
+}
+
+// probeSyncRound (follow-up 6, Part D): the Wayland wl_display.sync round trip of the watcher's ProbeSync, copied for the strict trial
+// confirm of the test harness: connect, send sync (object 1, opcode 0, new id 2), wait for wl_callback.done (object 2, opcode 0).
+func probeSyncRound(sock string, limit time.Duration) bool {
+	c, err := net.DialTimeout("unix", sock, limit)
+	if err != nil {
+		return false
+	}
+	defer c.Close()
+	c.SetDeadline(time.Now().Add(limit))
+	var req [12]byte
+	binary.LittleEndian.PutUint32(req[0:], 1)
+	binary.LittleEndian.PutUint32(req[4:], 12<<16|0)
+	binary.LittleEndian.PutUint32(req[8:], 2)
+	if _, err := c.Write(req[:]); err != nil {
+		return false
+	}
+	for i := 0; i < 8; i++ {
+		var h [8]byte
+		if _, err := io.ReadFull(c, h[:]); err != nil {
+			return false
+		}
+		obj, w := binary.LittleEndian.Uint32(h[0:]), binary.LittleEndian.Uint32(h[4:])
+		size, op := int(w>>16), int(w&0xffff)
+		if size < 8 || size > 4096 {
+			return false
+		}
+		if size > 8 {
+			if _, err := io.ReadFull(c, make([]byte, size-8)); err != nil {
+				return false
+			}
+		}
+		if obj == 2 && op == 0 {
+			return true
+		}
+	}
+	return false
 }

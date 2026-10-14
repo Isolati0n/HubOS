@@ -1,0 +1,562 @@
+H# start 2026-10-10 17:16:11 cand=s6rc suite=faults cpus_seen=4 loadavg_at_start=['0.52', '0.52', '0.51']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.18 Booting from ROM...
+H     7.96 c[?7l[2JCH STAGE1 up=6.08
+H     8.02 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     8.05 CH SUP-START up=6.17
+H     8.18 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=200 cpus=2
+H    14.57 CH S6RC-UP up=12.69
+H    14.84 CH t=6.7 BOOT-OK up=12.96 ok=1 (seconds since kernel start; waited 6.5)
+H    14.91 CH t=6.8 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=620640 init_side_cpu_ticks=215
+H    19.85 CH t=11.7 STEP 1 fKill
+H    25.08 CH t=17.0 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=642776 init_side_cpu_ticks=219
+H    35.14 CH t=27.0 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=642272 init_side_cpu_ticks=220
+H    45.23 CH t=37.1 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=640508 init_side_cpu_ticks=220
+H    55.28 CH t=47.2 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=638744 init_side_cpu_ticks=220
+H    65.34 CH t=57.2 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=638744 init_side_cpu_ticks=220
+H    75.39 CH t=67.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=638744 init_side_cpu_ticks=220
+H    80.05 CH t=71.9 UNRECOVERED ev=1 fault=kill target=seatd alert=0 why="clients missing: ok clients=waybar"
+H    80.41 CH t=72.3 STATUS dbus-log: up (pid 169 pgid 169) 70 seconds
+H    80.41 CH t=72.3 STATUS dbus: up (pid 187 pgid 187) 70 seconds, ready 70 seconds
+H    80.41 CH t=72.3 STATUS driftwm-log: up (pid 171 pgid 171) 70 seconds
+H    80.41 CH t=72.3 STATUS driftwm: up (pid 279 pgid 279) 60 seconds, ready 58 seconds
+H    80.41 CH t=72.3 STATUS guard-log: up (pid 159 pgid 159) 71 seconds
+H    80.42 CH t=72.3 STATUS guard: up (pid 184 pgid 184) 70 seconds
+H    80.42 CH t=72.3 STATUS hubd-log: up (pid 163 pgid 163) 71 seconds
+H    80.42 CH t=72.3 STATUS hubd: up (pid 239 pgid 239) 66 seconds, ready 65 seconds
+H    80.42 CH t=72.3 STATUS s6rc-fdholder: up (pid 132 pgid 132) 71 seconds, ready 71 seconds
+H    80.42 CH t=72.3 STATUS s6rc-oneshot-runner: down (not started yet) 
+H    80.42 CH t=72.3 STATUS seatd-log: up (pid 164 pgid 164) 71 seconds
+H    80.43 CH t=72.3 STATUS seatd: up (pid 272 pgid 272) 60 seconds, ready 60 seconds
+H    80.43 CH t=72.3 STATUS stage2: up (pid 109 pgid 109) 72 seconds
+H    80.43 CH t=72.3 STATUS udevd-log: up (pid 158 pgid 158) 71 seconds
+H    80.43 CH t=72.3 STATUS udevd: up (pid 188 pgid 188) 71 seconds, ready 69 seconds
+H    80.44 CH t=72.3 STATUS waybar-log: up (pid 151 pgid 151) 71 seconds
+H    80.44 CH t=72.3 STATUS waybar: up (pid 306 pgid 306) 58 seconds, ready 57 seconds
+H    80.56 CH t=72.4 operator-action target=seatd why="clients missing: ok clients=waybar"
+H    84.14 CH t=76.0 EV ev=1 fault=kill target=seatd rec=63.28 ok=0 fixed=1 
+H    85.47 CH t=77.4 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=623892 init_side_cpu_ticks=226
+H    87.14 CH t=79.0 STEP 2 fKill
+H    89.25 CH t=81.1 EV ev=2 fault=kill target=udevd rec=1.89 ok=1 fixed=0 
+H    92.25 CH t=84.1 STEP 3 fKill
+H    92.71 CH t=84.6 EV ev=3 fault=kill target=dbus rec=0.25 ok=1 fixed=0 
+H    95.55 CH t=87.4 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=623900 init_side_cpu_ticks=227
+H    95.71 CH t=87.6 STEP 4 fKill
+H   105.62 CH t=97.5 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=623676 init_side_cpu_ticks=231
+H   115.74 CH t=107.6 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=623424 init_side_cpu_ticks=231
+H   125.84 CH t=117.7 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=622920 init_side_cpu_ticks=231
+H   135.89 CH t=127.8 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=622920 init_side_cpu_ticks=232
+H   145.99 CH t=137.9 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=622920 init_side_cpu_ticks=232
+H   155.95 CH t=147.8 UNRECOVERED ev=4 fault=kill target=driftwm alert=0 why="clients missing: ok clients=waybar"
+H   156.09 CH t=148.0 SAMPLE zombies=0 nproc=101 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=622672 init_side_cpu_ticks=232
+H   156.22 CH t=148.1 STATUS dbus-log: up (pid 169 pgid 169) 146 seconds
+H   156.23 CH t=148.1 STATUS dbus: up (pid 623 pgid 623) 63 seconds, ready 63 seconds
+H   156.23 CH t=148.1 STATUS driftwm-log: up (pid 171 pgid 171) 146 seconds
+H   156.23 CH t=148.1 STATUS driftwm: up (pid 637 pgid 637) 60 seconds, ready 57 seconds
+H   156.23 CH t=148.1 STATUS guard-log: up (pid 159 pgid 159) 147 seconds
+H   156.23 CH t=148.1 STATUS guard: up (pid 184 pgid 184) 146 seconds
+H   156.23 CH t=148.1 STATUS hubd-log: up (pid 163 pgid 163) 146 seconds
+H   156.23 CH t=148.1 STATUS hubd: up (pid 576 pgid 576) 73 seconds, ready 72 seconds
+H   156.24 CH t=148.1 STATUS s6rc-fdholder: up (pid 132 pgid 132) 147 seconds, ready 147 seconds
+H   156.24 CH t=148.1 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   156.24 CH t=148.1 STATUS seatd-log: up (pid 164 pgid 164) 147 seconds
+H   156.24 CH t=148.1 STATUS seatd: up (pid 527 pgid 527) 75 seconds, ready 75 seconds
+H   156.24 CH t=148.1 STATUS stage2: up (pid 109 pgid 109) 147 seconds
+H   156.25 CH t=148.1 STATUS udevd-log: up (pid 158 pgid 158) 147 seconds
+H   156.25 CH t=148.1 STATUS udevd: up (pid 598 pgid 598) 69 seconds, ready 67 seconds
+H   156.25 CH t=148.1 STATUS waybar-log: up (pid 151 pgid 151) 147 seconds
+H   156.25 CH t=148.1 STATUS waybar: up (pid 657 pgid 657) 58 seconds, ready 57 seconds
+H   156.38 CH t=148.3 operator-action target=driftwm why="clients missing: ok clients=waybar"
+H   166.19 CH t=158.1 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=639988 init_side_cpu_ticks=237
+H   176.24 CH t=168.1 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=639484 init_side_cpu_ticks=238
+H   186.30 CH t=178.2 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=638476 init_side_cpu_ticks=238
+H   196.37 CH t=188.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=636464 init_side_cpu_ticks=238
+H   206.41 CH t=198.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=636464 init_side_cpu_ticks=238
+H   216.47 CH t=208.4 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=636464 init_side_cpu_ticks=238
+H   216.70 CH t=208.6 STUCK ev=4 step=4 fault=kill target=driftwm why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H   217.71 [  215.867642] reboot: Power down
+H# vm exit code 0 after 218s, loadavg ['0.61', '0.56', '0.53']
+H# launch 2 skip=4 dur=383 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   217.87 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   217.91 Booting from ROM...
+H   225.64 c[?7l[2JCH STAGE1 up=6.27
+H   225.69 CH CAND s6rc pid1=s6-svscan + s6-rc
+H   225.73 CH SUP-START up=6.36
+H   225.86 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=201 cpus=2
+H   231.72 CH S6RC-UP up=12.36
+H   232.24 CH t=6.4 BOOT-OK up=12.87 ok=1 (seconds since kernel start; waited 6.2)
+H   232.33 CH t=6.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=636384 init_side_cpu_ticks=210
+H   242.38 CH t=16.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=634896 init_side_cpu_ticks=210
+H   249.25 CH t=23.5 STEP 5 fKill
+H   249.94 CH t=24.1 EV ev=1 fault=kill target=waybar rec=0.47 ok=1 fixed=0 
+H   252.47 CH t=26.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=634900 init_side_cpu_ticks=211
+H   252.95 CH t=27.1 STEP 6 fKill
+H   253.87 CH t=28.1 EV ev=2 fault=kill target=hubd rec=0.72 ok=1 fixed=0 
+H   256.88 CH t=31.1 STEP 7 fKill
+H   262.58 CH t=36.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=635152 init_side_cpu_ticks=217
+H   272.65 CH t=46.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=635152 init_side_cpu_ticks=217
+H   282.72 CH t=56.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=634928 init_side_cpu_ticks=217
+H   292.77 CH t=67.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=634928 init_side_cpu_ticks=217
+H   302.85 CH t=77.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=634704 init_side_cpu_ticks=217
+H   312.96 CH t=87.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=634704 init_side_cpu_ticks=218
+H   317.01 CH t=91.2 UNRECOVERED ev=3 fault=kill target=seatd alert=0 why="clients missing: ok clients=waybar"
+H   317.38 CH t=91.6 STATUS dbus-log: up (pid 169 pgid 169) 90 seconds
+H   317.38 CH t=91.6 STATUS dbus: up (pid 187 pgid 187) 90 seconds, ready 90 seconds
+H   317.38 CH t=91.6 STATUS driftwm-log: up (pid 170 pgid 170) 90 seconds
+H   317.38 CH t=91.6 STATUS driftwm: up (pid 340 pgid 340) 60 seconds, ready 58 seconds
+H   317.39 CH t=91.6 STATUS guard-log: up (pid 168 pgid 168) 90 seconds
+H   317.39 CH t=91.6 STATUS guard: up (pid 186 pgid 186) 90 seconds
+H   317.39 CH t=91.6 STATUS hubd-log: up (pid 158 pgid 158) 90 seconds
+H   317.39 CH t=91.6 STATUS hubd: up (pid 319 pgid 319) 64 seconds, ready 63 seconds
+H   317.39 CH t=91.6 STATUS s6rc-fdholder: up (pid 131 pgid 131) 91 seconds, ready 90 seconds
+H   317.40 CH t=91.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   317.40 CH t=91.6 STATUS seatd-log: up (pid 160 pgid 160) 90 seconds
+H   317.40 CH t=91.6 STATUS seatd: up (pid 337 pgid 337) 60 seconds, ready 60 seconds
+H   317.40 CH t=91.6 STATUS stage2: up (pid 108 pgid 108) 91 seconds
+H   317.40 CH t=91.6 STATUS udevd-log: up (pid 157 pgid 157) 90 seconds
+H   317.40 CH t=91.6 STATUS udevd: up (pid 184 pgid 184) 90 seconds, ready 88 seconds
+H   317.40 CH t=91.6 STATUS waybar-log: up (pid 146 pgid 146) 90 seconds
+H   317.41 CH t=91.6 STATUS waybar: up (pid 371 pgid 371) 58 seconds, ready 57 seconds
+H   317.49 CH t=91.7 operator-action target=seatd why="clients missing: ok clients=waybar"
+H   323.01 CH t=97.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=636904 init_side_cpu_ticks=223
+H   333.06 CH t=107.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=636904 init_side_cpu_ticks=223
+H   343.15 CH t=117.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=636652 init_side_cpu_ticks=223
+H   353.23 CH t=127.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=636400 init_side_cpu_ticks=223
+H   363.29 CH t=137.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=636400 init_side_cpu_ticks=224
+H   373.37 CH t=147.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=635900 init_side_cpu_ticks=224
+H   377.85 CH t=152.0 STUCK ev=3 step=7 fault=kill target=seatd why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H   378.87 [  159.558026] reboot: Power down
+H# vm exit code 0 after 161s, loadavg ['0.50', '0.55', '0.54']
+H# launch 3 skip=7 dur=222 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   379.05 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   379.09 Booting from ROM...
+H   387.34 c[?7l[2JCH STAGE1 up=6.54
+H   387.40 CH CAND s6rc pid1=s6-svscan + s6-rc
+H   387.43 CH SUP-START up=6.63
+H   387.56 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=202 cpus=2
+H   393.67 CH S6RC-UP up=12.88
+H   394.12 CH t=6.6 BOOT-OK up=13.33 ok=1 (seconds since kernel start; waited 6.4)
+H   394.22 CH t=6.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=623332 init_side_cpu_ticks=235
+H   404.28 CH t=16.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=623364 init_side_cpu_ticks=236
+H   414.36 CH t=26.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=623112 init_side_cpu_ticks=236
+H   420.16 CH t=32.7 STEP 8 fKill
+H   422.07 CH t=34.6 EV ev=1 fault=kill target=udevd rec=1.71 ok=1 fixed=0 
+H   424.44 CH t=36.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=622860 init_side_cpu_ticks=236
+H   425.08 CH t=37.6 STEP 9 fKill
+H   425.74 CH t=38.2 EV ev=2 fault=kill target=dbus rec=0.45 ok=1 fixed=0 
+H   428.74 CH t=41.2 STEP 10 fKill
+H   434.51 CH t=47.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=622020 init_side_cpu_ticks=240
+H   444.61 CH t=57.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=622020 init_side_cpu_ticks=241
+H   454.67 CH t=67.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=622020 init_side_cpu_ticks=241
+H   464.75 CH t=77.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=621516 init_side_cpu_ticks=241
+H   474.88 CH t=87.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=622328 init_side_cpu_ticks=241
+H   484.93 CH t=97.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=622336 init_side_cpu_ticks=242
+H   488.84 CH t=101.3 UNRECOVERED ev=3 fault=kill target=driftwm alert=0 why="clients missing: ok clients=waybar"
+H   489.13 CH t=101.6 STATUS dbus-log: up (pid 171 pgid 171) 100 seconds
+H   489.13 CH t=101.6 STATUS dbus: up (pid 347 pgid 347) 63 seconds, ready 63 seconds
+H   489.13 CH t=101.6 STATUS driftwm-log: up (pid 167 pgid 167) 100 seconds
+H   489.13 CH t=101.6 STATUS driftwm: up (pid 371 pgid 371) 60 seconds, ready 58 seconds
+H   489.13 CH t=101.6 STATUS guard-log: up (pid 166 pgid 166) 100 seconds
+H   489.13 CH t=101.6 STATUS guard: up (pid 181 pgid 181) 100 seconds
+H   489.14 CH t=101.6 STATUS hubd-log: up (pid 156 pgid 156) 100 seconds
+H   489.14 CH t=101.6 STATUS hubd: up (pid 237 pgid 237) 95 seconds, ready 95 seconds
+H   489.14 CH t=101.6 STATUS s6rc-fdholder: up (pid 131 pgid 131) 101 seconds, ready 100 seconds
+H   489.14 CH t=101.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   489.14 CH t=101.6 STATUS seatd-log: up (pid 165 pgid 165) 100 seconds
+H   489.14 CH t=101.6 STATUS seatd: up (pid 186 pgid 186) 100 seconds, ready 99 seconds
+H   489.14 CH t=101.6 STATUS stage2: up (pid 108 pgid 108) 101 seconds
+H   489.14 CH t=101.6 STATUS udevd-log: up (pid 153 pgid 153) 100 seconds
+H   489.14 CH t=101.6 STATUS udevd: up (pid 332 pgid 332) 68 seconds, ready 67 seconds
+H   489.15 CH t=101.6 STATUS waybar-log: up (pid 155 pgid 155) 100 seconds
+H   489.15 CH t=101.6 STATUS waybar: up (pid 389 pgid 389) 58 seconds, ready 57 seconds
+H   489.22 CH t=101.7 operator-action target=driftwm why="clients missing: ok clients=waybar"
+H   492.69 CH t=105.2 EV ev=3 fault=kill target=driftwm rec=63.20 ok=0 fixed=1 
+H   495.00 CH t=107.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=636488 init_side_cpu_ticks=247
+H   495.69 CH t=108.2 STEP 11 fKill
+H   496.18 CH t=108.7 EV ev=4 fault=kill target=waybar rec=0.26 ok=1 fixed=0 
+H   499.18 CH t=111.7 STEP 12 fKill
+H   500.18 CH t=112.7 EV ev=5 fault=kill target=hubd rec=0.78 ok=1 fixed=0 
+H   503.18 CH t=115.7 STEP 13 fKill
+H   505.10 CH t=117.6 SAMPLE zombies=0 nproc=96 init_side_fds=127 init_side_rss_kb=13332 memavail_kb=636268 init_side_cpu_ticks=254
+H   515.19 CH t=127.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=635772 init_side_cpu_ticks=256
+H   525.25 CH t=137.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=635772 init_side_cpu_ticks=256
+H   535.31 CH t=147.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=635296 init_side_cpu_ticks=256
+H   545.40 CH t=157.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=635296 init_side_cpu_ticks=257
+H   555.45 CH t=167.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=635296 init_side_cpu_ticks=257
+H   563.57 CH t=176.1 UNRECOVERED ev=6 fault=kill target=seatd alert=0 why="clients missing: ok clients=waybar"
+H   563.79 CH t=176.3 STATUS dbus-log: up (pid 171 pgid 171) 174 seconds
+H   563.79 CH t=176.3 STATUS dbus: up (pid 347 pgid 347) 138 seconds, ready 138 seconds
+H   563.79 CH t=176.3 STATUS driftwm-log: up (pid 167 pgid 167) 174 seconds
+H   563.79 CH t=176.3 STATUS driftwm: up (pid 730 pgid 730) 60 seconds, ready 58 seconds
+H   563.79 CH t=176.3 STATUS guard-log: up (pid 166 pgid 166) 174 seconds
+H   563.79 CH t=176.3 STATUS guard: up (pid 181 pgid 181) 174 seconds
+H   563.79 CH t=176.3 STATUS hubd-log: up (pid 156 pgid 156) 175 seconds
+H   563.79 CH t=176.3 STATUS hubd: up (pid 704 pgid 704) 64 seconds, ready 63 seconds
+H   563.80 CH t=176.3 STATUS s6rc-fdholder: up (pid 131 pgid 131) 175 seconds, ready 175 seconds
+H   563.80 CH t=176.3 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   563.80 CH t=176.3 STATUS seatd-log: up (pid 165 pgid 165) 175 seconds
+H   563.80 CH t=176.3 STATUS seatd: up (pid 723 pgid 723) 60 seconds, ready 60 seconds
+H   563.80 CH t=176.3 STATUS stage2: up (pid 108 pgid 108) 176 seconds
+H   563.80 CH t=176.3 STATUS udevd-log: up (pid 153 pgid 153) 175 seconds
+H   563.80 CH t=176.3 STATUS udevd: up (pid 332 pgid 332) 143 seconds, ready 142 seconds
+H   563.81 CH t=176.3 STATUS waybar-log: up (pid 155 pgid 155) 175 seconds
+H   563.81 CH t=176.3 STATUS waybar: up (pid 758 pgid 758) 58 seconds, ready 57 seconds
+H   563.91 CH t=176.4 operator-action target=seatd why="clients missing: ok clients=waybar"
+H   565.51 CH t=178.0 SAMPLE zombies=0 nproc=95 init_side_fds=127 init_side_rss_kb=13332 memavail_kb=633152 init_side_cpu_ticks=261
+H   575.61 CH t=188.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=633152 init_side_cpu_ticks=262
+H   585.69 CH t=198.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=632900 init_side_cpu_ticks=263
+H   595.79 CH t=208.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=632656 init_side_cpu_ticks=263
+H   605.90 CH t=218.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=632656 init_side_cpu_ticks=263
+H   615.95 CH t=228.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=632404 init_side_cpu_ticks=263
+H   624.18 CH t=236.7 STUCK ev=6 step=13 fault=kill target=seatd why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H   625.20 [  244.436558] reboot: Power down
+H# vm exit code 0 after 246s, loadavg ['0.65', '0.62', '0.56']
+H# launch 4 skip=13 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   625.36 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   625.40 Booting from ROM...
+H   633.86 c[?7l[2JCH STAGE1 up=6.62
+H   633.92 CH CAND s6rc pid1=s6-svscan + s6-rc
+H   633.96 CH SUP-START up=6.73
+H   634.11 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=203 cpus=2
+H   640.10 CH S6RC-UP up=12.87
+H   640.50 CH t=6.5 BOOT-OK up=13.27 ok=1 (seconds since kernel start; waited 6.2)
+H   640.59 CH t=6.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=642244 init_side_cpu_ticks=217
+H   650.64 CH t=16.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=641308 init_side_cpu_ticks=217
+H   660.70 CH t=26.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=641308 init_side_cpu_ticks=217
+H   670.79 CH t=36.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=640552 init_side_cpu_ticks=217
+H   680.88 CH t=46.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=640300 init_side_cpu_ticks=218
+H   684.53 CH t=50.5 STEP 14 fKill
+H   686.41 CH t=52.4 EV ev=1 fault=kill target=udevd rec=1.66 ok=1 fixed=0 
+H   689.41 CH t=55.4 STEP 15 fKill
+H   690.03 CH t=56.0 EV ev=2 fault=kill target=dbus rec=0.40 ok=1 fixed=0 
+H   690.93 CH t=56.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=639544 init_side_cpu_ticks=219
+H   693.03 CH t=59.0 STEP 16 fKill
+H   701.00 CH t=67.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=640300 init_side_cpu_ticks=221
+H   711.05 CH t=77.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=640048 init_side_cpu_ticks=221
+H   721.10 CH t=87.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637280 init_side_cpu_ticks=221
+H   731.17 CH t=97.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637280 init_side_cpu_ticks=222
+H   741.23 CH t=107.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637280 init_side_cpu_ticks=222
+H   751.31 CH t=117.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637280 init_side_cpu_ticks=222
+H   753.36 CH t=119.3 UNRECOVERED ev=3 fault=kill target=driftwm alert=0 why="clients missing: ok clients=waybar"
+H   753.59 CH t=119.6 STATUS dbus-log: up (pid 170 pgid 170) 118 seconds
+H   753.59 CH t=119.6 STATUS dbus: up (pid 405 pgid 405) 63 seconds, ready 63 seconds
+H   753.59 CH t=119.6 STATUS driftwm-log: up (pid 169 pgid 169) 118 seconds
+H   753.59 CH t=119.6 STATUS driftwm: up (pid 421 pgid 421) 60 seconds, ready 58 seconds
+H   753.60 CH t=119.6 STATUS guard-log: up (pid 165 pgid 165) 118 seconds
+H   753.60 CH t=119.6 STATUS guard: up (pid 186 pgid 186) 118 seconds
+H   753.60 CH t=119.6 STATUS hubd-log: up (pid 164 pgid 164) 118 seconds
+H   753.60 CH t=119.6 STATUS hubd: up (pid 238 pgid 238) 114 seconds, ready 113 seconds
+H   753.60 CH t=119.6 STATUS s6rc-fdholder: up (pid 131 pgid 131) 118 seconds, ready 118 seconds
+H   753.61 CH t=119.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   753.61 CH t=119.6 STATUS seatd-log: up (pid 150 pgid 150) 118 seconds
+H   753.61 CH t=119.6 STATUS seatd: up (pid 179 pgid 179) 118 seconds, ready 117 seconds
+H   753.61 CH t=119.6 STATUS stage2: up (pid 105 pgid 105) 119 seconds
+H   753.61 CH t=119.6 STATUS udevd-log: up (pid 160 pgid 160) 118 seconds
+H   753.61 CH t=119.6 STATUS udevd: up (pid 389 pgid 389) 69 seconds, ready 67 seconds
+H   753.61 CH t=119.6 STATUS waybar-log: up (pid 149 pgid 149) 118 seconds
+H   753.61 CH t=119.6 STATUS waybar: up (pid 447 pgid 447) 58 seconds, ready 57 seconds
+H   753.69 CH t=119.7 operator-action target=driftwm why="clients missing: ok clients=waybar"
+H   757.01 CH t=123.0 EV ev=3 fault=kill target=driftwm rec=63.07 ok=0 fixed=1 
+H   760.01 CH t=126.0 STEP 17 fKill
+H   760.42 CH t=126.4 EV ev=4 fault=kill target=waybar rec=0.18 ok=1 fixed=0 
+H   761.38 CH t=127.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637540 init_side_cpu_ticks=228
+H   763.42 CH t=129.4 STEP 18 fKill
+H   764.43 CH t=130.4 EV ev=5 fault=kill target=hubd rec=0.79 ok=1 fixed=0 
+H   767.43 CH t=133.4 STEP 19 fHang
+H   771.43 CH t=137.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637316 init_side_cpu_ticks=229
+H   781.49 CH t=147.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637316 init_side_cpu_ticks=229
+H   791.55 CH t=157.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637316 init_side_cpu_ticks=230
+H   801.61 CH t=167.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637316 init_side_cpu_ticks=230
+H   811.66 CH t=177.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637316 init_side_cpu_ticks=230
+H   821.75 CH t=187.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637316 init_side_cpu_ticks=230
+H   827.64 CH t=193.6 UNRECOVERED ev=6 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   827.88 CH t=193.8 STATUS dbus-log: up (pid 170 pgid 170) 192 seconds
+H   827.88 CH t=193.8 STATUS dbus: up (pid 405 pgid 405) 138 seconds, ready 138 seconds
+H   827.88 CH t=193.9 STATUS driftwm-log: up (pid 169 pgid 169) 192 seconds
+H   827.88 CH t=193.9 STATUS driftwm: up (pid 673 pgid 673) 73 seconds, ready 71 seconds
+H   827.88 CH t=193.9 STATUS guard-log: up (pid 165 pgid 165) 192 seconds
+H   827.88 CH t=193.9 STATUS guard: up (pid 186 pgid 186) 192 seconds
+H   827.89 CH t=193.9 STATUS hubd-log: up (pid 164 pgid 164) 192 seconds
+H   827.89 CH t=193.9 STATUS hubd: up (pid 749 pgid 749) 64 seconds, ready 63 seconds
+H   827.89 CH t=193.9 STATUS s6rc-fdholder: up (pid 131 pgid 131) 193 seconds, ready 192 seconds
+H   827.89 CH t=193.9 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   827.89 CH t=193.9 STATUS seatd-log: up (pid 150 pgid 150) 192 seconds
+H   827.90 CH t=193.9 STATUS seatd: up (pid 179 pgid 179) 192 seconds, ready 192 seconds
+H   827.90 CH t=193.9 STATUS stage2: up (pid 105 pgid 105) 193 seconds
+H   827.90 CH t=193.9 STATUS udevd-log: up (pid 160 pgid 160) 192 seconds
+H   827.90 CH t=193.9 STATUS udevd: up (pid 389 pgid 389) 143 seconds, ready 141 seconds
+H   827.90 CH t=193.9 STATUS waybar-log: up (pid 149 pgid 149) 192 seconds
+H   827.90 CH t=193.9 STATUS waybar: up (pid 735 pgid 735) 67 seconds, ready 67 seconds
+H   827.97 CH t=193.9 operator-action target=driftwm why="driftwm stopped"
+H   831.80 CH t=197.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637828 init_side_cpu_ticks=233
+H   841.85 CH t=207.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637828 init_side_cpu_ticks=233
+H   851.95 CH t=217.9 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637828 init_side_cpu_ticks=234
+H   862.01 CH t=228.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637576 init_side_cpu_ticks=234
+H   872.06 CH t=238.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637576 init_side_cpu_ticks=234
+H   882.11 CH t=248.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=637324 init_side_cpu_ticks=234
+H   888.26 CH t=254.2 STUCK ev=6 step=19 fault=hang-stop target=driftwm why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H   889.26 [  262.090250] reboot: Power down
+H# vm exit code 0 after 264s, loadavg ['0.22', '0.39', '0.48']
+H# launch 5 skip=19 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   889.42 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   889.46 Booting from ROM...
+H   896.44 c[?7l[2JCH STAGE1 up=5.49
+H   896.50 CH CAND s6rc pid1=s6-svscan + s6-rc
+H   896.53 CH SUP-START up=5.58
+H   896.67 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=204 cpus=2
+H   902.10 CH S6RC-UP up=11.15
+H   902.41 CH t=5.8 BOOT-OK up=11.46 ok=1 (seconds since kernel start; waited 5.5)
+H   902.48 CH t=5.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=637784 init_side_cpu_ticks=197
+H   912.55 CH t=15.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=635576 init_side_cpu_ticks=197
+H   922.61 CH t=26.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=634568 init_side_cpu_ticks=197
+H   932.67 CH t=36.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633308 init_side_cpu_ticks=197
+H   942.73 CH t=46.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633308 init_side_cpu_ticks=197
+H   952.79 CH t=56.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633308 init_side_cpu_ticks=197
+H   962.85 CH t=66.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633308 init_side_cpu_ticks=198
+H   964.52 CH t=67.9 STEP 20 fHang
+H   964.88 CH t=68.3 EV ev=1 fault=hang-spin target=driftwm rec=0.15 ok=1 fixed=0 
+H   967.88 CH t=71.3 STEP 21 fHang
+H   972.92 CH t=76.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633308 init_side_cpu_ticks=199
+H   982.97 CH t=86.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633056 init_side_cpu_ticks=199
+H   993.05 CH t=96.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633056 init_side_cpu_ticks=199
+H  1003.11 CH t=106.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633056 init_side_cpu_ticks=199
+H  1013.15 CH t=116.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633056 init_side_cpu_ticks=200
+H  1023.26 CH t=126.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=633056 init_side_cpu_ticks=200
+H  1027.93 CH t=131.3 UNRECOVERED ev=2 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1028.17 CH t=131.6 STATUS dbus-log: up (pid 176 pgid 176) 130 seconds
+H  1028.17 CH t=131.6 STATUS dbus: up (pid 188 pgid 188) 130 seconds, ready 130 seconds
+H  1028.18 CH t=131.6 STATUS driftwm-log: up (pid 169 pgid 169) 130 seconds
+H  1028.18 CH t=131.6 STATUS driftwm: up (pid 214 pgid 214) 128 seconds, ready 126 seconds
+H  1028.18 CH t=131.6 STATUS guard-log: up (pid 168 pgid 168) 130 seconds
+H  1028.18 CH t=131.6 STATUS guard: up (pid 187 pgid 187) 130 seconds
+H  1028.18 CH t=131.6 STATUS hubd-log: up (pid 153 pgid 153) 130 seconds
+H  1028.19 CH t=131.6 STATUS hubd: up (pid 239 pgid 239) 126 seconds, ready 125 seconds
+H  1028.19 CH t=131.6 STATUS s6rc-fdholder: up (pid 132 pgid 132) 131 seconds, ready 130 seconds
+H  1028.19 CH t=131.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H  1028.19 CH t=131.6 STATUS seatd-log: up (pid 161 pgid 161) 130 seconds
+H  1028.20 CH t=131.6 STATUS seatd: up (pid 177 pgid 177) 130 seconds, ready 130 seconds
+H  1028.20 CH t=131.6 STATUS stage2: up (pid 108 pgid 108) 131 seconds
+H  1028.20 CH t=131.6 STATUS udevd-log: up (pid 149 pgid 149) 130 seconds
+H  1028.20 CH t=131.6 STATUS udevd: up (pid 184 pgid 184) 130 seconds, ready 128 seconds
+H  1028.20 CH t=131.6 STATUS waybar-log: up (pid 162 pgid 162) 130 seconds
+H  1028.21 CH t=131.6 STATUS waybar: up (pid 238 pgid 238) 126 seconds, ready 126 seconds
+H  1028.30 CH t=131.7 operator-action target=driftwm why="driftwm stopped"
+H  1033.32 CH t=136.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=638356 init_side_cpu_ticks=205
+H  1043.37 CH t=146.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=638356 init_side_cpu_ticks=205
+H  1053.41 CH t=156.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=638104 init_side_cpu_ticks=205
+H  1063.47 CH t=166.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=637096 init_side_cpu_ticks=206
+H  1073.52 CH t=176.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=636088 init_side_cpu_ticks=206
+H  1083.60 CH t=187.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13340 memavail_kb=636088 init_side_cpu_ticks=206
+H  1088.52 CH t=191.9 STUCK ev=2 step=21 fault=hang-stop target=driftwm why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H  1089.53 [  198.612891] reboot: Power down
+H# vm exit code 0 after 200s, loadavg ['0.84', '0.50', '0.50']
+H# launch 6 skip=21 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H  1089.66 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1089.71 Booting from ROM...
+H  1098.09 c[?7l[2JCH STAGE1 up=6.54
+H  1098.14 CH CAND s6rc pid1=s6-svscan + s6-rc
+H  1098.17 CH SUP-START up=6.62
+H  1098.34 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=205 cpus=2
+H  1104.16 CH S6RC-UP up=12.61
+H  1104.47 CH t=6.2 BOOT-OK up=12.91 ok=1 (seconds since kernel start; waited 5.9)
+H  1104.55 CH t=6.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=647148 init_side_cpu_ticks=213
+H  1114.63 CH t=16.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=646920 init_side_cpu_ticks=213
+H  1124.70 CH t=26.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=645912 init_side_cpu_ticks=213
+H  1134.76 CH t=36.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=644652 init_side_cpu_ticks=213
+H  1144.83 CH t=46.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=214
+H  1154.89 CH t=56.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=214
+H  1164.94 CH t=66.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=215
+H  1172.52 CH t=74.3 STEP 22 fHang
+H  1172.84 CH t=74.6 EV ev=1 fault=hang-spin target=driftwm rec=0.11 ok=1 fixed=0 
+H  1174.99 CH t=76.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=215
+H  1175.85 CH t=77.6 STEP 23 fHang
+H  1185.06 CH t=86.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=215
+H  1195.13 CH t=96.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=215
+H  1205.18 CH t=106.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=215
+H  1215.25 CH t=117.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=216
+H  1225.30 CH t=127.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=643396 init_side_cpu_ticks=216
+H  1235.35 CH t=137.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=642640 init_side_cpu_ticks=216
+H  1236.05 CH t=137.8 UNRECOVERED ev=2 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1236.29 CH t=138.0 STATUS dbus-log: up (pid 170 pgid 170) 136 seconds
+H  1236.29 CH t=138.0 STATUS dbus: up (pid 187 pgid 187) 136 seconds, ready 136 seconds
+H  1236.29 CH t=138.0 STATUS driftwm-log: up (pid 168 pgid 168) 136 seconds
+H  1236.29 CH t=138.0 STATUS driftwm: up (pid 215 pgid 215) 134 seconds, ready 132 seconds
+H  1236.29 CH t=138.1 STATUS guard-log: up (pid 166 pgid 166) 136 seconds
+H  1236.29 CH t=138.1 STATUS guard: up (pid 186 pgid 186) 136 seconds
+H  1236.29 CH t=138.1 STATUS hubd-log: up (pid 160 pgid 160) 136 seconds
+H  1236.30 CH t=138.1 STATUS hubd: up (pid 239 pgid 239) 132 seconds, ready 132 seconds
+H  1236.30 CH t=138.1 STATUS s6rc-fdholder: up (pid 131 pgid 131) 137 seconds, ready 137 seconds
+H  1236.30 CH t=138.1 STATUS s6rc-oneshot-runner: down (not started yet) 
+H  1236.30 CH t=138.1 STATUS seatd-log: up (pid 162 pgid 162) 136 seconds
+H  1236.30 CH t=138.1 STATUS seatd: up (pid 179 pgid 179) 136 seconds, ready 136 seconds
+H  1236.30 CH t=138.1 STATUS stage2: up (pid 108 pgid 108) 137 seconds
+H  1236.30 CH t=138.1 STATUS udevd-log: up (pid 157 pgid 157) 137 seconds
+H  1236.31 CH t=138.1 STATUS udevd: up (pid 183 pgid 183) 136 seconds, ready 135 seconds
+H  1236.31 CH t=138.1 STATUS waybar-log: up (pid 149 pgid 149) 137 seconds
+H  1236.31 CH t=138.1 STATUS waybar: up (pid 240 pgid 240) 132 seconds, ready 132 seconds
+H  1236.36 CH t=138.1 operator-action target=driftwm why="driftwm stopped"
+H  1245.41 CH t=147.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=624756 init_side_cpu_ticks=218
+H  1255.46 CH t=157.2 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=624756 init_side_cpu_ticks=218
+H  1265.52 CH t=167.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=624756 init_side_cpu_ticks=218
+H  1275.58 CH t=177.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=624756 init_side_cpu_ticks=218
+H  1285.69 CH t=187.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=624252 init_side_cpu_ticks=219
+H  1295.75 CH t=197.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13324 memavail_kb=624252 init_side_cpu_ticks=219
+H  1296.63 CH t=198.4 STUCK ev=2 step=23 fault=hang-stop target=driftwm why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H  1297.63 [  206.133147] reboot: Power down
+H# vm exit code 0 after 208s, loadavg ['0.56', '0.50', '0.49']
+H# launch 7 skip=23 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H  1297.78 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1297.82 Booting from ROM...
+H  1305.15 c[?7l[2JCH STAGE1 up=5.72
+H  1305.21 CH CAND s6rc pid1=s6-svscan + s6-rc
+H  1305.24 CH SUP-START up=5.82
+H  1305.39 CH t=0.0 CHAOS start cand=s6rc suite=faults seed=206 cpus=2
+H  1310.92 CH S6RC-UP up=11.50
+H  1311.20 CH t=5.9 BOOT-OK up=11.78 ok=1 (seconds since kernel start; waited 5.6)
+H  1311.29 CH t=6.0 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627056 init_side_cpu_ticks=199
+H  1321.34 CH t=16.0 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=199
+H  1331.40 CH t=26.1 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=200
+H  1341.44 CH t=36.1 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=200
+H  1351.50 CH t=46.2 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=200
+H  1361.55 CH t=56.2 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=200
+H  1371.60 CH t=66.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=200
+H  1381.65 CH t=76.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=201
+H  1385.26 CH t=79.9 STEP 24 fHang
+H  1385.58 CH t=80.3 EV ev=1 fault=hang-spin target=driftwm rec=0.11 ok=1 fixed=0 
+H  1388.58 CH t=83.3 STEP 25 fStorm
+H  1391.71 CH t=86.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=203
+H  1401.77 CH t=96.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=212
+H  1411.87 CH t=106.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=220
+H  1421.97 CH t=116.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=627084 init_side_cpu_ticks=226
+H  1428.90 CH t=123.6 STATUS dbus-log: up (pid 173 pgid 173) 122 seconds
+H  1428.90 CH t=123.6 STATUS dbus: up (pid 187 pgid 187) 122 seconds, ready 122 seconds
+H  1428.90 CH t=123.6 STATUS driftwm-log: up (pid 174 pgid 174) 122 seconds
+H  1428.90 CH t=123.6 STATUS driftwm: up (pid 215 pgid 215) 120 seconds, ready 118 seconds
+H  1428.90 CH t=123.6 STATUS guard-log: up (pid 157 pgid 157) 122 seconds
+H  1428.90 CH t=123.6 STATUS guard: up (pid 183 pgid 183) 122 seconds
+H  1428.90 CH t=123.6 STATUS hubd-log: up (pid 156 pgid 156) 122 seconds
+H  1428.91 CH t=123.6 STATUS hubd: down (exitcode 1) 0 seconds, normally up, want up, ready 0 seconds
+H  1428.91 CH t=123.6 STATUS s6rc-fdholder: up (pid 133 pgid 133) 123 seconds, ready 122 seconds
+H  1428.91 CH t=123.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H  1428.91 CH t=123.6 STATUS seatd-log: up (pid 162 pgid 162) 122 seconds
+H  1428.91 CH t=123.6 STATUS seatd: up (pid 188 pgid 188) 122 seconds, ready 122 seconds
+H  1428.91 CH t=123.6 STATUS stage2: up (pid 109 pgid 109) 123 seconds
+H  1428.91 CH t=123.6 STATUS udevd-log: up (pid 160 pgid 160) 122 seconds
+H  1428.91 CH t=123.6 STATUS udevd: up (pid 189 pgid 189) 122 seconds, ready 120 seconds
+H  1428.92 CH t=123.6 STATUS waybar-log: up (pid 159 pgid 159) 122 seconds
+H  1428.92 CH t=123.6 STATUS waybar: up (pid 239 pgid 239) 118 seconds, ready 118 seconds
+H  1428.92 CH t=123.6 STORM target=hubd dur=40 starts=35 starts_last10s=8 cpu_ticks_init_side=32 bar-up
+H  1430.00 CH t=124.7 EV ev=2 fault=storm target=hubd rec=0.87 ok=1 fixed=0 starts=35 last10=8 cpu=32 bar-up
+H  1432.04 CH t=126.7 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=626860 init_side_cpu_ticks=234
+H  1433.00 CH t=127.7 STEP 26 fStorm
+H  1442.09 CH t=136.8 SAMPLE zombies=0 nproc=95 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=700752 init_side_cpu_ticks=244
+H  1452.18 CH t=146.9 SAMPLE zombies=0 nproc=95 init_side_fds=127 init_side_rss_kb=13316 memavail_kb=702432 init_side_cpu_ticks=259
+H  1462.24 CH t=156.9 SAMPLE zombies=0 nproc=95 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=696200 init_side_cpu_ticks=273
+H  1472.29 CH t=167.0 SAMPLE zombies=0 nproc=95 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=717992 init_side_cpu_ticks=285
+H  1473.27 CH t=167.9 STATUS dbus-log: up (pid 173 pgid 173) 166 seconds
+H  1473.27 CH t=167.9 STATUS dbus: up (pid 187 pgid 187) 166 seconds, ready 166 seconds
+H  1473.27 CH t=167.9 STATUS driftwm-log: up (pid 174 pgid 174) 166 seconds
+H  1473.27 CH t=168.0 STATUS driftwm: up (pid 1540 pgid 1540) 0 seconds
+H  1473.28 CH t=168.0 STATUS guard-log: up (pid 157 pgid 157) 167 seconds
+H  1473.28 CH t=168.0 STATUS guard: up (pid 183 pgid 183) 166 seconds
+H  1473.28 CH t=168.0 STATUS hubd-log: up (pid 156 pgid 156) 167 seconds
+H  1473.28 CH t=168.0 STATUS hubd: up (pid 969 pgid 969) 44 seconds, ready 43 seconds
+H  1473.28 CH t=168.0 STATUS s6rc-fdholder: up (pid 133 pgid 133) 167 seconds, ready 167 seconds
+H  1473.28 CH t=168.0 STATUS s6rc-oneshot-runner: down (not started yet) 
+H  1473.28 CH t=168.0 STATUS seatd-log: up (pid 162 pgid 162) 167 seconds
+H  1473.29 CH t=168.0 STATUS seatd: up (pid 188 pgid 188) 166 seconds, ready 166 seconds
+H  1473.29 CH t=168.0 STATUS stage2: up (pid 109 pgid 109) 167 seconds
+H  1473.29 CH t=168.0 STATUS udevd-log: up (pid 160 pgid 160) 167 seconds
+H  1473.29 CH t=168.0 STATUS udevd: up (pid 189 pgid 189) 166 seconds, ready 165 seconds
+H  1473.29 CH t=168.0 STATUS waybar-log: up (pid 159 pgid 159) 167 seconds
+H  1473.29 CH t=168.0 STATUS waybar: down (exitcode 1) 0 seconds, normally up, want up, ready 0 seconds
+H  1473.30 CH t=168.0 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=52 bar-down
+H  1482.35 CH t=177.0 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=639736 init_side_cpu_ticks=290
+H  1492.41 CH t=187.1 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=637972 init_side_cpu_ticks=290
+H  1502.46 CH t=197.1 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=637972 init_side_cpu_ticks=290
+H  1512.53 CH t=207.2 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=635200 init_side_cpu_ticks=290
+H  1522.58 CH t=217.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=634696 init_side_cpu_ticks=291
+H  1532.62 CH t=227.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=633184 init_side_cpu_ticks=291
+H  1533.61 CH t=228.3 UNRECOVERED ev=3 fault=storm target=driftwm alert=0 why="clients missing: ok clients=waybar"
+H  1533.88 CH t=228.6 STATUS dbus-log: up (pid 173 pgid 173) 227 seconds
+H  1533.88 CH t=228.6 STATUS dbus: up (pid 187 pgid 187) 227 seconds, ready 227 seconds
+H  1533.88 CH t=228.6 STATUS driftwm-log: up (pid 174 pgid 174) 227 seconds
+H  1533.88 CH t=228.6 STATUS driftwm: up (pid 1602 pgid 1602) 59 seconds, ready 57 seconds
+H  1533.88 CH t=228.6 STATUS guard-log: up (pid 157 pgid 157) 227 seconds
+H  1533.88 CH t=228.6 STATUS guard: up (pid 183 pgid 183) 227 seconds
+H  1533.88 CH t=228.6 STATUS hubd-log: up (pid 156 pgid 156) 227 seconds
+H  1533.88 CH t=228.6 STATUS hubd: up (pid 969 pgid 969) 104 seconds, ready 104 seconds
+H  1533.89 CH t=228.6 STATUS s6rc-fdholder: up (pid 133 pgid 133) 228 seconds, ready 227 seconds
+H  1533.89 CH t=228.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H  1533.89 CH t=228.6 STATUS seatd-log: up (pid 162 pgid 162) 227 seconds
+H  1533.89 CH t=228.6 STATUS seatd: up (pid 188 pgid 188) 227 seconds, ready 227 seconds
+H  1533.89 CH t=228.6 STATUS stage2: up (pid 109 pgid 109) 228 seconds
+H  1533.89 CH t=228.6 STATUS udevd-log: up (pid 160 pgid 160) 227 seconds
+H  1533.89 CH t=228.6 STATUS udevd: up (pid 189 pgid 189) 227 seconds, ready 225 seconds
+H  1533.89 CH t=228.6 STATUS waybar-log: up (pid 159 pgid 159) 227 seconds
+H  1533.90 CH t=228.6 STATUS waybar: up (pid 1621 pgid 1621) 57 seconds, ready 56 seconds
+H  1534.00 CH t=228.7 operator-action target=driftwm why="clients missing: ok clients=waybar"
+H  1542.68 CH t=237.4 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=633332 init_side_cpu_ticks=297
+H  1552.74 CH t=247.4 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=633332 init_side_cpu_ticks=297
+H  1562.79 CH t=257.5 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=633080 init_side_cpu_ticks=298
+H  1572.87 CH t=267.5 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=632828 init_side_cpu_ticks=298
+H  1582.97 CH t=277.6 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=632576 init_side_cpu_ticks=298
+H  1593.05 CH t=287.7 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13316 memavail_kb=632324 init_side_cpu_ticks=298
+H  1594.35 CH t=289.0 STUCK ev=3 step=26 fault=storm target=driftwm why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H  1595.36 [  295.987951] reboot: Power down
+H# vm exit code 0 after 298s, loadavg ['0.38', '0.40', '0.44']
+H# launch 8 skip=26 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H  1595.53 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H  1595.58 Booting from ROM...
+H  1603.29 c[?7l[2JCH STAGE1 up=6.10
+H  1603.36 CH CAND s6rc pid1=s6-svscan + s6-rc
+H  1603.40 CH SUP-START up=6.21
+H  1603.52 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=207 cpus=2
+H  1609.47 CH S6RC-UP up=12.28
+H  1609.98 CH t=6.5 BOOT-OK up=12.79 ok=1 (seconds since kernel start; waited 6.3)
+H  1610.07 CH t=6.6 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=621120 init_side_cpu_ticks=227
+H  1620.14 CH t=16.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=620684 init_side_cpu_ticks=227
+H  1630.20 CH t=26.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=620432 init_side_cpu_ticks=227
+H  1640.28 CH t=36.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=620180 init_side_cpu_ticks=227
+H  1650.33 CH t=46.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=619928 init_side_cpu_ticks=228
+H  1660.39 CH t=56.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=619928 init_side_cpu_ticks=228
+H  1670.44 CH t=67.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=619424 init_side_cpu_ticks=228
+H  1680.49 CH t=77.0 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=619424 init_side_cpu_ticks=228
+H  1690.55 CH t=87.1 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=619424 init_side_cpu_ticks=229
+H  1693.05 CH t=89.6 STEP 27 fDep
+H  1700.61 CH t=97.2 SAMPLE zombies=0 nproc=94 init_side_fds=127 init_side_rss_kb=13320 memavail_kb=706376 init_side_cpu_ticks=241
+H  1710.68 CH t=107.2 SAMPLE zombies=0 nproc=96 init_side_fds=127 init_side_rss_kb=13320 memavail_kb=610808 init_side_cpu_ticks=253
+H  1720.79 CH t=117.3 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=616472 init_side_cpu_ticks=254
+H  1730.85 CH t=127.4 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=615996 init_side_cpu_ticks=254
+H  1740.91 CH t=137.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=615752 init_side_cpu_ticks=255
+H  1750.99 CH t=147.5 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=615752 init_side_cpu_ticks=255
+H  1753.35 CH t=149.9 UNRECOVERED ev=1 fault=dep-slow target=seatd alert=0 why="clients missing: ok clients=waybar"
+H  1753.63 CH t=150.2 STATUS dbus-log: up (pid 171 pgid 171) 148 seconds
+H  1753.63 CH t=150.2 STATUS dbus: up (pid 187 pgid 187) 148 seconds, ready 148 seconds
+H  1753.64 CH t=150.2 STATUS driftwm-log: up (pid 173 pgid 173) 148 seconds
+H  1753.64 CH t=150.2 STATUS driftwm: up (pid 721 pgid 721) 45 seconds, ready 43 seconds
+H  1753.64 CH t=150.2 STATUS guard-log: up (pid 163 pgid 163) 148 seconds
+H  1753.64 CH t=150.2 STATUS guard: up (pid 185 pgid 185) 148 seconds
+H  1753.64 CH t=150.2 STATUS hubd-log: up (pid 156 pgid 156) 149 seconds
+H  1753.64 CH t=150.2 STATUS hubd: up (pid 237 pgid 237) 144 seconds, ready 144 seconds
+H  1753.64 CH t=150.2 STATUS s6rc-fdholder: up (pid 131 pgid 131) 149 seconds, ready 149 seconds
+H  1753.65 CH t=150.2 STATUS s6rc-oneshot-runner: down (not started yet) 
+H  1753.65 CH t=150.2 STATUS seatd-log: up (pid 164 pgid 164) 149 seconds
+H  1753.65 CH t=150.2 STATUS seatd: up (pid 502 pgid 502) 60 seconds, ready 45 seconds
+H  1753.65 CH t=150.2 STATUS stage2: up (pid 108 pgid 108) 150 seconds
+H  1753.65 CH t=150.2 STATUS udevd-log: up (pid 157 pgid 157) 149 seconds
+H  1753.65 CH t=150.2 STATUS udevd: up (pid 180 pgid 180) 148 seconds, ready 147 seconds
+H  1753.66 CH t=150.2 STATUS waybar-log: up (pid 144 pgid 144) 149 seconds
+H  1753.66 CH t=150.2 STATUS waybar: up (pid 744 pgid 744) 43 seconds, ready 42 seconds
+H  1753.76 CH t=150.3 operator-action target=seatd why="clients missing: ok clients=waybar"
+H  1761.04 CH t=157.6 SAMPLE zombies=0 nproc=94 init_side_fds=127 init_side_rss_kb=13320 memavail_kb=663416 init_side_cpu_ticks=267
+H  1771.12 CH t=167.7 SAMPLE zombies=0 nproc=95 init_side_fds=127 init_side_rss_kb=13320 memavail_kb=610704 init_side_cpu_ticks=281
+H  1781.19 CH t=177.7 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=614716 init_side_cpu_ticks=282
+H  1791.25 CH t=187.8 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=615184 init_side_cpu_ticks=283
+H  1801.31 CH t=197.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=614456 init_side_cpu_ticks=283
+H  1811.38 CH t=207.9 SAMPLE zombies=0 nproc=96 init_side_fds=126 init_side_rss_kb=13320 memavail_kb=614456 init_side_cpu_ticks=283
+H  1814.02 CH t=210.6 STUCK ev=1 step=27 fault=dep-slow target=seatd why="clients missing: ok clients=waybar" (a reboot is the only way out; the host restarts the machine)
+H  1815.03 [  217.875401] reboot: Power down
+H# vm exit code 0 after 220s, loadavg ['0.56', '0.43', '0.45']
+H# end wall=1815.0s launches=8 suite_done=False

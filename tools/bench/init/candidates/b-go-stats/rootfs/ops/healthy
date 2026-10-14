@@ -1,0 +1,5 @@
+#!/bin/sh
+o=$(hubsim ctl /run/hubos/brain.sock status) || exit 1
+[ "$(echo "$o" | wc -l)" -eq 6 ] || exit 1
+echo "$o" | grep -v 'state=running up=true' >/dev/null && exit 1
+exit 0

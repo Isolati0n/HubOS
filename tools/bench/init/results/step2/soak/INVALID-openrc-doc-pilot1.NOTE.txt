@@ -1,0 +1,1 @@
+INVALID for memory: the soak driver's memory counter missed OpenRC's supervise-daemon processes (the kernel cuts process names at 15 characters; 'supervise-daemon' has 16), so the PSS total here is PID 1 only. Fault and restart data in this file are valid. Fixed in hubsim/chaos.go (supGroup); the pilot was rerun with new seeds.

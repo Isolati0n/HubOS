@@ -1,0 +1,3 @@
+#!/bin/sh
+mkdir -p /var/log/guard
+exec s6-log -b n5 s100000 /var/log/guard

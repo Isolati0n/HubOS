@@ -1,0 +1,418 @@
+H# start 2026-10-11 02:39:38 cand=c-go suite=soak cpus_seen=4 loadavg_at_start=['0.18', '0.29', '0.33']
+H# launch 1 skip=0 dur=2700 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/c-go.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=soak hub.dur=2700 hub.seed=5001 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=c-go hub.sup=s6-supervise hub.brain=brain
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.43 Booting from ROM...
+H     8.24 c[?7l[2JCH STAGE1 up=5.90
+H     8.29 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H     8.33 CH SUP-START up=5.99
+H     8.53 CH t=0.1 CHAOS start cand=c-go suite=soak seed=5001 cpus=2
+H    14.20 CH S6RC-UP up=11.86
+H    14.55 CH t=6.1 BOOT-OK up=12.22 ok=1 (seconds since kernel start; waited 5.8)
+H    19.56 CH t=11.1 STEP 1 fKill
+H    19.57 CH t=11.2 SOAKMEM t=0 restarts=0 faults=0
+H    19.67 CH t=11.3 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H    19.67 CH t=11.3 MEM pid=108 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.68 CH t=11.3 MEM pid=109 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.68 CH t=11.3 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.68 CH t=11.3 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.68 CH t=11.3 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.68 CH t=11.3 MEM pid=120 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.69 CH t=11.3 MEM pid=121 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.69 CH t=11.3 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.69 CH t=11.3 MEM pid=123 comm=s6-supervise rss_kb=724 pss_kb=94
+H    19.69 CH t=11.3 MEM pid=124 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.70 CH t=11.3 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.70 CH t=11.3 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.70 CH t=11.3 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.71 CH t=11.3 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.71 CH t=11.3 MEM pid=129 comm=s6-supervise rss_kb=724 pss_kb=94
+H    19.71 CH t=11.3 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.71 CH t=11.3 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.71 CH t=11.3 MEM pid=132 comm=s6-supervise rss_kb=720 pss_kb=90
+H    19.72 CH t=11.3 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H    19.72 CH t=11.3 MEM pid=258 comm=brain rss_kb=4376 pss_kb=4372
+H    20.20 CH t=11.8 EV ev=1 fault=kill target=dbus rec=0.43 ok=1 fixed=0 
+H    35.20 CH t=26.8 STEP 2 fKill
+H    37.89 CH t=29.5 EV ev=2 fault=kill target=waybar rec=2.47 ok=1 fixed=0 
+H    47.89 CH t=39.5 STEP 3 fSupKill
+H    49.81 CH t=41.4 EV ev=3 fault=supervisor-killed target=waybar rec=0.16 ok=1 fixed=0 child_kept_running=1
+H    53.03 CH t=44.6 EV ev=4 fault=after-supervisor-killed target=waybar rec=0.97 ok=1 fixed=0 supervisor_back=1
+H    62.03 CH t=53.6 STEP 4 fScanKill
+H    68.04 CH t=59.6 STEP 5 fKill
+H    71.54 CH t=63.1 EV ev=5 fault=kill target=seatd rec=3.30 ok=1 fixed=0 
+H    79.72 CH t=71.3 SOAKMEM t=60 restarts=8 faults=5
+H    79.75 CH t=71.3 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H    79.75 CH t=71.3 MEM pid=108 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.75 CH t=71.3 MEM pid=109 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.75 CH t=71.3 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.75 CH t=71.3 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.75 CH t=71.3 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.75 CH t=71.3 MEM pid=120 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.76 CH t=71.3 MEM pid=121 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.76 CH t=71.3 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.76 CH t=71.3 MEM pid=123 comm=s6-supervise rss_kb=724 pss_kb=94
+H    79.76 CH t=71.3 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.76 CH t=71.3 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.76 CH t=71.3 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.76 CH t=71.3 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.76 CH t=71.4 MEM pid=129 comm=s6-supervise rss_kb=724 pss_kb=94
+H    79.76 CH t=71.4 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.76 CH t=71.4 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.76 CH t=71.4 MEM pid=132 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.76 CH t=71.4 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H    79.76 CH t=71.4 MEM pid=751 comm=s6-supervise rss_kb=720 pss_kb=90
+H    79.77 CH t=71.4 MEM pid=258 comm=brain rss_kb=8340 pss_kb=8336
+H    80.54 CH t=72.1 STEP 6 fScanKill
+H    92.55 CH t=84.1 STEP 7 fDep
+H   113.53 CH t=105.1 EV ev=6 fault=dep-slow target=seatd rec=20.77 ok=1 fixed=0 
+H   113.53 CH t=105.1 DEPSTARTS mode=slow seatd=2 driftwm=2 waybar=11 hubd=1
+H   118.53 CH t=110.1 STEP 8 fStorm
+H   139.77 CH t=131.4 SOAKMEM t=120 restarts=12 faults=7
+H   139.80 CH t=131.4 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   139.80 CH t=131.4 MEM pid=108 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.80 CH t=131.4 MEM pid=109 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.80 CH t=131.4 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.80 CH t=131.4 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.80 CH t=131.4 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.80 CH t=131.4 MEM pid=120 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.80 CH t=131.4 MEM pid=121 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.81 CH t=131.4 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.81 CH t=131.4 MEM pid=123 comm=s6-supervise rss_kb=724 pss_kb=94
+H   139.81 CH t=131.4 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.81 CH t=131.4 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.81 CH t=131.4 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.81 CH t=131.4 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.82 CH t=131.4 MEM pid=129 comm=s6-supervise rss_kb=724 pss_kb=94
+H   139.82 CH t=131.4 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.82 CH t=131.4 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.82 CH t=131.4 MEM pid=132 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.82 CH t=131.4 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   139.83 CH t=131.4 MEM pid=751 comm=s6-supervise rss_kb=720 pss_kb=90
+H   139.83 CH t=131.4 MEM pid=258 comm=brain rss_kb=8580 pss_kb=8576
+H   143.68 CH t=135.3 STATUS dbus state=running up=true pid=339 restarts=1 last_failure=123s needs=[] cause="restarted unseen"
+H   143.68 CH t=135.3 STATUS driftwm state=running up=true pid=1744 restarts=1 last_failure=75s needs=[seatd udevd] cause="restarted unseen"
+H   143.69 CH t=135.3 STATUS hubd state=running up=true pid=1780 restarts=0 last_failure=never needs=[driftwm] cause=""
+H   143.69 CH t=135.3 STATUS seatd state=running up=true pid=1489 restarts=2 last_failure=50s needs=[] cause="restarted unseen"
+H   143.69 CH t=135.3 STATUS udevd state=running up=true pid=192 restarts=0 last_failure=never needs=[] cause=""
+H   143.69 CH t=135.3 STATUS waybar state=running up=false pid=2036 restarts=5 last_failure=15s needs=[driftwm dbus] cause="exitcode 1"
+H   143.70 CH t=135.3 STORM target=waybar dur=25 starts=21 starts_last10s=9 cpu_ticks_init_side=213 bar-up
+H   144.30 CH t=135.9 EV ev=7 fault=storm target=waybar rec=0.40 ok=1 fixed=0 starts=21 last10=9 cpu=213 bar-up
+H   159.30 CH t=150.9 STEP 9 fStorm
+H   184.58 CH t=176.2 STATUS dbus state=running up=true pid=339 restarts=1 last_failure=164s needs=[] cause="restarted unseen"
+H   184.59 CH t=176.2 STATUS driftwm state=restarted-dependents up=false pid=2933 restarts=6 last_failure=6s needs=[seatd udevd] cause="exitcode 1"
+H   184.59 CH t=176.2 STATUS hubd state=running up=false pid=1780 restarts=0 last_failure=never needs=[driftwm] cause=""
+H   184.59 CH t=176.2 STATUS seatd state=running up=true pid=1489 restarts=2 last_failure=91s needs=[] cause="restarted unseen"
+H   184.59 CH t=176.2 STATUS udevd state=running up=true pid=192 restarts=0 last_failure=never needs=[] cause=""
+H   184.59 CH t=176.2 STATUS waybar state=running up=false pid=2907 restarts=5 last_failure=56s needs=[driftwm dbus] cause="exitcode 1"
+H   184.60 CH t=176.2 STORM target=driftwm dur=25 starts=7 starts_last10s=2 cpu_ticks_init_side=196 bar-down
+H   190.60 CH t=182.2 EV ev=8 fault=storm target=driftwm rec=5.80 ok=1 fixed=0 starts=7 last10=2 cpu=196 bar-down
+H   199.83 CH t=191.4 SOAKMEM t=180 restarts=19 faults=9
+H   199.86 CH t=191.4 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   199.86 CH t=191.4 MEM pid=108 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.86 CH t=191.4 MEM pid=109 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.86 CH t=191.4 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.86 CH t=191.5 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.86 CH t=191.5 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.87 CH t=191.5 MEM pid=120 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.87 CH t=191.5 MEM pid=121 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.87 CH t=191.5 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.87 CH t=191.5 MEM pid=123 comm=s6-supervise rss_kb=724 pss_kb=94
+H   199.87 CH t=191.5 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.87 CH t=191.5 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.87 CH t=191.5 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.87 CH t=191.5 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.87 CH t=191.5 MEM pid=129 comm=s6-supervise rss_kb=724 pss_kb=94
+H   199.87 CH t=191.5 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.88 CH t=191.5 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.88 CH t=191.5 MEM pid=132 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.88 CH t=191.5 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   199.88 CH t=191.5 MEM pid=751 comm=s6-supervise rss_kb=720 pss_kb=90
+H   199.88 CH t=191.5 MEM pid=258 comm=brain rss_kb=8468 pss_kb=8464
+H   204.60 CH t=196.2 STEP 10 fSupKill
+H   259.88 CH t=251.5 SOAKMEM t=240 restarts=19 faults=9
+H   259.91 CH t=251.5 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   259.92 CH t=251.5 MEM pid=108 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.92 CH t=251.5 MEM pid=109 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.92 CH t=251.5 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.92 CH t=251.5 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.92 CH t=251.5 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.92 CH t=251.5 MEM pid=120 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.92 CH t=251.5 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.92 CH t=251.5 MEM pid=123 comm=s6-supervise rss_kb=724 pss_kb=94
+H   259.92 CH t=251.5 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.92 CH t=251.5 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.92 CH t=251.5 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.92 CH t=251.5 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.93 CH t=251.5 MEM pid=129 comm=s6-supervise rss_kb=724 pss_kb=94
+H   259.93 CH t=251.5 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.93 CH t=251.5 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.93 CH t=251.5 MEM pid=132 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.93 CH t=251.5 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.93 CH t=251.5 MEM pid=3362 comm=s6-supervise rss_kb=716 pss_kb=86
+H   259.94 CH t=251.5 MEM pid=751 comm=s6-supervise rss_kb=720 pss_kb=90
+H   259.94 CH t=251.5 MEM pid=258 comm=brain rss_kb=8476 pss_kb=8472
+H   266.29 CH t=257.9 UNRECOVERED ev=9 fault=supervisor-killed target=driftwm alert=1 why="waybar not running"
+H   266.33 CH t=257.9 STATUS dbus state=running up=true pid=339 restarts=1 last_failure=246s needs=[] cause="restarted unseen"
+H   266.33 CH t=257.9 STATUS driftwm state=degraded up=false pid=3095 restarts=7 last_failure=61s needs=[seatd udevd] cause="exitcode 1"
+H   266.33 CH t=257.9 STATUS hubd state=running up=false pid=3140 restarts=0 last_failure=never needs=[driftwm] cause=""
+H   266.34 CH t=257.9 STATUS seatd state=running up=true pid=1489 restarts=2 last_failure=173s needs=[] cause="restarted unseen"
+H   266.34 CH t=257.9 STATUS udevd state=running up=true pid=192 restarts=0 last_failure=never needs=[] cause=""
+H   266.34 CH t=257.9 STATUS waybar state=running up=false pid=3137 restarts=5 last_failure=138s needs=[driftwm dbus] cause="exitcode 1"
+H   266.34 CH t=257.9 ALERT-FILE "driftwm degraded: exitcode 1 (retrying stopped; the owner must act)"
+H   266.36 CH t=257.9 BRAIN-LOG brain: holding hubd: a dependency is down
+H   266.36 CH t=257.9 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=2 action=1
+H   266.37 CH t=258.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=3 action=1
+H   266.37 CH t=258.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=4 action=2
+H   266.37 CH t=258.0 BRAIN-LOG brain: holding waybar: a dependency is down
+H   266.37 CH t=258.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=5 action=2
+H   266.37 CH t=258.0 BRAIN-LOG brain: starting waybar: its dependencies are ready
+H   266.37 CH t=258.0 BRAIN-LOG brain: starting hubd: its dependencies are ready
+H   266.37 CH t=258.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=6 action=3
+H   266.38 CH t=258.0 BRAIN-LOG brain: driftwm is DEGRADED: alert raised, everything else keeps running
+H   266.38 CH t=258.0 BRAIN-LOG brain: holding waybar: a dependency is down
+H   266.38 CH t=258.0 BRAIN-LOG brain: holding hubd: a dependency is down
+H   266.43 CH t=258.0 operator-action target=driftwm why="waybar not running"
+H   266.55 ok
+H   319.94 CH t=311.5 SOAKMEM t=300 restarts=19 faults=9
+H   319.97 CH t=311.6 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   319.98 CH t=311.6 MEM pid=108 comm=s6-supervise rss_kb=716 pss_kb=86
+H   319.98 CH t=311.6 MEM pid=109 comm=s6-supervise rss_kb=716 pss_kb=86
+H   319.98 CH t=311.6 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   319.98 CH t=311.6 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   319.98 CH t=311.6 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   319.98 CH t=311.6 MEM pid=120 comm=s6-supervise rss_kb=720 pss_kb=90
+H   319.98 CH t=311.6 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H   319.99 CH t=311.6 MEM pid=123 comm=s6-supervise rss_kb=724 pss_kb=94
+H   319.99 CH t=311.6 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H   319.99 CH t=311.6 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   319.99 CH t=311.6 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   319.99 CH t=311.6 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   319.99 CH t=311.6 MEM pid=129 comm=s6-supervise rss_kb=724 pss_kb=94
+H   320.00 CH t=311.6 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H   320.00 CH t=311.6 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   320.00 CH t=311.6 MEM pid=132 comm=s6-supervise rss_kb=720 pss_kb=90
+H   320.00 CH t=311.6 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   320.00 CH t=311.6 MEM pid=3362 comm=s6-supervise rss_kb=716 pss_kb=86
+H   320.00 CH t=311.6 MEM pid=751 comm=s6-supervise rss_kb=720 pss_kb=90
+H   320.01 CH t=311.6 MEM pid=258 comm=brain rss_kb=8560 pss_kb=8556
+H   326.70 CH t=318.3 STUCK ev=9 step=10 fault=supervisor-killed target=driftwm why="waybar not running" (a reboot is the only way out; the host restarts the machine)
+H   327.71 [  325.408738] reboot: Power down
+H# vm exit code 0 after 328s, loadavg ['1.03', '0.72', '0.49']
+H# launch 2 skip=0 dur=2373 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/c-go.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=soak hub.dur=2373 hub.seed=5002 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=c-go hub.sup=s6-supervise hub.brain=brain
+H   327.84 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   327.87 Booting from ROM...
+H   334.85 c[?7l[2JCH STAGE1 up=5.55
+H   334.92 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H   334.95 CH SUP-START up=5.66
+H   335.14 CH t=0.1 CHAOS start cand=c-go suite=soak seed=5002 cpus=2
+H   340.50 CH S6RC-UP up=11.21
+H   340.91 CH t=5.9 BOOT-OK up=11.61 ok=1 (seconds since kernel start; waited 5.6)
+H   345.91 CH t=10.9 STEP 1 fSupKill
+H   345.93 CH t=10.9 SOAKMEM t=0 restarts=0 faults=0
+H   346.03 CH t=11.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   346.04 CH t=11.0 MEM pid=107 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.04 CH t=11.0 MEM pid=108 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.04 CH t=11.0 MEM pid=109 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.04 CH t=11.0 MEM pid=117 comm=s6-supervise rss_kb=716 pss_kb=86
+H   346.04 CH t=11.0 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.04 CH t=11.0 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.05 CH t=11.0 MEM pid=121 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.05 CH t=11.0 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.05 CH t=11.0 MEM pid=123 comm=s6-supervise rss_kb=716 pss_kb=86
+H   346.05 CH t=11.0 MEM pid=124 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.05 CH t=11.0 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H   346.06 CH t=11.0 MEM pid=126 comm=s6-supervise rss_kb=724 pss_kb=94
+H   346.06 CH t=11.0 MEM pid=127 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.06 CH t=11.0 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   346.06 CH t=11.0 MEM pid=129 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.06 CH t=11.0 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.07 CH t=11.0 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   346.07 CH t=11.0 MEM pid=132 comm=s6-supervise rss_kb=716 pss_kb=86
+H   346.07 CH t=11.1 MEM pid=258 comm=brain rss_kb=4756 pss_kb=4752
+H   406.07 CH t=71.1 SOAKMEM t=60 restarts=0 faults=0
+H   406.13 CH t=71.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   406.13 CH t=71.1 MEM pid=107 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.13 CH t=71.1 MEM pid=108 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.13 CH t=71.1 MEM pid=109 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.13 CH t=71.1 MEM pid=117 comm=s6-supervise rss_kb=716 pss_kb=86
+H   406.13 CH t=71.1 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.14 CH t=71.1 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.14 CH t=71.1 MEM pid=121 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.14 CH t=71.1 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.14 CH t=71.1 MEM pid=123 comm=s6-supervise rss_kb=716 pss_kb=86
+H   406.14 CH t=71.1 MEM pid=124 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.14 CH t=71.1 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H   406.15 CH t=71.1 MEM pid=126 comm=s6-supervise rss_kb=724 pss_kb=94
+H   406.15 CH t=71.1 MEM pid=127 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.15 CH t=71.1 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   406.15 CH t=71.1 MEM pid=129 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.15 CH t=71.1 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.15 CH t=71.1 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   406.16 CH t=71.1 MEM pid=132 comm=s6-supervise rss_kb=716 pss_kb=86
+H   406.16 CH t=71.1 MEM pid=340 comm=s6-supervise rss_kb=724 pss_kb=94
+H   406.16 CH t=71.1 MEM pid=258 comm=brain rss_kb=8240 pss_kb=8236
+H   407.69 CH t=72.7 UNRECOVERED ev=1 fault=supervisor-killed target=driftwm alert=1 why="waybar not running"
+H   407.78 CH t=72.8 STATUS dbus state=running up=true pid=196 restarts=0 last_failure=never needs=[] cause=""
+H   407.79 CH t=72.8 STATUS driftwm state=degraded up=false pid=862 restarts=6 last_failure=28s needs=[seatd udevd] cause="exitcode 1"
+H   407.79 CH t=72.8 STATUS hubd state=running up=false pid=243 restarts=0 last_failure=never needs=[driftwm] cause=""
+H   407.79 CH t=72.8 STATUS seatd state=running up=true pid=190 restarts=0 last_failure=never needs=[] cause=""
+H   407.79 CH t=72.8 STATUS udevd state=running up=true pid=179 restarts=0 last_failure=never needs=[] cause=""
+H   407.79 CH t=72.8 STATUS waybar state=running up=false pid=244 restarts=0 last_failure=never needs=[driftwm dbus] cause=""
+H   407.80 CH t=72.8 ALERT-FILE "driftwm degraded: exitcode 1 (retrying stopped; the owner must act)"
+H   407.81 CH t=72.8 BRAIN-LOG brain: started mode=s6 pid=258
+H   407.81 CH t=72.8 BRAIN-LOG brain: driftwm failed (restarted unseen), failures=1 action=0
+H   407.81 CH t=72.8 BRAIN-LOG brain: holding waybar: a dependency is down
+H   407.81 CH t=72.8 BRAIN-LOG brain: holding hubd: a dependency is down
+H   407.81 CH t=72.8 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=2 action=1
+H   407.82 CH t=72.8 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=3 action=1
+H   407.82 CH t=72.8 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=4 action=2
+H   407.82 CH t=72.8 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=5 action=2
+H   407.82 CH t=72.8 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=6 action=3
+H   407.82 CH t=72.8 BRAIN-LOG brain: driftwm is DEGRADED: alert raised, everything else keeps running
+H   407.87 CH t=72.9 operator-action target=driftwm why="waybar not running"
+H   407.91 ok
+H   466.16 CH t=131.1 SOAKMEM t=120 restarts=14 faults=0
+H   466.19 CH t=131.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   466.19 CH t=131.2 MEM pid=107 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.20 CH t=131.2 MEM pid=108 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.20 CH t=131.2 MEM pid=109 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.20 CH t=131.2 MEM pid=117 comm=s6-supervise rss_kb=716 pss_kb=86
+H   466.20 CH t=131.2 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.20 CH t=131.2 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.20 CH t=131.2 MEM pid=121 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.20 CH t=131.2 MEM pid=122 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.21 CH t=131.2 MEM pid=123 comm=s6-supervise rss_kb=716 pss_kb=86
+H   466.21 CH t=131.2 MEM pid=124 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.21 CH t=131.2 MEM pid=125 comm=s6-supervise rss_kb=716 pss_kb=86
+H   466.22 CH t=131.2 MEM pid=126 comm=s6-supervise rss_kb=724 pss_kb=94
+H   466.22 CH t=131.2 MEM pid=127 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.22 CH t=131.2 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   466.22 CH t=131.2 MEM pid=129 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.22 CH t=131.2 MEM pid=130 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.22 CH t=131.2 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   466.23 CH t=131.2 MEM pid=132 comm=s6-supervise rss_kb=716 pss_kb=86
+H   466.23 CH t=131.2 MEM pid=340 comm=s6-supervise rss_kb=724 pss_kb=94
+H   466.23 CH t=131.2 MEM pid=258 comm=brain rss_kb=8512 pss_kb=8508
+H   468.00 CH t=133.0 STUCK ev=1 step=1 fault=supervisor-killed target=driftwm why="waybar not running" (a reboot is the only way out; the host restarts the machine)
+H   469.01 [  139.748782] reboot: Power down
+H# vm exit code 0 after 141s, loadavg ['0.69', '0.67', '0.50']
+H# launch 3 skip=0 dur=2231 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/c-go.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=soak hub.dur=2231 hub.seed=5003 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=c-go hub.sup=s6-supervise hub.brain=brain
+H   469.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   469.19 Booting from ROM...
+H   475.88 c[?7l[2JCH STAGE1 up=5.33
+H   475.93 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H   475.97 CH SUP-START up=5.43
+H   476.11 CH t=0.1 CHAOS start cand=c-go suite=soak seed=5003 cpus=2
+H   481.50 CH S6RC-UP up=10.95
+H   481.83 CH t=5.8 BOOT-OK up=11.29 ok=1 (seconds since kernel start; waited 5.5)
+H   486.84 CH t=10.8 STEP 1 fKill
+H   486.85 CH t=10.8 SOAKMEM t=0 restarts=0 faults=0
+H   487.00 CH t=11.0 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   487.01 CH t=11.0 MEM pid=108 comm=s6-supervise rss_kb=720 pss_kb=94
+H   487.01 CH t=11.0 MEM pid=109 comm=s6-supervise rss_kb=724 pss_kb=94
+H   487.01 CH t=11.0 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.02 CH t=11.0 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   487.02 CH t=11.0 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   487.02 CH t=11.0 MEM pid=120 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.02 CH t=11.0 MEM pid=121 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.03 CH t=11.0 MEM pid=122 comm=s6-supervise rss_kb=724 pss_kb=94
+H   487.03 CH t=11.0 MEM pid=123 comm=s6-supervise rss_kb=720 pss_kb=90
+H   487.03 CH t=11.0 MEM pid=124 comm=s6-supervise rss_kb=720 pss_kb=90
+H   487.03 CH t=11.0 MEM pid=125 comm=s6-supervise rss_kb=720 pss_kb=90
+H   487.03 CH t=11.0 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.04 CH t=11.0 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.04 CH t=11.0 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.04 CH t=11.0 MEM pid=129 comm=s6-supervise rss_kb=720 pss_kb=90
+H   487.04 CH t=11.0 MEM pid=130 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.04 CH t=11.0 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   487.05 CH t=11.0 MEM pid=132 comm=s6-supervise rss_kb=724 pss_kb=94
+H   487.05 CH t=11.0 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   487.05 CH t=11.0 MEM pid=257 comm=brain rss_kb=4568 pss_kb=4564
+H   490.84 CH t=14.8 EV ev=1 fault=kill target=driftwm rec=3.79 ok=1 fixed=0 
+H   495.84 CH t=19.8 STEP 2 fKill
+H   496.45 CH t=20.4 EV ev=2 fault=kill target=waybar rec=0.40 ok=1 fixed=0 
+H   508.45 CH t=32.4 STEP 3 fKill
+H   510.11 CH t=34.1 EV ev=3 fault=kill target=waybar rec=1.44 ok=1 fixed=0 
+H   519.11 CH t=43.1 STEP 4 fKill
+H   524.94 CH t=48.9 EV ev=4 fault=kill target=seatd rec=5.62 ok=1 fixed=0 
+H   537.94 CH t=61.9 STEP 5 fKill
+H   542.92 CH t=66.9 EV ev=5 fault=kill target=udevd rec=4.76 ok=1 fixed=0 
+H   547.05 CH t=71.0 SOAKMEM t=60 restarts=13 faults=5
+H   547.12 CH t=71.1 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   547.12 CH t=71.1 MEM pid=108 comm=s6-supervise rss_kb=720 pss_kb=94
+H   547.12 CH t=71.1 MEM pid=109 comm=s6-supervise rss_kb=724 pss_kb=94
+H   547.13 CH t=71.1 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.13 CH t=71.1 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   547.13 CH t=71.1 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   547.14 CH t=71.1 MEM pid=120 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.14 CH t=71.1 MEM pid=121 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.14 CH t=71.1 MEM pid=122 comm=s6-supervise rss_kb=724 pss_kb=94
+H   547.14 CH t=71.1 MEM pid=123 comm=s6-supervise rss_kb=720 pss_kb=90
+H   547.14 CH t=71.1 MEM pid=124 comm=s6-supervise rss_kb=720 pss_kb=90
+H   547.14 CH t=71.1 MEM pid=125 comm=s6-supervise rss_kb=720 pss_kb=90
+H   547.14 CH t=71.1 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.14 CH t=71.1 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.14 CH t=71.1 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.14 CH t=71.1 MEM pid=129 comm=s6-supervise rss_kb=720 pss_kb=90
+H   547.14 CH t=71.1 MEM pid=130 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.15 CH t=71.1 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   547.15 CH t=71.1 MEM pid=132 comm=s6-supervise rss_kb=724 pss_kb=94
+H   547.15 CH t=71.1 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   547.15 CH t=71.1 MEM pid=257 comm=brain rss_kb=8388 pss_kb=8384
+H   554.92 CH t=78.9 STEP 6 fKill
+H   562.88 CH t=86.9 EV ev=6 fault=kill target=seatd rec=7.75 ok=1 fixed=0 
+H   578.88 CH t=102.9 STEP 7 fKill
+H   584.82 CH t=108.8 EV ev=7 fault=kill target=driftwm rec=5.73 ok=1 fixed=0 
+H   592.82 CH t=116.8 STEP 8 fKill
+H   600.91 CH t=124.9 EV ev=8 fault=kill target=udevd rec=7.88 ok=1 fixed=0 
+H   607.15 CH t=131.1 SOAKMEM t=120 restarts=28 faults=8
+H   607.18 CH t=131.2 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   607.18 CH t=131.2 MEM pid=108 comm=s6-supervise rss_kb=720 pss_kb=94
+H   607.18 CH t=131.2 MEM pid=109 comm=s6-supervise rss_kb=724 pss_kb=94
+H   607.18 CH t=131.2 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.18 CH t=131.2 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   607.18 CH t=131.2 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   607.18 CH t=131.2 MEM pid=120 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.18 CH t=131.2 MEM pid=121 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.18 CH t=131.2 MEM pid=122 comm=s6-supervise rss_kb=724 pss_kb=94
+H   607.19 CH t=131.2 MEM pid=123 comm=s6-supervise rss_kb=720 pss_kb=90
+H   607.19 CH t=131.2 MEM pid=124 comm=s6-supervise rss_kb=720 pss_kb=90
+H   607.19 CH t=131.2 MEM pid=125 comm=s6-supervise rss_kb=720 pss_kb=90
+H   607.19 CH t=131.2 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.19 CH t=131.2 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.19 CH t=131.2 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.19 CH t=131.2 MEM pid=129 comm=s6-supervise rss_kb=720 pss_kb=90
+H   607.19 CH t=131.2 MEM pid=130 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.20 CH t=131.2 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   607.20 CH t=131.2 MEM pid=132 comm=s6-supervise rss_kb=724 pss_kb=94
+H   607.20 CH t=131.2 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   607.20 CH t=131.2 MEM pid=257 comm=brain rss_kb=8520 pss_kb=8516
+H   608.91 CH t=132.9 STEP 9 fBrainKill
+H   612.37 CH t=136.4 EV ev=9 fault=brain-killed target=brain rec=0.14 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H   631.37 CH t=155.4 STEP 10 fDep
+H   658.13 CH t=182.1 EV ev=10 fault=dep-fail target=seatd rec=6.54 ok=1 fixed=0 
+H   658.13 CH t=182.1 DEPSTARTS mode=fail seatd=17 driftwm=2 waybar=10 hubd=1
+H   667.20 CH t=191.2 SOAKMEM t=180 restarts=33 faults=10
+H   667.24 CH t=191.2 MEM pid=1 comm=s6-svscan rss_kb=1100 pss_kb=1092
+H   667.25 CH t=191.2 MEM pid=108 comm=s6-supervise rss_kb=720 pss_kb=94
+H   667.25 CH t=191.2 MEM pid=109 comm=s6-supervise rss_kb=724 pss_kb=94
+H   667.25 CH t=191.2 MEM pid=110 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.25 CH t=191.2 MEM pid=118 comm=s6-supervise rss_kb=720 pss_kb=90
+H   667.25 CH t=191.2 MEM pid=119 comm=s6-supervise rss_kb=720 pss_kb=90
+H   667.26 CH t=191.2 MEM pid=120 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.26 CH t=191.2 MEM pid=121 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.26 CH t=191.2 MEM pid=122 comm=s6-supervise rss_kb=724 pss_kb=94
+H   667.26 CH t=191.2 MEM pid=123 comm=s6-supervise rss_kb=720 pss_kb=90
+H   667.26 CH t=191.2 MEM pid=124 comm=s6-supervise rss_kb=720 pss_kb=90
+H   667.26 CH t=191.2 MEM pid=125 comm=s6-supervise rss_kb=720 pss_kb=90
+H   667.27 CH t=191.3 MEM pid=126 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.27 CH t=191.3 MEM pid=127 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.27 CH t=191.3 MEM pid=128 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.27 CH t=191.3 MEM pid=129 comm=s6-supervise rss_kb=720 pss_kb=90
+H   667.27 CH t=191.3 MEM pid=130 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.27 CH t=191.3 MEM pid=131 comm=s6-supervise rss_kb=720 pss_kb=90
+H   667.27 CH t=191.3 MEM pid=132 comm=s6-supervise rss_kb=724 pss_kb=94
+H   667.27 CH t=191.3 MEM pid=133 comm=s6-supervise rss_kb=716 pss_kb=86
+H   667.28 CH t=191.3 MEM pid=2415 comm=brain rss_kb=8096 pss_kb=8092
+H   673.13 CH t=197.1 STEP 11 fHang
+H   673.46 CH t=197.4 EV ev=11 fault=hang-spin target=driftwm rec=0.12 ok=1 fixed=0 

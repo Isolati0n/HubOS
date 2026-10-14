@@ -1,0 +1,143 @@
+H# start 2026-10-14 01:05:22 cand=s6rc-par-wd4b suite=alert cpus_seen=4 loadavg_at_start=['0.44', '0.36', '0.16']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/rf/s6rc-par-wd4b.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=alert hub.dur=600 hub.seed=511 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.case=retry7 hub.cand=s6rc hub.sup=s6-supervise hub.watcher=watcher
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.41 Booting from ROM...
+H     8.06 c[?7l[2JCH STAGE1 up=4.89
+H     8.11 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     8.13 CH SUP-START up=4.96
+H     8.26 CH t=0.1 CHAOS start cand=s6rc suite=alert seed=511 cpus=2
+H    14.90 CH S6RC-UP up=11.73
+H    15.04 watcher: started pid=271 probes=state(5s)+wl_display.sync(2s), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version + auto-clear after 1h0m0s)
+H    15.04 watcher: started pid=271 probes=state(5s)+wl_display.sync(2s), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version + auto-clear after 1h0m0s)
+H    15.05 watcher: budget file missing: starting with an empty budget (/run/hubos/watcher.budget)
+H    15.05 watcher: budget file missing: starting with an empty budget (/run/hubos/watcher.budget)
+H    15.37 CH t=7.2 BOOT-OK up=12.19 ok=1 (seconds since kernel start; waited 6.9)
+H    16.09 watcher: round 1 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    16.09 watcher: round 1 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    17.07 watcher: round 2 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    17.07 watcher: round 2 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    18.06 watcher: round 3 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    18.06 watcher: round 3 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    19.06 watcher: round 4 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    19.06 watcher: round 4 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    20.06 watcher: round 5 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    20.07 watcher: round 5 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    20.38 CH t=12.2 STEP 1 retry7
+H    20.45 CH t=12.2 RETRY7 start: pids seatd=180 udevd=184 dbus=188 driftwm=215 waybar=248 hubd=249 watcher=271; alert files: []
+H    20.61 CH t=12.4 RETRY7 harmless-1 (waybar, no alert, no dependents): `/bin/hub-retry waybar` took 0.09s; output: "hub-retry: nothing to retry: waybar has no alert and none of its dependents has one. State: up (pid 238 pgid 238) 7 seconds, ready 5 seconds\nexit=0"; alert files: []; pids: seatd=180 udevd=184 dbus=188 driftwm=215 waybar=248 hubd=249 watcher=271
+H    20.70 CH t=12.5 RETRY7 harmless-2 (unknown name): `/bin/hub-retry nosuchthing` took 0.02s; output: "hub-retry: 'nosuchthing' is not a service I know\nexit=2"; alert files: []; pids: seatd=180 udevd=184 dbus=188 driftwm=215 waybar=248 hubd=249 watcher=271
+H    20.82 CH t=12.6 RETRY7 harmless-3 (no argument): `/bin/hub-retry` took 0.03s; output: "usage: hub-retry SERVICE\nexit=2"; alert files: []; pids: seatd=180 udevd=184 dbus=188 driftwm=215 waybar=248 hubd=249 watcher=271
+H    20.86 CH t=12.7 RETRY7 after the harmless calls: desktop why=""
+H    21.11 watcher: STREAK starts; failing process: none
+H    21.11 watcher: STREAK starts; failing process: none
+H    21.11 watcher: round 6 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H    21.11 watcher: round 6 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H    22.06 watcher: round 7 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s result=idle
+H    22.06 watcher: round 7 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s result=idle
+H    23.06 watcher: round 8 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s result=idle
+H    23.06 watcher: round 8 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s result=idle
+H    24.05 watcher: round 9 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s result=idle
+H    24.06 watcher: round 9 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s result=idle
+H    25.06 watcher: round 10 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s result=idle
+H    25.06 watcher: round 10 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s result=idle
+H    26.05 watcher: round 11 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.0s result=idle
+H    26.05 watcher: round 11 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.0s result=idle
+H    27.05 watcher: round 12 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.0s result=idle
+H    27.05 watcher: round 12 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.0s result=idle
+H    28.05 watcher: round 13 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.0s result=idle
+H    28.06 watcher: round 13 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.0s result=idle
+H    29.05 watcher: round 14 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=9 since_first=8.0s result=idle
+H    29.06 watcher: round 14 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=9 since_first=8.0s result=idle
+H    30.05 watcher: round 15 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.0s result=idle
+H    30.06 watcher: round 15 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.0s result=idle
+H    31.05 watcher: round 16 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.0s result=idle
+H    31.05 watcher: round 16 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.0s result=idle
+H    32.06 watcher: round 17 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.0s result=idle
+H    32.06 watcher: round 17 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.0s result=idle
+H    33.05 watcher: round 18 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=13 since_first=12.0s result=idle
+H    33.06 watcher: round 18 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=13 since_first=12.0s result=idle
+H    34.05 watcher: round 19 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=14 since_first=13.0s result=idle
+H    34.05 watcher: round 19 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=14 since_first=13.0s result=idle
+H    35.06 watcher: round 20 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=15 since_first=14.0s result=idle
+H    35.06 watcher: round 20 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=15 since_first=14.0s result=idle
+H    36.05 watcher: round 21 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=16 since_first=15.0s result=idle
+H    36.06 watcher: round 21 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=16 since_first=15.0s result=idle
+H    37.05 watcher: round 22 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=17 since_first=16.0s result=idle
+H    37.06 watcher: round 22 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=17 since_first=16.0s result=idle
+H    38.06 watcher: round 23 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=18 since_first=17.0s result=idle
+H    38.06 watcher: round 23 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=18 since_first=17.0s result=idle
+H    39.06 watcher: round 24 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=19 since_first=18.0s result=idle
+H    39.06 watcher: round 24 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=19 since_first=18.0s result=idle
+H    40.05 watcher: round 25 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=20 since_first=19.0s result=idle
+H    40.06 watcher: round 25 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=20 since_first=19.0s result=idle
+H    41.06 watcher: round 26 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=21 since_first=20.0s result=idle
+H    41.06 watcher: round 26 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=21 since_first=20.0s result=idle
+H    42.05 watcher: round 27 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=22 since_first=21.0s result=idle
+H    42.06 watcher: round 27 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=22 since_first=21.0s result=idle
+H    43.06 watcher: round 28 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=23 since_first=22.0s result=idle
+H    43.06 watcher: round 28 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=23 since_first=22.0s result=idle
+H    44.05 watcher: round 29 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=24 since_first=23.0s result=idle
+H    44.06 watcher: round 29 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=24 since_first=23.0s result=idle
+H    45.05 watcher: round 30 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=25 since_first=24.0s result=idle
+H    45.05 watcher: round 30 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=25 since_first=24.0s result=idle
+H    46.06 watcher: round 31 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=26 since_first=25.0s result=idle
+H    46.06 watcher: round 31 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=26 since_first=25.0s result=idle
+H    47.06 watcher: round 32 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=27 since_first=26.0s result=idle
+H    47.06 watcher: round 32 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=27 since_first=26.0s result=idle
+H    48.06 watcher: round 33 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=28 since_first=27.0s result=idle
+H    48.06 watcher: round 33 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=28 since_first=27.0s result=idle
+H    49.06 watcher: round 34 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=29 since_first=28.0s result=idle
+H    49.06 watcher: round 34 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=29 since_first=28.0s result=idle
+H    50.05 watcher: round 35 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=30 since_first=29.0s result=idle
+H    50.06 watcher: round 35 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=30 since_first=29.0s result=idle
+H    51.05 watcher: round 36 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=31 since_first=30.0s result=idle
+H    51.06 watcher: round 36 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=31 since_first=30.0s result=idle
+H    52.07 watcher: SKIP: process changed (recorded none, now none): no kill, nothing counted, new streak with the new process
+H    52.07 watcher: SKIP: process changed (recorded none, now none): no kill, nothing counted, new streak with the new process
+H    52.07 watcher: round 37 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=skipped
+H    52.07 watcher: round 37 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=skipped
+H    53.05 watcher: round 38 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s result=idle
+H    53.06 watcher: round 38 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s result=idle
+H    54.06 watcher: round 39 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s result=idle
+H    54.06 watcher: round 39 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s result=idle
+H    55.05 watcher: round 40 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s result=idle
+H    55.06 watcher: round 40 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s result=idle
+H    56.05 watcher: round 41 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s result=idle
+H    56.06 watcher: round 41 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s result=idle
+H    57.05 watcher: round 42 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.0s result=idle
+H    57.06 watcher: round 42 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.0s result=idle
+H    58.07 watcher: round 43 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.0s result=idle
+H    58.07 watcher: round 43 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.0s result=idle
+H    59.06 watcher: round 44 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.0s result=idle
+H    59.06 watcher: round 44 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.0s result=idle
+H    60.06 watcher: round 45 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=9 since_first=8.0s result=idle
+H    60.06 watcher: round 45 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=9 since_first=8.0s result=idle
+H    61.06 CH t=52.8 RETRY7 seatd storm over: starts=4; alert files BEFORE the retry: [driftwm,seatd] (seatd: "seatd stopped: tried 5 times in 60 s", driftwm: "driftwm stopped: tried 5 times in 60 s"); svstat: seatd: down (exitcode 1) 36 seconds, normally up, ready 36 seconds | udevd: up (pid 184 pgid 184) 51 seconds, ready 50 seconds | dbus: up (pid 188 pgid 188) 51 seconds, ready 51 seconds | driftwm: down (exitcode 1) 34 seconds, normally up, ready 34 seconds | waybar: up (pid 549 pgid 549) 34 seconds | hubd: up (pid 578 pgid 578) 33 seconds; why="seatd not running"
+H    61.07 watcher: round 46 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.0s result=idle
+H    61.07 watcher: round 46 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.0s result=idle
+H    61.36 CH t=53.2 RETRY7 dependent-with-stopped-parent (driftwm, 1st call): `/bin/hub-retry driftwm` took 0.05s; output: "hub-retry: driftwm waits for seatd, which is stopped: seatd stopped: tried 5 times in 60 s. Nothing done. Run: hub-retry seatd\nexit=1"; alert files: [driftwm,seatd]; pids: seatd=0 udevd=184 dbus=188 driftwm=0 waybar=0 hubd=0 watcher=271
+H    61.50 CH t=53.3 RETRY7 dependent-with-stopped-parent (driftwm, 2nd call): `/bin/hub-retry driftwm` took 0.05s; output: "hub-retry: driftwm waits for seatd, which is stopped: seatd stopped: tried 5 times in 60 s. Nothing done. Run: hub-retry seatd\nexit=1"; alert files: [driftwm,seatd]; pids: seatd=0 udevd=184 dbus=188 driftwm=0 waybar=0 hubd=0 watcher=271
+H    61.59 CH t=53.4 RETRY7 after the two calls on driftwm: alert files [driftwm,seatd]; pids same as before=true
+H    61.59 CH t=53.4 PERSON-COMMAND *** the harness plays the person: ONE command, hub-retry seatd ***
+H    62.06 watcher: round 47 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.0s result=idle
+H    62.06 watcher: round 47 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.0s result=idle
+H    63.05 watcher: round 48 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.0s result=idle
+H    63.06 watcher: round 48 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.0s result=idle
+H    63.87 CH t=55.7 RETRY7 the one command (seatd): `/bin/hub-retry seatd` took 2.19s; output: "hub-retry: starting seatd (seatd stopped: tried 5 times in 60 s)\nhub-retry: starting driftwm (driftwm stopped: tried 5 times in 60 s)\nhub-retry: seatd is up\nhub-retry: driftwm is up\nexit=0"; alert files: []; pids: seatd=964 udevd=184 dbus=188 driftwm=976 waybar=0 hubd=0 watcher=271
+H    64.06 watcher: round 49 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    64.06 watcher: round 49 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    65.06 watcher: round 50 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    65.06 watcher: round 50 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    66.07 watcher: round 51 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    66.07 watcher: round 51 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    66.65 CH t=58.4 RETRY7 RESULT: the command returned after 2.19s; desktop ok=true 2.43s after it returned (4.91s after it started); alert files AFTER: []; pids seatd=964 udevd=184 dbus=188 driftwm=976 waybar=1057 hubd=1045 watcher=271; svstat: seatd: up (pid 964 pgid 964) 4 seconds, ready 4 seconds | udevd: up (pid 184 pgid 184) 57 seconds, ready 55 seconds | dbus: up (pid 188 pgid 188) 57 seconds, ready 57 seconds | driftwm: up (pid 976 pgid 976) 4 seconds, ready 2 seconds | waybar: up (pid 1040 pgid 1040) 1 seconds | hubd: up (pid 1035 pgid 1035) 2 seconds, ready 0 seconds
+H    66.78 CH t=58.6 RETRY7 harmless-4 (seatd again, nothing stopped now): `/bin/hub-retry seatd` took 0.07s; output: "hub-retry: nothing to retry: seatd has no alert and none of its dependents has one. State: up (pid 964 pgid 964) 5 seconds, ready 4 seconds\nexit=0"; alert files: []; pids: seatd=964 udevd=184 dbus=188 driftwm=976 waybar=1057 hubd=1045 watcher=271
+H    66.79 CH t=58.6 EV ev=1 fault=retry7 target=seatd rec=5.19 ok=1 fixed=0
+H    66.79 CH t=58.6 SUITE-DONE
+H    67.06 watcher: round 52 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    67.06 watcher: round 52 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    68.07 watcher: round 53 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    68.07 watcher: round 53 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    68.80 [   65.617411] reboot: Power down
+H# vm exit code 0 after 69s, loadavg ['0.76', '0.47', '0.21']
+H# end wall=68.8s launches=1 suite_done=True

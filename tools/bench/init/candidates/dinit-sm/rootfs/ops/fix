@@ -1,0 +1,2 @@
+#!/bin/sh
+/opt/dinit/bin/dinitctl start boot 2>/dev/null; /opt/dinit/bin/dinitctl restart $1 2>/dev/null

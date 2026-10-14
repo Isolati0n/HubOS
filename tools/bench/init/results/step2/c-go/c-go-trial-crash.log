@@ -1,0 +1,17 @@
+H# start 2026-10-10 20:57:35 cand=c-go suite=trial cpus_seen=4 loadavg_at_start=['1.06', '0.76', '0.57']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.18 Booting from ROM...
+H     7.41 c[?7l[2JCH STAGE1 up=5.70
+H     7.46 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H     7.51 CH SUP-START up=5.80
+H     7.75 CH t=0.1 CHAOS start cand=c-go suite=trial seed=131 cpus=2
+H    68.13 CH t=60.5 TRIAL ROLLBACK scenario=crash after=60s true_state="driftwm not running" guard_still_feeding=true
+H    68.18 CH t=60.6 STATUS dial unix /run/hubos/brain.sock: connect: no such file or directory
+H    69.19 [   67.542358] reboot: Restarting system
+H    69.32 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    69.34 Booting from ROM...
+H    76.54 c[?7l[2JCH STAGE1 up=5.77
+H# trial finished
+H# vm exit code -9 after 77s, loadavg ['0.88', '0.76', '0.59']
+H# end wall=76.5s launches=1 suite_done=True

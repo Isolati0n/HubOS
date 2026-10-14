@@ -1,0 +1,2447 @@
+H# chunk 1 of candidate openrc-doc, seed 7310, planned 7200 s 
+H# start 2026-10-12 02:34:22 cand=openrc-doc suite=soak cpus_seen=4 loadavg_at_start=['0.44', '0.48', '0.51']
+H# launch 1 skip=0 dur=7200 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/openrc-doc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=soak hub.dur=7200 hub.seed=7310 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=openrc hub.sup=supervise-daemon
+H     0.19 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.32 Booting from ROM...
+H     6.35 c[?7l[2JCH STAGE1 up=3.77
+H     6.41 CH CAND openrc pid1=openrc-init
+H     6.42 CH SUP-START up=3.85
+H     6.57 OpenRC init version 0.63.3 starting
+H     6.58 Starting sysinit runlevel
+H     6.62 CH t=0.1 CHAOS start cand=openrc suite=soak seed=7310 cpus=2
+H     6.81 
+H     6.82    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     6.82 
+H     6.99  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     7.04  [1m[32m*[m Mounting /proc[K ...
+H     7.10  [1m[31m*[m /etc/fstab does not exist[K
+H     7.17  [ ok ]
+H     7.35  [1m[32m*[m /run/openrc: creating directory[K
+H     7.42  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     7.45  [1m[32m*[m Caching service dependencies[K ...
+H     7.81  [ ok ]
+H     7.83 Starting boot runlevel
+H     7.94 Starting default runlevel
+H     8.52  [1m[32m*[m Starting seatd[K ...
+H     8.78  [1m[32m*[m Starting dbus[K ...
+H     8.82  [ ok ]
+H     8.90  [1m[32m*[m Starting udevd[K ...
+H     9.07  [ ok ]
+H    10.60  [ ok ]
+H    10.89  [1m[32m*[m Starting driftwm[K ...
+H    13.73  [ ok ]
+H    14.03  [1m[32m*[m Starting hubd[K ...
+H    14.06  [1m[32m*[m Starting waybar[K ...
+H    15.95  [ ok ]
+H    16.07  [ ok ]
+H    16.38 CH t=9.8 BOOT-OK up=13.80 ok=1 (seconds since kernel start; waited 9.6)
+H    21.38 CH t=14.8 STEP 1 fSupKill
+H    21.39 CH t=14.8 SOAKMEM t=0 restarts=0 faults=0
+H    21.46 CH t=14.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=627
+H    21.46 CH t=14.9 MEM pid=191 comm=supervise-daemo rss_kb=1656 pss_kb=454
+H    21.46 CH t=14.9 MEM pid=221 comm=supervise-daemo rss_kb=1544 pss_kb=442
+H    21.46 CH t=14.9 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=427
+H    21.46 CH t=14.9 MEM pid=327 comm=supervise-daemo rss_kb=1572 pss_kb=426
+H    21.47 CH t=14.9 MEM pid=328 comm=supervise-daemo rss_kb=1644 pss_kb=461
+H    23.19 CH t=16.6 EV ev=1 fault=supervisor-killed target=driftwm rec=0.07 ok=1 fixed=0 child_kept_running=1
+H    81.47 CH t=74.9 SOAKMEM t=60 restarts=0 faults=0
+H    81.51 CH t=75.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=579
+H    81.51 CH t=75.0 MEM pid=191 comm=supervise-daemo rss_kb=1656 pss_kb=454
+H    81.52 CH t=75.0 MEM pid=221 comm=supervise-daemo rss_kb=1544 pss_kb=440
+H    81.52 CH t=75.0 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=425
+H    81.53 CH t=75.0 MEM pid=327 comm=supervise-daemo rss_kb=1704 pss_kb=466
+H    81.53 CH t=75.0 MEM pid=328 comm=supervise-daemo rss_kb=1712 pss_kb=474
+H    85.31 CH t=78.8 UNRECOVERED ev=2 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H    85.44 CH t=78.9 STATUS Runlevel: sysinit
+H    85.44 CH t=78.9 STATUS Runlevel: default
+H    85.45 CH t=78.9 STATUS  dbus                                                  [  started 00:01:17 (0) ]
+H    85.45 CH t=78.9 STATUS  seatd                                                 [  started 00:01:17 (0) ]
+H    85.45 CH t=78.9 STATUS  udevd                                                 [  started 00:01:17 (0) ]
+H    85.45 CH t=78.9 STATUS  driftwm                                                      [  unsupervised  ]
+H    85.45 CH t=78.9 STATUS  waybar                                                [  started 00:00:59 (1) ]
+H    85.45 CH t=78.9 STATUS  hubd                                                  [  started 00:00:58 (1) ]
+H    85.46 CH t=78.9 STATUS Runlevel: boot
+H    85.46 CH t=78.9 STATUS Dynamic Runlevel: hotplugged
+H    85.46 CH t=78.9 STATUS Dynamic Runlevel: needed/wanted
+H    85.46 CH t=78.9 STATUS Dynamic Runlevel: manual
+H    85.49 CH t=79.0 operator-action target=driftwm why="driftwm not running"
+H    86.23  [1m[32m*[m Stopping waybar[K ...
+H    86.23  [1m[32m*[m Stopping hubd[K ...
+H    86.42  [ ok ]
+H    86.43  [ ok ]
+H    86.77  [1m[32m*[m Stopping driftwm[K ...
+H    86.90  [ ok ]
+H    87.15  [1m[32m*[m Starting driftwm[K ...
+H    89.23  [ ok ]
+H    89.55  [1m[32m*[m Starting hubd[K ...
+H    89.71  [1m[32m*[m Starting waybar[K ...
+H    91.39  [ ok ]
+H    91.45  [ ok ]
+H    91.70 CH t=85.2 EV ev=2 fault=after-supervisor-killed target=driftwm rec=62.00 ok=0 fixed=1 supervisor_back=1
+H   102.70 CH t=96.2 STEP 2 fKill
+H   109.49 CH t=103.0 EV ev=3 fault=kill target=driftwm rec=6.58 ok=1 fixed=0 
+H   128.50 CH t=122.0 STEP 3 fKill
+H   134.76 CH t=128.2 EV ev=4 fault=kill target=seatd rec=6.05 ok=1 fixed=0 
+H   141.54 CH t=135.0 SOAKMEM t=120 restarts=15 faults=3
+H   141.58 CH t=135.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=514
+H   141.58 CH t=135.0 MEM pid=1237 comm=supervise-daemo rss_kb=1740 pss_kb=436
+H   141.58 CH t=135.0 MEM pid=1298 comm=supervise-daemo rss_kb=1740 pss_kb=429
+H   141.58 CH t=135.0 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=412
+H   141.58 CH t=135.0 MEM pid=191 comm=supervise-daemo rss_kb=1788 pss_kb=446
+H   141.59 CH t=135.0 MEM pid=221 comm=supervise-daemo rss_kb=1544 pss_kb=388
+H   141.59 CH t=135.0 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=389
+H   141.77 CH t=135.2 STEP 4 fOOM
+H   141.82 CH t=135.3 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H   151.31 CH t=144.8 EV ev=5 fault=oom target=hog rec=0.12 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   158.32 CH t=151.8 STEP 5 fKill
+H   164.68 CH t=158.1 EV ev=6 fault=kill target=seatd rec=6.15 ok=1 fixed=0 
+H   183.68 CH t=177.1 STEP 6 fKill
+H   185.35 CH t=178.8 EV ev=7 fault=kill target=dbus rec=1.47 ok=1 fixed=0 
+H   190.36 CH t=183.8 STEP 7 fKill
+H   192.11 CH t=185.6 EV ev=8 fault=kill target=dbus rec=1.53 ok=1 fixed=0 
+H   201.11 CH t=194.6 STEP 8 fHang
+H   201.42 CH t=194.9 EV ev=9 fault=hang-spin target=driftwm rec=0.10 ok=1 fixed=0 
+H   201.59 CH t=195.0 SOAKMEM t=180 restarts=21 faults=8
+H   201.62 CH t=195.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=512
+H   201.62 CH t=195.1 MEM pid=1237 comm=supervise-daemo rss_kb=1740 pss_kb=434
+H   201.63 CH t=195.1 MEM pid=1298 comm=supervise-daemo rss_kb=1740 pss_kb=427
+H   201.63 CH t=195.1 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=410
+H   201.63 CH t=195.1 MEM pid=191 comm=supervise-daemo rss_kb=1788 pss_kb=444
+H   201.63 CH t=195.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=399
+H   201.63 CH t=195.1 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=388
+H   212.42 CH t=205.9 STEP 9 fOOM
+H   212.48 CH t=205.9 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H   217.96 CH t=211.4 EV ev=10 fault=oom target=hog rec=0.12 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   226.96 CH t=220.4 STEP 10 fKill
+H   233.54 CH t=227.0 EV ev=11 fault=kill target=seatd rec=6.37 ok=1 fixed=0 
+H   251.54 CH t=245.0 STEP 11 fKill
+H   261.63 CH t=255.1 SOAKMEM t=240 restarts=25 faults=10
+H   261.67 CH t=255.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=498
+H   261.67 CH t=255.1 MEM pid=1237 comm=supervise-daemo rss_kb=1900 pss_kb=496
+H   261.67 CH t=255.1 MEM pid=1298 comm=supervise-daemo rss_kb=1740 pss_kb=424
+H   261.67 CH t=255.1 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=407
+H   261.67 CH t=255.1 MEM pid=191 comm=supervise-daemo rss_kb=1788 pss_kb=441
+H   261.68 CH t=255.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=398
+H   261.68 CH t=255.1 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=384
+H   269.63 CH t=263.1 EV ev=12 fault=kill target=driftwm rec=17.88 ok=1 fixed=0 
+H   281.64 CH t=275.1 STEP 12 fHang
+H   302.34 CH t=295.8 EV ev=13 fault=hang-stop target=driftwm rec=20.49 ok=1 fixed=0 
+H   315.34 CH t=308.8 STEP 13 fDep
+H   321.68 CH t=315.1 SOAKMEM t=300 restarts=33 faults=12
+H   321.73 CH t=315.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H   321.74 CH t=315.2 MEM pid=1237 comm=supervise-daemo rss_kb=2004 pss_kb=532
+H   321.74 CH t=315.2 MEM pid=1298 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H   321.74 CH t=315.2 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=403
+H   321.74 CH t=315.2 MEM pid=191 comm=supervise-daemo rss_kb=1788 pss_kb=440
+H   321.75 CH t=315.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=389
+H   321.75 CH t=315.2 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=381
+H   337.44 CH t=330.9 EV ev=14 fault=dep-slow target=seatd rec=21.89 ok=1 fixed=0 
+H   337.44 CH t=330.9 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=5 hubd=2
+H   343.44 CH t=336.9 STEP 14 fBrainKill
+H   350.45 CH t=343.9 STEP 15 fKill
+H   353.29 CH t=346.8 EV ev=15 fault=kill target=waybar rec=2.62 ok=1 fixed=0 
+H   364.30 CH t=357.8 STEP 16 fKill
+H   367.68 CH t=361.1 EV ev=16 fault=kill target=hubd rec=3.17 ok=1 fixed=0 
+H   380.68 CH t=374.1 STEP 17 fStorm
+H   381.75 CH t=375.2 SOAKMEM t=360 restarts=42 faults=16
+H   381.80 CH t=375.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H   381.80 CH t=375.3 MEM pid=1237 comm=supervise-daemo rss_kb=2004 pss_kb=531
+H   381.80 CH t=375.3 MEM pid=1298 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H   381.81 CH t=375.3 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=403
+H   381.81 CH t=375.3 MEM pid=191 comm=supervise-daemo rss_kb=1788 pss_kb=440
+H   381.81 CH t=375.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=389
+H   381.81 CH t=375.3 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=381
+H   405.89 CH t=399.4 STATUS Runlevel: sysinit
+H   405.89 CH t=399.4 STATUS Runlevel: default
+H   405.90 CH t=399.4 STATUS  dbus                                                  [  started 00:03:34 (2) ]
+H   405.90 CH t=399.4 STATUS  seatd                                                 [  started 00:01:29 (0) ]
+H   405.90 CH t=399.4 STATUS  udevd                                                 [  started 00:06:37 (0) ]
+H   405.90 CH t=399.4 STATUS  driftwm                                               [  started 00:01:13 (1) ]
+H   405.90 CH t=399.4 STATUS  waybar                                                [  started 00:00:54 (1) ]
+H   405.90 CH t=399.4 STATUS  hubd                                                  [  started 00:00:01 (3) ]
+H   405.90 CH t=399.4 STATUS Runlevel: boot
+H   405.91 CH t=399.4 STATUS Dynamic Runlevel: hotplugged
+H   405.91 CH t=399.4 STATUS Dynamic Runlevel: needed/wanted
+H   405.91 CH t=399.4 STATUS Dynamic Runlevel: manual
+H   405.91 CH t=399.4 STORM target=hubd dur=25 starts=10 starts_last10s=5 cpu_ticks_init_side=10 bar-up
+H   409.34 CH t=402.8 EV ev=17 fault=storm target=hubd rec=3.22 ok=1 fixed=0 starts=10 last10=5 cpu=10 bar-up
+H   428.34 CH t=421.8 STEP 18 fKill
+H   435.02 CH t=428.5 EV ev=18 fault=kill target=driftwm rec=6.46 ok=1 fixed=0 
+H   441.81 CH t=435.3 SOAKMEM t=420 restarts=47 faults=18
+H   441.86 CH t=435.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=439
+H   441.87 CH t=435.3 MEM pid=1237 comm=supervise-daemo rss_kb=2004 pss_kb=467
+H   441.87 CH t=435.3 MEM pid=1298 comm=supervise-daemo rss_kb=1740 pss_kb=385
+H   441.87 CH t=435.3 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=374
+H   441.88 CH t=435.3 MEM pid=191 comm=supervise-daemo rss_kb=1788 pss_kb=398
+H   441.88 CH t=435.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=359
+H   441.88 CH t=435.3 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=354
+H   452.02 CH t=445.5 STEP 19 fKill
+H   455.21 CH t=448.7 EV ev=19 fault=kill target=hubd rec=2.97 ok=1 fixed=0 
+H   463.21 CH t=456.7 STEP 20 fSupKill
+H   465.06 CH t=458.5 EV ev=20 fault=supervisor-killed target=hubd rec=0.11 ok=1 fixed=0 child_kept_running=1
+H   501.88 CH t=495.3 SOAKMEM t=480 restarts=48 faults=19
+H   501.92 CH t=495.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=539
+H   501.92 CH t=495.4 MEM pid=1237 comm=supervise-daemo rss_kb=2004 pss_kb=577
+H   501.92 CH t=495.4 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=447
+H   501.92 CH t=495.4 MEM pid=191 comm=supervise-daemo rss_kb=1788 pss_kb=479
+H   501.93 CH t=495.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=429
+H   501.93 CH t=495.4 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=415
+H   527.41 CH t=520.9 UNRECOVERED ev=21 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H   527.52 CH t=521.0 STATUS Runlevel: sysinit
+H   527.52 CH t=521.0 STATUS Runlevel: default
+H   527.53 CH t=521.0 STATUS  dbus                                                  [  started 00:05:36 (2) ]
+H   527.53 CH t=521.0 STATUS  seatd                                                 [  started 00:03:31 (0) ]
+H   527.54 CH t=521.0 STATUS  udevd                                                 [  started 00:08:39 (0) ]
+H   527.54 CH t=521.0 STATUS  driftwm                                               [  started 00:01:38 (0) ]
+H   527.54 CH t=521.0 STATUS  waybar                                                [  started 00:01:34 (1) ]
+H   527.54 CH t=521.0 STATUS  hubd                                                         [  unsupervised  ]
+H   527.54 CH t=521.0 STATUS Runlevel: boot
+H   527.55 CH t=521.0 STATUS Dynamic Runlevel: hotplugged
+H   527.55 CH t=521.0 STATUS Dynamic Runlevel: needed/wanted
+H   527.55 CH t=521.0 STATUS Dynamic Runlevel: manual
+H   527.62 CH t=521.1 operator-action target=hubd why="hubd not running"
+H   528.13  [1m[32m*[m Stopping hubd[K ...
+H   528.31  [ ok ]
+H   528.57  [1m[32m*[m Starting hubd[K ...
+H   530.45  [ ok ]
+H   530.96 CH t=524.4 EV ev=21 fault=after-supervisor-killed target=hubd rec=60.17 ok=0 fixed=1 supervisor_back=0
+H   543.97 CH t=537.4 STEP 21 fSupKill
+H   545.83 CH t=539.3 EV ev=22 fault=supervisor-killed target=seatd rec=0.13 ok=1 fixed=0 child_kept_running=1
+H   561.93 CH t=555.4 SOAKMEM t=541 restarts=52 faults=20
+H   562.03 CH t=555.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=544
+H   562.04 CH t=555.5 MEM pid=1237 comm=supervise-daemo rss_kb=2004 pss_kb=580
+H   562.04 CH t=555.5 MEM pid=1307 comm=supervise-daemo rss_kb=1712 pss_kb=451
+H   562.04 CH t=555.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=428
+H   562.04 CH t=555.5 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=418
+H   562.05 CH t=555.5 MEM pid=9655 comm=supervise-daemo rss_kb=1732 pss_kb=469
+H   608.00 CH t=601.5 UNRECOVERED ev=23 fault=after-supervisor-killed target=seatd alert=0 why="seatd not running"
+H   608.12 CH t=601.6 STATUS Runlevel: sysinit
+H   608.12 CH t=601.6 STATUS Runlevel: default
+H   608.13 CH t=601.6 STATUS  dbus                                                  [  started 00:06:56 (2) ]
+H   608.13 CH t=601.6 STATUS  seatd                                                        [  unsupervised  ]
+H   608.13 CH t=601.6 STATUS  udevd                                                 [  started 00:09:59 (0) ]
+H   608.13 CH t=601.6 STATUS  driftwm                                               [  started 00:00:02 (6) ]
+H   608.13 CH t=601.6 STATUS  waybar                                                [  started 00:00:02 (1) ]
+H   608.14 CH t=601.6 STATUS  hubd                                                  [  started 00:00:06 (2) ]
+H   608.14 CH t=601.6 STATUS Runlevel: boot
+H   608.14 CH t=601.6 STATUS Dynamic Runlevel: hotplugged
+H   608.14 CH t=601.6 STATUS Dynamic Runlevel: needed/wanted
+H   608.14 CH t=601.6 STATUS Dynamic Runlevel: manual
+H   608.18 CH t=601.6 operator-action target=seatd why="seatd not running"
+H   609.10  [1m[32m*[m Stopping waybar[K ...
+H   609.15  [1m[32m*[m Stopping hubd[K ...
+H   609.28  [ ok ]
+H   609.29  [ ok ]
+H   609.64  [1m[32m*[m Stopping driftwm[K ...
+H   610.14  [ ok ]
+H   610.55  [1m[32m*[m Stopping seatd[K ...
+H   610.70  [ ok ]
+H   610.97  [1m[32m*[m Starting seatd[K ...
+H   611.18  [ ok ]
+H   611.62  [1m[32m*[m Starting driftwm[K ...
+H   613.70  [ ok ]
+H   613.95  [1m[32m*[m Starting hubd[K ...
+H   613.96  [1m[32m*[m Starting waybar[K ...
+H   615.81  [ ok ]
+H   615.84  [ ok ]
+H   616.16 CH t=609.6 EV ev=23 fault=after-supervisor-killed target=seatd rec=64.52 ok=0 fixed=1 supervisor_back=0
+H   622.05 CH t=615.5 SOAKMEM t=601 restarts=74 faults=21
+H   622.08 CH t=615.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=646
+H   622.09 CH t=615.5 MEM pid=11208 comm=supervise-daemo rss_kb=1540 pss_kb=368
+H   622.09 CH t=615.5 MEM pid=11240 comm=supervise-daemo rss_kb=1548 pss_kb=377
+H   622.09 CH t=615.5 MEM pid=11299 comm=supervise-daemo rss_kb=1544 pss_kb=368
+H   622.09 CH t=615.5 MEM pid=11302 comm=supervise-daemo rss_kb=1544 pss_kb=368
+H   622.09 CH t=615.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=399
+H   622.09 CH t=615.6 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=439
+H   623.17 CH t=616.6 STEP 22 fKill
+H   625.79 CH t=619.2 EV ev=24 fault=kill target=waybar rec=2.42 ok=1 fixed=0 
+H   640.79 CH t=634.2 STEP 23 fClock
+H   647.28 CH t=640.7 EV ev=25 fault=clock-3600 target=driftwm rec=6.28 ok=1 fixed=0 
+H   652.90 CH t=646.4 EV ev=26 fault=after-clock-3600 target=hubd rec=4.42 ok=1 fixed=0 
+H   669.91 CH t=663.4 STEP 24 fBrainKill
+H   682.09 CH t=675.6 SOAKMEM t=661 restarts=79 faults=24
+H   682.14 CH t=675.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=596
+H   682.14 CH t=675.6 MEM pid=11208 comm=supervise-daemo rss_kb=1540 pss_kb=368
+H   682.14 CH t=675.6 MEM pid=11240 comm=supervise-daemo rss_kb=1616 pss_kb=388
+H   682.15 CH t=675.6 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=403
+H   682.15 CH t=675.6 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=403
+H   682.15 CH t=675.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=384
+H   682.15 CH t=675.6 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=435
+H   686.91 CH t=680.4 STEP 25 fOOM
+H   686.97 CH t=680.4 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H   691.92 CH t=685.4 EV ev=27 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   699.92 CH t=693.4 STEP 26 fHang
+H   720.83 CH t=714.3 EV ev=28 fault=hang-stop target=driftwm rec=20.71 ok=1 fixed=0 
+H   734.84 CH t=728.3 STEP 27 fHang
+H   742.15 CH t=735.6 SOAKMEM t=721 restarts=82 faults=26
+H   742.20 CH t=735.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=545
+H   742.20 CH t=735.7 MEM pid=11208 comm=supervise-daemo rss_kb=1540 pss_kb=367
+H   742.21 CH t=735.7 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=496
+H   742.21 CH t=735.7 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=402
+H   742.21 CH t=735.7 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=402
+H   742.21 CH t=735.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=384
+H   742.21 CH t=735.7 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=414
+H   755.19 CH t=748.7 EV ev=29 fault=hang-stop target=driftwm rec=20.15 ok=1 fixed=0 
+H   771.20 CH t=764.7 STEP 28 fDep
+H   799.07 CH t=792.5 EV ev=30 fault=dep-fail target=seatd rec=7.66 ok=1 fixed=0 
+H   799.07 CH t=792.5 DEPSTARTS mode=fail seatd=13 driftwm=6 waybar=5 hubd=3
+H   802.21 CH t=795.7 SOAKMEM t=781 restarts=93 faults=28
+H   802.25 CH t=795.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=543
+H   802.25 CH t=795.7 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=378
+H   802.25 CH t=795.7 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=494
+H   802.25 CH t=795.7 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=400
+H   802.25 CH t=795.7 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=400
+H   802.25 CH t=795.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=382
+H   802.26 CH t=795.7 MEM pid=227 comm=supervise-daemo rss_kb=1576 pss_kb=414
+H   810.07 CH t=803.5 STEP 29 fKill
+H   813.08 CH t=806.5 EV ev=31 fault=kill target=udevd rec=2.80 ok=1 fixed=0 
+H   827.09 CH t=820.5 STEP 30 fKill
+H   828.48 CH t=821.9 EV ev=32 fault=kill target=dbus rec=1.19 ok=1 fixed=0 
+H   845.49 CH t=838.9 STEP 31 fKill
+H   848.34 CH t=841.8 EV ev=33 fault=kill target=udevd rec=2.65 ok=1 fixed=0 
+H   855.35 CH t=848.8 STEP 32 fDisk
+H   855.39 CH t=848.8 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   862.26 CH t=855.7 SOAKMEM t=841 restarts=96 faults=31
+H   862.30 CH t=855.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H   862.30 CH t=855.8 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=376
+H   862.30 CH t=855.8 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=492
+H   862.30 CH t=855.8 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H   862.30 CH t=855.8 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H   862.30 CH t=855.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H   862.30 CH t=855.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H   871.11 CH t=864.6 STATUS Runlevel: sysinit
+H   871.11 CH t=864.6 STATUS Runlevel: default
+H   871.12 CH t=864.6 STATUS  dbus                                                  [  started 00:00:43 (0) ]
+H   871.12 CH t=864.6 STATUS  seatd                                                 [  started 00:01:19 (4) ]
+H   871.12 CH t=864.6 STATUS  udevd                                                 [  started 00:00:24 (0) ]
+H   871.12 CH t=864.6 STATUS  driftwm                                               [  started 00:01:17 (5) ]
+H   871.12 CH t=864.6 STATUS  waybar                                                [  started 00:00:09 (0) ]
+H   871.13 CH t=864.6 STATUS  hubd                                                  [  started 00:01:14 (4) ]
+H   871.13 CH t=864.6 STATUS Runlevel: boot
+H   871.13 CH t=864.6 STATUS Dynamic Runlevel: hotplugged
+H   871.13 CH t=864.6 STATUS Dynamic Runlevel: needed/wanted
+H   871.13 CH t=864.6 STATUS Dynamic Runlevel: manual
+H   871.43 CH t=864.9 EV ev=34 fault=disk-full target=waybar rec=0.06 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H   885.43 CH t=878.9 STEP 33 fKill
+H   891.37 CH t=884.8 EV ev=35 fault=kill target=seatd rec=5.73 ok=1 fixed=0 
+H   896.37 CH t=889.8 STEP 34 fStorm
+H   921.55 CH t=915.0 STATUS Runlevel: sysinit
+H   921.55 CH t=915.0 STATUS Runlevel: default
+H   921.55 CH t=915.0 STATUS  dbus                                                  [  started 00:01:34 (0) ]
+H   921.55 CH t=915.0 STATUS  seatd                                                 [  started 00:00:35 (0) ]
+H   921.55 CH t=915.0 STATUS  udevd                                                 [  started 00:01:15 (0) ]
+H   921.56 CH t=915.0 STATUS  driftwm                                               [  started 00:00:01 (5) ]
+H   921.56 CH t=915.0 STATUS  waybar                                                [  started 00:00:01 (0) ]
+H   921.56 CH t=915.0 STATUS  hubd                                                  [  started 00:00:02 (2) ]
+H   921.56 CH t=915.0 STATUS Runlevel: boot
+H   921.56 CH t=915.0 STATUS Dynamic Runlevel: hotplugged
+H   921.56 CH t=915.0 STATUS Dynamic Runlevel: needed/wanted
+H   921.56 CH t=915.0 STATUS Dynamic Runlevel: manual
+H   921.56 CH t=915.0 STORM target=driftwm dur=25 starts=12 starts_last10s=5 cpu_ticks_init_side=13 bar-down
+H   922.31 CH t=915.8 SOAKMEM t=901 restarts=107 faults=33
+H   922.35 CH t=915.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H   922.35 CH t=915.8 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=376
+H   922.36 CH t=915.8 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=492
+H   922.36 CH t=915.8 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H   922.36 CH t=915.8 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H   922.36 CH t=915.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H   922.36 CH t=915.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H   928.58 CH t=922.0 EV ev=36 fault=storm target=driftwm rec=6.82 ok=1 fixed=0 starts=12 last10=5 cpu=13 bar-down
+H   935.58 CH t=929.0 STEP 35 fOOM
+H   935.66 CH t=929.1 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H   940.88 CH t=934.3 EV ev=37 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   959.88 CH t=953.3 STEP 36 fKill
+H   963.02 CH t=956.5 EV ev=38 fault=kill target=hubd rec=2.93 ok=1 fixed=0 
+H   973.02 CH t=966.5 STEP 37 fKill
+H   976.08 CH t=969.5 EV ev=39 fault=kill target=hubd rec=2.85 ok=1 fixed=0 
+H   982.36 CH t=975.8 SOAKMEM t=961 restarts=112 faults=37
+H   982.40 CH t=975.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H   982.40 CH t=975.9 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=376
+H   982.40 CH t=975.9 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=492
+H   982.41 CH t=975.9 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H   982.41 CH t=975.9 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H   982.41 CH t=975.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H   982.41 CH t=975.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H   983.08 CH t=976.5 STEP 38 fKill
+H   984.53 CH t=978.0 EV ev=40 fault=kill target=dbus rec=1.24 ok=1 fixed=0 
+H   993.53 CH t=987.0 STEP 39 fKill
+H   999.92 CH t=993.4 EV ev=41 fault=kill target=driftwm rec=6.18 ok=1 fixed=0 
+H  1013.93 CH t=1007.4 STEP 40 fKill
+H  1015.32 CH t=1008.8 EV ev=42 fault=kill target=dbus rec=1.19 ok=1 fixed=0 
+H  1034.32 CH t=1027.8 STEP 41 fKill
+H  1040.75 CH t=1034.2 EV ev=43 fault=kill target=seatd rec=6.21 ok=1 fixed=0 
+H  1042.41 CH t=1035.9 SOAKMEM t=1021 restarts=121 faults=41
+H  1042.46 CH t=1035.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  1042.46 CH t=1035.9 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=376
+H  1042.47 CH t=1035.9 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=492
+H  1042.47 CH t=1035.9 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H  1042.47 CH t=1035.9 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H  1042.47 CH t=1035.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  1042.48 CH t=1035.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H  1051.75 CH t=1045.2 STEP 42 fKill
+H  1054.20 CH t=1047.7 EV ev=44 fault=kill target=waybar rec=2.24 ok=1 fixed=0 
+H  1072.20 CH t=1065.7 STEP 43 fKill
+H  1078.33 CH t=1071.8 EV ev=45 fault=kill target=seatd rec=5.93 ok=1 fixed=0 
+H  1092.33 CH t=1085.8 STEP 44 fKill
+H  1099.35 CH t=1092.8 EV ev=46 fault=kill target=seatd rec=6.80 ok=1 fixed=0 
+H  1102.48 CH t=1095.9 SOAKMEM t=1081 restarts=130 faults=44
+H  1102.51 CH t=1096.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  1102.51 CH t=1096.0 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=376
+H  1102.51 CH t=1096.0 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=492
+H  1102.51 CH t=1096.0 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H  1102.51 CH t=1096.0 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H  1102.52 CH t=1096.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  1102.52 CH t=1096.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H  1116.35 CH t=1109.8 STEP 45 fOOM
+H  1116.40 CH t=1109.9 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  1121.76 CH t=1115.2 EV ev=47 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1133.76 CH t=1127.2 STEP 46 fKill
+H  1135.43 CH t=1128.9 EV ev=48 fault=kill target=dbus rec=1.46 ok=1 fixed=0 
+H  1153.43 CH t=1146.9 STEP 47 fKill
+H  1159.23 CH t=1152.7 EV ev=49 fault=kill target=driftwm rec=5.59 ok=1 fixed=0 
+H  1162.52 CH t=1156.0 SOAKMEM t=1141 restarts=134 faults=47
+H  1162.55 CH t=1156.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  1162.56 CH t=1156.0 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=376
+H  1162.56 CH t=1156.0 MEM pid=11240 comm=supervise-daemo rss_kb=1856 pss_kb=492
+H  1162.56 CH t=1156.0 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H  1162.56 CH t=1156.0 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=395
+H  1162.57 CH t=1156.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  1162.57 CH t=1156.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H  1167.23 CH t=1160.7 STEP 48 fSupKill
+H  1169.04 CH t=1162.5 EV ev=50 fault=supervisor-killed target=driftwm rec=0.07 ok=1 fixed=0 child_kept_running=1
+H  1222.57 CH t=1216.0 SOAKMEM t=1201 restarts=134 faults=47
+H  1222.60 CH t=1216.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=613
+H  1222.60 CH t=1216.1 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=415
+H  1222.60 CH t=1216.1 MEM pid=11299 comm=supervise-daemo rss_kb=1676 pss_kb=433
+H  1222.60 CH t=1216.1 MEM pid=11302 comm=supervise-daemo rss_kb=1676 pss_kb=433
+H  1225.55 CH t=1216.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=424
+H  1225.55 CH t=1216.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=497
+H  1231.30 CH t=1224.8 UNRECOVERED ev=51 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H  1231.42 CH t=1224.9 STATUS Runlevel: sysinit
+H  1231.42 CH t=1224.9 STATUS Runlevel: default
+H  1231.42 CH t=1224.9 STATUS  dbus                                                  [  started 00:01:37 (1) ]
+H  1231.42 CH t=1224.9 STATUS  seatd                                                 [  started 00:02:18 (1) ]
+H  1231.43 CH t=1224.9 STATUS  udevd                                                 [  started 00:06:25 (0) ]
+H  1231.43 CH t=1224.9 STATUS  driftwm                                                      [  unsupervised  ]
+H  1231.43 CH t=1224.9 STATUS  waybar                                                [  started 00:01:00 (0) ]
+H  1231.43 CH t=1224.9 STATUS  hubd                                                  [  started 00:00:59 (0) ]
+H  1231.43 CH t=1224.9 STATUS Runlevel: boot
+H  1231.43 CH t=1224.9 STATUS Dynamic Runlevel: hotplugged
+H  1231.44 CH t=1224.9 STATUS Dynamic Runlevel: needed/wanted
+H  1231.44 CH t=1224.9 STATUS Dynamic Runlevel: manual
+H  1231.47 CH t=1224.9 operator-action target=driftwm why="driftwm not running"
+H  1231.94  [1m[32m*[m Stopping waybar[K ...
+H  1231.97  [1m[32m*[m Stopping hubd[K ...
+H  1232.19  [ ok ]
+H  1232.20  [ ok ]
+H  1232.47  [1m[32m*[m Stopping driftwm[K ...
+H  1232.57  [ ok ]
+H  1232.79  [1m[32m*[m Starting driftwm[K ...
+H  1234.80  [ ok ]
+H  1235.21  [1m[32m*[m Starting hubd[K ...
+H  1235.26  [1m[32m*[m Starting waybar[K ...
+H  1236.99  [ ok ]
+H  1237.07  [ ok ]
+H  1237.29 CH t=1230.8 EV ev=51 fault=after-supervisor-killed target=driftwm rec=62.07 ok=0 fixed=1 supervisor_back=1
+H  1249.29 CH t=1242.8 STEP 49 fKill
+H  1252.49 CH t=1246.0 EV ev=52 fault=kill target=hubd rec=2.99 ok=1 fixed=0 
+H  1263.50 CH t=1257.0 STEP 50 fKill
+H  1266.51 CH t=1260.0 EV ev=53 fault=kill target=udevd rec=2.81 ok=1 fixed=0 
+H  1282.60 CH t=1276.1 SOAKMEM t=1261 restarts=142 faults=50
+H  1282.67 CH t=1276.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=440
+H  1282.68 CH t=1276.1 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=366
+H  1282.68 CH t=1276.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=372
+H  1282.68 CH t=1276.1 MEM pid=22640 comm=supervise-daemo rss_kb=1584 pss_kb=360
+H  1282.69 CH t=1276.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=383
+H  1282.69 CH t=1276.1 MEM pid=22702 comm=supervise-daemo rss_kb=1708 pss_kb=388
+H  1282.69 CH t=1276.2 MEM pid=22709 comm=supervise-daemo rss_kb=1664 pss_kb=411
+H  1283.51 CH t=1277.0 STEP 51 fBrainKill
+H  1296.51 CH t=1290.0 STEP 52 fDep
+H  1323.66 CH t=1317.1 EV ev=54 fault=dep-fail target=seatd rec=6.94 ok=1 fixed=0 
+H  1323.67 CH t=1317.1 DEPSTARTS mode=fail seatd=14 driftwm=12 waybar=6 hubd=2
+H  1337.67 CH t=1331.1 STEP 53 fDep
+H  1342.69 CH t=1336.2 SOAKMEM t=1321 restarts=153 faults=52
+H  1342.72 CH t=1336.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=522
+H  1342.73 CH t=1336.2 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=392
+H  1342.73 CH t=1336.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=397
+H  1342.73 CH t=1336.2 MEM pid=22640 comm=supervise-daemo rss_kb=1716 pss_kb=414
+H  1342.73 CH t=1336.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=411
+H  1342.73 CH t=1336.2 MEM pid=22702 comm=supervise-daemo rss_kb=1708 pss_kb=417
+H  1342.73 CH t=1336.2 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=457
+H  1357.39 CH t=1350.8 EV ev=55 fault=dep-slow target=seatd rec=19.51 ok=1 fixed=0 
+H  1357.39 CH t=1350.8 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=5 hubd=2
+H  1374.39 CH t=1367.9 STEP 54 fDisk
+H  1374.43 CH t=1367.9 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1390.41 CH t=1383.9 STATUS Runlevel: sysinit
+H  1390.41 CH t=1383.9 STATUS Runlevel: default
+H  1390.41 CH t=1383.9 STATUS  dbus                                                  [  started 00:04:16 (1) ]
+H  1390.42 CH t=1383.9 STATUS  seatd                                                 [  started 00:00:52 (0) ]
+H  1390.42 CH t=1383.9 STATUS  udevd                                                 [  started 00:02:06 (1) ]
+H  1390.42 CH t=1383.9 STATUS  driftwm                                               [  started 00:00:36 (0) ]
+H  1390.42 CH t=1383.9 STATUS  waybar                                                [  started 00:00:10 (0) ]
+H  1390.42 CH t=1383.9 STATUS  hubd                                                  [  started 00:00:35 (0) ]
+H  1390.42 CH t=1383.9 STATUS Runlevel: boot
+H  1390.42 CH t=1383.9 STATUS Dynamic Runlevel: hotplugged
+H  1390.42 CH t=1383.9 STATUS Dynamic Runlevel: needed/wanted
+H  1390.42 CH t=1383.9 STATUS Dynamic Runlevel: manual
+H  1390.75 CH t=1384.2 EV ev=56 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H  1397.75 CH t=1391.2 STEP 55 fSupKill
+H  1399.56 CH t=1393.0 EV ev=57 fault=supervisor-killed target=hubd rec=0.09 ok=1 fixed=0 child_kept_running=1
+H  1402.73 CH t=1396.2 SOAKMEM t=1381 restarts=161 faults=54
+H  1402.77 CH t=1396.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=572
+H  1402.77 CH t=1396.2 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=424
+H  1402.77 CH t=1396.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=430
+H  1402.77 CH t=1396.2 MEM pid=22640 comm=supervise-daemo rss_kb=1716 pss_kb=460
+H  1402.77 CH t=1396.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=462
+H  1402.77 CH t=1396.2 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=499
+H  1461.77 CH t=1455.2 UNRECOVERED ev=58 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  1461.87 CH t=1455.3 STATUS Runlevel: sysinit
+H  1461.87 CH t=1455.3 STATUS Runlevel: default
+H  1461.88 CH t=1455.3 STATUS  dbus                                                  [  started 00:05:27 (1) ]
+H  1461.88 CH t=1455.3 STATUS  seatd                                                 [  started 00:02:03 (0) ]
+H  1461.88 CH t=1455.3 STATUS  udevd                                                 [  started 00:03:17 (1) ]
+H  1461.88 CH t=1455.3 STATUS  driftwm                                               [  started 00:01:47 (0) ]
+H  1461.89 CH t=1455.3 STATUS  waybar                                                [  started 00:01:21 (0) ]
+H  1461.89 CH t=1455.3 STATUS  hubd                                                         [  unsupervised  ]
+H  1461.89 CH t=1455.3 STATUS Runlevel: boot
+H  1461.89 CH t=1455.3 STATUS Dynamic Runlevel: hotplugged
+H  1461.89 CH t=1455.3 STATUS Dynamic Runlevel: needed/wanted
+H  1461.89 CH t=1455.4 STATUS Dynamic Runlevel: manual
+H  1461.94 CH t=1455.4 operator-action target=hubd why="hubd not running"
+H  1462.40  [1m[32m*[m Stopping hubd[K ...
+H  1462.57  [ ok ]
+H  1462.78 CH t=1456.2 SOAKMEM t=1441 restarts=162 faults=54
+H  1462.80  [1m[32m*[m Starting hubd[K ...
+H  1462.82 CH t=1456.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=472
+H  1462.82 CH t=1456.3 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=385
+H  1462.82 CH t=1456.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=389
+H  1462.82 CH t=1456.3 MEM pid=22640 comm=supervise-daemo rss_kb=1716 pss_kb=412
+H  1462.82 CH t=1456.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=412
+H  1462.83 CH t=1456.3 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=428
+H  1464.59  [ ok ]
+H  1465.01 CH t=1458.5 EV ev=58 fault=after-supervisor-killed target=hubd rec=60.08 ok=0 fixed=1 supervisor_back=0
+H  1474.02 CH t=1467.5 STEP 56 fStorm
+H  1499.18 CH t=1492.6 STATUS Runlevel: sysinit
+H  1499.18 CH t=1492.6 STATUS Runlevel: default
+H  1499.18 CH t=1492.6 STATUS  dbus                                                  [  started 00:06:05 (1) ]
+H  1499.18 CH t=1492.6 STATUS  seatd                                                 [  started 00:02:41 (0) ]
+H  1499.19 CH t=1492.6 STATUS  udevd                                                 [  started 00:03:55 (1) ]
+H  1499.19 CH t=1492.6 STATUS  driftwm                                               [  started 00:02:25 (0) ]
+H  1499.19 CH t=1492.6 STATUS  waybar                                                [  started 00:00:02 (4) ]
+H  1499.20 CH t=1492.7 STATUS  hubd                                                  [  started 00:00:37 (0) ]
+H  1499.20 CH t=1492.7 STATUS Runlevel: boot
+H  1499.20 CH t=1492.7 STATUS Dynamic Runlevel: hotplugged
+H  1499.20 CH t=1492.7 STATUS Dynamic Runlevel: needed/wanted
+H  1499.20 CH t=1492.7 STATUS Dynamic Runlevel: manual
+H  1499.20 CH t=1492.7 STORM target=waybar dur=25 starts=10 starts_last10s=4 cpu_ticks_init_side=8 bar-up
+H  1502.11 CH t=1495.6 EV ev=59 fault=storm target=waybar rec=2.71 ok=1 fixed=0 starts=10 last10=4 cpu=8 bar-up
+H  1508.12 CH t=1501.6 STEP 57 fKill
+H  1511.51 CH t=1505.0 EV ev=60 fault=kill target=hubd rec=3.18 ok=1 fixed=0 
+H  1522.83 CH t=1516.3 SOAKMEM t=1501 restarts=168 faults=57
+H  1522.87 CH t=1516.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  1522.87 CH t=1516.3 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=390
+H  1522.87 CH t=1516.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=394
+H  1522.87 CH t=1516.3 MEM pid=22640 comm=supervise-daemo rss_kb=1716 pss_kb=424
+H  1522.87 CH t=1516.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=424
+H  1522.88 CH t=1516.3 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=430
+H  1522.88 CH t=1516.3 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=417
+H  1524.51 CH t=1518.0 STEP 58 fKill
+H  1527.57 CH t=1521.0 EV ev=61 fault=kill target=hubd rec=2.85 ok=1 fixed=0 
+H  1545.57 CH t=1539.0 STEP 59 fKill
+H  1551.99 CH t=1545.5 EV ev=62 fault=kill target=driftwm rec=6.21 ok=1 fixed=0 
+H  1566.99 CH t=1560.5 STEP 60 fDep
+H  1582.88 CH t=1576.3 SOAKMEM t=1561 restarts=177 faults=59
+H  1582.91 CH t=1576.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  1582.91 CH t=1576.4 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=390
+H  1582.91 CH t=1576.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=394
+H  1582.91 CH t=1576.4 MEM pid=22640 comm=supervise-daemo rss_kb=1716 pss_kb=424
+H  1582.91 CH t=1576.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=424
+H  1582.91 CH t=1576.4 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=430
+H  1582.91 CH t=1576.4 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=417
+H  1586.83 CH t=1580.3 EV ev=63 fault=dep-slow target=seatd rec=19.63 ok=1 fixed=0 
+H  1586.84 CH t=1580.3 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=5 hubd=1
+H  1604.84 CH t=1598.3 STEP 61 fStorm
+H  1630.02 CH t=1623.5 STATUS Runlevel: sysinit
+H  1630.02 CH t=1623.5 STATUS Runlevel: default
+H  1630.02 CH t=1623.5 STATUS  dbus                                                  [  started 00:08:15 (1) ]
+H  1630.02 CH t=1623.5 STATUS  seatd                                                 [  started 00:01:01 (1) ]
+H  1630.03 CH t=1623.5 STATUS  udevd                                                 [  started 00:06:05 (1) ]
+H  1630.03 CH t=1623.5 STATUS  driftwm                                               [  started 00:00:46 (0) ]
+H  1630.03 CH t=1623.5 STATUS  waybar                                                [  started 00:00:00 (4) ]
+H  1630.03 CH t=1623.5 STATUS  hubd                                                  [  started 00:00:45 (0) ]
+H  1630.03 CH t=1623.5 STATUS Runlevel: boot
+H  1630.03 CH t=1623.5 STATUS Dynamic Runlevel: hotplugged
+H  1630.03 CH t=1623.5 STATUS Dynamic Runlevel: needed/wanted
+H  1630.03 CH t=1623.5 STATUS Dynamic Runlevel: manual
+H  1630.03 CH t=1623.5 STORM target=waybar dur=25 starts=9 starts_last10s=3 cpu_ticks_init_side=9 bar-up
+H  1631.11 CH t=1624.6 EV ev=64 fault=storm target=waybar rec=0.88 ok=1 fixed=0 starts=9 last10=3 cpu=9 bar-up
+H  1640.12 CH t=1633.6 STEP 62 fKill
+H  1641.68 CH t=1635.1 EV ev=65 fault=kill target=dbus rec=1.35 ok=1 fixed=0 
+H  1642.92 CH t=1636.4 SOAKMEM t=1622 restarts=183 faults=62
+H  1642.96 CH t=1636.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  1642.97 CH t=1636.4 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=390
+H  1642.97 CH t=1636.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=394
+H  1642.97 CH t=1636.4 MEM pid=22640 comm=supervise-daemo rss_kb=1716 pss_kb=424
+H  1642.97 CH t=1636.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=424
+H  1642.97 CH t=1636.4 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=430
+H  1642.97 CH t=1636.4 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=417
+H  1646.68 CH t=1640.1 STEP 63 fKill
+H  1648.15 CH t=1641.6 EV ev=66 fault=kill target=dbus rec=1.26 ok=1 fixed=0 
+H  1657.16 CH t=1650.6 STEP 64 fKill
+H  1660.13 CH t=1653.6 EV ev=67 fault=kill target=udevd rec=2.77 ok=1 fixed=0 
+H  1668.14 CH t=1661.6 STEP 65 fHang
+H  1688.03 CH t=1681.5 EV ev=68 fault=hang-stop target=driftwm rec=19.69 ok=1 fixed=0 
+H  1702.97 CH t=1696.4 SOAKMEM t=1682 restarts=188 faults=65
+H  1703.02 CH t=1696.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=508
+H  1703.02 CH t=1696.5 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=388
+H  1703.02 CH t=1696.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=392
+H  1703.02 CH t=1696.5 MEM pid=22640 comm=supervise-daemo rss_kb=1908 pss_kb=503
+H  1703.02 CH t=1696.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=423
+H  1703.03 CH t=1696.5 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=418
+H  1703.03 CH t=1696.5 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=406
+H  1707.04 CH t=1700.5 STEP 66 fOOM
+H  1707.10 CH t=1700.6 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  1712.29 CH t=1705.8 EV ev=69 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1730.30 CH t=1723.8 STEP 67 fHang
+H  1749.34 CH t=1742.8 EV ev=70 fault=hang-spin target=driftwm rec=18.83 ok=1 fixed=0 
+H  1760.34 CH t=1753.8 STEP 68 fKill
+H  1761.86 CH t=1755.3 EV ev=71 fault=kill target=dbus rec=1.30 ok=1 fixed=0 
+H  1763.03 CH t=1756.5 SOAKMEM t=1742 restarts=192 faults=68
+H  1763.06 CH t=1756.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=508
+H  1763.06 CH t=1756.5 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=388
+H  1763.06 CH t=1756.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=392
+H  1763.06 CH t=1756.5 MEM pid=22640 comm=supervise-daemo rss_kb=1908 pss_kb=503
+H  1763.07 CH t=1756.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=423
+H  1763.07 CH t=1756.5 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=418
+H  1763.07 CH t=1756.5 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=406
+H  1766.86 CH t=1760.3 STEP 69 fDep
+H  1794.54 CH t=1788.0 EV ev=72 fault=dep-fail target=seatd rec=7.47 ok=1 fixed=0 
+H  1794.54 CH t=1788.0 DEPSTARTS mode=fail seatd=14 driftwm=12 waybar=6 hubd=2
+H  1802.54 CH t=1796.0 STEP 70 fDep
+H  1823.07 CH t=1816.5 SOAKMEM t=1802 restarts=210 faults=69
+H  1823.14 CH t=1816.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=508
+H  1823.14 CH t=1816.6 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=388
+H  1823.14 CH t=1816.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=392
+H  1823.15 CH t=1816.6 MEM pid=22640 comm=supervise-daemo rss_kb=1908 pss_kb=503
+H  1823.15 CH t=1816.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=423
+H  1823.15 CH t=1816.6 MEM pid=22709 comm=supervise-daemo rss_kb=1732 pss_kb=418
+H  1823.16 CH t=1816.6 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=406
+H  1829.85 CH t=1823.3 EV ev=73 fault=dep-fail target=seatd rec=7.10 ok=1 fixed=0 
+H  1829.85 CH t=1823.3 DEPSTARTS mode=fail seatd=14 driftwm=12 waybar=7 hubd=2
+H  1839.85 CH t=1833.3 STEP 71 fStorm
+H  1865.03 CH t=1858.5 STATUS Runlevel: sysinit
+H  1865.03 CH t=1858.5 STATUS Runlevel: default
+H  1865.04 CH t=1858.5 STATUS  dbus                                                  [  started 00:01:43 (0) ]
+H  1865.04 CH t=1858.5 STATUS  seatd                                                 [  started 00:00:41 (4) ]
+H  1865.04 CH t=1858.5 STATUS  udevd                                                 [  started 00:03:26 (0) ]
+H  1865.04 CH t=1858.5 STATUS  driftwm                                               [  started 00:00:40 (3) ]
+H  1865.04 CH t=1858.5 STATUS  waybar                                                [  started 00:00:01 (3) ]
+H  1865.05 CH t=1858.5 STATUS  hubd                                                  [  started 00:00:37 (1) ]
+H  1865.05 CH t=1858.5 STATUS Runlevel: boot
+H  1865.05 CH t=1858.5 STATUS Dynamic Runlevel: hotplugged
+H  1865.05 CH t=1858.5 STATUS Dynamic Runlevel: needed/wanted
+H  1865.05 CH t=1858.5 STATUS Dynamic Runlevel: manual
+H  1865.05 CH t=1858.5 STORM target=waybar dur=25 starts=9 starts_last10s=4 cpu_ticks_init_side=7 bar-up
+H  1865.60 CH t=1859.1 EV ev=74 fault=storm target=waybar rec=0.35 ok=1 fixed=0 starts=9 last10=4 cpu=7 bar-up
+H  1882.61 CH t=1876.1 STEP 72 fSupKill
+H  1883.16 CH t=1876.6 SOAKMEM t=1862 restarts=217 faults=71
+H  1883.19 CH t=1876.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=551
+H  1883.19 CH t=1876.7 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=423
+H  1883.19 CH t=1876.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=428
+H  1883.19 CH t=1876.7 MEM pid=22640 comm=supervise-daemo rss_kb=1908 pss_kb=552
+H  1883.20 CH t=1876.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=462
+H  1883.20 CH t=1876.7 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=458
+H  1884.42 CH t=1877.9 EV ev=75 fault=supervisor-killed target=waybar rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  1943.20 CH t=1936.7 SOAKMEM t=1922 restarts=217 faults=71
+H  1943.24 CH t=1936.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=551
+H  1943.24 CH t=1936.7 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=424
+H  1943.24 CH t=1936.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=428
+H  1943.24 CH t=1936.7 MEM pid=22640 comm=supervise-daemo rss_kb=1908 pss_kb=552
+H  1943.24 CH t=1936.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=462
+H  1943.25 CH t=1936.7 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=458
+H  1946.81 CH t=1940.3 UNRECOVERED ev=76 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H  1946.90 CH t=1940.4 STATUS Runlevel: sysinit
+H  1946.90 CH t=1940.4 STATUS Runlevel: default
+H  1946.91 CH t=1940.4 STATUS  dbus                                                  [  started 00:03:05 (0) ]
+H  1946.91 CH t=1940.4 STATUS  seatd                                                 [  started 00:02:03 (4) ]
+H  1946.91 CH t=1940.4 STATUS  udevd                                                 [  started 00:04:48 (0) ]
+H  1946.91 CH t=1940.4 STATUS  driftwm                                               [  started 00:02:02 (3) ]
+H  1946.91 CH t=1940.4 STATUS  waybar                                                       [  unsupervised  ]
+H  1946.91 CH t=1940.4 STATUS  hubd                                                  [  started 00:01:59 (1) ]
+H  1946.91 CH t=1940.4 STATUS Runlevel: boot
+H  1946.91 CH t=1940.4 STATUS Dynamic Runlevel: hotplugged
+H  1946.91 CH t=1940.4 STATUS Dynamic Runlevel: needed/wanted
+H  1946.91 CH t=1940.4 STATUS Dynamic Runlevel: manual
+H  1946.96 CH t=1940.4 operator-action target=waybar why="waybar not running"
+H  1947.49  [1m[32m*[m Stopping waybar[K ...
+H  1947.60  [ ok ]
+H  1947.83  [1m[32m*[m Starting waybar[K ...
+H  1949.57  [ ok ]
+H  1949.99 CH t=1943.4 EV ev=76 fault=after-supervisor-killed target=waybar rec=60.09 ok=0 fixed=1 supervisor_back=0
+H  1956.99 CH t=1950.5 STEP 73 fKill
+H  1963.20 CH t=1956.7 EV ev=77 fault=kill target=seatd rec=6.00 ok=1 fixed=0 
+H  1969.20 CH t=1962.7 STEP 74 fKill
+H  1970.80 CH t=1964.3 EV ev=78 fault=kill target=dbus rec=1.38 ok=1 fixed=0 
+H  1978.81 CH t=1972.3 STEP 75 fKill
+H  1981.90 CH t=1975.4 EV ev=79 fault=kill target=udevd rec=2.88 ok=1 fixed=0 
+H  1990.90 CH t=1984.4 STEP 76 fKill
+H  1997.66 CH t=1991.1 EV ev=80 fault=kill target=seatd rec=6.49 ok=1 fixed=0 
+H  2003.25 CH t=1996.7 SOAKMEM t=1982 restarts=229 faults=76
+H  2003.29 CH t=1996.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=504
+H  2003.29 CH t=1996.8 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=388
+H  2003.30 CH t=1996.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  2003.30 CH t=1996.8 MEM pid=22640 comm=supervise-daemo rss_kb=1908 pss_kb=504
+H  2003.30 CH t=1996.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=417
+H  2003.30 CH t=1996.8 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=423
+H  2003.31 CH t=1996.8 MEM pid=4068 comm=supervise-daemo rss_kb=1696 pss_kb=405
+H  2009.67 CH t=2003.1 STEP 77 fKill
+H  2016.63 CH t=2010.1 EV ev=81 fault=kill target=seatd rec=6.75 ok=1 fixed=0 
+H  2028.63 CH t=2022.1 STEP 78 fKill
+H  2030.26 CH t=2023.7 EV ev=82 fault=kill target=dbus rec=1.42 ok=1 fixed=0 
+H  2044.26 CH t=2037.7 STEP 79 fOOM
+H  2044.34 CH t=2037.8 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  2049.85 CH t=2043.3 EV ev=83 fault=oom target=hog rec=0.17 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2055.85 CH t=2049.3 STEP 80 fKill
+H  2057.43 CH t=2050.9 EV ev=84 fault=kill target=dbus rec=1.36 ok=1 fixed=0 
+H  2063.31 CH t=2056.8 SOAKMEM t=2042 restarts=235 faults=80
+H  2063.34 CH t=2056.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=504
+H  2063.34 CH t=2056.8 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=388
+H  2063.35 CH t=2056.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  2063.35 CH t=2056.8 MEM pid=22640 comm=supervise-daemo rss_kb=1908 pss_kb=504
+H  2063.35 CH t=2056.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=417
+H  2063.35 CH t=2056.8 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=423
+H  2063.36 CH t=2056.8 MEM pid=4068 comm=supervise-daemo rss_kb=1696 pss_kb=405
+H  2063.43 CH t=2056.9 STEP 81 fClock
+H  2070.19 CH t=2063.7 EV ev=85 fault=clock+86400 target=driftwm rec=6.55 ok=1 fixed=0 
+H  2074.66 CH t=2068.1 EV ev=86 fault=after-clock+86400 target=hubd rec=3.25 ok=1 fixed=0 
+H  2081.66 CH t=2075.1 STEP 82 fKill
+H  2084.25 CH t=2077.7 EV ev=87 fault=kill target=waybar rec=2.37 ok=1 fixed=0 
+H  2100.26 CH t=2093.7 STEP 83 fSupKill
+H  2102.26 CH t=2095.7 EV ev=88 fault=supervisor-killed target=driftwm rec=0.25 ok=1 fixed=0 child_kept_running=1
+H  2123.36 CH t=2116.8 SOAKMEM t=2102 restarts=240 faults=82
+H  2123.39 CH t=2116.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=572
+H  2123.39 CH t=2116.8 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=426
+H  2123.39 CH t=2116.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=431
+H  2123.39 CH t=2116.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=468
+H  2123.39 CH t=2116.9 MEM pid=27039 comm=supervise-daemo rss_kb=1676 pss_kb=488
+H  2123.39 CH t=2116.9 MEM pid=4068 comm=supervise-daemo rss_kb=1696 pss_kb=453
+H  2164.37 CH t=2157.8 UNRECOVERED ev=89 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H  2164.51 CH t=2158.0 STATUS Runlevel: sysinit
+H  2164.51 CH t=2158.0 STATUS Runlevel: default
+H  2164.51 CH t=2158.0 STATUS  dbus                                                  [  started 00:01:48 (1) ]
+H  2164.51 CH t=2158.0 STATUS  seatd                                                 [  started 00:02:34 (0) ]
+H  2164.52 CH t=2158.0 STATUS  udevd                                                 [  started 00:03:05 (1) ]
+H  2164.52 CH t=2158.0 STATUS  driftwm                                                      [  unsupervised  ]
+H  2164.52 CH t=2158.0 STATUS  waybar                                                [  started 00:00:59 (1) ]
+H  2164.52 CH t=2158.0 STATUS  hubd                                                  [  started 00:00:59 (0) ]
+H  2164.52 CH t=2158.0 STATUS Runlevel: boot
+H  2164.52 CH t=2158.0 STATUS Dynamic Runlevel: hotplugged
+H  2164.52 CH t=2158.0 STATUS Dynamic Runlevel: needed/wanted
+H  2164.53 CH t=2158.0 STATUS Dynamic Runlevel: manual
+H  2164.58 CH t=2158.0 operator-action target=driftwm why="driftwm not running"
+H  2165.11  [1m[32m*[m Stopping hubd[K ...
+H  2165.12  [1m[32m*[m Stopping waybar[K ...
+H  2165.35  [ ok ]
+H  2165.40  [ ok ]
+H  2165.71  [1m[32m*[m Stopping driftwm[K ...
+H  2165.85  [ ok ]
+H  2166.08  [1m[32m*[m Starting driftwm[K ...
+H  2168.13  [ ok ]
+H  2168.46  [1m[32m*[m Starting waybar[K ...
+H  2168.71  [1m[32m*[m Starting hubd[K ...
+H  2170.36  [ ok ]
+H  2170.57  [ ok ]
+H  2170.88 CH t=2164.3 EV ev=89 fault=after-supervisor-killed target=driftwm rec=62.31 ok=0 fixed=1 supervisor_back=1
+H  2183.40 CH t=2176.9 SOAKMEM t=2162 restarts=248 faults=83
+H  2183.43 CH t=2176.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=542
+H  2183.43 CH t=2176.9 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=391
+H  2183.43 CH t=2176.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=395
+H  2183.44 CH t=2176.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=443
+H  2183.44 CH t=2176.9 MEM pid=7811 comm=supervise-daemo rss_kb=1660 pss_kb=426
+H  2183.44 CH t=2176.9 MEM pid=7859 comm=supervise-daemo rss_kb=1564 pss_kb=386
+H  2183.44 CH t=2176.9 MEM pid=7871 comm=supervise-daemo rss_kb=1672 pss_kb=422
+H  2185.88 CH t=2179.3 STEP 84 fKill
+H  2188.93 CH t=2182.4 EV ev=90 fault=kill target=udevd rec=2.83 ok=1 fixed=0 
+H  2206.93 CH t=2200.4 STEP 85 fKill
+H  2208.64 CH t=2202.1 EV ev=91 fault=kill target=dbus rec=1.49 ok=1 fixed=0 
+H  2217.64 CH t=2211.1 STEP 86 fKill
+H  2220.36 CH t=2213.8 EV ev=92 fault=kill target=waybar rec=2.51 ok=1 fixed=0 
+H  2231.37 CH t=2224.8 STEP 87 fKill
+H  2234.52 CH t=2228.0 EV ev=93 fault=kill target=udevd rec=2.94 ok=1 fixed=0 
+H  2243.45 CH t=2236.9 SOAKMEM t=2222 restarts=252 faults=87
+H  2243.50 CH t=2237.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  2243.50 CH t=2237.0 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=389
+H  2243.50 CH t=2237.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  2243.50 CH t=2237.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=433
+H  2243.51 CH t=2237.0 MEM pid=7811 comm=supervise-daemo rss_kb=1660 pss_kb=426
+H  2243.51 CH t=2237.0 MEM pid=7859 comm=supervise-daemo rss_kb=1696 pss_kb=418
+H  2243.51 CH t=2237.0 MEM pid=7871 comm=supervise-daemo rss_kb=1672 pss_kb=419
+H  2246.53 CH t=2240.0 STEP 88 fKill
+H  2249.48 CH t=2242.9 EV ev=94 fault=kill target=waybar rec=2.68 ok=1 fixed=0 
+H  2264.48 CH t=2257.9 STEP 89 fHang
+H  2286.30 CH t=2279.8 EV ev=95 fault=hang-stop target=driftwm rec=21.61 ok=1 fixed=0 
+H  2302.30 CH t=2295.8 STEP 90 fStorm
+H  2303.51 CH t=2297.0 SOAKMEM t=2282 restarts=256 faults=89
+H  2303.55 CH t=2297.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  2303.55 CH t=2297.0 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=382
+H  2303.55 CH t=2297.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=385
+H  2303.56 CH t=2297.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=413
+H  2303.56 CH t=2297.0 MEM pid=7811 comm=supervise-daemo rss_kb=2024 pss_kb=552
+H  2303.57 CH t=2297.0 MEM pid=7859 comm=supervise-daemo rss_kb=1696 pss_kb=405
+H  2303.57 CH t=2297.0 MEM pid=7871 comm=supervise-daemo rss_kb=1740 pss_kb=431
+H  2327.47 CH t=2320.9 STATUS Runlevel: sysinit
+H  2327.47 CH t=2320.9 STATUS Runlevel: default
+H  2327.48 CH t=2320.9 STATUS  dbus                                                  [  started 00:02:00 (0) ]
+H  2327.49 CH t=2320.9 STATUS  seatd                                                 [  started 00:05:17 (0) ]
+H  2327.50 CH t=2321.0 STATUS  udevd                                                 [  started 00:01:35 (1) ]
+H  2327.51 CH t=2321.0 STATUS  driftwm                                               [  started 00:00:01 (4) ]
+H  2327.51 CH t=2321.0 STATUS  waybar                                                [  started 00:00:04 (1) ]
+H  2327.52 CH t=2321.0 STATUS  hubd                                                  [  started 00:00:00 (2) ]
+H  2327.52 CH t=2321.0 STATUS Runlevel: boot
+H  2327.52 CH t=2321.0 STATUS Dynamic Runlevel: hotplugged
+H  2327.52 CH t=2321.0 STATUS Dynamic Runlevel: needed/wanted
+H  2327.52 CH t=2321.0 STATUS Dynamic Runlevel: manual
+H  2327.53 CH t=2321.0 STORM target=driftwm dur=25 starts=13 starts_last10s=6 cpu_ticks_init_side=12 bar-down
+H  2334.40 CH t=2327.9 EV ev=96 fault=storm target=driftwm rec=6.66 ok=1 fixed=0 starts=13 last10=6 cpu=12 bar-down
+H  2344.40 CH t=2337.9 STEP 91 fKill
+H  2347.27 CH t=2340.7 EV ev=97 fault=kill target=udevd rec=2.66 ok=1 fixed=0 
+H  2360.27 CH t=2353.7 STEP 92 fOOM
+H  2360.32 CH t=2353.8 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  2363.58 CH t=2357.0 SOAKMEM t=2342 restarts=263 faults=91
+H  2363.63 CH t=2357.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  2363.63 CH t=2357.1 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=382
+H  2363.63 CH t=2357.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=385
+H  2363.63 CH t=2357.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=413
+H  2363.63 CH t=2357.1 MEM pid=7811 comm=supervise-daemo rss_kb=2024 pss_kb=552
+H  2363.63 CH t=2357.1 MEM pid=7859 comm=supervise-daemo rss_kb=1696 pss_kb=405
+H  2363.63 CH t=2357.1 MEM pid=7871 comm=supervise-daemo rss_kb=1740 pss_kb=431
+H  2366.37 CH t=2359.8 EV ev=98 fault=oom target=hog rec=0.14 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2384.37 CH t=2377.8 STEP 93 fKill
+H  2387.47 CH t=2380.9 EV ev=99 fault=kill target=udevd rec=2.89 ok=1 fixed=0 
+H  2401.47 CH t=2394.9 STEP 94 fBrainKill
+H  2411.47 CH t=2404.9 STEP 95 fStorm
+H  2423.64 CH t=2417.1 SOAKMEM t=2402 restarts=268 faults=94
+H  2423.68 CH t=2417.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  2423.68 CH t=2417.1 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=382
+H  2423.68 CH t=2417.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=385
+H  2423.68 CH t=2417.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=413
+H  2423.69 CH t=2417.1 MEM pid=7811 comm=supervise-daemo rss_kb=2024 pss_kb=552
+H  2423.69 CH t=2417.1 MEM pid=7859 comm=supervise-daemo rss_kb=1696 pss_kb=405
+H  2423.69 CH t=2417.1 MEM pid=7871 comm=supervise-daemo rss_kb=1740 pss_kb=431
+H  2436.66 CH t=2430.1 STATUS Runlevel: sysinit
+H  2436.66 CH t=2430.1 STATUS Runlevel: default
+H  2436.66 CH t=2430.1 STATUS  dbus                                                  [  started 00:03:49 (0) ]
+H  2436.66 CH t=2430.1 STATUS  seatd                                                 [  started 00:07:06 (0) ]
+H  2436.66 CH t=2430.1 STATUS  udevd                                                 [  started 00:00:51 (1) ]
+H  2436.67 CH t=2430.1 STATUS  driftwm                                               [  started 00:00:00 (4) ]
+H  2436.67 CH t=2430.1 STATUS  waybar                                                [  started 00:00:04 (0) ]
+H  2436.67 CH t=2430.1 STATUS  hubd                                                  [  started 00:00:04 (2) ]
+H  2436.67 CH t=2430.1 STATUS Runlevel: boot
+H  2436.67 CH t=2430.1 STATUS Dynamic Runlevel: hotplugged
+H  2436.67 CH t=2430.1 STATUS Dynamic Runlevel: needed/wanted
+H  2436.67 CH t=2430.1 STATUS Dynamic Runlevel: manual
+H  2436.68 CH t=2430.1 STORM target=driftwm dur=25 starts=12 starts_last10s=5 cpu_ticks_init_side=11 bar-down
+H  2442.82 CH t=2436.3 EV ev=100 fault=storm target=driftwm rec=5.94 ok=1 fixed=0 starts=12 last10=5 cpu=11 bar-down
+H  2450.82 CH t=2444.3 STEP 96 fKill
+H  2458.15 CH t=2451.6 EV ev=101 fault=kill target=driftwm rec=7.13 ok=1 fixed=0 
+H  2466.16 CH t=2459.6 STEP 97 fKill
+H  2472.26 CH t=2465.7 EV ev=102 fault=kill target=driftwm rec=5.89 ok=1 fixed=0 
+H  2482.26 CH t=2475.7 STEP 98 fKill
+H  2483.69 CH t=2477.2 SOAKMEM t=2462 restarts=281 faults=97
+H  2483.73 CH t=2477.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  2483.73 CH t=2477.2 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=382
+H  2483.73 CH t=2477.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=385
+H  2483.73 CH t=2477.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=413
+H  2483.73 CH t=2477.2 MEM pid=7811 comm=supervise-daemo rss_kb=2024 pss_kb=552
+H  2483.73 CH t=2477.2 MEM pid=7859 comm=supervise-daemo rss_kb=1696 pss_kb=405
+H  2483.74 CH t=2477.2 MEM pid=7871 comm=supervise-daemo rss_kb=1740 pss_kb=431
+H  2485.33 CH t=2478.8 EV ev=103 fault=kill target=hubd rec=2.86 ok=1 fixed=0 
+H  2501.33 CH t=2494.8 STEP 99 fKill
+H  2502.83 CH t=2496.3 EV ev=104 fault=kill target=dbus rec=1.28 ok=1 fixed=0 
+H  2512.83 CH t=2506.3 STEP 100 fSupKill
+H  2514.71 CH t=2508.2 EV ev=105 fault=supervisor-killed target=hubd rec=0.12 ok=1 fixed=0 child_kept_running=1
+H  2543.74 CH t=2537.2 SOAKMEM t=2522 restarts=283 faults=99
+H  2543.79 CH t=2537.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=546
+H  2543.79 CH t=2537.3 MEM pid=11208 comm=supervise-daemo rss_kb=1608 pss_kb=419
+H  2543.80 CH t=2537.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=423
+H  2543.80 CH t=2537.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=452
+H  2543.80 CH t=2537.3 MEM pid=7811 comm=supervise-daemo rss_kb=2024 pss_kb=622
+H  2543.81 CH t=2537.3 MEM pid=7859 comm=supervise-daemo rss_kb=1696 pss_kb=441
+H  2576.99 CH t=2570.5 UNRECOVERED ev=106 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  2577.09 CH t=2570.5 STATUS Runlevel: sysinit
+H  2577.09 CH t=2570.6 STATUS Runlevel: default
+H  2577.09 CH t=2570.6 STATUS  dbus                                                  [  started 00:01:14 (1) ]
+H  2577.10 CH t=2570.6 STATUS  seatd                                                 [  started 00:09:26 (0) ]
+H  2577.10 CH t=2570.6 STATUS  udevd                                                 [  started 00:03:11 (1) ]
+H  2577.10 CH t=2570.6 STATUS  driftwm                                               [  started 00:01:49 (1) ]
+H  2577.10 CH t=2570.6 STATUS  waybar                                                [  started 00:01:46 (0) ]
+H  2577.11 CH t=2570.6 STATUS  hubd                                                         [  unsupervised  ]
+H  2577.12 CH t=2570.6 STATUS Runlevel: boot
+H  2577.12 CH t=2570.6 STATUS Dynamic Runlevel: hotplugged
+H  2577.12 CH t=2570.6 STATUS Dynamic Runlevel: needed/wanted
+H  2577.12 CH t=2570.6 STATUS Dynamic Runlevel: manual
+H  2577.19 CH t=2570.6 operator-action target=hubd why="hubd not running"
+H  2577.56  [1m[32m*[m Stopping hubd[K ...
+H  2577.67  [ ok ]
+H  2577.89  [1m[32m*[m Starting hubd[K ...
+H  2579.62  [ ok ]
+H  2580.06 CH t=2573.5 EV ev=106 fault=after-supervisor-killed target=hubd rec=60.11 ok=0 fixed=1 supervisor_back=0
+H  2597.06 CH t=2590.5 STEP 101 fSupKill
+H  2598.86 CH t=2592.3 EV ev=107 fault=supervisor-killed target=seatd rec=0.07 ok=1 fixed=0 child_kept_running=1
+H  2603.81 CH t=2597.3 SOAKMEM t=2582 restarts=285 faults=100
+H  2603.86 CH t=2597.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=541
+H  2603.87 CH t=2597.3 MEM pid=15588 comm=supervise-daemo rss_kb=1712 pss_kb=434
+H  2603.87 CH t=2597.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=434
+H  2603.87 CH t=2597.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=442
+H  2603.87 CH t=2597.3 MEM pid=7811 comm=supervise-daemo rss_kb=2024 pss_kb=620
+H  2603.87 CH t=2597.3 MEM pid=7859 comm=supervise-daemo rss_kb=1696 pss_kb=431
+H  2661.15 CH t=2654.6 UNRECOVERED ev=108 fault=after-supervisor-killed target=seatd alert=0 why="seatd not running"
+H  2661.27 CH t=2654.7 STATUS Runlevel: sysinit
+H  2661.27 CH t=2654.7 STATUS Runlevel: default
+H  2661.27 CH t=2654.7 STATUS  dbus                                                  [  started 00:02:39 (1) ]
+H  2661.27 CH t=2654.7 STATUS  seatd                                                        [  unsupervised  ]
+H  2661.28 CH t=2654.7 STATUS  udevd                                                 [  started 00:04:36 (1) ]
+H  2661.28 CH t=2654.7 STATUS  driftwm                                               [  started 00:00:01 (6) ]
+H  2661.28 CH t=2654.7 STATUS  waybar                                                [  started 00:00:01 (3) ]
+H  2661.28 CH t=2654.7 STATUS  hubd                                                  [  started 00:00:03 (1) ]
+H  2661.28 CH t=2654.7 STATUS Runlevel: boot
+H  2661.28 CH t=2654.7 STATUS Dynamic Runlevel: hotplugged
+H  2661.28 CH t=2654.7 STATUS Dynamic Runlevel: needed/wanted
+H  2661.28 CH t=2654.7 STATUS Dynamic Runlevel: manual
+H  2661.31 CH t=2654.8 operator-action target=seatd why="seatd not running"
+H  2661.89  [1m[32m*[m Stopping hubd[K ...
+H  2661.95  [1m[32m*[m Stopping waybar[K ...
+H  2662.30  [ ok ]
+H  2662.30  [ ok ]
+H  2662.62  [1m[32m*[m Stopping driftwm[K ...
+H  2663.13  [ ok ]
+H  2663.49  [1m[32m*[m Stopping seatd[K ...
+H  2663.62  [ ok ]
+H  2663.84  [1m[32m*[m Starting seatd[K ...
+H  2663.87 CH t=2657.3 SOAKMEM t=2642 restarts=298 faults=100
+H  2663.92 CH t=2657.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=527
+H  2663.92 CH t=2657.4 MEM pid=17249 comm=supervise-daemo rss_kb=2200 pss_kb=759
+H  2663.92 CH t=2657.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=492
+H  2663.92 CH t=2657.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=486
+H  2664.00  [ ok ]
+H  2664.41  [1m[32m*[m Starting driftwm[K ...
+H  2666.44  [ ok ]
+H  2666.73  [1m[32m*[m Starting waybar[K ...
+H  2666.76  [1m[32m*[m Starting hubd[K ...
+H  2668.65  [ ok ]
+H  2668.66  [ ok ]
+H  2669.09 CH t=2662.5 EV ev=108 fault=after-supervisor-killed target=seatd rec=64.67 ok=0 fixed=1 supervisor_back=0
+H  2677.09 CH t=2670.5 STEP 102 fOOM
+H  2677.15 CH t=2670.6 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  2682.69 CH t=2676.1 EV ev=109 fault=oom target=hog rec=0.06 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2689.69 CH t=2683.2 STEP 103 fHang
+H  2709.34 CH t=2702.8 EV ev=110 fault=hang-stop target=driftwm rec=19.44 ok=1 fixed=0 
+H  2723.92 CH t=2717.4 SOAKMEM t=2703 restarts=308 faults=103
+H  2723.99 CH t=2717.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=515
+H  2724.00 CH t=2717.5 MEM pid=17250 comm=supervise-daemo rss_kb=1568 pss_kb=374
+H  2724.00 CH t=2717.5 MEM pid=17282 comm=supervise-daemo rss_kb=1900 pss_kb=501
+H  2724.01 CH t=2717.5 MEM pid=17341 comm=supervise-daemo rss_kb=1696 pss_kb=394
+H  2724.01 CH t=2717.5 MEM pid=17343 comm=supervise-daemo rss_kb=1696 pss_kb=394
+H  2724.01 CH t=2717.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=405
+H  2724.02 CH t=2717.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=426
+H  2728.34 CH t=2721.8 STEP 104 fKill
+H  2734.59 CH t=2728.1 EV ev=111 fault=kill target=driftwm rec=6.04 ok=1 fixed=0 
+H  2750.60 CH t=2744.1 STEP 105 fHang
+H  2768.61 CH t=2762.1 EV ev=112 fault=hang-stop target=driftwm rec=17.81 ok=1 fixed=0 
+H  2784.02 CH t=2777.5 SOAKMEM t=2763 restarts=314 faults=105
+H  2784.06 CH t=2777.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=515
+H  2784.07 CH t=2777.5 MEM pid=17250 comm=supervise-daemo rss_kb=1568 pss_kb=374
+H  2784.07 CH t=2777.5 MEM pid=17282 comm=supervise-daemo rss_kb=1900 pss_kb=501
+H  2784.07 CH t=2777.5 MEM pid=17341 comm=supervise-daemo rss_kb=1696 pss_kb=394
+H  2784.07 CH t=2777.5 MEM pid=17343 comm=supervise-daemo rss_kb=1696 pss_kb=394
+H  2784.07 CH t=2777.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=405
+H  2784.08 CH t=2777.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=426
+H  2786.62 CH t=2780.1 STEP 106 fKill
+H  2792.56 CH t=2786.0 EV ev=113 fault=kill target=seatd rec=5.74 ok=1 fixed=0 
+H  2804.56 CH t=2798.0 STEP 107 fKill
+H  2822.23 CH t=2815.7 EV ev=114 fault=kill target=driftwm rec=17.46 ok=1 fixed=0 
+H  2838.23 CH t=2831.7 STEP 108 fDisk
+H  2838.29 CH t=2831.7 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  2844.08 CH t=2837.5 SOAKMEM t=2823 restarts=321 faults=107
+H  2844.12 CH t=2837.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=510
+H  2844.12 CH t=2837.6 MEM pid=17250 comm=supervise-daemo rss_kb=1700 pss_kb=395
+H  2844.13 CH t=2837.6 MEM pid=17282 comm=supervise-daemo rss_kb=1900 pss_kb=498
+H  2844.13 CH t=2837.6 MEM pid=17341 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  2844.13 CH t=2837.6 MEM pid=17343 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  2844.13 CH t=2837.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=404
+H  2844.14 CH t=2837.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=422
+H  2854.12 CH t=2847.6 STATUS Runlevel: sysinit
+H  2854.12 CH t=2847.6 STATUS Runlevel: default
+H  2854.12 CH t=2847.6 STATUS  dbus                                                  [  started 00:05:51 (1) ]
+H  2854.12 CH t=2847.6 STATUS  seatd                                                 [  started 00:01:06 (1) ]
+H  2854.12 CH t=2847.6 STATUS  udevd                                                 [  started 00:07:48 (1) ]
+H  2854.12 CH t=2847.6 STATUS  driftwm                                               [  started 00:00:36 (1) ]
+H  2854.13 CH t=2847.6 STATUS  waybar                                                [  started 00:00:09 (0) ]
+H  2854.13 CH t=2847.6 STATUS  hubd                                                  [  started 00:00:34 (1) ]
+H  2854.13 CH t=2847.6 STATUS Runlevel: boot
+H  2854.13 CH t=2847.6 STATUS Dynamic Runlevel: hotplugged
+H  2854.13 CH t=2847.6 STATUS Dynamic Runlevel: needed/wanted
+H  2854.13 CH t=2847.6 STATUS Dynamic Runlevel: manual
+H  2854.42 CH t=2847.9 EV ev=115 fault=disk-full target=waybar rec=0.05 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H  2862.42 CH t=2855.9 STEP 109 fKill
+H  2865.34 CH t=2858.8 EV ev=116 fault=kill target=hubd rec=2.72 ok=1 fixed=0 
+H  2873.35 CH t=2866.8 STEP 110 fHang
+H  2873.62 CH t=2867.1 EV ev=117 fault=hang-spin target=driftwm rec=0.07 ok=1 fixed=0 
+H  2889.62 CH t=2883.1 STEP 111 fKill
+H  2892.52 CH t=2886.0 EV ev=118 fault=kill target=udevd rec=2.68 ok=1 fixed=0 
+H  2903.52 CH t=2897.0 STEP 112 fOOM
+H  2903.58 CH t=2897.0 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  2904.14 CH t=2897.6 SOAKMEM t=2883 restarts=324 faults=111
+H  2904.19 CH t=2897.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=510
+H  2904.19 CH t=2897.7 MEM pid=17250 comm=supervise-daemo rss_kb=1700 pss_kb=395
+H  2904.20 CH t=2897.7 MEM pid=17282 comm=supervise-daemo rss_kb=1900 pss_kb=498
+H  2904.20 CH t=2897.7 MEM pid=17341 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  2904.20 CH t=2897.7 MEM pid=17343 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  2904.20 CH t=2897.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=404
+H  2904.20 CH t=2897.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=422
+H  2908.76 CH t=2902.2 EV ev=119 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2919.76 CH t=2913.2 STEP 113 fKill
+H  2921.22 CH t=2914.7 EV ev=120 fault=kill target=dbus rec=1.26 ok=1 fixed=0 
+H  2934.22 CH t=2927.7 STEP 114 fKill
+H  2940.35 CH t=2933.8 EV ev=121 fault=kill target=driftwm rec=5.92 ok=1 fixed=0 
+H  2946.35 CH t=2939.8 STEP 115 fDisk
+H  2946.38 CH t=2939.8 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  2962.23 CH t=2955.7 STATUS Runlevel: sysinit
+H  2962.23 CH t=2955.7 STATUS Runlevel: default
+H  2962.23 CH t=2955.7 STATUS  dbus                                                  [  started 00:00:42 (0) ]
+H  2962.24 CH t=2955.7 STATUS  seatd                                                 [  started 00:02:55 (1) ]
+H  2962.24 CH t=2955.7 STATUS  udevd                                                 [  started 00:01:12 (0) ]
+H  2962.24 CH t=2955.7 STATUS  driftwm                                               [  started 00:00:27 (0) ]
+H  2962.25 CH t=2955.7 STATUS  waybar                                                [  started 00:00:10 (0) ]
+H  2962.25 CH t=2955.7 STATUS  hubd                                                  [  started 00:00:25 (2) ]
+H  2962.26 CH t=2955.7 STATUS Runlevel: boot
+H  2962.26 CH t=2955.7 STATUS Dynamic Runlevel: hotplugged
+H  2962.26 CH t=2955.7 STATUS Dynamic Runlevel: needed/wanted
+H  2962.26 CH t=2955.7 STATUS Dynamic Runlevel: manual
+H  2962.60 CH t=2956.1 EV ev=122 fault=disk-full target=waybar rec=0.07 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H  2964.20 CH t=2957.7 SOAKMEM t=2943 restarts=329 faults=115
+H  2964.24 CH t=2957.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=510
+H  2964.24 CH t=2957.7 MEM pid=17250 comm=supervise-daemo rss_kb=1700 pss_kb=395
+H  2964.24 CH t=2957.7 MEM pid=17282 comm=supervise-daemo rss_kb=1900 pss_kb=498
+H  2964.24 CH t=2957.7 MEM pid=17341 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  2964.24 CH t=2957.7 MEM pid=17343 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  2964.24 CH t=2957.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=404
+H  2964.25 CH t=2957.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=422
+H  2977.60 CH t=2971.1 STEP 116 fHang
+H  2997.43 CH t=2990.9 EV ev=123 fault=hang-spin target=driftwm rec=19.62 ok=1 fixed=0 
+H  3002.43 CH t=2995.9 STEP 117 fKill
+H  3005.52 CH t=2999.0 EV ev=124 fault=kill target=udevd rec=2.88 ok=1 fixed=0 
+H  3012.52 CH t=3006.0 STEP 118 fKill
+H  3016.38 CH t=3009.8 EV ev=125 fault=kill target=waybar rec=3.64 ok=1 fixed=0 
+H  3024.25 CH t=3017.7 SOAKMEM t=3003 restarts=334 faults=118
+H  3024.28 CH t=3017.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=510
+H  3024.28 CH t=3017.7 MEM pid=17250 comm=supervise-daemo rss_kb=1700 pss_kb=395
+H  3024.28 CH t=3017.7 MEM pid=17282 comm=supervise-daemo rss_kb=1900 pss_kb=498
+H  3024.28 CH t=3017.7 MEM pid=17341 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  3024.28 CH t=3017.7 MEM pid=17343 comm=supervise-daemo rss_kb=1696 pss_kb=390
+H  3024.29 CH t=3017.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=404
+H  3024.29 CH t=3017.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=422
+H  3026.38 CH t=3019.8 STEP 119 fKill
+H  3032.62 CH t=3026.1 EV ev=126 fault=kill target=seatd rec=6.03 ok=1 fixed=0 
+H  3050.62 CH t=3044.1 STEP 120 fSupKill
+H  3052.43 CH t=3045.9 EV ev=127 fault=supervisor-killed target=seatd rec=0.09 ok=1 fixed=0 child_kept_running=1
+H  3084.29 CH t=3077.7 SOAKMEM t=3063 restarts=344 faults=119
+H  3084.32 CH t=3077.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=549
+H  3084.32 CH t=3077.8 MEM pid=17282 comm=supervise-daemo rss_kb=1900 pss_kb=538
+H  3084.32 CH t=3077.8 MEM pid=17341 comm=supervise-daemo rss_kb=1696 pss_kb=430
+H  3084.32 CH t=3077.8 MEM pid=17343 comm=supervise-daemo rss_kb=1696 pss_kb=430
+H  3084.32 CH t=3077.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=437
+H  3084.33 CH t=3077.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=461
+H  3114.66 CH t=3108.1 UNRECOVERED ev=128 fault=after-supervisor-killed target=seatd alert=0 why="seatd not running"
+H  3114.83 CH t=3108.3 STATUS Runlevel: sysinit
+H  3114.83 CH t=3108.3 STATUS Runlevel: default
+H  3114.84 CH t=3108.3 STATUS  dbus                                                  [  started 00:03:14 (0) ]
+H  3114.85 CH t=3108.3 STATUS  seatd                                                        [  unsupervised  ]
+H  3114.85 CH t=3108.3 STATUS  udevd                                                 [  started 00:01:51 (1) ]
+H  3114.85 CH t=3108.3 STATUS  driftwm                                               [  started 00:00:00 (7) ]
+H  3114.86 CH t=3108.3 STATUS  waybar                                                [  started 00:00:00 (1) ]
+H  3114.86 CH t=3108.3 STATUS  hubd                                                  [  started 00:00:00 (0) ]
+H  3114.86 CH t=3108.3 STATUS Runlevel: boot
+H  3114.86 CH t=3108.3 STATUS Dynamic Runlevel: hotplugged
+H  3114.87 CH t=3108.3 STATUS Dynamic Runlevel: needed/wanted
+H  3114.87 CH t=3108.3 STATUS Dynamic Runlevel: manual
+H  3114.90 CH t=3108.4 operator-action target=seatd why="seatd not running"
+H  3115.69  [1m[32m*[m Stopping waybar[K ...
+H  3115.71  [1m[32m*[m Stopping hubd[K ...
+H  3115.89  [ ok ]
+H  3115.91  [ ok ]
+H  3116.22  [1m[32m*[m Stopping driftwm[K ...
+H  3116.53  [ ok ]
+H  3116.87  [1m[32m*[m Stopping seatd[K ...
+H  3116.99  [ ok ]
+H  3117.20  [1m[32m*[m Starting seatd[K ...
+H  3117.45  [ ok ]
+H  3117.84  [1m[32m*[m Starting driftwm[K ...
+H  3119.87  [ ok ]
+H  3120.11  [1m[32m*[m Starting waybar[K ...
+H  3120.13  [1m[32m*[m Starting hubd[K ...
+H  3121.99  [ ok ]
+H  3122.02  [ ok ]
+H  3122.28 CH t=3115.7 EV ev=128 fault=after-supervisor-killed target=seatd rec=64.36 ok=0 fixed=1 supervisor_back=0
+H  3136.28 CH t=3129.7 STEP 121 fKill
+H  3137.73 CH t=3131.2 EV ev=129 fault=kill target=dbus rec=1.24 ok=1 fixed=0 
+H  3142.75 CH t=3136.2 STEP 122 fKill
+H  3144.33 CH t=3137.8 SOAKMEM t=3123 restarts=363 faults=121
+H  3144.37 CH t=3137.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=518
+H  3144.37 CH t=3137.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=405
+H  3144.38 CH t=3137.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=419
+H  3144.38 CH t=3137.8 MEM pid=25820 comm=supervise-daemo rss_kb=1652 pss_kb=414
+H  3144.38 CH t=3137.8 MEM pid=25861 comm=supervise-daemo rss_kb=1700 pss_kb=408
+H  3144.38 CH t=3137.8 MEM pid=25911 comm=supervise-daemo rss_kb=1696 pss_kb=404
+H  3144.38 CH t=3137.8 MEM pid=25913 comm=supervise-daemo rss_kb=1740 pss_kb=434
+H  3148.99 CH t=3142.4 EV ev=130 fault=kill target=driftwm rec=6.04 ok=1 fixed=0 
+H  3167.99 CH t=3161.5 STEP 123 fKill
+H  3170.90 CH t=3164.4 EV ev=131 fault=kill target=udevd rec=2.70 ok=1 fixed=0 
+H  3180.90 CH t=3174.4 STEP 124 fSupKill
+H  3182.70 CH t=3176.2 EV ev=132 fault=supervisor-killed target=seatd rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  3204.38 CH t=3197.8 SOAKMEM t=3183 restarts=369 faults=123
+H  3204.42 CH t=3197.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=562
+H  3204.42 CH t=3197.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=444
+H  3204.42 CH t=3197.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=456
+H  3204.42 CH t=3197.9 MEM pid=25861 comm=supervise-daemo rss_kb=1700 pss_kb=442
+H  3204.42 CH t=3197.9 MEM pid=25911 comm=supervise-daemo rss_kb=1696 pss_kb=438
+H  3204.42 CH t=3197.9 MEM pid=25913 comm=supervise-daemo rss_kb=1740 pss_kb=502
+H  3244.81 CH t=3238.3 UNRECOVERED ev=133 fault=after-supervisor-killed target=seatd alert=0 why="seatd not running"
+H  3244.91 CH t=3238.4 STATUS Runlevel: sysinit
+H  3244.92 CH t=3238.4 STATUS Runlevel: default
+H  3244.92 CH t=3238.4 STATUS  dbus                                                  [  started 00:01:47 (1) ]
+H  3244.92 CH t=3238.4 STATUS  seatd                                                        [  unsupervised  ]
+H  3244.92 CH t=3238.4 STATUS  udevd                                                 [  started 00:01:16 (0) ]
+H  3244.93 CH t=3238.4 STATUS  driftwm                                               [  started 00:00:00 (6) ]
+H  3244.93 CH t=3238.4 STATUS  waybar                                                [  started 00:00:06 (1) ]
+H  3244.94 CH t=3238.4 STATUS  hubd                                                  [  started 00:00:02 (1) ]
+H  3244.94 CH t=3238.4 STATUS Runlevel: boot
+H  3244.94 CH t=3238.4 STATUS Dynamic Runlevel: hotplugged
+H  3244.94 CH t=3238.4 STATUS Dynamic Runlevel: needed/wanted
+H  3244.94 CH t=3238.4 STATUS Dynamic Runlevel: manual
+H  3244.98 CH t=3238.4 operator-action target=seatd why="seatd not running"
+H  3245.89  [1m[32m*[m Stopping waybar[K ...
+H  3246.02  [1m[32m*[m Stopping hubd[K ...
+H  3246.11  [ ok ]
+H  3246.19  [ ok ]
+H  3246.49  [1m[32m*[m Stopping driftwm[K ...
+H  3246.89  [ ok ]
+H  3247.22  [1m[32m*[m Stopping seatd[K ...
+H  3247.35  [ ok ]
+H  3247.59  [1m[32m*[m Starting seatd[K ...
+H  3247.77  [ ok ]
+H  3248.21  [1m[32m*[m Starting driftwm[K ...
+H  3250.29  [ ok ]
+H  3250.61  [1m[32m*[m Starting hubd[K ...
+H  3250.65  [1m[32m*[m Starting waybar[K ...
+H  3252.50  [ ok ]
+H  3252.53  [ ok ]
+H  3252.76 CH t=3246.2 EV ev=133 fault=after-supervisor-killed target=seatd rec=64.46 ok=0 fixed=1 supervisor_back=0
+H  3264.42 CH t=3257.9 SOAKMEM t=3243 restarts=390 faults=124
+H  3264.48 CH t=3257.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=540
+H  3264.48 CH t=3257.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=411
+H  3264.48 CH t=3257.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=434
+H  3264.48 CH t=3257.9 MEM pid=28316 comm=supervise-daemo rss_kb=1676 pss_kb=427
+H  3264.48 CH t=3257.9 MEM pid=28348 comm=supervise-daemo rss_kb=1660 pss_kb=422
+H  3264.48 CH t=3257.9 MEM pid=28407 comm=supervise-daemo rss_kb=1568 pss_kb=388
+H  3264.48 CH t=3257.9 MEM pid=28412 comm=supervise-daemo rss_kb=1576 pss_kb=391
+H  3264.76 CH t=3258.2 STEP 125 fKill
+H  3271.33 CH t=3264.8 EV ev=134 fault=kill target=seatd rec=6.37 ok=1 fixed=0 
+H  3286.34 CH t=3279.8 STEP 126 fHang
+H  3306.01 CH t=3299.5 EV ev=135 fault=hang-stop target=driftwm rec=19.46 ok=1 fixed=0 
+H  3324.49 CH t=3317.9 SOAKMEM t=3303 restarts=397 faults=126
+H  3324.53 CH t=3318.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3324.54 CH t=3318.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3324.54 CH t=3318.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3324.54 CH t=3318.0 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3324.54 CH t=3318.0 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3324.54 CH t=3318.0 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3324.55 CH t=3318.0 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3325.01 CH t=3318.5 STEP 127 fKill
+H  3332.08 CH t=3325.5 EV ev=136 fault=kill target=seatd rec=6.86 ok=1 fixed=0 
+H  3345.09 CH t=3338.5 STEP 128 fKill
+H  3362.37 CH t=3355.8 EV ev=137 fault=kill target=seatd rec=17.07 ok=1 fixed=0 
+H  3368.38 CH t=3361.8 STEP 129 fKill
+H  3371.57 CH t=3365.0 EV ev=138 fault=kill target=udevd rec=2.99 ok=1 fixed=0 
+H  3381.57 CH t=3375.0 STEP 130 fKill
+H  3383.04 CH t=3376.5 EV ev=139 fault=kill target=dbus rec=1.25 ok=1 fixed=0 
+H  3384.55 CH t=3378.0 SOAKMEM t=3363 restarts=408 faults=130
+H  3384.59 CH t=3378.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3384.59 CH t=3378.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3384.59 CH t=3378.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3384.59 CH t=3378.0 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3384.59 CH t=3378.1 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3384.59 CH t=3378.1 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3384.59 CH t=3378.1 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3401.04 CH t=3394.5 STEP 131 fKill
+H  3404.22 CH t=3397.7 EV ev=140 fault=kill target=hubd rec=2.96 ok=1 fixed=0 
+H  3409.22 CH t=3402.7 STEP 132 fKill
+H  3416.29 CH t=3409.8 EV ev=141 fault=kill target=driftwm rec=6.87 ok=1 fixed=0 
+H  3430.30 CH t=3423.8 STEP 133 fDep
+H  3444.59 CH t=3438.1 SOAKMEM t=3423 restarts=413 faults=132
+H  3444.64 CH t=3438.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3444.65 CH t=3438.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3444.65 CH t=3438.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3444.65 CH t=3438.1 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3444.65 CH t=3438.1 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3444.65 CH t=3438.1 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3444.65 CH t=3438.1 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=406
+H  3457.27 CH t=3450.7 EV ev=142 fault=dep-fail target=seatd rec=6.76 ok=1 fixed=0 
+H  3457.27 CH t=3450.7 DEPSTARTS mode=fail seatd=14 driftwm=12 waybar=6 hubd=2
+H  3465.28 CH t=3458.7 STEP 134 fHang
+H  3465.57 CH t=3459.0 EV ev=143 fault=hang-spin target=driftwm rec=0.09 ok=1 fixed=0 
+H  3480.57 CH t=3474.0 STEP 135 fDep
+H  3500.42 CH t=3493.9 EV ev=144 fault=dep-slow target=seatd rec=19.64 ok=1 fixed=0 
+H  3500.43 CH t=3493.9 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=6 hubd=2
+H  3504.66 CH t=3498.1 SOAKMEM t=3483 restarts=427 faults=135
+H  3504.68 CH t=3498.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3504.69 CH t=3498.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3504.69 CH t=3498.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3504.69 CH t=3498.1 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3504.69 CH t=3498.1 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3504.69 CH t=3498.1 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3504.69 CH t=3498.2 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3511.43 CH t=3504.9 STEP 136 fOOM
+H  3511.53 CH t=3505.0 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  3517.08 CH t=3510.5 EV ev=145 fault=oom target=hog rec=0.18 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  3526.08 CH t=3519.5 STEP 137 fStorm
+H  3551.28 CH t=3544.7 STATUS Runlevel: sysinit
+H  3551.28 CH t=3544.7 STATUS Runlevel: default
+H  3551.28 CH t=3544.7 STATUS  dbus                                                  [  started 00:02:49 (0) ]
+H  3551.28 CH t=3544.7 STATUS  seatd                                                 [  started 00:01:10 (0) ]
+H  3551.29 CH t=3544.7 STATUS  udevd                                                 [  started 00:03:02 (1) ]
+H  3551.29 CH t=3544.7 STATUS  driftwm                                               [  started 00:00:54 (0) ]
+H  3551.29 CH t=3544.7 STATUS  waybar                                                [  started 00:00:53 (1) ]
+H  3551.29 CH t=3544.8 STATUS  hubd                                                  [  started 00:00:01 (4) ]
+H  3551.29 CH t=3544.8 STATUS Runlevel: boot
+H  3551.29 CH t=3544.8 STATUS Dynamic Runlevel: hotplugged
+H  3551.30 CH t=3544.8 STATUS Dynamic Runlevel: needed/wanted
+H  3551.30 CH t=3544.8 STATUS Dynamic Runlevel: manual
+H  3551.30 CH t=3544.8 STORM target=hubd dur=25 starts=9 starts_last10s=4 cpu_ticks_init_side=8 bar-up
+H  3552.41 CH t=3545.9 EV ev=146 fault=storm target=hubd rec=0.91 ok=1 fixed=0 starts=9 last10=4 cpu=8 bar-up
+H  3564.69 CH t=3558.2 SOAKMEM t=3543 restarts=436 faults=137
+H  3564.73 CH t=3558.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3564.73 CH t=3558.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3564.73 CH t=3558.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3564.73 CH t=3558.2 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3564.73 CH t=3558.2 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3564.73 CH t=3558.2 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3564.74 CH t=3558.2 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3569.41 CH t=3562.9 STEP 138 fHang
+H  3569.74 CH t=3563.2 EV ev=147 fault=hang-spin target=driftwm rec=0.11 ok=1 fixed=0 
+H  3577.74 CH t=3571.2 STEP 139 fKill
+H  3580.31 CH t=3573.8 EV ev=148 fault=kill target=waybar rec=2.35 ok=1 fixed=0 
+H  3591.31 CH t=3584.8 STEP 140 fOOM
+H  3591.38 CH t=3584.8 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  3596.64 CH t=3590.1 EV ev=149 fault=oom target=hog rec=0.13 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  3614.64 CH t=3608.1 STEP 141 fKill
+H  3618.88 CH t=3612.3 EV ev=150 fault=kill target=hubd rec=4.03 ok=1 fixed=0 
+H  3624.74 CH t=3618.2 SOAKMEM t=3603 restarts=446 faults=141
+H  3624.78 CH t=3618.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3624.79 CH t=3618.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3624.79 CH t=3618.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3624.79 CH t=3618.2 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3624.79 CH t=3618.2 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3624.79 CH t=3618.3 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3624.79 CH t=3618.3 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3635.88 CH t=3629.3 STEP 142 fKill
+H  3642.16 CH t=3635.6 EV ev=151 fault=kill target=driftwm rec=6.05 ok=1 fixed=0 
+H  3654.16 CH t=3647.6 STEP 143 fKill
+H  3657.11 CH t=3650.6 EV ev=152 fault=kill target=udevd rec=2.75 ok=1 fixed=0 
+H  3676.12 CH t=3669.6 STEP 144 fKill
+H  3684.79 CH t=3678.3 SOAKMEM t=3663 restarts=453 faults=143
+H  3684.83 CH t=3678.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3684.83 CH t=3678.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3684.83 CH t=3678.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3684.83 CH t=3678.3 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3684.83 CH t=3678.3 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3684.83 CH t=3678.3 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3684.83 CH t=3678.3 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3693.48 CH t=3686.9 EV ev=153 fault=kill target=seatd rec=17.16 ok=1 fixed=0 
+H  3698.49 CH t=3691.9 STEP 145 fStorm
+H  3723.66 CH t=3717.1 STATUS Runlevel: sysinit
+H  3723.66 CH t=3717.1 STATUS Runlevel: default
+H  3723.66 CH t=3717.1 STATUS  dbus                                                  [  started 00:05:41 (0) ]
+H  3723.66 CH t=3717.1 STATUS  seatd                                                 [  started 00:00:46 (1) ]
+H  3723.67 CH t=3717.1 STATUS  udevd                                                 [  started 00:01:08 (0) ]
+H  3723.67 CH t=3717.1 STATUS  driftwm                                               [  started 00:00:35 (0) ]
+H  3723.67 CH t=3717.1 STATUS  waybar                                                [  started 00:00:02 (0) ]
+H  3723.67 CH t=3717.1 STATUS  hubd                                                  [  started 00:00:32 (1) ]
+H  3723.67 CH t=3717.1 STATUS Runlevel: boot
+H  3723.67 CH t=3717.1 STATUS Dynamic Runlevel: hotplugged
+H  3723.67 CH t=3717.1 STATUS Dynamic Runlevel: needed/wanted
+H  3723.67 CH t=3717.1 STATUS Dynamic Runlevel: manual
+H  3723.68 CH t=3717.1 STORM target=waybar dur=25 starts=9 starts_last10s=4 cpu_ticks_init_side=8 bar-up
+H  3725.44 CH t=3718.9 EV ev=154 fault=storm target=waybar rec=1.56 ok=1 fixed=0 starts=9 last10=4 cpu=8 bar-up
+H  3731.44 CH t=3724.9 STEP 146 fKill
+H  3732.97 CH t=3726.4 EV ev=155 fault=kill target=dbus rec=1.33 ok=1 fixed=0 
+H  3744.84 CH t=3738.3 SOAKMEM t=3723 restarts=461 faults=146
+H  3744.87 CH t=3738.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3744.87 CH t=3738.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3744.88 CH t=3738.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3744.88 CH t=3738.3 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3744.88 CH t=3738.3 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3744.88 CH t=3738.3 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3744.88 CH t=3738.3 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3747.97 CH t=3741.4 STEP 147 fKill
+H  3754.57 CH t=3748.0 EV ev=156 fault=kill target=seatd rec=6.38 ok=1 fixed=0 
+H  3761.58 CH t=3755.0 STEP 148 fBrainKill
+H  3778.58 CH t=3772.0 STEP 149 fClock
+H  3784.50 CH t=3778.0 EV ev=157 fault=clock+86400 target=driftwm rec=5.68 ok=1 fixed=0 
+H  3788.69 CH t=3782.1 EV ev=158 fault=after-clock+86400 target=hubd rec=2.98 ok=1 fixed=0 
+H  3800.69 CH t=3794.1 STEP 150 fDisk
+H  3800.73 CH t=3794.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  3804.88 CH t=3798.3 SOAKMEM t=3783 restarts=469 faults=149
+H  3804.93 CH t=3798.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3804.93 CH t=3798.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3804.94 CH t=3798.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3804.94 CH t=3798.4 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3804.94 CH t=3798.4 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3804.94 CH t=3798.4 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3804.94 CH t=3798.4 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3815.89 CH t=3809.3 STATUS Runlevel: sysinit
+H  3815.89 CH t=3809.3 STATUS Runlevel: default
+H  3815.89 CH t=3809.3 STATUS  dbus                                                  [  started 00:01:23 (1) ]
+H  3815.89 CH t=3809.3 STATUS  seatd                                                 [  started 00:01:07 (0) ]
+H  3815.89 CH t=3809.4 STATUS  udevd                                                 [  started 00:02:40 (0) ]
+H  3815.90 CH t=3809.4 STATUS  driftwm                                            [  started -23:-59:-24 (0) ]
+H  3815.90 CH t=3809.4 STATUS  waybar                                                [  started 00:00:08 (0) ]
+H  3815.90 CH t=3809.4 STATUS  hubd                                                  [  started 00:00:29 (1) ]
+H  3815.90 CH t=3809.4 STATUS Runlevel: boot
+H  3815.90 CH t=3809.4 STATUS Dynamic Runlevel: hotplugged
+H  3815.90 CH t=3809.4 STATUS Dynamic Runlevel: needed/wanted
+H  3815.90 CH t=3809.4 STATUS Dynamic Runlevel: manual
+H  3816.33 CH t=3809.8 EV ev=159 fault=disk-full target=waybar rec=0.16 ok=1 fixed=0 ok_during=12/14 all_alive_at_end=1
+H  3829.33 CH t=3822.8 STEP 151 fKill
+H  3833.06 CH t=3826.5 EV ev=160 fault=kill target=waybar rec=3.49 ok=1 fixed=0 
+H  3844.06 CH t=3837.5 STEP 152 fKill
+H  3850.79 CH t=3844.3 EV ev=161 fault=kill target=driftwm rec=6.50 ok=1 fixed=0 
+H  3856.80 CH t=3850.3 STEP 153 fKill
+H  3860.25 CH t=3853.7 EV ev=162 fault=kill target=hubd rec=3.24 ok=1 fixed=0 
+H  3864.94 CH t=3858.4 SOAKMEM t=3844 restarts=475 faults=153
+H  3864.99 CH t=3858.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3864.99 CH t=3858.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3864.99 CH t=3858.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3864.99 CH t=3858.5 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3865.00 CH t=3858.5 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3865.00 CH t=3858.5 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3865.00 CH t=3858.5 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3870.25 CH t=3863.7 STEP 154 fKill
+H  3876.73 CH t=3870.2 EV ev=163 fault=kill target=driftwm rec=6.26 ok=1 fixed=0 
+H  3895.73 CH t=3889.2 STEP 155 fKill
+H  3897.30 CH t=3890.8 EV ev=164 fault=kill target=dbus rec=1.35 ok=1 fixed=0 
+H  3909.31 CH t=3902.8 STEP 156 fKill
+H  3912.90 CH t=3906.4 EV ev=165 fault=kill target=hubd rec=3.37 ok=1 fixed=0 
+H  3925.00 CH t=3918.5 SOAKMEM t=3904 restarts=480 faults=156
+H  3925.08 CH t=3918.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3925.08 CH t=3918.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3925.08 CH t=3918.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3925.08 CH t=3918.5 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3925.08 CH t=3918.5 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3925.08 CH t=3918.5 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3925.08 CH t=3918.5 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  3926.90 CH t=3920.4 STEP 157 fKill
+H  3930.22 CH t=3923.7 EV ev=166 fault=kill target=udevd rec=3.11 ok=1 fixed=0 
+H  3935.23 CH t=3928.7 STEP 158 fHang
+H  3956.83 CH t=3950.3 EV ev=167 fault=hang-spin target=driftwm rec=21.36 ok=1 fixed=0 
+H  3962.83 CH t=3956.3 STEP 159 fHang
+H  3982.69 CH t=3976.2 EV ev=168 fault=hang-spin target=driftwm rec=19.65 ok=1 fixed=0 
+H  3985.08 CH t=3978.5 SOAKMEM t=3964 restarts=487 faults=159
+H  3985.11 CH t=3978.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  3985.11 CH t=3978.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  3985.12 CH t=3978.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  3985.12 CH t=3978.6 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  3985.12 CH t=3978.6 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  3985.12 CH t=3978.6 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  3985.12 CH t=3978.6 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  4000.70 CH t=3994.2 STEP 160 fBrainKill
+H  4016.71 CH t=4010.2 STEP 161 fDisk
+H  4016.75 CH t=4010.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  4032.74 CH t=4026.2 STATUS Runlevel: sysinit
+H  4032.74 CH t=4026.2 STATUS Runlevel: default
+H  4032.74 CH t=4026.2 STATUS  dbus                                                  [  started 00:02:16 (0) ]
+H  4032.74 CH t=4026.2 STATUS  seatd                                                 [  started 00:04:44 (0) ]
+H  4032.74 CH t=4026.2 STATUS  udevd                                                 [  started 00:01:45 (1) ]
+H  4032.74 CH t=4026.2 STATUS  driftwm                                               [  started 00:00:55 (0) ]
+H  4032.74 CH t=4026.2 STATUS  waybar                                                [  started 00:00:09 (1) ]
+H  4032.75 CH t=4026.2 STATUS  hubd                                                  [  started 00:00:52 (1) ]
+H  4032.75 CH t=4026.2 STATUS Runlevel: boot
+H  4032.75 CH t=4026.2 STATUS Dynamic Runlevel: hotplugged
+H  4032.75 CH t=4026.2 STATUS Dynamic Runlevel: needed/wanted
+H  4032.75 CH t=4026.2 STATUS Dynamic Runlevel: manual
+H  4033.10 CH t=4026.6 EV ev=169 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H  4045.12 CH t=4038.6 SOAKMEM t=4024 restarts=488 faults=161
+H  4045.17 CH t=4038.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  4045.18 CH t=4038.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4045.18 CH t=4038.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  4045.18 CH t=4038.6 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  4045.18 CH t=4038.6 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  4045.18 CH t=4038.6 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  4045.18 CH t=4038.6 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  4047.10 CH t=4040.6 STEP 162 fBrainKill
+H  4066.11 CH t=4059.6 STEP 163 fDep
+H  4092.82 CH t=4086.3 EV ev=170 fault=dep-fail target=seatd rec=6.49 ok=1 fixed=0 
+H  4092.82 CH t=4086.3 DEPSTARTS mode=fail seatd=13 driftwm=5 waybar=3 hubd=2
+H  4097.83 CH t=4091.3 STEP 164 fHang
+H  4105.19 CH t=4098.6 SOAKMEM t=4084 restarts=494 faults=163
+H  4105.23 CH t=4098.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  4105.23 CH t=4098.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4105.23 CH t=4098.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  4105.23 CH t=4098.7 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  4105.23 CH t=4098.7 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  4105.23 CH t=4098.7 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  4105.24 CH t=4098.7 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  4117.77 CH t=4111.2 EV ev=171 fault=hang-stop target=driftwm rec=19.73 ok=1 fixed=0 
+H  4122.77 CH t=4116.2 STEP 165 fKill
+H  4126.17 CH t=4119.6 EV ev=172 fault=kill target=hubd rec=3.20 ok=1 fixed=0 
+H  4144.17 CH t=4137.6 STEP 166 fClock
+H  4150.59 CH t=4144.0 EV ev=173 fault=clock-3600 target=driftwm rec=6.20 ok=1 fixed=0 
+H  4155.04 CH t=4148.5 EV ev=174 fault=after-clock-3600 target=hubd rec=3.24 ok=1 fixed=0 
+H  4160.04 CH t=4153.5 STEP 167 fKill
+H  4162.84 CH t=4156.3 EV ev=175 fault=kill target=waybar rec=2.59 ok=1 fixed=0 
+H  4165.24 CH t=4158.7 SOAKMEM t=4144 restarts=503 faults=167
+H  4165.27 CH t=4158.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  4165.27 CH t=4158.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4165.28 CH t=4158.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  4165.28 CH t=4158.7 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  4165.28 CH t=4158.7 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  4165.28 CH t=4158.7 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  4165.29 CH t=4158.7 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  4181.84 CH t=4175.3 STEP 168 fKill
+H  4184.91 CH t=4178.4 EV ev=176 fault=kill target=udevd rec=2.86 ok=1 fixed=0 
+H  4189.92 CH t=4183.4 STEP 169 fKill
+H  4192.91 CH t=4186.4 EV ev=177 fault=kill target=udevd rec=2.78 ok=1 fixed=0 
+H  4207.91 CH t=4201.4 STEP 170 fKill
+H  4210.78 CH t=4204.2 EV ev=178 fault=kill target=udevd rec=2.67 ok=1 fixed=0 
+H  4225.29 CH t=4218.7 SOAKMEM t=4204 restarts=506 faults=170
+H  4225.32 CH t=4218.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  4225.32 CH t=4218.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4225.33 CH t=4218.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  4225.33 CH t=4218.8 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  4225.33 CH t=4218.8 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  4225.33 CH t=4218.8 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  4225.33 CH t=4218.8 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  4226.79 CH t=4220.2 STEP 171 fKill
+H  4233.59 CH t=4227.1 EV ev=179 fault=kill target=seatd rec=6.60 ok=1 fixed=0 
+H  4250.60 CH t=4244.1 STEP 172 fDep
+H  4276.37 CH t=4269.8 EV ev=180 fault=dep-fail target=seatd rec=5.57 ok=1 fixed=0 
+H  4276.37 CH t=4269.8 DEPSTARTS mode=fail seatd=13 driftwm=11 waybar=6 hubd=2
+H  4285.33 CH t=4278.8 SOAKMEM t=4264 restarts=517 faults=172
+H  4285.38 CH t=4278.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  4285.38 CH t=4278.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4285.39 CH t=4278.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  4285.39 CH t=4278.8 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  4285.39 CH t=4278.8 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  4285.39 CH t=4278.8 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  4285.39 CH t=4278.9 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  4291.38 CH t=4284.8 STEP 173 fHang
+H  4310.65 CH t=4304.1 EV ev=181 fault=hang-stop target=driftwm rec=19.07 ok=1 fixed=0 
+H  4317.65 CH t=4311.1 STEP 174 fKill
+H  4320.98 CH t=4314.4 EV ev=182 fault=kill target=hubd rec=3.13 ok=1 fixed=0 
+H  4325.99 CH t=4319.4 STEP 175 fHang
+H  4345.39 CH t=4338.9 SOAKMEM t=4324 restarts=524 faults=174
+H  4345.44 CH t=4338.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=493
+H  4345.44 CH t=4338.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4345.44 CH t=4338.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=401
+H  4345.44 CH t=4338.9 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=431
+H  4345.44 CH t=4338.9 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=546
+H  4345.44 CH t=4338.9 MEM pid=28407 comm=supervise-daemo rss_kb=1700 pss_kb=409
+H  4345.44 CH t=4338.9 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=405
+H  4345.80 CH t=4339.3 EV ev=183 fault=hang-stop target=driftwm rec=19.61 ok=1 fixed=0 
+H  4358.80 CH t=4352.3 STEP 176 fSupKill
+H  4360.62 CH t=4354.1 EV ev=184 fault=supervisor-killed target=hubd rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  4405.45 CH t=4398.9 SOAKMEM t=4384 restarts=525 faults=175
+H  4405.49 CH t=4398.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=538
+H  4405.49 CH t=4398.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=430
+H  4405.49 CH t=4399.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=441
+H  4405.50 CH t=4399.0 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=467
+H  4405.50 CH t=4399.0 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=591
+H  4405.50 CH t=4399.0 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H  4422.93 CH t=4416.4 UNRECOVERED ev=185 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  4423.02 CH t=4416.5 STATUS Runlevel: sysinit
+H  4423.02 CH t=4416.5 STATUS Runlevel: default
+H  4423.02 CH t=4416.5 STATUS  dbus                                                  [  started 00:08:46 (0) ]
+H  4423.02 CH t=4416.5 STATUS  seatd                                                 [  started 00:02:32 (4) ]
+H  4423.03 CH t=4416.5 STATUS  udevd                                                 [  started 00:03:34 (0) ]
+H  4423.03 CH t=4416.5 STATUS  driftwm                                               [  started 00:01:22 (1) ]
+H  4423.03 CH t=4416.5 STATUS  waybar                                                [  started 00:01:18 (1) ]
+H  4423.03 CH t=4416.5 STATUS  hubd                                                         [  unsupervised  ]
+H  4423.03 CH t=4416.5 STATUS Runlevel: boot
+H  4423.03 CH t=4416.5 STATUS Dynamic Runlevel: hotplugged
+H  4423.03 CH t=4416.5 STATUS Dynamic Runlevel: needed/wanted
+H  4423.04 CH t=4416.5 STATUS Dynamic Runlevel: manual
+H  4423.09 CH t=4416.5 operator-action target=hubd why="hubd not running"
+H  4423.53  [1m[32m*[m Stopping hubd[K ...
+H  4423.64  [ ok ]
+H  4423.87  [1m[32m*[m Starting hubd[K ...
+H  4425.64  [ ok ]
+H  4426.06 CH t=4419.5 EV ev=185 fault=after-supervisor-killed target=hubd rec=60.08 ok=0 fixed=1 supervisor_back=0
+H  4444.07 CH t=4437.5 STEP 177 fKill
+H  4450.04 CH t=4443.5 EV ev=186 fault=kill target=driftwm rec=5.77 ok=1 fixed=0 
+H  4460.04 CH t=4453.5 STEP 178 fScanKill
+H  4465.50 CH t=4459.0 SOAKMEM t=4444 restarts=530 faults=178
+H  4465.54 CH t=4459.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  4465.54 CH t=4459.0 MEM pid=18408 comm=supervise-daemo rss_kb=1680 pss_kb=407
+H  4465.54 CH t=4459.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4465.55 CH t=4459.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=407
+H  4465.55 CH t=4459.0 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=418
+H  4465.55 CH t=4459.0 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=541
+H  4465.55 CH t=4459.0 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=410
+H  4467.04 CH t=4460.5 STEP 179 fBrainKill
+H  4485.05 CH t=4478.5 STEP 180 fKill
+H  4486.69 CH t=4480.1 EV ev=187 fault=kill target=dbus rec=1.43 ok=1 fixed=0 
+H  4496.70 CH t=4490.2 STEP 181 fClock
+H  4503.13 CH t=4496.6 EV ev=188 fault=clock-3600 target=driftwm rec=6.22 ok=1 fixed=0 
+H  4507.50 CH t=4501.0 EV ev=189 fault=after-clock-3600 target=hubd rec=3.17 ok=1 fixed=0 
+H  4525.55 CH t=4519.0 SOAKMEM t=4504 restarts=535 faults=181
+H  4525.60 CH t=4519.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  4525.60 CH t=4519.1 MEM pid=18408 comm=supervise-daemo rss_kb=1680 pss_kb=407
+H  4525.60 CH t=4519.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4525.60 CH t=4519.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=407
+H  4525.60 CH t=4519.1 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=418
+H  4525.60 CH t=4519.1 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=541
+H  4525.60 CH t=4519.1 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=410
+H  4526.50 CH t=4520.0 STEP 182 fKill
+H  4532.62 CH t=4526.1 EV ev=190 fault=kill target=driftwm rec=5.91 ok=1 fixed=0 
+H  4544.62 CH t=4538.1 STEP 183 fKill
+H  4550.95 CH t=4544.4 EV ev=191 fault=kill target=driftwm rec=6.12 ok=1 fixed=0 
+H  4562.95 CH t=4556.4 STEP 184 fKill
+H  4565.88 CH t=4559.3 EV ev=192 fault=kill target=hubd rec=2.72 ok=1 fixed=0 
+H  4574.88 CH t=4568.3 STEP 185 fDep
+H  4585.61 CH t=4579.1 SOAKMEM t=4564 restarts=547 faults=184
+H  4585.70 CH t=4579.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  4585.70 CH t=4579.2 MEM pid=18408 comm=supervise-daemo rss_kb=1680 pss_kb=407
+H  4585.71 CH t=4579.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=393
+H  4585.71 CH t=4579.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=407
+H  4585.71 CH t=4579.2 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=418
+H  4585.71 CH t=4579.2 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=541
+H  4585.71 CH t=4579.2 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=410
+H  4594.99 CH t=4588.4 EV ev=193 fault=dep-slow target=seatd rec=19.90 ok=1 fixed=0 
+H  4594.99 CH t=4588.4 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=4 hubd=1
+H  4607.99 CH t=4601.5 STEP 186 fKill
+H  4614.59 CH t=4608.0 EV ev=194 fault=kill target=driftwm rec=6.39 ok=1 fixed=0 
+H  4621.59 CH t=4615.0 STEP 187 fSupKill
+H  4623.37 CH t=4616.8 EV ev=195 fault=supervisor-killed target=hubd rec=0.06 ok=1 fixed=0 child_kept_running=1
+H  4645.72 CH t=4639.2 SOAKMEM t=4624 restarts=555 faults=186
+H  4645.77 CH t=4639.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=538
+H  4645.77 CH t=4639.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=430
+H  4645.77 CH t=4639.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=441
+H  4645.77 CH t=4639.2 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=467
+H  4645.77 CH t=4639.2 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=591
+H  4645.78 CH t=4639.2 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=444
+H  4685.56 CH t=4679.0 UNRECOVERED ev=196 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  4685.66 CH t=4679.1 STATUS Runlevel: sysinit
+H  4685.66 CH t=4679.1 STATUS Runlevel: default
+H  4685.67 CH t=4679.1 STATUS  dbus                                                  [  started 00:03:19 (1) ]
+H  4685.67 CH t=4679.1 STATUS  seatd                                                 [  started 00:01:50 (0) ]
+H  4685.67 CH t=4679.1 STATUS  udevd                                                 [  started 00:07:57 (0) ]
+H  4685.67 CH t=4679.1 STATUS  driftwm                                               [  started 00:01:16 (1) ]
+H  4685.67 CH t=4679.1 STATUS  waybar                                                [  started 00:01:12 (2) ]
+H  4685.68 CH t=4679.1 STATUS  hubd                                                         [  unsupervised  ]
+H  4685.68 CH t=4679.1 STATUS Runlevel: boot
+H  4685.68 CH t=4679.1 STATUS Dynamic Runlevel: hotplugged
+H  4685.68 CH t=4679.1 STATUS Dynamic Runlevel: needed/wanted
+H  4685.68 CH t=4679.1 STATUS Dynamic Runlevel: manual
+H  4685.72 CH t=4679.2 operator-action target=hubd why="hubd not running"
+H  4686.59  [1m[32m*[m Stopping hubd[K ...
+H  4686.83  [ ok ]
+H  4687.13  [1m[32m*[m Starting hubd[K ...
+H  4688.95  [ ok ]
+H  4689.53 CH t=4683.0 EV ev=196 fault=after-supervisor-killed target=hubd rec=60.20 ok=0 fixed=1 supervisor_back=0
+H  4698.53 CH t=4692.0 STEP 188 fKill
+H  4699.98 CH t=4693.4 EV ev=197 fault=kill target=dbus rec=1.24 ok=1 fixed=0 
+H  4705.78 CH t=4699.2 SOAKMEM t=4684 restarts=558 faults=188
+H  4705.81 CH t=4699.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=499
+H  4705.81 CH t=4699.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=391
+H  4705.81 CH t=4699.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=408
+H  4705.82 CH t=4699.3 MEM pid=23229 comm=supervise-daemo rss_kb=1672 pss_kb=401
+H  4705.82 CH t=4699.3 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=417
+H  4705.82 CH t=4699.3 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=542
+H  4705.82 CH t=4699.3 MEM pid=28412 comm=supervise-daemo rss_kb=1708 pss_kb=411
+H  4705.98 CH t=4699.4 STEP 189 fSupKill
+H  4707.78 CH t=4701.2 EV ev=198 fault=supervisor-killed target=waybar rec=0.06 ok=1 fixed=0 child_kept_running=1
+H  4765.82 CH t=4759.3 SOAKMEM t=4744 restarts=558 faults=188
+H  4765.86 CH t=4759.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=545
+H  4765.86 CH t=4759.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=424
+H  4765.86 CH t=4759.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=457
+H  4765.86 CH t=4759.3 MEM pid=23229 comm=supervise-daemo rss_kb=1672 pss_kb=434
+H  4765.86 CH t=4759.3 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=453
+H  4765.87 CH t=4759.3 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=592
+H  4770.07 CH t=4763.5 UNRECOVERED ev=199 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H  4770.18 CH t=4763.6 STATUS Runlevel: sysinit
+H  4770.18 CH t=4763.6 STATUS Runlevel: default
+H  4770.18 CH t=4763.6 STATUS  dbus                                                  [  started 00:01:11 (0) ]
+H  4770.18 CH t=4763.6 STATUS  seatd                                                 [  started 00:03:15 (0) ]
+H  4770.18 CH t=4763.6 STATUS  udevd                                                 [  started 00:09:22 (0) ]
+H  4770.19 CH t=4763.6 STATUS  driftwm                                               [  started 00:02:41 (1) ]
+H  4770.19 CH t=4763.6 STATUS  waybar                                                       [  unsupervised  ]
+H  4770.19 CH t=4763.6 STATUS  hubd                                                  [  started 00:01:23 (0) ]
+H  4770.19 CH t=4763.6 STATUS Runlevel: boot
+H  4770.19 CH t=4763.7 STATUS Dynamic Runlevel: hotplugged
+H  4770.19 CH t=4763.7 STATUS Dynamic Runlevel: needed/wanted
+H  4770.19 CH t=4763.7 STATUS Dynamic Runlevel: manual
+H  4770.24 CH t=4763.7 operator-action target=waybar why="waybar not running"
+H  4770.74  [1m[32m*[m Stopping waybar[K ...
+H  4770.86  [ ok ]
+H  4771.17  [1m[32m*[m Starting waybar[K ...
+H  4773.00  [ ok ]
+H  4773.77 CH t=4767.2 EV ev=199 fault=after-supervisor-killed target=waybar rec=60.32 ok=0 fixed=1 supervisor_back=0
+H  4791.77 CH t=4785.2 STEP 190 fKill
+H  4794.92 CH t=4788.4 EV ev=200 fault=kill target=hubd rec=2.95 ok=1 fixed=0 
+H  4813.93 CH t=4807.4 STEP 191 fDep
+H  4825.87 CH t=4819.3 SOAKMEM t=4804 restarts=567 faults=190
+H  4825.90 CH t=4819.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=505
+H  4825.91 CH t=4819.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=388
+H  4825.91 CH t=4819.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=419
+H  4825.91 CH t=4819.4 MEM pid=23229 comm=supervise-daemo rss_kb=1740 pss_kb=402
+H  4825.91 CH t=4819.4 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=402
+H  4825.91 CH t=4819.4 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=406
+H  4825.91 CH t=4819.4 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=545
+H  4835.98 CH t=4829.4 EV ev=201 fault=dep-slow target=seatd rec=21.84 ok=1 fixed=0 
+H  4835.98 CH t=4829.4 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=5 hubd=2
+H  4849.98 CH t=4843.4 STEP 192 fKill
+H  4853.10 CH t=4846.6 EV ev=202 fault=kill target=udevd rec=2.91 ok=1 fixed=0 
+H  4866.10 CH t=4859.6 STEP 193 fKill
+H  4869.38 CH t=4862.8 EV ev=203 fault=kill target=hubd rec=3.07 ok=1 fixed=0 
+H  4885.38 CH t=4878.8 STEP 194 fSupKill
+H  4885.92 CH t=4879.4 SOAKMEM t=4865 restarts=572 faults=193
+H  4885.95 CH t=4879.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=542
+H  4885.95 CH t=4879.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=424
+H  4885.96 CH t=4879.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=454
+H  4885.96 CH t=4879.4 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=446
+H  4885.96 CH t=4879.4 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=451
+H  4885.96 CH t=4879.4 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=589
+H  4887.18 CH t=4880.6 EV ev=204 fault=supervisor-killed target=hubd rec=0.07 ok=1 fixed=0 child_kept_running=1
+H  4945.96 CH t=4939.4 SOAKMEM t=4925 restarts=572 faults=193
+H  4946.00 CH t=4939.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=542
+H  4946.00 CH t=4939.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=424
+H  4946.00 CH t=4939.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=454
+H  4946.00 CH t=4939.5 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=447
+H  4946.00 CH t=4939.5 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=451
+H  4946.00 CH t=4939.5 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=589
+H  4949.43 CH t=4942.9 UNRECOVERED ev=205 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  4949.62 CH t=4943.1 STATUS Runlevel: sysinit
+H  4949.62 CH t=4943.1 STATUS Runlevel: default
+H  4949.62 CH t=4943.1 STATUS  dbus                                                  [  started 00:04:10 (0) ]
+H  4949.63 CH t=4943.1 STATUS  seatd                                                 [  started 00:02:15 (1) ]
+H  4949.63 CH t=4943.1 STATUS  udevd                                                 [  started 00:01:38 (1) ]
+H  4949.63 CH t=4943.1 STATUS  driftwm                                               [  started 00:01:59 (1) ]
+H  4949.63 CH t=4943.1 STATUS  waybar                                                [  started 00:01:55 (1) ]
+H  4949.63 CH t=4943.1 STATUS  hubd                                                         [  unsupervised  ]
+H  4949.63 CH t=4943.1 STATUS Runlevel: boot
+H  4949.64 CH t=4943.1 STATUS Dynamic Runlevel: hotplugged
+H  4949.64 CH t=4943.1 STATUS Dynamic Runlevel: needed/wanted
+H  4949.64 CH t=4943.1 STATUS Dynamic Runlevel: manual
+H  4949.72 CH t=4943.2 operator-action target=hubd why="hubd not running"
+H  4950.16  [1m[32m*[m Stopping hubd[K ...
+H  4950.27  [ ok ]
+H  4950.51  [1m[32m*[m Starting hubd[K ...
+H  4952.33  [ ok ]
+H  4952.77 CH t=4946.2 EV ev=205 fault=after-supervisor-killed target=hubd rec=60.11 ok=0 fixed=1 supervisor_back=0
+H  4961.77 CH t=4955.2 STEP 195 fKill
+H  4980.08 CH t=4973.5 EV ev=206 fault=kill target=driftwm rec=18.10 ok=1 fixed=0 
+H  4994.08 CH t=4987.5 STEP 196 fKill
+H  4997.00 CH t=4990.5 EV ev=207 fault=kill target=udevd rec=2.71 ok=1 fixed=0 
+H  5003.00 CH t=4996.5 STEP 197 fKill
+H  5006.00 CH t=4999.5 SOAKMEM t=4985 restarts=579 faults=196
+H  5006.04 CH t=4999.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=505
+H  5006.04 CH t=4999.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=388
+H  5006.05 CH t=4999.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=419
+H  5006.05 CH t=4999.5 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=401
+H  5006.05 CH t=4999.5 MEM pid=28229 comm=supervise-daemo rss_kb=1740 pss_kb=405
+H  5006.05 CH t=4999.5 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=406
+H  5006.05 CH t=4999.5 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=545
+H  5006.09 CH t=4999.6 EV ev=208 fault=kill target=udevd rec=2.88 ok=1 fixed=0 
+H  5013.10 CH t=5006.6 STEP 198 fHang
+H  5033.14 CH t=5026.6 EV ev=209 fault=hang-spin target=driftwm rec=19.83 ok=1 fixed=0 
+H  5040.14 CH t=5033.6 STEP 199 fKill
+H  5046.21 CH t=5039.7 EV ev=210 fault=kill target=driftwm rec=5.85 ok=1 fixed=0 
+H  5063.21 CH t=5056.7 STEP 200 fDep
+H  5066.05 CH t=5059.5 SOAKMEM t=5045 restarts=586 faults=199
+H  5066.09 CH t=5059.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=505
+H  5066.09 CH t=5059.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=389
+H  5066.09 CH t=5059.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=419
+H  5066.09 CH t=5059.5 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=401
+H  5066.09 CH t=5059.5 MEM pid=28229 comm=supervise-daemo rss_kb=1740 pss_kb=405
+H  5066.09 CH t=5059.6 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=406
+H  5066.09 CH t=5059.6 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=545
+H  5090.84 CH t=5084.3 EV ev=211 fault=dep-fail target=seatd rec=7.42 ok=1 fixed=0 
+H  5090.84 CH t=5084.3 DEPSTARTS mode=fail seatd=14 driftwm=12 waybar=6 hubd=3
+H  5100.84 CH t=5094.3 STEP 201 fKill
+H  5106.86 CH t=5100.3 EV ev=212 fault=kill target=driftwm rec=5.80 ok=1 fixed=0 
+H  5117.86 CH t=5111.3 STEP 202 fKill
+H  5124.18 CH t=5117.6 EV ev=213 fault=kill target=seatd rec=6.11 ok=1 fixed=0 
+H  5126.10 CH t=5119.6 SOAKMEM t=5105 restarts=599 faults=202
+H  5126.13 CH t=5119.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=505
+H  5126.14 CH t=5119.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=388
+H  5126.14 CH t=5119.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=419
+H  5126.14 CH t=5119.6 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=401
+H  5126.14 CH t=5119.6 MEM pid=28229 comm=supervise-daemo rss_kb=1740 pss_kb=405
+H  5126.14 CH t=5119.6 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=406
+H  5126.14 CH t=5119.6 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=545
+H  5134.18 CH t=5127.6 STEP 203 fSupKill
+H  5136.09 CH t=5129.5 EV ev=214 fault=supervisor-killed target=hubd rec=0.17 ok=1 fixed=0 child_kept_running=1
+H  5186.14 CH t=5179.6 SOAKMEM t=5165 restarts=599 faults=202
+H  5186.17 CH t=5179.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=542
+H  5186.18 CH t=5179.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=424
+H  5186.18 CH t=5179.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=454
+H  5186.18 CH t=5179.6 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=447
+H  5186.18 CH t=5179.6 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=451
+H  5186.18 CH t=5179.6 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=589
+H  5198.26 CH t=5191.7 UNRECOVERED ev=215 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  5198.36 CH t=5191.8 STATUS Runlevel: sysinit
+H  5198.36 CH t=5191.8 STATUS Runlevel: default
+H  5198.37 CH t=5191.8 STATUS  dbus                                                  [  started 00:08:19 (0) ]
+H  5198.37 CH t=5191.8 STATUS  seatd                                                 [  started 00:01:20 (0) ]
+H  5198.37 CH t=5191.8 STATUS  udevd                                                 [  started 00:03:14 (1) ]
+H  5198.37 CH t=5191.8 STATUS  driftwm                                               [  started 00:01:20 (1) ]
+H  5198.37 CH t=5191.8 STATUS  waybar                                                [  started 00:01:17 (1) ]
+H  5198.37 CH t=5191.8 STATUS  hubd                                                         [  unsupervised  ]
+H  5198.37 CH t=5191.8 STATUS Runlevel: boot
+H  5198.37 CH t=5191.8 STATUS Dynamic Runlevel: hotplugged
+H  5198.38 CH t=5191.8 STATUS Dynamic Runlevel: needed/wanted
+H  5198.38 CH t=5191.8 STATUS Dynamic Runlevel: manual
+H  5198.44 CH t=5191.9 operator-action target=hubd why="hubd not running"
+H  5198.93  [1m[32m*[m Stopping hubd[K ...
+H  5199.04  [ ok ]
+H  5199.28  [1m[32m*[m Starting hubd[K ...
+H  5201.05  [ ok ]
+H  5201.51 CH t=5195.0 EV ev=215 fault=after-supervisor-killed target=hubd rec=60.10 ok=0 fixed=1 supervisor_back=0
+H  5215.52 CH t=5209.0 STEP 204 fStorm
+H  5240.73 CH t=5234.2 STATUS Runlevel: sysinit
+H  5240.73 CH t=5234.2 STATUS Runlevel: default
+H  5240.74 CH t=5234.2 STATUS  dbus                                                  [  started 00:09:01 (0) ]
+H  5240.74 CH t=5234.2 STATUS  seatd                                                 [  started 00:02:02 (0) ]
+H  5240.74 CH t=5234.2 STATUS  udevd                                                 [  started 00:03:56 (1) ]
+H  5240.75 CH t=5234.2 STATUS  driftwm                                               [  started 00:02:02 (1) ]
+H  5240.75 CH t=5234.2 STATUS  waybar                                                [  started 00:01:59 (1) ]
+H  5240.75 CH t=5234.2 STATUS  hubd                                                  [  started 00:00:01 (4) ]
+H  5240.75 CH t=5234.2 STATUS Runlevel: boot
+H  5240.75 CH t=5234.2 STATUS Dynamic Runlevel: hotplugged
+H  5240.75 CH t=5234.2 STATUS Dynamic Runlevel: needed/wanted
+H  5240.75 CH t=5234.2 STATUS Dynamic Runlevel: manual
+H  5240.76 CH t=5234.2 STORM target=hubd dur=25 starts=9 starts_last10s=4 cpu_ticks_init_side=8 bar-up
+H  5241.89 CH t=5235.3 EV ev=216 fault=storm target=hubd rec=0.93 ok=1 fixed=0 starts=9 last10=4 cpu=8 bar-up
+H  5246.18 CH t=5239.6 SOAKMEM t=5225 restarts=606 faults=204
+H  5246.24 CH t=5239.7 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  5246.24 CH t=5239.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=382
+H  5246.24 CH t=5239.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=417
+H  5246.24 CH t=5239.7 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=402
+H  5246.24 CH t=5239.7 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=406
+H  5246.25 CH t=5239.7 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=537
+H  5246.25 CH t=5239.7 MEM pid=313 comm=supervise-daemo rss_kb=1804 pss_kb=419
+H  5258.89 CH t=5252.4 STEP 205 fKill
+H  5261.94 CH t=5255.4 EV ev=217 fault=kill target=udevd rec=2.82 ok=1 fixed=0 
+H  5267.94 CH t=5261.4 STEP 206 fKill
+H  5271.04 CH t=5264.5 EV ev=218 fault=kill target=udevd rec=2.89 ok=1 fixed=0 
+H  5281.04 CH t=5274.5 STEP 207 fDep
+H  5303.22 CH t=5296.7 EV ev=219 fault=dep-slow target=seatd rec=21.96 ok=1 fixed=0 
+H  5303.22 CH t=5296.7 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=5 hubd=1
+H  5306.25 CH t=5299.7 SOAKMEM t=5285 restarts=624 faults=207
+H  5306.30 CH t=5299.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  5306.30 CH t=5299.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=382
+H  5306.30 CH t=5299.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=417
+H  5306.30 CH t=5299.8 MEM pid=24819 comm=supervise-daemo rss_kb=1736 pss_kb=402
+H  5306.31 CH t=5299.8 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=406
+H  5306.31 CH t=5299.8 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=537
+H  5306.31 CH t=5299.8 MEM pid=313 comm=supervise-daemo rss_kb=1804 pss_kb=419
+H  5318.22 CH t=5311.7 STEP 208 fKill
+H  5325.66 CH t=5319.1 EV ev=220 fault=kill target=seatd rec=7.23 ok=1 fixed=0 
+H  5336.66 CH t=5330.1 STEP 209 fKill
+H  5339.63 CH t=5333.1 EV ev=221 fault=kill target=hubd rec=2.76 ok=1 fixed=0 
+H  5349.64 CH t=5343.1 STEP 210 fSupKill
+H  5351.47 CH t=5344.9 EV ev=222 fault=supervisor-killed target=driftwm rec=0.10 ok=1 fixed=0 child_kept_running=1
+H  5366.31 CH t=5359.8 SOAKMEM t=5345 restarts=631 faults=209
+H  5366.35 CH t=5359.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=540
+H  5366.35 CH t=5359.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=417
+H  5366.35 CH t=5359.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=453
+H  5366.36 CH t=5359.8 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=451
+H  5366.36 CH t=5359.8 MEM pid=28348 comm=supervise-daemo rss_kb=2024 pss_kb=582
+H  5366.36 CH t=5359.8 MEM pid=313 comm=supervise-daemo rss_kb=1804 pss_kb=463
+H  5413.72 CH t=5407.2 UNRECOVERED ev=223 fault=after-supervisor-killed target=driftwm alert=0 why="waybar not running"
+H  5413.82 CH t=5407.3 STATUS Runlevel: sysinit
+H  5413.82 CH t=5407.3 STATUS Runlevel: default
+H  5413.82 CH t=5407.3 STATUS  dbus                                                  [  started 00:11:54 (0) ]
+H  5413.82 CH t=5407.3 STATUS  seatd                                                 [  started 00:01:34 (0) ]
+H  5413.82 CH t=5407.3 STATUS  udevd                                                 [  started 00:02:25 (1) ]
+H  5413.82 CH t=5407.3 STATUS  driftwm                                               [  started 00:00:59 (0) ]
+H  5413.83 CH t=5407.3 STATUS  waybar                                                       [  unsupervised  ]
+H  5413.83 CH t=5407.3 STATUS  hubd                                                  [  started 00:00:58 (1) ]
+H  5413.83 CH t=5407.3 STATUS Runlevel: boot
+H  5413.83 CH t=5407.3 STATUS Dynamic Runlevel: hotplugged
+H  5413.83 CH t=5407.3 STATUS Dynamic Runlevel: needed/wanted
+H  5413.83 CH t=5407.3 STATUS Dynamic Runlevel: manual
+H  5413.87 CH t=5407.3 operator-action target=driftwm why="waybar not running"
+H  5414.40  [1m[32m*[m Stopping waybar[K ...
+H  5414.47  [1m[32m*[m Stopping hubd[K ...
+H  5414.51  [ ok ]
+H  5414.64  [ ok ]
+H  5414.94  [1m[32m*[m Stopping driftwm[K ...
+H  5415.12  [ ok ]
+H  5415.35  [1m[32m*[m Starting driftwm[K ...
+H  5417.39  [ ok ]
+H  5417.89  [1m[32m*[m Starting waybar[K ...
+H  5418.02  [1m[32m*[m Starting hubd[K ...
+H  5419.69  [ ok ]
+H  5419.86  [ ok ]
+H  5420.20 CH t=5413.7 EV ev=223 fault=after-supervisor-killed target=driftwm rec=62.38 ok=0 fixed=1 supervisor_back=1
+H  5426.36 CH t=5419.8 SOAKMEM t=5405 restarts=638 faults=210
+H  5426.41 CH t=5419.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=532
+H  5426.41 CH t=5419.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=406
+H  5426.41 CH t=5419.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=432
+H  5426.41 CH t=5419.9 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=428
+H  5426.41 CH t=5419.9 MEM pid=4475 comm=supervise-daemo rss_kb=1672 pss_kb=404
+H  5426.41 CH t=5419.9 MEM pid=4536 comm=supervise-daemo rss_kb=1584 pss_kb=395
+H  5426.41 CH t=5419.9 MEM pid=4544 comm=supervise-daemo rss_kb=1660 pss_kb=412
+H  5435.20 CH t=5428.7 STEP 211 fKill
+H  5440.51 CH t=5434.0 EV ev=224 fault=kill target=seatd rec=5.11 ok=1 fixed=0 
+H  5448.52 CH t=5442.0 STEP 212 fDep
+H  5471.21 CH t=5464.7 EV ev=225 fault=dep-slow target=seatd rec=22.48 ok=1 fixed=0 
+H  5471.21 CH t=5464.7 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=4 hubd=2
+H  5480.21 CH t=5473.7 STEP 213 fKill
+H  5484.90 CH t=5478.4 EV ev=226 fault=kill target=hubd rec=4.44 ok=1 fixed=0 
+H  5486.41 CH t=5479.9 SOAKMEM t=5465 restarts=655 faults=213
+H  5486.45 CH t=5479.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=513
+H  5486.45 CH t=5479.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=402
+H  5486.45 CH t=5479.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=415
+H  5486.46 CH t=5479.9 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=416
+H  5486.46 CH t=5479.9 MEM pid=4475 comm=supervise-daemo rss_kb=1740 pss_kb=412
+H  5486.46 CH t=5479.9 MEM pid=4536 comm=supervise-daemo rss_kb=1716 pss_kb=419
+H  5486.46 CH t=5479.9 MEM pid=4544 comm=supervise-daemo rss_kb=1792 pss_kb=433
+H  5493.91 CH t=5487.4 STEP 214 fKill
+H  5496.44 CH t=5489.9 EV ev=227 fault=kill target=waybar rec=2.32 ok=1 fixed=0 
+H  5511.45 CH t=5504.9 STEP 215 fKill
+H  5518.91 CH t=5512.4 EV ev=228 fault=kill target=driftwm rec=7.24 ok=1 fixed=0 
+H  5534.91 CH t=5528.4 STEP 216 fKill
+H  5540.91 CH t=5534.4 EV ev=229 fault=kill target=seatd rec=5.78 ok=1 fixed=0 
+H  5546.46 CH t=5539.9 SOAKMEM t=5525 restarts=664 faults=216
+H  5546.53 CH t=5540.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=513
+H  5546.53 CH t=5540.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=402
+H  5546.53 CH t=5540.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=415
+H  5546.53 CH t=5540.0 MEM pid=28316 comm=supervise-daemo rss_kb=1744 pss_kb=416
+H  5546.53 CH t=5540.0 MEM pid=4475 comm=supervise-daemo rss_kb=1740 pss_kb=412
+H  5546.53 CH t=5540.0 MEM pid=4536 comm=supervise-daemo rss_kb=1716 pss_kb=419
+H  5546.54 CH t=5540.0 MEM pid=4544 comm=supervise-daemo rss_kb=1792 pss_kb=433
+H  5551.91 CH t=5545.4 STEP 217 fSupKill
+H  5553.78 CH t=5547.2 EV ev=230 fault=supervisor-killed target=seatd rec=0.13 ok=1 fixed=0 child_kept_running=1
+H  5606.54 CH t=5600.0 SOAKMEM t=5585 restarts=673 faults=216
+H  5606.59 CH t=5600.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=554
+H  5606.60 CH t=5600.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=440
+H  5606.60 CH t=5600.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=451
+H  5606.60 CH t=5600.1 MEM pid=4475 comm=supervise-daemo rss_kb=1740 pss_kb=465
+H  5606.61 CH t=5600.1 MEM pid=4536 comm=supervise-daemo rss_kb=1716 pss_kb=454
+H  5606.61 CH t=5600.1 MEM pid=4544 comm=supervise-daemo rss_kb=1792 pss_kb=483
+H  5616.01 CH t=5609.5 UNRECOVERED ev=231 fault=after-supervisor-killed target=seatd alert=0 why="seatd not running"
+H  5616.11 CH t=5609.6 STATUS Runlevel: sysinit
+H  5616.11 CH t=5609.6 STATUS Runlevel: default
+H  5616.12 CH t=5609.6 STATUS  dbus                                                  [  started 00:15:16 (0) ]
+H  5616.12 CH t=5609.6 STATUS  seatd                                                        [  unsupervised  ]
+H  5616.12 CH t=5609.6 STATUS  udevd                                                 [  started 00:05:47 (1) ]
+H  5616.12 CH t=5609.6 STATUS  driftwm                                               [  started 00:00:01 (6) ]
+H  5616.12 CH t=5609.6 STATUS  waybar                                                [  started 00:00:01 (0) ]
+H  5616.12 CH t=5609.6 STATUS  hubd                                                  [  started 00:00:00 (2) ]
+H  5616.12 CH t=5609.6 STATUS Runlevel: boot
+H  5616.12 CH t=5609.6 STATUS Dynamic Runlevel: hotplugged
+H  5616.13 CH t=5609.6 STATUS Dynamic Runlevel: needed/wanted
+H  5616.13 CH t=5609.6 STATUS Dynamic Runlevel: manual
+H  5616.15 CH t=5609.6 operator-action target=seatd why="seatd not running"
+H  5616.70  [1m[32m*[m Stopping waybar[K ...
+H  5616.70  [1m[32m*[m Stopping hubd[K ...
+H  5616.85  [ ok ]
+H  5617.24  [ ok ]
+H  5617.55  [1m[32m*[m Stopping driftwm[K ...
+H  5618.64  [ ok ]
+H  5618.96  [1m[32m*[m Stopping seatd[K ...
+H  5619.07  [ ok ]
+H  5619.28  [1m[32m*[m Starting seatd[K ...
+H  5619.42  [ ok ]
+H  5619.81  [1m[32m*[m Starting driftwm[K ...
+H  5621.90  [ ok ]
+H  5622.12  [1m[32m*[m Starting hubd[K ...
+H  5622.17  [1m[32m*[m Starting waybar[K ...
+H  5624.05  [ ok ]
+H  5624.07  [ ok ]
+H  5624.40 CH t=5617.9 EV ev=231 fault=after-supervisor-killed target=seatd rec=64.54 ok=0 fixed=1 supervisor_back=0
+H  5631.40 CH t=5624.9 STEP 218 fKill
+H  5634.71 CH t=5628.2 EV ev=232 fault=kill target=hubd rec=3.09 ok=1 fixed=0 
+H  5649.72 CH t=5643.2 STEP 219 fKill
+H  5666.62 CH t=5660.1 SOAKMEM t=5645 restarts=689 faults=218
+H  5666.65 CH t=5660.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=505
+H  5666.66 CH t=5660.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=369
+H  5666.66 CH t=5660.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=398
+H  5666.66 CH t=5660.1 MEM pid=8189 comm=supervise-daemo rss_kb=1548 pss_kb=355
+H  5666.67 CH t=5660.1 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=477
+H  5666.67 CH t=5660.1 MEM pid=8280 comm=supervise-daemo rss_kb=1716 pss_kb=404
+H  5666.67 CH t=5660.1 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=330
+H  5668.11 CH t=5661.6 EV ev=233 fault=kill target=driftwm rec=18.18 ok=1 fixed=0 
+H  5685.11 CH t=5678.6 STEP 220 fDisk
+H  5685.15 CH t=5678.6 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  5701.19 CH t=5694.7 STATUS Runlevel: sysinit
+H  5701.19 CH t=5694.7 STATUS Runlevel: default
+H  5701.20 CH t=5694.7 STATUS  dbus                                                  [  started 00:16:42 (0) ]
+H  5701.20 CH t=5694.7 STATUS  seatd                                                 [  started 00:01:22 (0) ]
+H  5701.20 CH t=5694.7 STATUS  udevd                                                 [  started 00:07:13 (1) ]
+H  5701.20 CH t=5694.7 STATUS  driftwm                                               [  started 00:00:39 (1) ]
+H  5701.20 CH t=5694.7 STATUS  waybar                                                [  started 00:00:10 (1) ]
+H  5701.21 CH t=5694.7 STATUS  hubd                                                  [  started 00:00:36 (1) ]
+H  5701.21 CH t=5694.7 STATUS Runlevel: boot
+H  5701.21 CH t=5694.7 STATUS Dynamic Runlevel: hotplugged
+H  5701.21 CH t=5694.7 STATUS Dynamic Runlevel: needed/wanted
+H  5701.21 CH t=5694.7 STATUS Dynamic Runlevel: manual
+H  5701.57 CH t=5695.0 EV ev=234 fault=disk-full target=waybar rec=0.11 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H  5718.57 CH t=5712.0 STEP 221 fKill
+H  5721.16 CH t=5714.6 EV ev=235 fault=kill target=waybar rec=2.37 ok=1 fixed=0 
+H  5726.67 CH t=5720.1 SOAKMEM t=5705 restarts=695 faults=221
+H  5726.72 CH t=5720.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=505
+H  5726.72 CH t=5720.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=386
+H  5726.72 CH t=5720.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=423
+H  5726.73 CH t=5720.2 MEM pid=8189 comm=supervise-daemo rss_kb=1548 pss_kb=379
+H  5726.73 CH t=5720.2 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=504
+H  5726.73 CH t=5720.2 MEM pid=8280 comm=supervise-daemo rss_kb=1716 pss_kb=429
+H  5726.73 CH t=5720.2 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=423
+H  5737.16 CH t=5730.6 STEP 222 fKill
+H  5754.64 CH t=5748.1 EV ev=236 fault=kill target=driftwm rec=17.27 ok=1 fixed=0 
+H  5760.64 CH t=5754.1 STEP 223 fKill
+H  5767.27 CH t=5760.7 EV ev=237 fault=kill target=seatd rec=6.42 ok=1 fixed=0 
+H  5773.28 CH t=5766.7 STEP 224 fStorm
+H  5786.73 CH t=5780.2 SOAKMEM t=5765 restarts=702 faults=223
+H  5786.76 CH t=5780.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=503
+H  5786.76 CH t=5780.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=384
+H  5786.76 CH t=5780.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=422
+H  5786.77 CH t=5780.2 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=388
+H  5786.77 CH t=5780.2 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=503
+H  5786.77 CH t=5780.2 MEM pid=8280 comm=supervise-daemo rss_kb=1716 pss_kb=427
+H  5786.77 CH t=5780.2 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=422
+H  5798.48 CH t=5791.9 STATUS Runlevel: sysinit
+H  5798.48 CH t=5791.9 STATUS Runlevel: default
+H  5798.48 CH t=5791.9 STATUS  dbus                                                  [  started 00:18:19 (0) ]
+H  5798.48 CH t=5791.9 STATUS  seatd                                                 [  started 00:00:37 (1) ]
+H  5798.48 CH t=5791.9 STATUS  udevd                                                 [  started 00:08:50 (1) ]
+H  5798.48 CH t=5791.9 STATUS  driftwm                                               [  started 00:00:37 (1) ]
+H  5798.49 CH t=5791.9 STATUS  waybar                                                [  started 00:00:02 (3) ]
+H  5798.49 CH t=5791.9 STATUS  hubd                                                  [  started 00:00:34 (0) ]
+H  5798.49 CH t=5791.9 STATUS Runlevel: boot
+H  5798.49 CH t=5792.0 STATUS Dynamic Runlevel: hotplugged
+H  5798.49 CH t=5792.0 STATUS Dynamic Runlevel: needed/wanted
+H  5798.49 CH t=5792.0 STATUS Dynamic Runlevel: manual
+H  5798.50 CH t=5792.0 STORM target=waybar dur=25 starts=10 starts_last10s=4 cpu_ticks_init_side=9 bar-up
+H  5800.46 CH t=5793.9 EV ev=238 fault=storm target=waybar rec=1.76 ok=1 fixed=0 starts=10 last10=4 cpu=9 bar-up
+H  5811.46 CH t=5804.9 STEP 225 fKill
+H  5814.55 CH t=5808.0 EV ev=239 fault=kill target=hubd rec=2.89 ok=1 fixed=0 
+H  5829.55 CH t=5823.0 STEP 226 fKill
+H  5846.77 CH t=5840.2 SOAKMEM t=5825 restarts=707 faults=225
+H  5846.80 CH t=5840.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=503
+H  5846.81 CH t=5840.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=384
+H  5846.81 CH t=5840.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=422
+H  5846.81 CH t=5840.3 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=388
+H  5846.81 CH t=5840.3 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=503
+H  5846.81 CH t=5840.3 MEM pid=8280 comm=supervise-daemo rss_kb=1716 pss_kb=427
+H  5846.81 CH t=5840.3 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=422
+H  5847.01 CH t=5840.5 EV ev=240 fault=kill target=driftwm rec=17.25 ok=1 fixed=0 
+H  5864.01 CH t=5857.5 STEP 227 fKill
+H  5870.31 CH t=5863.8 EV ev=241 fault=kill target=seatd rec=6.10 ok=1 fixed=0 
+H  5889.31 CH t=5882.8 STEP 228 fKill
+H  5892.28 CH t=5885.7 EV ev=242 fault=kill target=udevd rec=2.76 ok=1 fixed=0 
+H  5897.28 CH t=5890.7 STEP 229 fSupKill
+H  5899.12 CH t=5892.6 EV ev=243 fault=supervisor-killed target=hubd rec=0.05 ok=1 fixed=0 child_kept_running=1
+H  5906.81 CH t=5900.3 SOAKMEM t=5885 restarts=712 faults=228
+H  5906.86 CH t=5900.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=554
+H  5906.86 CH t=5900.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=421
+H  5906.87 CH t=5900.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=466
+H  5906.87 CH t=5900.3 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=425
+H  5906.87 CH t=5900.3 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=567
+H  5906.87 CH t=5900.3 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=459
+H  5961.41 CH t=5954.9 UNRECOVERED ev=244 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  5961.50 CH t=5955.0 STATUS Runlevel: sysinit
+H  5961.51 CH t=5955.0 STATUS Runlevel: default
+H  5961.51 CH t=5955.0 STATUS  dbus                                                  [  started 00:21:02 (0) ]
+H  5961.51 CH t=5955.0 STATUS  seatd                                                 [  started 00:01:37 (0) ]
+H  5961.51 CH t=5955.0 STATUS  udevd                                                 [  started 00:01:11 (0) ]
+H  5961.51 CH t=5955.0 STATUS  driftwm                                               [  started 00:01:36 (1) ]
+H  5961.52 CH t=5955.0 STATUS  waybar                                                [  started 00:01:33 (1) ]
+H  5961.52 CH t=5955.0 STATUS  hubd                                                         [  unsupervised  ]
+H  5961.52 CH t=5955.0 STATUS Runlevel: boot
+H  5961.52 CH t=5955.0 STATUS Dynamic Runlevel: hotplugged
+H  5961.52 CH t=5955.0 STATUS Dynamic Runlevel: needed/wanted
+H  5961.52 CH t=5955.0 STATUS Dynamic Runlevel: manual
+H  5961.56 CH t=5955.0 operator-action target=hubd why="hubd not running"
+H  5962.02  [1m[32m*[m Stopping hubd[K ...
+H  5962.13  [ ok ]
+H  5962.35  [1m[32m*[m Starting hubd[K ...
+H  5964.11  [ ok ]
+H  5964.51 CH t=5958.0 EV ev=244 fault=after-supervisor-killed target=hubd rec=60.06 ok=0 fixed=1 supervisor_back=0
+H  5966.88 CH t=5960.3 SOAKMEM t=5945 restarts=714 faults=229
+H  5966.91 CH t=5960.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=510
+H  5966.92 CH t=5960.4 MEM pid=14839 comm=supervise-daemo rss_kb=1736 pss_kb=428
+H  5966.92 CH t=5960.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  5966.92 CH t=5960.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=429
+H  5966.92 CH t=5960.4 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  5966.92 CH t=5960.4 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=503
+H  5966.92 CH t=5960.4 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=421
+H  5982.51 CH t=5976.0 STEP 230 fHang
+H  6001.99 CH t=5995.4 EV ev=245 fault=hang-stop target=driftwm rec=19.27 ok=1 fixed=0 
+H  6011.99 CH t=6005.5 STEP 231 fKill
+H  6015.11 CH t=6008.6 EV ev=246 fault=kill target=hubd rec=2.91 ok=1 fixed=0 
+H  6026.92 CH t=6020.4 SOAKMEM t=6006 restarts=718 faults=231
+H  6026.96 CH t=6020.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  6026.96 CH t=6020.4 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=446
+H  6026.96 CH t=6020.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  6026.96 CH t=6020.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  6026.96 CH t=6020.4 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  6026.96 CH t=6020.4 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=501
+H  6026.96 CH t=6020.4 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H  6032.12 CH t=6025.6 STEP 232 fHang
+H  6052.79 CH t=6046.2 EV ev=247 fault=hang-stop target=driftwm rec=20.46 ok=1 fixed=0 
+H  6058.79 CH t=6052.3 STEP 233 fBrainKill
+H  6075.79 CH t=6069.3 STEP 234 fHang
+H  6076.05 CH t=6069.5 EV ev=248 fault=hang-spin target=driftwm rec=0.05 ok=1 fixed=0 
+H  6086.97 CH t=6080.4 SOAKMEM t=6066 restarts=721 faults=234
+H  6087.00 CH t=6080.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  6087.00 CH t=6080.5 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=446
+H  6087.00 CH t=6080.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  6087.00 CH t=6080.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  6087.00 CH t=6080.5 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  6087.00 CH t=6080.5 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=501
+H  6087.01 CH t=6080.5 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H  6089.06 CH t=6082.5 STEP 235 fHang
+H  6109.66 CH t=6103.1 EV ev=249 fault=hang-stop target=driftwm rec=20.40 ok=1 fixed=0 
+H  6119.67 CH t=6113.1 STEP 236 fKill
+H  6122.14 CH t=6115.6 EV ev=250 fault=kill target=waybar rec=2.26 ok=1 fixed=0 
+H  6131.14 CH t=6124.6 STEP 237 fKill
+H  6134.26 CH t=6127.7 EV ev=251 fault=kill target=udevd rec=2.91 ok=1 fixed=0 
+H  6147.01 CH t=6140.5 SOAKMEM t=6126 restarts=726 faults=237
+H  6147.06 CH t=6140.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  6147.06 CH t=6140.5 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=446
+H  6147.06 CH t=6140.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  6147.07 CH t=6140.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  6147.07 CH t=6140.5 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  6147.07 CH t=6140.5 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=501
+H  6147.07 CH t=6140.5 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H  6147.26 CH t=6140.7 STEP 238 fKill
+H  6150.44 CH t=6143.9 EV ev=252 fault=kill target=hubd rec=2.96 ok=1 fixed=0 
+H  6164.44 CH t=6157.9 STEP 239 fKill
+H  6167.41 CH t=6160.9 EV ev=253 fault=kill target=udevd rec=2.76 ok=1 fixed=0 
+H  6185.41 CH t=6178.9 STEP 240 fDisk
+H  6185.45 CH t=6178.9 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  6201.18 CH t=6194.6 STATUS Runlevel: sysinit
+H  6201.18 CH t=6194.6 STATUS Runlevel: default
+H  6201.18 CH t=6194.6 STATUS  dbus                                                  [  started 00:25:02 (0) ]
+H  6201.18 CH t=6194.6 STATUS  seatd                                                 [  started 00:05:37 (0) ]
+H  6201.19 CH t=6194.6 STATUS  udevd                                                 [  started 00:00:36 (0) ]
+H  6201.19 CH t=6194.6 STATUS  driftwm                                               [  started 00:01:37 (0) ]
+H  6201.19 CH t=6194.6 STATUS  waybar                                                [  started 00:00:10 (1) ]
+H  6201.20 CH t=6194.7 STATUS  hubd                                                  [  started 00:00:53 (0) ]
+H  6201.20 CH t=6194.7 STATUS Runlevel: boot
+H  6201.20 CH t=6194.7 STATUS Dynamic Runlevel: hotplugged
+H  6201.20 CH t=6194.7 STATUS Dynamic Runlevel: needed/wanted
+H  6201.20 CH t=6194.7 STATUS Dynamic Runlevel: manual
+H  6201.52 CH t=6195.0 EV ev=254 fault=disk-full target=waybar rec=0.07 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H  6207.07 CH t=6200.5 SOAKMEM t=6186 restarts=729 faults=240
+H  6207.11 CH t=6200.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  6207.11 CH t=6200.6 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=446
+H  6207.11 CH t=6200.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  6207.11 CH t=6200.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  6207.11 CH t=6200.6 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  6207.11 CH t=6200.6 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=501
+H  6207.11 CH t=6200.6 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H  6213.52 CH t=6207.0 STEP 241 fDisk
+H  6213.55 CH t=6207.0 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  6229.25 CH t=6222.7 STATUS Runlevel: sysinit
+H  6229.25 CH t=6222.7 STATUS Runlevel: default
+H  6229.25 CH t=6222.7 STATUS  dbus                                                  [  started 00:25:30 (0) ]
+H  6229.25 CH t=6222.7 STATUS  seatd                                                 [  started 00:06:05 (0) ]
+H  6229.25 CH t=6222.7 STATUS  udevd                                                 [  started 00:01:04 (0) ]
+H  6229.25 CH t=6222.7 STATUS  driftwm                                               [  started 00:02:05 (0) ]
+H  6229.26 CH t=6222.7 STATUS  waybar                                                [  started 00:00:10 (0) ]
+H  6229.26 CH t=6222.7 STATUS  hubd                                                  [  started 00:01:21 (0) ]
+H  6229.26 CH t=6222.7 STATUS Runlevel: boot
+H  6229.26 CH t=6222.7 STATUS Dynamic Runlevel: hotplugged
+H  6229.26 CH t=6222.7 STATUS Dynamic Runlevel: needed/wanted
+H  6229.26 CH t=6222.7 STATUS Dynamic Runlevel: manual
+H  6229.62 CH t=6223.1 EV ev=255 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H  6248.62 CH t=6242.1 STEP 242 fOOM
+H  6248.67 CH t=6242.1 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  6254.46 CH t=6247.9 EV ev=256 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  6265.46 CH t=6258.9 STEP 243 fKill
+H  6267.11 CH t=6260.6 SOAKMEM t=6246 restarts=730 faults=242
+H  6267.15 CH t=6260.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  6267.15 CH t=6260.6 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=446
+H  6267.15 CH t=6260.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  6267.15 CH t=6260.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  6267.15 CH t=6260.6 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  6267.15 CH t=6260.6 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=501
+H  6267.15 CH t=6260.6 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H  6268.45 CH t=6261.9 EV ev=257 fault=kill target=udevd rec=2.79 ok=1 fixed=0 
+H  6280.46 CH t=6273.9 STEP 244 fKill
+H  6281.93 CH t=6275.4 EV ev=258 fault=kill target=dbus rec=1.26 ok=1 fixed=0 
+H  6286.93 CH t=6280.4 STEP 245 fKill
+H  6293.73 CH t=6287.2 EV ev=259 fault=kill target=driftwm rec=6.58 ok=1 fixed=0 
+H  6309.73 CH t=6303.2 STEP 246 fKill
+H  6312.74 CH t=6306.2 EV ev=260 fault=kill target=udevd rec=2.81 ok=1 fixed=0 
+H  6319.75 CH t=6313.2 STEP 247 fStorm
+H  6327.16 CH t=6320.6 SOAKMEM t=6306 restarts=737 faults=246
+H  6327.19 CH t=6320.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  6327.19 CH t=6320.6 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=446
+H  6327.19 CH t=6320.7 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  6327.19 CH t=6320.7 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  6327.19 CH t=6320.7 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  6327.20 CH t=6320.7 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=501
+H  6327.20 CH t=6320.7 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H  6344.91 CH t=6338.4 STATUS Runlevel: sysinit
+H  6344.91 CH t=6338.4 STATUS Runlevel: default
+H  6344.91 CH t=6338.4 STATUS  dbus                                                  [  started 00:01:03 (1) ]
+H  6344.91 CH t=6338.4 STATUS  seatd                                                 [  started 00:08:00 (0) ]
+H  6344.92 CH t=6338.4 STATUS  udevd                                                 [  started 00:00:34 (0) ]
+H  6344.92 CH t=6338.4 STATUS  driftwm                                               [  started 00:00:56 (1) ]
+H  6344.92 CH t=6338.4 STATUS  waybar                                                [  started 00:00:01 (3) ]
+H  6344.92 CH t=6338.4 STATUS  hubd                                                  [  started 00:00:54 (2) ]
+H  6344.92 CH t=6338.4 STATUS Runlevel: boot
+H  6344.92 CH t=6338.4 STATUS Dynamic Runlevel: hotplugged
+H  6344.92 CH t=6338.4 STATUS Dynamic Runlevel: needed/wanted
+H  6344.93 CH t=6338.4 STATUS Dynamic Runlevel: manual
+H  6344.93 CH t=6338.4 STORM target=waybar dur=25 starts=9 starts_last10s=4 cpu_ticks_init_side=8 bar-up
+H  6345.43 CH t=6338.9 EV ev=261 fault=storm target=waybar rec=0.30 ok=1 fixed=0 starts=9 last10=4 cpu=8 bar-up
+H  6354.43 CH t=6347.9 STEP 248 fBrainKill
+H  6367.44 CH t=6360.9 STEP 249 fStorm
+H  6387.20 CH t=6380.7 SOAKMEM t=6366 restarts=744 faults=248
+H  6387.34 CH t=6380.8 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=502
+H  6387.34 CH t=6380.8 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=446
+H  6387.34 CH t=6380.8 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=380
+H  6387.34 CH t=6380.8 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  6387.36 CH t=6380.8 MEM pid=8189 comm=supervise-daemo rss_kb=1616 pss_kb=384
+H  6387.36 CH t=6380.8 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=501
+H  6387.38 CH t=6380.8 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=420
+H  6392.61 CH t=6386.1 STATUS Runlevel: sysinit
+H  6392.61 CH t=6386.1 STATUS Runlevel: default
+H  6392.61 CH t=6386.1 STATUS  dbus                                                  [  started 00:01:51 (1) ]
+H  6392.61 CH t=6386.1 STATUS  seatd                                                 [  started 00:08:48 (0) ]
+H  6392.61 CH t=6386.1 STATUS  udevd                                                 [  started 00:01:22 (0) ]
+H  6392.61 CH t=6386.1 STATUS  driftwm                                               [  started 00:00:01 (5) ]
+H  6392.62 CH t=6386.1 STATUS  waybar                                                [  started 00:00:00 (1) ]
+H  6392.62 CH t=6386.1 STATUS  hubd                                                  [  started 00:00:00 (1) ]
+H  6392.62 CH t=6386.1 STATUS Runlevel: boot
+H  6392.62 CH t=6386.1 STATUS Dynamic Runlevel: hotplugged
+H  6392.62 CH t=6386.1 STATUS Dynamic Runlevel: needed/wanted
+H  6392.62 CH t=6386.1 STATUS Dynamic Runlevel: manual
+H  6392.63 CH t=6386.1 STORM target=driftwm dur=25 starts=13 starts_last10s=6 cpu_ticks_init_side=13 bar-down
+H  6400.04 CH t=6393.5 EV ev=262 fault=storm target=driftwm rec=7.21 ok=1 fixed=0 starts=13 last10=6 cpu=13 bar-down
+H  6406.04 CH t=6399.5 STEP 250 fSupKill
+H  6407.85 CH t=6401.3 EV ev=263 fault=supervisor-killed target=seatd rec=0.06 ok=1 fixed=0 child_kept_running=1
+H  6447.38 CH t=6440.8 SOAKMEM t=6426 restarts=756 faults=249
+H  6447.41 CH t=6440.9 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=536
+H  6447.42 CH t=6440.9 MEM pid=14839 comm=supervise-daemo rss_kb=1804 pss_kb=487
+H  6447.42 CH t=6440.9 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=421
+H  6447.42 CH t=6440.9 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=453
+H  6447.42 CH t=6440.9 MEM pid=8221 comm=supervise-daemo rss_kb=1896 pss_kb=537
+H  6447.43 CH t=6440.9 MEM pid=8283 comm=supervise-daemo rss_kb=1740 pss_kb=457
+H  6469.96 CH t=6463.4 UNRECOVERED ev=264 fault=after-supervisor-killed target=seatd alert=0 why="seatd not running"
+H  6470.08 CH t=6463.5 STATUS Runlevel: sysinit
+H  6470.08 CH t=6463.5 STATUS Runlevel: default
+H  6470.08 CH t=6463.5 STATUS  dbus                                                  [  started 00:03:08 (1) ]
+H  6470.08 CH t=6463.5 STATUS  seatd                                                        [  unsupervised  ]
+H  6470.08 CH t=6463.5 STATUS  udevd                                                 [  started 00:02:39 (0) ]
+H  6470.08 CH t=6463.5 STATUS  driftwm                                               [  started 00:00:00 (6) ]
+H  6470.08 CH t=6463.5 STATUS  waybar                                                [  started 00:00:04 (1) ]
+H  6470.09 CH t=6463.5 STATUS  hubd                                                  [  started 00:00:02 (1) ]
+H  6470.09 CH t=6463.5 STATUS Runlevel: boot
+H  6470.09 CH t=6463.5 STATUS Dynamic Runlevel: hotplugged
+H  6470.09 CH t=6463.5 STATUS Dynamic Runlevel: needed/wanted
+H  6470.09 CH t=6463.5 STATUS Dynamic Runlevel: manual
+H  6470.11 CH t=6463.6 operator-action target=seatd why="seatd not running"
+H  6470.93  [1m[32m*[m Stopping waybar[K ...
+H  6470.93  [1m[32m*[m Stopping hubd[K ...
+H  6471.14  [ ok ]
+H  6471.14  [ ok ]
+H  6471.44  [1m[32m*[m Stopping driftwm[K ...
+H  6472.01  [ ok ]
+H  6472.30  [1m[32m*[m Stopping seatd[K ...
+H  6472.43  [ ok ]
+H  6472.68  [1m[32m*[m Starting seatd[K ...
+H  6472.82  [ ok ]
+H  6473.22  [1m[32m*[m Starting driftwm[K ...
+H  6475.22  [ ok ]
+H  6475.54  [1m[32m*[m Starting waybar[K ...
+H  6475.54  [1m[32m*[m Starting hubd[K ...
+H  6477.39  [ ok ]
+H  6477.47  [ ok ]
+H  6477.81 CH t=6471.3 EV ev=264 fault=after-supervisor-killed target=seatd rec=64.56 ok=0 fixed=1 supervisor_back=0
+H  6491.81 CH t=6485.3 STEP 251 fKill
+H  6498.52 CH t=6492.0 EV ev=265 fault=kill target=driftwm rec=6.50 ok=1 fixed=0 
+H  6503.53 CH t=6497.0 STEP 252 fKill
+H  6506.58 CH t=6500.0 EV ev=266 fault=kill target=udevd rec=2.85 ok=1 fixed=0 
+H  6507.43 CH t=6500.9 SOAKMEM t=6486 restarts=776 faults=252
+H  6507.51 CH t=6501.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=433
+H  6507.51 CH t=6501.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=373
+H  6507.51 CH t=6501.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=379
+H  6507.51 CH t=6501.0 MEM pid=24821 comm=supervise-daemo rss_kb=1548 pss_kb=358
+H  6507.51 CH t=6501.0 MEM pid=24854 comm=supervise-daemo rss_kb=1696 pss_kb=379
+H  6507.51 CH t=6501.0 MEM pid=24914 comm=supervise-daemo rss_kb=1716 pss_kb=424
+H  6507.51 CH t=6501.0 MEM pid=24915 comm=supervise-daemo rss_kb=1712 pss_kb=383
+H  6520.58 CH t=6514.0 STEP 253 fSupKill
+H  6522.39 CH t=6515.8 EV ev=267 fault=supervisor-killed target=waybar rec=0.07 ok=1 fixed=0 child_kept_running=1
+H  6567.52 CH t=6561.0 SOAKMEM t=6546 restarts=776 faults=252
+H  6567.54 CH t=6561.0 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=587
+H  6567.55 CH t=6561.0 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=444
+H  6567.55 CH t=6561.0 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=455
+H  6567.55 CH t=6561.0 MEM pid=24821 comm=supervise-daemo rss_kb=1548 pss_kb=420
+H  6567.55 CH t=6561.0 MEM pid=24854 comm=supervise-daemo rss_kb=1696 pss_kb=449
+H  6567.55 CH t=6561.0 MEM pid=24915 comm=supervise-daemo rss_kb=1712 pss_kb=459
+H  6584.60 CH t=6578.1 UNRECOVERED ev=268 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H  6584.71 CH t=6578.2 STATUS Runlevel: sysinit
+H  6584.71 CH t=6578.2 STATUS Runlevel: default
+H  6584.71 CH t=6578.2 STATUS  dbus                                                  [  started 00:05:03 (1) ]
+H  6584.71 CH t=6578.2 STATUS  seatd                                                 [  started 00:01:52 (0) ]
+H  6584.71 CH t=6578.2 STATUS  udevd                                                 [  started 00:01:20 (1) ]
+H  6584.72 CH t=6578.2 STATUS  driftwm                                               [  started 00:01:32 (1) ]
+H  6584.72 CH t=6578.2 STATUS  waybar                                                       [  unsupervised  ]
+H  6584.72 CH t=6578.2 STATUS  hubd                                                  [  started 00:01:28 (2) ]
+H  6584.72 CH t=6578.2 STATUS Runlevel: boot
+H  6584.72 CH t=6578.2 STATUS Dynamic Runlevel: hotplugged
+H  6584.73 CH t=6578.2 STATUS Dynamic Runlevel: needed/wanted
+H  6584.73 CH t=6578.2 STATUS Dynamic Runlevel: manual
+H  6584.79 CH t=6578.2 operator-action target=waybar why="waybar not running"
+H  6585.38  [1m[32m*[m Stopping waybar[K ...
+H  6585.49  [ ok ]
+H  6585.69  [1m[32m*[m Starting waybar[K ...
+H  6587.44  [ ok ]
+H  6587.89 CH t=6581.3 EV ev=268 fault=after-supervisor-killed target=waybar rec=60.11 ok=0 fixed=1 supervisor_back=0
+H  6605.89 CH t=6599.4 STEP 254 fDep
+H  6627.55 CH t=6621.0 SOAKMEM t=6606 restarts=785 faults=253
+H  6627.60 CH t=6621.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=535
+H  6627.60 CH t=6621.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=410
+H  6627.60 CH t=6621.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=403
+H  6627.60 CH t=6621.1 MEM pid=24821 comm=supervise-daemo rss_kb=1680 pss_kb=418
+H  6627.60 CH t=6621.1 MEM pid=24854 comm=supervise-daemo rss_kb=1696 pss_kb=404
+H  6627.60 CH t=6621.1 MEM pid=24915 comm=supervise-daemo rss_kb=1712 pss_kb=407
+H  6627.61 CH t=6621.1 MEM pid=26913 comm=supervise-daemo rss_kb=1708 pss_kb=413
+H  6628.09 CH t=6621.6 EV ev=269 fault=dep-slow target=seatd rec=21.99 ok=1 fixed=0 
+H  6628.10 CH t=6621.6 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=5 hubd=3
+H  6634.10 CH t=6627.6 STEP 255 fKill
+H  6635.60 CH t=6629.1 EV ev=270 fault=kill target=dbus rec=1.30 ok=1 fixed=0 
+H  6641.61 CH t=6635.1 STEP 256 fSupKill
+H  6643.43 CH t=6636.9 EV ev=271 fault=supervisor-killed target=driftwm rec=0.09 ok=1 fixed=0 child_kept_running=1
+H  6687.61 CH t=6681.1 SOAKMEM t=6666 restarts=788 faults=255
+H  6687.66 CH t=6681.1 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=579
+H  6687.66 CH t=6681.1 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=450
+H  6687.66 CH t=6681.1 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=441
+H  6687.66 CH t=6681.1 MEM pid=24821 comm=supervise-daemo rss_kb=1680 pss_kb=464
+H  6687.66 CH t=6681.1 MEM pid=24915 comm=supervise-daemo rss_kb=1712 pss_kb=445
+H  6687.67 CH t=6681.1 MEM pid=26913 comm=supervise-daemo rss_kb=1708 pss_kb=450
+H  6705.52 CH t=6699.0 UNRECOVERED ev=272 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H  6705.64 CH t=6699.1 STATUS Runlevel: sysinit
+H  6705.64 CH t=6699.1 STATUS Runlevel: default
+H  6705.64 CH t=6699.1 STATUS  dbus                                                  [  started 00:01:11 (0) ]
+H  6705.64 CH t=6699.1 STATUS  seatd                                                 [  started 00:01:39 (1) ]
+H  6705.65 CH t=6699.1 STATUS  udevd                                                 [  started 00:03:21 (1) ]
+H  6705.65 CH t=6699.1 STATUS  driftwm                                                      [  unsupervised  ]
+H  6705.65 CH t=6699.1 STATUS  waybar                                                [  started 00:00:59 (0) ]
+H  6705.65 CH t=6699.1 STATUS  hubd                                                  [  started 00:00:59 (0) ]
+H  6705.65 CH t=6699.1 STATUS Runlevel: boot
+H  6705.65 CH t=6699.1 STATUS Dynamic Runlevel: hotplugged
+H  6705.65 CH t=6699.1 STATUS Dynamic Runlevel: needed/wanted
+H  6705.65 CH t=6699.1 STATUS Dynamic Runlevel: manual
+H  6705.69 CH t=6699.2 operator-action target=driftwm why="driftwm not running"
+H  6706.31  [1m[32m*[m Stopping hubd[K ...
+H  6706.39  [1m[32m*[m Stopping waybar[K ...
+H  6706.49  [ ok ]
+H  6706.57  [ ok ]
+H  6706.85  [1m[32m*[m Stopping driftwm[K ...
+H  6706.96  [ ok ]
+H  6707.18  [1m[32m*[m Starting driftwm[K ...
+H  6709.22  [ ok ]
+H  6709.55  [1m[32m*[m Starting hubd[K ...
+H  6709.71  [1m[32m*[m Starting waybar[K ...
+H  6711.48  [ ok ]
+H  6711.53  [ ok ]
+H  6711.81 CH t=6705.3 EV ev=272 fault=after-supervisor-killed target=driftwm rec=62.16 ok=0 fixed=1 supervisor_back=1
+H  6725.82 CH t=6719.3 STEP 257 fKill
+H  6729.14 CH t=6722.6 EV ev=273 fault=kill target=hubd rec=3.11 ok=1 fixed=0 
+H  6744.14 CH t=6737.6 STEP 258 fOOM
+H  6744.23 CH t=6737.7 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  6747.67 CH t=6741.1 SOAKMEM t=6726 restarts=797 faults=257
+H  6747.72 CH t=6741.2 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=531
+H  6747.73 CH t=6741.2 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=403
+H  6747.73 CH t=6741.2 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=418
+H  6747.73 CH t=6741.2 MEM pid=24821 comm=supervise-daemo rss_kb=1680 pss_kb=426
+H  6747.73 CH t=6741.2 MEM pid=28761 comm=supervise-daemo rss_kb=1576 pss_kb=386
+H  6747.73 CH t=6741.2 MEM pid=28822 comm=supervise-daemo rss_kb=1740 pss_kb=469
+H  6747.73 CH t=6741.2 MEM pid=28828 comm=supervise-daemo rss_kb=1580 pss_kb=384
+H  6749.20 CH t=6742.7 EV ev=274 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  6766.21 CH t=6759.7 STEP 259 fSupKill
+H  6768.03 CH t=6761.5 EV ev=275 fault=supervisor-killed target=seatd rec=0.09 ok=1 fixed=0 child_kept_running=1
+H  6807.73 CH t=6801.2 SOAKMEM t=6786 restarts=804 faults=258
+H  6807.81 CH t=6801.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=506
+H  6807.82 CH t=6801.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=396
+H  6807.82 CH t=6801.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=407
+H  6807.82 CH t=6801.3 MEM pid=28761 comm=supervise-daemo rss_kb=1708 pss_kb=443
+H  6807.84 CH t=6801.3 MEM pid=28822 comm=supervise-daemo rss_kb=1740 pss_kb=501
+H  6807.84 CH t=6801.3 MEM pid=28828 comm=supervise-daemo rss_kb=1712 pss_kb=446
+H  6830.24 CH t=6823.7 UNRECOVERED ev=276 fault=after-supervisor-killed target=seatd alert=0 why="seatd not running"
+H  6830.34 CH t=6823.8 STATUS Runlevel: sysinit
+H  6830.34 CH t=6823.8 STATUS Runlevel: default
+H  6830.34 CH t=6823.8 STATUS  dbus                                                  [  started 00:03:16 (0) ]
+H  6830.35 CH t=6823.8 STATUS  seatd                                                        [  unsupervised  ]
+H  6830.35 CH t=6823.8 STATUS  udevd                                                 [  started 00:05:26 (1) ]
+H  6830.35 CH t=6823.8 STATUS  driftwm                                               [  started 00:00:01 (7) ]
+H  6830.35 CH t=6823.8 STATUS  waybar                                                [  started 00:00:01 (2) ]
+H  6830.35 CH t=6823.8 STATUS  hubd                                                  [  started 00:00:01 (2) ]
+H  6830.35 CH t=6823.8 STATUS Runlevel: boot
+H  6830.36 CH t=6823.8 STATUS Dynamic Runlevel: hotplugged
+H  6830.36 CH t=6823.8 STATUS Dynamic Runlevel: needed/wanted
+H  6830.36 CH t=6823.8 STATUS Dynamic Runlevel: manual
+H  6830.38 CH t=6823.8 operator-action target=seatd why="seatd not running"
+H  6830.89  [1m[32m*[m Stopping hubd[K ...
+H  6830.98  [1m[32m*[m Stopping waybar[K ...
+H  6831.02  [ ok ]
+H  6831.13  [ ok ]
+H  6831.51  [1m[32m*[m Stopping driftwm[K ...
+H  6831.71  [ ok ]
+H  6831.98  [1m[32m*[m Stopping seatd[K ...
+H  6832.09  [ ok ]
+H  6832.29  [1m[32m*[m Starting seatd[K ...
+H  6832.49  [ ok ]
+H  6832.86  [1m[32m*[m Starting driftwm[K ...
+H  6834.88  [ ok ]
+H  6835.14  [1m[32m*[m Starting hubd[K ...
+H  6835.15  [1m[32m*[m Starting waybar[K ...
+H  6837.02  [ ok ]
+H  6837.18  [ ok ]
+H  6837.42 CH t=6830.9 EV ev=276 fault=after-supervisor-killed target=seatd rec=64.51 ok=0 fixed=1 supervisor_back=0
+H  6850.42 CH t=6843.9 STEP 260 fOOM
+H  6850.49 CH t=6843.9 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  6855.80 CH t=6849.3 EV ev=277 fault=oom target=hog rec=0.18 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  6867.85 CH t=6861.3 SOAKMEM t=6846 restarts=816 faults=260
+H  6867.88 CH t=6861.3 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=551
+H  6867.88 CH t=6861.3 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=392
+H  6867.88 CH t=6861.3 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=441
+H  6867.88 CH t=6861.3 MEM pid=31214 comm=supervise-daemo rss_kb=1504 pss_kb=371
+H  6867.88 CH t=6861.3 MEM pid=31246 comm=supervise-daemo rss_kb=1576 pss_kb=401
+H  6867.88 CH t=6861.3 MEM pid=31305 comm=supervise-daemo rss_kb=1740 pss_kb=464
+H  6867.88 CH t=6861.3 MEM pid=31307 comm=supervise-daemo rss_kb=1604 pss_kb=390
+H  6869.80 CH t=6863.3 STEP 261 fKill
+H  6875.90 CH t=6869.4 EV ev=278 fault=kill target=seatd rec=5.87 ok=1 fixed=0 
+H  6887.90 CH t=6881.4 STEP 262 fKill
+H  6894.37 CH t=6887.8 EV ev=279 fault=kill target=driftwm rec=6.26 ok=1 fixed=0 
+H  6909.37 CH t=6902.8 STEP 263 fKill
+H  6912.32 CH t=6905.8 EV ev=280 fault=kill target=udevd rec=2.75 ok=1 fixed=0 
+H  6927.89 CH t=6921.3 SOAKMEM t=6906 restarts=826 faults=263
+H  6927.92 CH t=6921.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=521
+H  6927.92 CH t=6921.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=385
+H  6927.93 CH t=6921.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=416
+H  6927.93 CH t=6921.4 MEM pid=31214 comm=supervise-daemo rss_kb=1572 pss_kb=379
+H  6927.93 CH t=6921.4 MEM pid=31246 comm=supervise-daemo rss_kb=1708 pss_kb=422
+H  6927.93 CH t=6921.4 MEM pid=31305 comm=supervise-daemo rss_kb=1808 pss_kb=473
+H  6927.94 CH t=6921.4 MEM pid=31307 comm=supervise-daemo rss_kb=1736 pss_kb=422
+H  6930.33 CH t=6923.8 STEP 264 fKill
+H  6931.90 CH t=6925.4 EV ev=281 fault=kill target=dbus rec=1.36 ok=1 fixed=0 
+H  6938.90 CH t=6932.4 STEP 265 fSupKill
+H  6940.96 CH t=6934.4 EV ev=282 fault=supervisor-killed target=hubd rec=0.31 ok=1 fixed=0 child_kept_running=1
+H  6987.94 CH t=6981.4 SOAKMEM t=6967 restarts=836 faults=264
+H  6987.97 CH t=6981.4 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=572
+H  6987.97 CH t=6981.4 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=424
+H  6987.97 CH t=6981.4 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=459
+H  6987.97 CH t=6981.4 MEM pid=31214 comm=supervise-daemo rss_kb=1572 pss_kb=416
+H  6987.97 CH t=6981.4 MEM pid=31246 comm=supervise-daemo rss_kb=1708 pss_kb=464
+H  6987.97 CH t=6981.4 MEM pid=31305 comm=supervise-daemo rss_kb=1808 pss_kb=514
+H  7003.32 CH t=6996.8 UNRECOVERED ev=283 fault=after-supervisor-killed target=hubd alert=0 why="hubd not running"
+H  7003.42 CH t=6996.9 STATUS Runlevel: sysinit
+H  7003.42 CH t=6996.9 STATUS Runlevel: default
+H  7003.42 CH t=6996.9 STATUS  dbus                                                  [  started 00:01:12 (1) ]
+H  7003.42 CH t=6996.9 STATUS  seatd                                                 [  started 00:02:13 (1) ]
+H  7003.42 CH t=6996.9 STATUS  udevd                                                 [  started 00:01:33 (0) ]
+H  7003.42 CH t=6996.9 STATUS  driftwm                                               [  started 00:01:55 (0) ]
+H  7003.43 CH t=6996.9 STATUS  waybar                                                [  started 00:01:51 (1) ]
+H  7003.43 CH t=6996.9 STATUS  hubd                                                         [  unsupervised  ]
+H  7003.43 CH t=6996.9 STATUS Runlevel: boot
+H  7003.43 CH t=6996.9 STATUS Dynamic Runlevel: hotplugged
+H  7003.43 CH t=6996.9 STATUS Dynamic Runlevel: needed/wanted
+H  7003.43 CH t=6996.9 STATUS Dynamic Runlevel: manual
+H  7003.53 CH t=6997.0 operator-action target=hubd why="hubd not running"
+H  7003.99  [1m[32m*[m Stopping hubd[K ...
+H  7004.10  [ ok ]
+H  7004.29  [1m[32m*[m Starting hubd[K ...
+H  7006.08  [ ok ]
+H  7006.49 CH t=6999.9 EV ev=283 fault=after-supervisor-killed target=hubd rec=60.09 ok=0 fixed=1 supervisor_back=0
+H  7022.49 CH t=7015.9 STEP 266 fKill
+H  7028.90 CH t=7022.4 EV ev=284 fault=kill target=seatd rec=6.20 ok=1 fixed=0 
+H  7033.90 CH t=7027.4 STEP 267 fOOM
+H  7033.95 CH t=7027.4 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H  7039.36 CH t=7032.8 EV ev=285 fault=oom target=hog rec=0.10 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  7047.98 CH t=7041.4 SOAKMEM t=7027 restarts=851 faults=267
+H  7048.02 CH t=7041.5 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=522
+H  7048.02 CH t=7041.5 MEM pid=1985 comm=supervise-daemo rss_kb=1700 pss_kb=416
+H  7048.03 CH t=7041.5 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=388
+H  7048.03 CH t=7041.5 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=415
+H  7048.03 CH t=7041.5 MEM pid=31214 comm=supervise-daemo rss_kb=1572 pss_kb=381
+H  7048.03 CH t=7041.5 MEM pid=31246 comm=supervise-daemo rss_kb=1708 pss_kb=421
+H  7048.03 CH t=7041.5 MEM pid=31305 comm=supervise-daemo rss_kb=1808 pss_kb=475
+H  7052.36 CH t=7045.8 STEP 268 fSupKill
+H  7054.17 CH t=7047.6 EV ev=286 fault=supervisor-killed target=driftwm rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  7108.04 CH t=7101.5 SOAKMEM t=7087 restarts=853 faults=267
+H  7108.09 CH t=7101.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=572
+H  7108.09 CH t=7101.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=424
+H  7108.10 CH t=7101.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=459
+H  7108.10 CH t=7101.6 MEM pid=31214 comm=supervise-daemo rss_kb=1572 pss_kb=416
+H  7108.10 CH t=7101.6 MEM pid=31246 comm=supervise-daemo rss_kb=1708 pss_kb=464
+H  7108.10 CH t=7101.6 MEM pid=31305 comm=supervise-daemo rss_kb=1808 pss_kb=514
+H  7116.40 CH t=7109.9 UNRECOVERED ev=287 fault=after-supervisor-killed target=driftwm alert=0 why="hubd not running"
+H  7116.51 CH t=7110.0 STATUS Runlevel: sysinit
+H  7116.51 CH t=7110.0 STATUS Runlevel: default
+H  7116.51 CH t=7110.0 STATUS  dbus                                                  [  started 00:03:05 (1) ]
+H  7116.51 CH t=7110.0 STATUS  seatd                                                 [  started 00:01:33 (0) ]
+H  7116.51 CH t=7110.0 STATUS  udevd                                                 [  started 00:03:26 (0) ]
+H  7116.51 CH t=7110.0 STATUS  driftwm                                               [  started 00:00:59 (0) ]
+H  7116.52 CH t=7110.0 STATUS  waybar                                                [  started 00:00:56 (1) ]
+H  7116.52 CH t=7110.0 STATUS  hubd                                                         [  unsupervised  ]
+H  7116.52 CH t=7110.0 STATUS Runlevel: boot
+H  7116.52 CH t=7110.0 STATUS Dynamic Runlevel: hotplugged
+H  7116.52 CH t=7110.0 STATUS Dynamic Runlevel: needed/wanted
+H  7116.52 CH t=7110.0 STATUS Dynamic Runlevel: manual
+H  7116.60 CH t=7110.1 operator-action target=driftwm why="hubd not running"
+H  7117.18  [1m[32m*[m Stopping waybar[K ...
+H  7117.19  [1m[32m*[m Stopping hubd[K ...
+H  7117.31  [ ok ]
+H  7117.32  [ ok ]
+H  7117.66  [1m[32m*[m Stopping driftwm[K ...
+H  7117.83  [ ok ]
+H  7118.03  [1m[32m*[m Starting driftwm[K ...
+H  7120.03  [ ok ]
+H  7120.40  [1m[32m*[m Starting hubd[K ...
+H  7120.59  [1m[32m*[m Starting waybar[K ...
+H  7122.29  [ ok ]
+H  7122.40  [ ok ]
+H  7122.72 CH t=7116.2 EV ev=287 fault=after-supervisor-killed target=driftwm rec=62.22 ok=0 fixed=1 supervisor_back=1
+H  7133.72 CH t=7127.2 STEP 269 fDisk
+H  7133.76 CH t=7127.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  7149.82 CH t=7143.3 STATUS Runlevel: sysinit
+H  7149.82 CH t=7143.3 STATUS Runlevel: default
+H  7149.83 CH t=7143.3 STATUS  dbus                                                  [  started 00:03:38 (1) ]
+H  7149.83 CH t=7143.3 STATUS  seatd                                                 [  started 00:02:06 (0) ]
+H  7149.83 CH t=7143.3 STATUS  udevd                                                 [  started 00:03:59 (0) ]
+H  7149.83 CH t=7143.3 STATUS  driftwm                                               [  started 00:00:32 (0) ]
+H  7149.83 CH t=7143.3 STATUS  waybar                                                [  started 00:00:09 (1) ]
+H  7149.83 CH t=7143.3 STATUS  hubd                                                  [  started 00:00:29 (0) ]
+H  7149.84 CH t=7143.3 STATUS Runlevel: boot
+H  7149.84 CH t=7143.3 STATUS Dynamic Runlevel: hotplugged
+H  7149.84 CH t=7143.3 STATUS Dynamic Runlevel: needed/wanted
+H  7149.84 CH t=7143.3 STATUS Dynamic Runlevel: manual
+H  7150.33 CH t=7143.8 EV ev=288 fault=disk-full target=waybar rec=0.21 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H  7168.10 CH t=7161.6 SOAKMEM t=7147 restarts=860 faults=269
+H  7168.14 CH t=7161.6 MEM pid=1 comm=openrc-init rss_kb=1856 pss_kb=540
+H  7168.14 CH t=7161.6 MEM pid=221 comm=supervise-daemo rss_kb=1612 pss_kb=385
+H  7168.14 CH t=7161.6 MEM pid=227 comm=supervise-daemo rss_kb=1708 pss_kb=446
+H  7168.14 CH t=7161.6 MEM pid=31214 comm=supervise-daemo rss_kb=1572 pss_kb=378
+H  7168.14 CH t=7161.6 MEM pid=4092 comm=supervise-daemo rss_kb=1736 pss_kb=420
+H  7168.14 CH t=7161.6 MEM pid=4153 comm=supervise-daemo rss_kb=1660 pss_kb=415
+H  7168.14 CH t=7161.6 MEM pid=4161 comm=supervise-daemo rss_kb=1740 pss_kb=426
+H  7169.33 CH t=7162.8 STEP 270 fScanKill
+H  7187.33 CH t=7180.8 STEP 271 fKill
+H  7189.98 CH t=7183.4 EV ev=289 fault=kill target=waybar rec=2.44 ok=1 fixed=0 
+H  7195.98 CH t=7189.4 STEP 272 fDep
+H  7218.64 CH t=7212.1 EV ev=290 fault=dep-slow target=seatd rec=22.46 ok=1 fixed=0 
+H  7218.65 CH t=7212.1 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=5 hubd=3
+H  7224.65 CH t=7218.1 SOAK-END restarts=870 faults=272
+H  7224.65 CH t=7218.1 SUITE-DONE
+H  7226.67 [ 7224.139973] reboot: Power down
+H# vm exit code 0 after 7227s, loadavg ['0.85', '0.68', '0.55']
+H# end wall=7226.7s launches=1 suite_done=True

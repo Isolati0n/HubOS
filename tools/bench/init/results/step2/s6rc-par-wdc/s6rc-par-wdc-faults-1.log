@@ -1,0 +1,1585 @@
+H# start 2026-10-12 17:23:28 cand=s6rc-par-wdc suite=faults cpus_seen=4 loadavg_at_start=['0.70', '0.60', '0.62']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6rc-par-wdc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=600 hub.seed=200 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=s6rc hub.sup=s6-supervise hub.watcher=watcher hub.wmode=compositor
+H     0.10 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.13 Booting from ROM...
+H     7.27 c[?7l[2JCH STAGE1 up=5.61
+H     7.32 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     7.36 CH SUP-START up=5.71
+H     7.50 CH t=0.1 CHAOS start cand=s6rc suite=faults seed=200 cpus=2
+H    14.38 CH S6RC-UP up=12.71
+H    14.49 watcher: started pid=272 mode=compositor (TEST STAND-IN, not the product watcher)
+H    14.49 watcher: started pid=272 mode=compositor (TEST STAND-IN, not the product watcher)
+H    14.72 CH t=7.3 BOOT-OK up=13.06 ok=1 (seconds since kernel start; waited 7.0)
+H    15.52 watcher: round 1 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    15.52 watcher: round 1 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    16.52 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    16.52 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    17.51 watcher: round 3 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    17.52 watcher: round 3 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    18.51 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    18.51 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    19.51 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    19.51 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    19.73 CH t=12.3 STEP 1 fKill
+H    20.51 watcher: round 6 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    20.51 watcher: round 6 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    21.50 watcher: round 7 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    21.51 watcher: round 7 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    22.51 watcher: round 8 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    22.51 watcher: round 8 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    23.52 watcher: round 9 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    23.52 watcher: round 9 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    24.51 watcher: round 10 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    24.51 watcher: round 10 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    25.52 watcher: round 11 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    25.52 watcher: round 11 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    25.57 CH t=18.1 EV ev=1 fault=kill target=seatd rec=5.63 ok=1 fixed=0 
+H    26.51 watcher: round 12 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    26.51 watcher: round 12 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    27.51 watcher: round 13 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    27.51 watcher: round 13 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    28.51 watcher: round 14 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    28.51 watcher: round 14 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    28.57 CH t=21.1 STEP 2 fKill
+H    29.51 watcher: round 15 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    29.51 watcher: round 15 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    30.52 watcher: round 16 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    30.53 watcher: round 16 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    30.59 CH t=23.2 EV ev=2 fault=kill target=udevd rec=1.81 ok=1 fixed=0 
+H    31.51 watcher: round 17 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    31.51 watcher: round 17 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    32.51 watcher: round 18 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    32.51 watcher: round 18 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    33.51 watcher: round 19 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    33.51 watcher: round 19 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    33.60 CH t=26.2 STEP 3 fKill
+H    34.02 CH t=26.6 EV ev=3 fault=kill target=dbus rec=0.21 ok=1 fixed=0 
+H    34.52 watcher: round 20 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    34.53 watcher: round 20 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    35.51 watcher: round 21 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    35.51 watcher: round 21 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    36.51 watcher: round 22 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    36.51 watcher: round 22 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    37.03 CH t=29.6 STEP 4 fKill
+H    37.52 watcher: round 23 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    37.53 watcher: round 23 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    38.50 watcher: round 24 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    38.50 watcher: round 24 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    39.51 watcher: round 25 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    39.51 watcher: round 25 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    40.52 watcher: round 26 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    40.52 watcher: round 26 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    41.51 watcher: round 27 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    41.51 watcher: round 27 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    42.51 watcher: round 28 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    42.52 watcher: round 28 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    42.55 CH t=35.1 EV ev=4 fault=kill target=driftwm rec=5.31 ok=1 fixed=0 
+H    43.51 watcher: round 29 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    43.51 watcher: round 29 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    44.51 watcher: round 30 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    44.51 watcher: round 30 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    45.51 watcher: round 31 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    45.51 watcher: round 31 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    45.55 CH t=38.1 STEP 5 fKill
+H    46.51 watcher: round 32 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    46.51 watcher: round 32 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    47.00 CH t=39.6 EV ev=5 fault=kill target=waybar rec=1.23 ok=1 fixed=0 
+H    47.51 watcher: round 33 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    47.51 watcher: round 33 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    48.51 watcher: round 34 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    48.51 watcher: round 34 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    49.51 watcher: round 35 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    49.51 watcher: round 35 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    50.00 CH t=42.6 STEP 6 fKill
+H    50.50 watcher: round 36 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    50.51 watcher: round 36 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    51.51 watcher: round 37 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    51.51 watcher: round 37 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    52.12 CH t=44.7 EV ev=6 fault=kill target=hubd rec=1.90 ok=1 fixed=0 
+H    52.51 watcher: round 38 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    52.51 watcher: round 38 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    53.51 watcher: round 39 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    53.51 watcher: round 39 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    54.51 watcher: round 40 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    54.51 watcher: round 40 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    55.12 CH t=47.7 STEP 7 fKill
+H    55.52 watcher: round 41 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    55.53 watcher: round 41 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    56.50 watcher: round 42 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    56.51 watcher: round 42 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    57.51 watcher: round 43 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    57.51 watcher: round 43 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    58.51 watcher: round 44 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    58.51 watcher: round 44 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    59.53 watcher: round 45 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    59.53 watcher: round 45 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    60.15 CH t=52.7 EV ev=7 fault=kill target=seatd rec=4.82 ok=1 fixed=0 
+H    60.51 watcher: round 46 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    60.51 watcher: round 46 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    61.51 watcher: round 47 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    61.51 watcher: round 47 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    62.51 watcher: round 48 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    62.51 watcher: round 48 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    63.16 CH t=55.7 STEP 8 fKill
+H    63.51 watcher: round 49 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    63.52 watcher: round 49 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    64.51 watcher: round 50 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    64.51 watcher: round 50 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    65.21 CH t=57.8 EV ev=8 fault=kill target=udevd rec=1.84 ok=1 fixed=0 
+H    65.51 watcher: round 51 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    65.51 watcher: round 51 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    66.51 watcher: round 52 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    66.51 watcher: round 52 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    67.51 watcher: round 53 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    67.51 watcher: round 53 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    68.21 CH t=60.8 STEP 9 fKill
+H    68.51 watcher: round 54 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    68.52 watcher: round 54 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    68.64 CH t=61.2 EV ev=9 fault=kill target=dbus rec=0.21 ok=1 fixed=0 
+H    69.51 watcher: round 55 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    69.51 watcher: round 55 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    70.51 watcher: round 56 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    70.51 watcher: round 56 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    71.52 watcher: round 57 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    71.52 watcher: round 57 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    71.65 CH t=64.2 STEP 10 fKill
+H    72.51 watcher: round 58 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    72.51 watcher: round 58 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    73.50 watcher: round 59 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    73.50 watcher: round 59 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    74.51 watcher: round 60 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    74.51 watcher: round 60 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    75.51 watcher: round 61 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    75.51 watcher: round 61 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    76.51 watcher: round 62 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    76.51 watcher: round 62 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    76.84 CH t=69.4 EV ev=10 fault=kill target=driftwm rec=4.97 ok=1 fixed=0 
+H    77.51 watcher: round 63 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    77.51 watcher: round 63 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    78.51 watcher: round 64 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    78.51 watcher: round 64 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    79.51 watcher: round 65 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    79.51 watcher: round 65 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    79.84 CH t=72.4 STEP 11 fKill
+H    80.51 watcher: round 66 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    80.51 watcher: round 66 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    81.50 CH t=74.1 EV ev=11 fault=kill target=waybar rec=1.45 ok=1 fixed=0 
+H    81.51 watcher: round 67 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    81.51 watcher: round 67 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    82.51 watcher: round 68 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    82.51 watcher: round 68 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    83.51 watcher: round 69 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    83.51 watcher: round 69 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    84.51 CH t=77.1 STEP 12 fKill
+H    84.51 watcher: round 70 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    84.51 watcher: round 70 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    85.51 watcher: round 71 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    85.51 watcher: round 71 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    86.51 watcher: round 72 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    86.51 watcher: round 72 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    86.85 CH t=79.4 EV ev=12 fault=kill target=hubd rec=2.13 ok=1 fixed=0 
+H    87.51 watcher: round 73 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    87.51 watcher: round 73 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    88.51 watcher: round 74 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    88.51 watcher: round 74 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    89.51 watcher: round 75 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    89.51 watcher: round 75 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    89.85 CH t=82.4 STEP 13 fKill
+H    90.50 watcher: round 76 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    90.50 watcher: round 76 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    91.50 watcher: round 77 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    91.50 watcher: round 77 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    92.50 watcher: round 78 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    92.50 watcher: round 78 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    93.51 watcher: round 79 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    93.51 watcher: round 79 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    94.51 watcher: round 80 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    94.51 watcher: round 80 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    95.21 CH t=87.8 EV ev=13 fault=kill target=seatd rec=5.14 ok=1 fixed=0 
+H    95.51 watcher: round 81 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    95.51 watcher: round 81 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    96.51 watcher: round 82 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    96.51 watcher: round 82 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    97.51 watcher: round 83 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    97.51 watcher: round 83 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    98.22 CH t=90.8 STEP 14 fKill
+H    98.51 watcher: round 84 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    98.51 watcher: round 84 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    99.52 watcher: round 85 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    99.53 watcher: round 85 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   100.11 CH t=92.7 EV ev=14 fault=kill target=udevd rec=1.67 ok=1 fixed=0 
+H   100.51 watcher: round 86 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   100.51 watcher: round 86 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   101.51 watcher: round 87 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   101.51 watcher: round 87 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   102.51 watcher: round 88 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   102.51 watcher: round 88 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   103.11 CH t=95.7 STEP 15 fKill
+H   103.48 CH t=96.0 EV ev=15 fault=kill target=dbus rec=0.15 ok=1 fixed=0 
+H   103.51 watcher: round 89 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   103.51 watcher: round 89 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   104.51 watcher: round 90 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   104.51 watcher: round 90 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   105.51 watcher: round 91 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   105.51 watcher: round 91 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   106.48 CH t=99.0 STEP 16 fKill
+H   106.53 watcher: round 92 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   106.53 watcher: round 92 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   107.50 watcher: round 93 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   107.50 watcher: round 93 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   108.51 watcher: round 94 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   108.51 watcher: round 94 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   109.51 watcher: round 95 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   109.51 watcher: round 95 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   110.51 watcher: round 96 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   110.51 watcher: round 96 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   111.42 CH t=104.0 EV ev=16 fault=kill target=driftwm rec=4.74 ok=1 fixed=0 
+H   111.51 watcher: round 97 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   111.51 watcher: round 97 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   112.51 watcher: round 98 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   112.51 watcher: round 98 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   113.51 watcher: round 99 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   113.51 watcher: round 99 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   114.43 CH t=107.0 STEP 17 fKill
+H   114.51 watcher: round 100 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   114.51 watcher: round 100 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   115.51 watcher: round 101 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   115.51 watcher: round 101 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   115.97 CH t=108.5 EV ev=17 fault=kill target=waybar rec=1.34 ok=1 fixed=0 
+H   116.51 watcher: round 102 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   116.51 watcher: round 102 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   117.51 watcher: round 103 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   117.51 watcher: round 103 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   118.51 watcher: round 104 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   118.51 watcher: round 104 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   118.97 CH t=111.5 STEP 18 fKill
+H   119.51 watcher: round 105 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   119.51 watcher: round 105 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   120.50 watcher: round 106 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   120.51 watcher: round 106 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   121.51 watcher: round 107 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   121.52 watcher: round 107 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   122.03 CH t=114.6 EV ev=18 fault=kill target=hubd rec=2.85 ok=1 fixed=0 
+H   122.51 watcher: round 108 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   122.51 watcher: round 108 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   123.51 watcher: round 109 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   123.51 watcher: round 109 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   124.51 watcher: round 110 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   124.51 watcher: round 110 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   125.04 CH t=117.6 STEP 19 fHang
+H   126.51 watcher: round 111 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   126.51 watcher: round 111 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   127.52 watcher: round 112 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   127.52 watcher: round 112 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   128.53 watcher: round 113 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   128.53 watcher: round 113 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   129.54 watcher: round 114 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   129.54 watcher: round 114 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   130.56 watcher: round 115 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.0s
+H   130.56 watcher: round 115 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.0s
+H   131.57 watcher: round 116 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   131.57 watcher: round 116 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   132.59 watcher: round 117 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   132.59 watcher: round 117 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   133.61 watcher: round 118 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   133.61 watcher: round 118 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   134.62 watcher: round 119 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   134.63 watcher: round 119 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   135.64 watcher: round 120 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.1s
+H   135.64 watcher: round 120 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.1s
+H   136.66 watcher: round 121 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   136.66 watcher: round 121 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   137.67 watcher: round 122 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.2s
+H   137.68 watcher: round 122 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.2s
+H   138.69 watcher: round 123 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.2s
+H   138.69 watcher: round 123 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.2s
+H   139.69 watcher: round 124 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   139.69 watcher: round 124 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   140.70 watcher: round 125 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.2s
+H   140.70 watcher: round 125 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.2s
+H   141.71 watcher: round 126 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   141.71 watcher: round 126 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   142.72 watcher: round 127 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.2s
+H   142.72 watcher: round 127 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.2s
+H   143.73 watcher: round 128 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   143.73 watcher: round 128 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   144.74 watcher: round 129 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.2s
+H   144.74 watcher: round 129 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.2s
+H   145.75 watcher: round 130 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   145.75 watcher: round 130 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   146.76 watcher: round 131 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.3s
+H   146.76 watcher: round 131 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.3s
+H   147.77 watcher: round 132 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   147.78 watcher: round 132 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   148.79 watcher: round 133 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   148.79 watcher: round 133 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   149.80 watcher: round 134 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   149.80 watcher: round 134 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   150.81 watcher: round 135 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   150.81 watcher: round 135 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   151.82 watcher: round 136 comp=FAIL hubd=FAIL failed_round=true streak=26 since_first=25.3s
+H   151.82 watcher: round 136 comp=FAIL hubd=FAIL failed_round=true streak=26 since_first=25.3s
+H   152.83 watcher: round 137 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.3s
+H   152.83 watcher: round 137 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.3s
+H   153.85 watcher: round 138 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   153.85 watcher: round 138 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   154.86 watcher: round 139 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.4s
+H   154.86 watcher: round 139 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.4s
+H   155.87 watcher: round 140 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.4s
+H   155.87 watcher: round 140 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.4s
+H   156.88 watcher: round 141 comp=FAIL hubd=ok failed_round=true streak=0 since_first=0.0s
+H   156.88 watcher: round 141 comp=FAIL hubd=ok failed_round=true streak=0 since_first=0.0s
+H   156.91 watcher: KILL driftwm pid=1547 err=<nil>
+H   156.91 watcher: KILL driftwm pid=1547 err=<nil>
+H   156.96 watcher: round 142 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   156.96 watcher: round 142 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   157.50 watcher: round 143 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.6s
+H   157.50 watcher: round 143 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.6s
+H   158.50 watcher: round 144 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.6s
+H   158.50 watcher: round 144 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.6s
+H   159.50 watcher: round 145 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   159.51 watcher: round 145 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   160.50 watcher: round 146 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   160.51 watcher: round 146 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   161.52 watcher: round 147 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   161.52 watcher: round 147 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   161.74 CH t=154.3 EV ev=19 fault=hang-stop target=driftwm rec=36.49 ok=1 fixed=0 
+H   162.51 watcher: round 148 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   162.51 watcher: round 148 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   163.51 watcher: round 149 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   163.51 watcher: round 149 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   164.51 watcher: round 150 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   164.52 watcher: round 150 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   164.74 CH t=157.3 STEP 20 fHang
+H   166.51 watcher: round 151 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   166.51 watcher: round 151 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   167.53 watcher: round 152 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   167.54 watcher: round 152 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   168.56 watcher: round 153 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   168.56 watcher: round 153 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   169.57 watcher: round 154 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.1s
+H   169.57 watcher: round 154 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.1s
+H   170.58 watcher: round 155 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   170.59 watcher: round 155 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   171.60 watcher: round 156 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.1s
+H   171.60 watcher: round 156 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.1s
+H   172.62 watcher: round 157 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.1s
+H   172.62 watcher: round 157 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.1s
+H   173.64 watcher: round 158 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.1s
+H   173.64 watcher: round 158 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.1s
+H   174.65 watcher: round 159 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.1s
+H   174.66 watcher: round 159 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.1s
+H   175.67 watcher: round 160 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.2s
+H   175.67 watcher: round 160 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.2s
+H   176.68 watcher: round 161 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.2s
+H   176.68 watcher: round 161 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.2s
+H   177.69 watcher: round 162 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.2s
+H   177.69 watcher: round 162 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.2s
+H   178.71 watcher: round 163 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.2s
+H   178.71 watcher: round 163 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.2s
+H   179.72 watcher: round 164 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   179.72 watcher: round 164 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   180.73 watcher: round 165 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H   180.73 watcher: round 165 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H   181.74 watcher: round 166 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   181.74 watcher: round 166 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   182.76 watcher: round 167 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H   182.76 watcher: round 167 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H   183.78 watcher: round 168 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.3s
+H   183.78 watcher: round 168 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.3s
+H   184.80 watcher: round 169 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.3s
+H   184.80 watcher: round 169 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.3s
+H   185.81 watcher: round 170 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.3s
+H   185.82 watcher: round 170 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.3s
+H   186.83 watcher: round 171 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.3s
+H   186.84 watcher: round 171 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.3s
+H   187.85 watcher: round 172 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   187.85 watcher: round 172 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   188.87 watcher: round 173 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.4s
+H   188.87 watcher: round 173 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.4s
+H   189.88 watcher: round 174 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.4s
+H   189.89 watcher: round 174 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.4s
+H   190.90 watcher: round 175 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.4s
+H   190.90 watcher: round 175 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.4s
+H   191.94 watcher: round 176 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.4s
+H   191.94 watcher: round 176 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.4s
+H   192.97 watcher: round 177 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.4s
+H   192.97 watcher: round 177 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.4s
+H   194.00 watcher: round 178 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.5s
+H   194.00 watcher: round 178 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.5s
+H   195.02 watcher: round 179 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.5s
+H   195.02 watcher: round 179 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.5s
+H   196.04 watcher: round 180 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.5s
+H   196.04 watcher: round 180 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.5s
+H   197.05 watcher: round 181 comp=FAIL hubd=FAIL failed_round=true streak=0 since_first=0.0s
+H   197.05 watcher: round 181 comp=FAIL hubd=FAIL failed_round=true streak=0 since_first=0.0s
+H   197.07 watcher: KILL driftwm pid=2133 err=<nil>
+H   197.07 watcher: KILL driftwm pid=2133 err=<nil>
+H   197.13 watcher: round 182 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   197.13 watcher: round 182 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   197.50 watcher: round 183 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.4s
+H   197.51 watcher: round 183 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.4s
+H   198.50 watcher: round 184 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.4s
+H   198.51 watcher: round 184 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.4s
+H   199.51 watcher: round 185 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   199.51 watcher: round 185 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   200.50 watcher: round 186 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   200.51 watcher: round 186 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   201.51 watcher: round 187 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   201.51 watcher: round 187 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   202.50 watcher: round 188 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   202.50 watcher: round 188 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   202.91 CH t=195.5 EV ev=20 fault=hang-spin target=driftwm rec=37.96 ok=1 fixed=0 
+H   203.51 watcher: round 189 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   203.51 watcher: round 189 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   204.51 watcher: round 190 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   204.51 watcher: round 190 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   205.51 watcher: round 191 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   205.51 watcher: round 191 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   205.91 CH t=198.5 STEP 21 fHang
+H   207.51 watcher: round 192 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   207.51 watcher: round 192 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   208.53 watcher: round 193 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   208.53 watcher: round 193 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   209.54 watcher: round 194 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   209.54 watcher: round 194 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   210.55 watcher: round 195 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   210.56 watcher: round 195 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   211.56 watcher: round 196 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   211.57 watcher: round 196 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   212.57 watcher: round 197 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   212.57 watcher: round 197 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   213.59 watcher: round 198 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   213.59 watcher: round 198 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   214.60 watcher: round 199 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   214.60 watcher: round 199 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   215.61 watcher: round 200 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   215.61 watcher: round 200 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   216.62 watcher: round 201 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.1s
+H   216.62 watcher: round 201 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.1s
+H   217.63 watcher: round 202 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   217.63 watcher: round 202 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   218.64 watcher: round 203 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.1s
+H   218.64 watcher: round 203 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.1s
+H   219.66 watcher: round 204 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.1s
+H   219.66 watcher: round 204 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.1s
+H   220.67 watcher: round 205 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   220.67 watcher: round 205 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   221.68 watcher: round 206 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H   221.68 watcher: round 206 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H   222.69 watcher: round 207 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   222.69 watcher: round 207 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   223.70 watcher: round 208 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.2s
+H   223.71 watcher: round 208 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.2s
+H   224.72 watcher: round 209 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   224.72 watcher: round 209 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   225.73 watcher: round 210 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.2s
+H   225.73 watcher: round 210 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.2s
+H   226.74 watcher: round 211 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   226.75 watcher: round 211 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   227.75 watcher: round 212 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.2s
+H   227.76 watcher: round 212 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.2s
+H   228.77 watcher: round 213 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   228.77 watcher: round 213 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   229.78 watcher: round 214 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   229.78 watcher: round 214 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   230.79 watcher: round 215 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   230.79 watcher: round 215 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   231.80 watcher: round 216 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   231.80 watcher: round 216 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   232.81 watcher: round 217 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H   232.81 watcher: round 217 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H   233.82 watcher: round 218 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.3s
+H   233.82 watcher: round 218 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.3s
+H   234.83 watcher: round 219 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   234.83 watcher: round 219 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   235.84 watcher: round 220 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H   235.84 watcher: round 220 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H   236.85 watcher: round 221 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.3s
+H   236.85 watcher: round 221 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.3s
+H   237.86 watcher: round 222 comp=FAIL hubd=ok failed_round=true streak=0 since_first=0.0s
+H   237.86 watcher: round 222 comp=FAIL hubd=ok failed_round=true streak=0 since_first=0.0s
+H   237.89 watcher: KILL driftwm pid=2594 err=<nil>
+H   237.89 watcher: KILL driftwm pid=2594 err=<nil>
+H   237.95 watcher: round 223 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   237.96 watcher: round 223 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   238.50 watcher: round 224 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.6s
+H   238.50 watcher: round 224 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.6s
+H   239.50 watcher: round 225 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.6s
+H   239.50 watcher: round 225 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.6s
+H   240.51 watcher: round 226 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   240.52 watcher: round 226 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   241.50 watcher: round 227 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   241.50 watcher: round 227 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   242.51 watcher: round 228 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   242.52 watcher: round 228 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   242.66 CH t=235.2 EV ev=21 fault=hang-stop target=driftwm rec=36.54 ok=1 fixed=0 
+H   243.51 watcher: round 229 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   243.51 watcher: round 229 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   244.51 watcher: round 230 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   244.51 watcher: round 230 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   245.51 watcher: round 231 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   245.51 watcher: round 231 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   245.67 CH t=238.2 STEP 22 fHang
+H   246.05 CH t=238.6 EV ev=22 fault=hang-spin target=driftwm rec=0.17 ok=1 fixed=0 
+H   246.51 watcher: round 232 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   246.51 watcher: round 232 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   247.51 watcher: round 233 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   247.51 watcher: round 233 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   248.51 watcher: round 234 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   248.51 watcher: round 234 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   249.06 CH t=241.6 STEP 23 fHang
+H   250.51 watcher: round 235 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   251.52 watcher: round 235 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   251.52 watcher: round 236 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   251.53 watcher: round 236 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   252.54 watcher: round 237 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   252.54 watcher: round 237 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   253.55 watcher: round 238 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   253.55 watcher: round 238 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   254.56 watcher: round 239 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   254.56 watcher: round 239 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   255.57 watcher: round 240 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   255.57 watcher: round 240 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   256.58 watcher: round 241 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.1s
+H   256.58 watcher: round 241 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.1s
+H   257.59 watcher: round 242 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   257.59 watcher: round 242 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   258.60 watcher: round 243 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   258.60 watcher: round 243 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   259.62 watcher: round 244 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.1s
+H   259.62 watcher: round 244 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.1s
+H   260.63 watcher: round 245 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   260.63 watcher: round 245 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   261.64 watcher: round 246 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.1s
+H   261.64 watcher: round 246 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.1s
+H   262.66 watcher: round 247 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.1s
+H   262.67 watcher: round 247 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.1s
+H   263.68 watcher: round 248 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   263.68 watcher: round 248 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   264.69 watcher: round 249 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H   264.69 watcher: round 249 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H   265.70 watcher: round 250 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   265.70 watcher: round 250 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   266.71 watcher: round 251 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H   266.71 watcher: round 251 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H   267.72 watcher: round 252 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   267.72 watcher: round 252 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   268.73 watcher: round 253 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.2s
+H   268.73 watcher: round 253 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.2s
+H   269.74 watcher: round 254 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   269.74 watcher: round 254 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   270.75 watcher: round 255 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.2s
+H   270.75 watcher: round 255 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.2s
+H   271.76 watcher: round 256 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   271.76 watcher: round 256 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   272.77 watcher: round 257 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   272.77 watcher: round 257 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   273.78 watcher: round 258 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   273.78 watcher: round 258 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   274.79 watcher: round 259 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   274.79 watcher: round 259 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   275.80 watcher: round 260 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H   275.80 watcher: round 260 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H   276.81 watcher: round 261 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.3s
+H   276.81 watcher: round 261 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.3s
+H   277.82 watcher: round 262 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   277.82 watcher: round 262 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   278.83 watcher: round 263 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H   278.83 watcher: round 263 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H   279.84 watcher: round 264 comp=FAIL hubd=FAIL failed_round=true streak=30 since_first=29.3s
+H   279.84 watcher: round 264 comp=FAIL hubd=FAIL failed_round=true streak=30 since_first=29.3s
+H   280.86 watcher: round 265 comp=FAIL hubd=ok failed_round=true streak=31 since_first=30.3s
+H   280.86 watcher: round 265 comp=FAIL hubd=ok failed_round=true streak=31 since_first=30.3s
+H   280.86 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   280.86 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   281.87 watcher: round 266 comp=FAIL hubd=ok failed_round=true streak=32 since_first=31.4s
+H   281.87 watcher: round 266 comp=FAIL hubd=ok failed_round=true streak=32 since_first=31.4s
+H   281.87 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   281.88 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   282.88 watcher: round 267 comp=FAIL hubd=ok failed_round=true streak=33 since_first=32.4s
+H   282.88 watcher: round 267 comp=FAIL hubd=ok failed_round=true streak=33 since_first=32.4s
+H   282.89 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   282.89 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   283.91 watcher: round 268 comp=FAIL hubd=ok failed_round=true streak=34 since_first=33.4s
+H   283.91 watcher: round 268 comp=FAIL hubd=ok failed_round=true streak=34 since_first=33.4s
+H   283.91 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   283.92 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   284.93 watcher: round 269 comp=FAIL hubd=ok failed_round=true streak=35 since_first=34.4s
+H   284.93 watcher: round 269 comp=FAIL hubd=ok failed_round=true streak=35 since_first=34.4s
+H   284.94 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   284.95 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   285.96 watcher: round 270 comp=FAIL hubd=FAIL failed_round=true streak=36 since_first=35.4s
+H   285.96 watcher: round 270 comp=FAIL hubd=FAIL failed_round=true streak=36 since_first=35.4s
+H   285.96 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   285.96 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   286.98 watcher: round 271 comp=FAIL hubd=FAIL failed_round=true streak=37 since_first=36.5s
+H   286.98 watcher: round 271 comp=FAIL hubd=FAIL failed_round=true streak=37 since_first=36.5s
+H   286.98 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   286.99 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   288.00 watcher: round 272 comp=FAIL hubd=ok failed_round=true streak=38 since_first=37.5s
+H   288.01 watcher: round 272 comp=FAIL hubd=ok failed_round=true streak=38 since_first=37.5s
+H   288.01 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   288.01 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   289.02 watcher: round 273 comp=FAIL hubd=ok failed_round=true streak=39 since_first=38.5s
+H   289.02 watcher: round 273 comp=FAIL hubd=ok failed_round=true streak=39 since_first=38.5s
+H   289.02 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   289.02 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   290.03 watcher: round 274 comp=FAIL hubd=ok failed_round=true streak=40 since_first=39.5s
+H   290.03 watcher: round 274 comp=FAIL hubd=ok failed_round=true streak=40 since_first=39.5s
+H   290.03 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   290.03 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   291.04 watcher: round 275 comp=FAIL hubd=ok failed_round=true streak=41 since_first=40.5s
+H   291.04 watcher: round 275 comp=FAIL hubd=ok failed_round=true streak=41 since_first=40.5s
+H   291.04 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   291.05 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   292.05 watcher: round 276 comp=FAIL hubd=ok failed_round=true streak=42 since_first=41.5s
+H   292.06 watcher: round 276 comp=FAIL hubd=ok failed_round=true streak=42 since_first=41.5s
+H   292.06 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   292.06 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   293.07 watcher: round 277 comp=FAIL hubd=ok failed_round=true streak=43 since_first=42.6s
+H   293.08 watcher: round 277 comp=FAIL hubd=ok failed_round=true streak=43 since_first=42.6s
+H   293.08 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   293.09 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   294.09 watcher: round 278 comp=FAIL hubd=ok failed_round=true streak=44 since_first=43.6s
+H   294.10 watcher: round 278 comp=FAIL hubd=ok failed_round=true streak=44 since_first=43.6s
+H   294.10 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   294.10 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   295.11 watcher: round 279 comp=FAIL hubd=ok failed_round=true streak=45 since_first=44.6s
+H   295.11 watcher: round 279 comp=FAIL hubd=ok failed_round=true streak=45 since_first=44.6s
+H   295.11 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   295.12 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   296.13 watcher: round 280 comp=FAIL hubd=FAIL failed_round=true streak=46 since_first=45.6s
+H   296.13 watcher: round 280 comp=FAIL hubd=FAIL failed_round=true streak=46 since_first=45.6s
+H   296.14 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   296.14 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   297.16 watcher: round 281 comp=FAIL hubd=ok failed_round=true streak=47 since_first=46.7s
+H   297.16 watcher: round 281 comp=FAIL hubd=ok failed_round=true streak=47 since_first=46.7s
+H   297.16 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   297.16 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   298.17 watcher: round 282 comp=FAIL hubd=FAIL failed_round=true streak=48 since_first=47.7s
+H   298.17 watcher: round 282 comp=FAIL hubd=FAIL failed_round=true streak=48 since_first=47.7s
+H   298.18 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   298.18 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   299.19 watcher: round 283 comp=FAIL hubd=ok failed_round=true streak=49 since_first=48.7s
+H   299.19 watcher: round 283 comp=FAIL hubd=ok failed_round=true streak=49 since_first=48.7s
+H   299.19 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   299.19 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   300.20 watcher: round 284 comp=FAIL hubd=FAIL failed_round=true streak=50 since_first=49.7s
+H   300.20 watcher: round 284 comp=FAIL hubd=FAIL failed_round=true streak=50 since_first=49.7s
+H   300.20 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   300.20 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   301.22 watcher: round 285 comp=FAIL hubd=ok failed_round=true streak=51 since_first=50.7s
+H   301.22 watcher: round 285 comp=FAIL hubd=ok failed_round=true streak=51 since_first=50.7s
+H   301.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   301.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   302.24 watcher: round 286 comp=FAIL hubd=ok failed_round=true streak=52 since_first=51.7s
+H   302.24 watcher: round 286 comp=FAIL hubd=ok failed_round=true streak=52 since_first=51.7s
+H   302.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   302.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   303.25 watcher: round 287 comp=FAIL hubd=ok failed_round=true streak=53 since_first=52.7s
+H   303.25 watcher: round 287 comp=FAIL hubd=ok failed_round=true streak=53 since_first=52.7s
+H   303.25 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   303.25 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   304.26 watcher: round 288 comp=FAIL hubd=FAIL failed_round=true streak=54 since_first=53.8s
+H   304.26 watcher: round 288 comp=FAIL hubd=FAIL failed_round=true streak=54 since_first=53.8s
+H   304.27 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   304.27 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   305.28 watcher: round 289 comp=FAIL hubd=ok failed_round=true streak=55 since_first=54.8s
+H   305.28 watcher: round 289 comp=FAIL hubd=ok failed_round=true streak=55 since_first=54.8s
+H   305.29 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   305.29 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   306.30 watcher: round 290 comp=FAIL hubd=ok failed_round=true streak=56 since_first=55.8s
+H   306.30 watcher: round 290 comp=FAIL hubd=ok failed_round=true streak=56 since_first=55.8s
+H   306.30 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   306.30 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   307.31 watcher: round 291 comp=FAIL hubd=ok failed_round=true streak=57 since_first=56.8s
+H   307.31 watcher: round 291 comp=FAIL hubd=ok failed_round=true streak=57 since_first=56.8s
+H   307.31 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   307.31 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   308.31 watcher: round 292 comp=FAIL hubd=ok failed_round=true streak=58 since_first=57.8s
+H   308.32 watcher: round 292 comp=FAIL hubd=ok failed_round=true streak=58 since_first=57.8s
+H   308.32 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   308.32 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   309.16 CH t=301.7 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   309.33 watcher: round 293 comp=FAIL hubd=ok failed_round=true streak=59 since_first=58.8s
+H   309.33 watcher: round 293 comp=FAIL hubd=ok failed_round=true streak=59 since_first=58.8s
+H   309.33 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   309.33 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   309.41 CH t=302.0 STATUS dbus-log: up (pid 169 pgid 169) 300 seconds
+H   309.41 CH t=302.0 STATUS dbus: up (pid 1505 pgid 1505) 206 seconds, ready 206 seconds
+H   309.41 CH t=302.0 STATUS driftwm-log: up (pid 165 pgid 165) 300 seconds
+H   309.41 CH t=302.0 STATUS driftwm: up (pid 3066 pgid 3066) 71 seconds, ready 69 seconds
+H   309.42 CH t=302.0 STATUS guard-log: up (pid 168 pgid 168) 300 seconds
+H   309.42 CH t=302.0 STATUS guard: up (pid 188 pgid 188) 300 seconds
+H   309.42 CH t=302.0 STATUS hubd-log: up (pid 159 pgid 159) 301 seconds
+H   309.42 CH t=302.0 STATUS hubd: up (pid 3120 pgid 3120) 68 seconds, ready 67 seconds
+H   309.42 CH t=302.0 STATUS s6rc-fdholder: up (pid 132 pgid 132) 301 seconds, ready 301 seconds
+H   309.42 CH t=302.0 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   309.42 CH t=302.0 STATUS seatd-log: up (pid 167 pgid 167) 301 seconds
+H   309.42 CH t=302.0 STATUS seatd: up (pid 1305 pgid 1305) 219 seconds, ready 219 seconds
+H   309.43 CH t=302.0 STATUS stage2: up (pid 108 pgid 108) 301 seconds
+H   309.43 CH t=302.0 STATUS udevd-log: up (pid 155 pgid 155) 301 seconds
+H   309.43 CH t=302.0 STATUS udevd: up (pid 1445 pgid 1445) 211 seconds, ready 209 seconds
+H   309.43 CH t=302.0 STATUS watcher: up (pid 272 pgid 272) 295 seconds
+H   309.43 CH t=302.0 STATUS waybar-log: up (pid 156 pgid 156) 301 seconds
+H   309.43 CH t=302.0 STATUS waybar: up (pid 3125 pgid 3125) 68 seconds, ready 66 seconds
+H   309.47 CH t=302.0 operator-action target=driftwm why="driftwm stopped"
+H   309.55 watcher: round 294 comp=FAIL hubd=ok failed_round=true streak=60 since_first=59.8s
+H   309.55 watcher: round 294 comp=FAIL hubd=ok failed_round=true streak=60 since_first=59.8s
+H   309.56 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   309.56 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   309.57 watcher: round 295 comp=FAIL hubd=FAIL failed_round=true streak=61 since_first=60.1s
+H   309.57 watcher: round 295 comp=FAIL hubd=FAIL failed_round=true streak=61 since_first=60.1s
+H   309.58 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   309.59 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   310.50 watcher: round 296 comp=FAIL hubd=FAIL failed_round=true streak=62 since_first=61.0s
+H   310.50 watcher: round 296 comp=FAIL hubd=FAIL failed_round=true streak=62 since_first=61.0s
+H   310.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   310.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   311.51 watcher: round 297 comp=FAIL hubd=FAIL failed_round=true streak=63 since_first=62.0s
+H   311.52 watcher: round 297 comp=FAIL hubd=FAIL failed_round=true streak=63 since_first=62.0s
+H   311.52 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   311.53 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   312.51 watcher: round 298 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   312.51 watcher: round 298 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   313.51 watcher: round 299 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   313.51 watcher: round 299 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   314.51 watcher: round 300 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   314.51 watcher: round 300 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   314.73 CH t=307.3 EV ev=23 fault=hang-stop target=driftwm rec=65.00 ok=0 fixed=1 
+H   315.51 watcher: round 301 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   315.51 watcher: round 301 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   316.51 watcher: round 302 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   316.51 watcher: round 302 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   317.51 watcher: round 303 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   317.51 watcher: round 303 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   317.73 CH t=310.3 STEP 24 fHang
+H   318.17 CH t=310.7 EV ev=24 fault=hang-spin target=driftwm rec=0.23 ok=1 fixed=0 
+H   318.51 watcher: round 304 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   318.51 watcher: round 304 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   319.51 watcher: round 305 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   319.51 watcher: round 305 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   320.51 watcher: round 306 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   320.52 watcher: round 306 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   321.17 CH t=313.7 STEP 25 fStorm
+H   321.51 watcher: round 307 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   321.51 watcher: round 307 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   322.51 watcher: round 308 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   322.51 watcher: round 308 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   323.52 watcher: round 309 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   323.53 watcher: round 309 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   324.51 watcher: round 310 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   324.51 watcher: round 310 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   325.51 watcher: round 311 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   325.51 watcher: round 311 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   326.51 watcher: round 312 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   326.51 watcher: round 312 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   327.51 watcher: round 313 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   327.51 watcher: round 313 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   328.51 watcher: round 314 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   328.51 watcher: round 314 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   329.51 watcher: round 315 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   329.51 watcher: round 315 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   330.50 watcher: round 316 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   330.50 watcher: round 316 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   331.51 watcher: round 317 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   331.51 watcher: round 317 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   332.51 watcher: round 318 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   332.51 watcher: round 318 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   333.50 watcher: round 319 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   333.50 watcher: round 319 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   334.51 watcher: round 320 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   334.51 watcher: round 320 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   335.51 watcher: round 321 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   335.51 watcher: round 321 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   336.51 watcher: round 322 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   336.51 watcher: round 322 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   337.51 watcher: round 323 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   337.51 watcher: round 323 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   338.51 watcher: round 324 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   338.51 watcher: round 324 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   339.51 watcher: round 325 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   339.51 watcher: round 325 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   340.51 watcher: round 326 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   340.51 watcher: round 326 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   341.51 watcher: round 327 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   342.50 watcher: round 327 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   342.51 watcher: round 328 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   342.51 watcher: round 328 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   343.52 watcher: round 329 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   343.52 watcher: round 329 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   344.51 watcher: round 330 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   344.51 watcher: round 330 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   345.51 watcher: round 331 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   345.51 watcher: round 331 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   346.51 watcher: round 332 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   346.51 watcher: round 332 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   347.51 watcher: round 333 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   347.51 watcher: round 333 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   348.50 watcher: round 334 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   348.50 watcher: round 334 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   349.51 watcher: round 335 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   349.51 watcher: round 335 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   350.51 watcher: round 336 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   350.51 watcher: round 336 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   351.51 watcher: round 337 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   351.51 watcher: round 337 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   352.51 watcher: round 338 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   352.52 watcher: round 338 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   353.51 watcher: round 339 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   353.51 watcher: round 339 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   354.51 watcher: round 340 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   354.51 watcher: round 340 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   355.51 watcher: round 341 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   355.51 watcher: round 341 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   356.51 watcher: round 342 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   356.51 watcher: round 342 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   357.51 watcher: round 343 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   357.51 watcher: round 343 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   358.51 watcher: round 344 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   358.51 watcher: round 344 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   359.51 watcher: round 345 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   359.51 watcher: round 345 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   360.51 watcher: round 346 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   360.51 watcher: round 346 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   361.55 watcher: round 347 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   361.56 watcher: round 347 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   361.65 CH t=354.2 STATUS dbus-log: up (pid 169 pgid 169) 353 seconds
+H   361.65 CH t=354.2 STATUS dbus: up (pid 1505 pgid 1505) 258 seconds, ready 258 seconds
+H   361.65 CH t=354.2 STATUS driftwm-log: up (pid 165 pgid 165) 353 seconds
+H   361.65 CH t=354.2 STATUS driftwm: up (pid 3904 pgid 3904) 51 seconds, ready 49 seconds
+H   361.66 CH t=354.2 STATUS guard-log: up (pid 168 pgid 168) 353 seconds
+H   361.66 CH t=354.2 STATUS guard: up (pid 188 pgid 188) 352 seconds
+H   361.66 CH t=354.2 STATUS hubd-log: up (pid 159 pgid 159) 353 seconds
+H   361.66 CH t=354.2 STATUS hubd: up (pid 4644 pgid 4644) 1 seconds
+H   361.66 CH t=354.2 STATUS s6rc-fdholder: up (pid 132 pgid 132) 353 seconds, ready 353 seconds
+H   361.66 CH t=354.2 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   361.66 CH t=354.2 STATUS seatd-log: up (pid 167 pgid 167) 353 seconds
+H   361.66 CH t=354.2 STATUS seatd: up (pid 1305 pgid 1305) 271 seconds, ready 271 seconds
+H   361.67 CH t=354.2 STATUS stage2: up (pid 108 pgid 108) 354 seconds
+H   361.67 CH t=354.2 STATUS udevd-log: up (pid 155 pgid 155) 353 seconds
+H   361.67 CH t=354.2 STATUS udevd: up (pid 1445 pgid 1445) 263 seconds, ready 261 seconds
+H   361.67 CH t=354.2 STATUS watcher: up (pid 272 pgid 272) 347 seconds
+H   361.67 CH t=354.2 STATUS waybar-log: up (pid 156 pgid 156) 353 seconds
+H   361.67 CH t=354.2 STATUS waybar: up (pid 3964 pgid 3964) 48 seconds, ready 47 seconds
+H   361.68 CH t=354.2 STORM target=hubd dur=40 starts=17 starts_last10s=4 cpu_ticks_init_side=16 bar-up
+H   362.51 watcher: round 348 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   362.51 watcher: round 348 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   363.51 watcher: round 349 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   363.51 watcher: round 349 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   364.51 watcher: round 350 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   364.51 watcher: round 350 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   364.63 CH t=357.2 EV ev=25 fault=storm target=hubd rec=2.75 ok=1 fixed=0 starts=17 last10=4 cpu=16 bar-up
+H   365.51 watcher: round 351 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   365.51 watcher: round 351 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   366.51 watcher: round 352 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   366.52 watcher: round 352 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   367.51 watcher: round 353 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   367.51 watcher: round 353 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   367.63 CH t=360.2 STEP 26 fStorm
+H   368.50 watcher: round 354 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   368.50 watcher: round 354 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   369.51 watcher: round 355 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   369.51 watcher: round 355 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   370.50 watcher: round 356 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   370.51 watcher: round 356 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   371.50 watcher: round 357 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   371.50 watcher: round 357 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   372.50 watcher: round 358 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   372.50 watcher: round 358 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   373.50 watcher: round 359 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   373.51 watcher: round 359 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   374.50 watcher: round 360 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   374.51 watcher: round 360 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   375.50 watcher: round 361 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   375.51 watcher: round 361 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   376.50 watcher: round 362 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   376.51 watcher: round 362 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   377.51 watcher: round 363 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   377.51 watcher: round 363 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   378.50 watcher: round 364 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   378.51 watcher: round 364 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   379.50 watcher: round 365 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   379.51 watcher: round 365 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   380.50 watcher: round 366 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   380.51 watcher: round 366 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   381.50 watcher: round 367 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   381.50 watcher: round 367 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   382.50 watcher: round 368 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   382.51 watcher: round 368 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   383.50 watcher: round 369 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   383.51 watcher: round 369 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   384.50 watcher: round 370 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   384.50 watcher: round 370 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   385.50 watcher: round 371 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   385.50 watcher: round 371 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   386.51 watcher: round 372 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.0s
+H   386.52 watcher: round 372 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.0s
+H   387.50 watcher: round 373 comp=FAIL hubd=FAIL failed_round=true streak=20 since_first=19.0s
+H   387.50 watcher: round 373 comp=FAIL hubd=FAIL failed_round=true streak=20 since_first=19.0s
+H   388.50 watcher: round 374 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.0s
+H   388.51 watcher: round 374 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.0s
+H   389.50 watcher: round 375 comp=FAIL hubd=FAIL failed_round=true streak=22 since_first=21.0s
+H   389.51 watcher: round 375 comp=FAIL hubd=FAIL failed_round=true streak=22 since_first=21.0s
+H   390.50 watcher: round 376 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.0s
+H   390.50 watcher: round 376 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.0s
+H   391.50 watcher: round 377 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.0s
+H   391.50 watcher: round 377 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.0s
+H   392.50 watcher: round 378 comp=FAIL hubd=FAIL failed_round=true streak=25 since_first=24.0s
+H   392.50 watcher: round 378 comp=FAIL hubd=FAIL failed_round=true streak=25 since_first=24.0s
+H   393.50 watcher: round 379 comp=FAIL hubd=FAIL failed_round=true streak=26 since_first=25.0s
+H   393.50 watcher: round 379 comp=FAIL hubd=FAIL failed_round=true streak=26 since_first=25.0s
+H   394.50 watcher: round 380 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.0s
+H   394.50 watcher: round 380 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.0s
+H   395.50 watcher: round 381 comp=FAIL hubd=FAIL failed_round=true streak=28 since_first=27.0s
+H   395.50 watcher: round 381 comp=FAIL hubd=FAIL failed_round=true streak=28 since_first=27.0s
+H   396.50 watcher: round 382 comp=FAIL hubd=FAIL failed_round=true streak=29 since_first=28.0s
+H   396.51 watcher: round 382 comp=FAIL hubd=FAIL failed_round=true streak=29 since_first=28.0s
+H   397.50 watcher: round 383 comp=FAIL hubd=FAIL failed_round=true streak=30 since_first=29.0s
+H   397.51 watcher: round 383 comp=FAIL hubd=FAIL failed_round=true streak=30 since_first=29.0s
+H   398.51 watcher: round 384 comp=FAIL hubd=FAIL failed_round=true streak=31 since_first=30.0s
+H   398.51 watcher: round 384 comp=FAIL hubd=FAIL failed_round=true streak=31 since_first=30.0s
+H   399.50 watcher: round 385 comp=FAIL hubd=FAIL failed_round=true streak=32 since_first=31.0s
+H   399.50 watcher: round 385 comp=FAIL hubd=FAIL failed_round=true streak=32 since_first=31.0s
+H   399.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   399.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   400.50 watcher: round 386 comp=FAIL hubd=FAIL failed_round=true streak=33 since_first=32.0s
+H   400.50 watcher: round 386 comp=FAIL hubd=FAIL failed_round=true streak=33 since_first=32.0s
+H   400.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   400.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   401.51 watcher: round 387 comp=FAIL hubd=FAIL failed_round=true streak=34 since_first=33.0s
+H   401.51 watcher: round 387 comp=FAIL hubd=FAIL failed_round=true streak=34 since_first=33.0s
+H   401.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   401.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   402.50 watcher: round 388 comp=FAIL hubd=FAIL failed_round=true streak=35 since_first=34.0s
+H   402.50 watcher: round 388 comp=FAIL hubd=FAIL failed_round=true streak=35 since_first=34.0s
+H   402.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   402.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   403.50 watcher: round 389 comp=FAIL hubd=FAIL failed_round=true streak=36 since_first=35.0s
+H   403.51 watcher: round 389 comp=FAIL hubd=FAIL failed_round=true streak=36 since_first=35.0s
+H   403.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   403.52 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   404.50 watcher: round 390 comp=FAIL hubd=FAIL failed_round=true streak=37 since_first=36.0s
+H   404.50 watcher: round 390 comp=FAIL hubd=FAIL failed_round=true streak=37 since_first=36.0s
+H   404.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   404.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   405.50 watcher: round 391 comp=FAIL hubd=FAIL failed_round=true streak=38 since_first=37.0s
+H   405.50 watcher: round 391 comp=FAIL hubd=FAIL failed_round=true streak=38 since_first=37.0s
+H   405.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   405.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   406.50 watcher: round 392 comp=FAIL hubd=FAIL failed_round=true streak=39 since_first=38.0s
+H   406.51 watcher: round 392 comp=FAIL hubd=FAIL failed_round=true streak=39 since_first=38.0s
+H   406.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   406.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   407.50 watcher: round 393 comp=FAIL hubd=FAIL failed_round=true streak=40 since_first=39.0s
+H   407.50 watcher: round 393 comp=FAIL hubd=FAIL failed_round=true streak=40 since_first=39.0s
+H   407.50 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   407.51 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   408.00 CH t=400.6 STATUS dbus-log: up (pid 169 pgid 169) 399 seconds
+H   408.00 CH t=400.6 STATUS dbus: up (pid 1505 pgid 1505) 304 seconds, ready 304 seconds
+H   408.00 CH t=400.6 STATUS driftwm-log: up (pid 165 pgid 165) 399 seconds
+H   408.01 CH t=400.6 STATUS driftwm: down (exitcode 1) 0 seconds, normally up, want up, ready 0 seconds
+H   408.01 CH t=400.6 STATUS guard-log: up (pid 168 pgid 168) 399 seconds
+H   408.01 CH t=400.6 STATUS guard: up (pid 188 pgid 188) 399 seconds
+H   408.01 CH t=400.6 STATUS hubd-log: up (pid 159 pgid 159) 399 seconds
+H   408.01 CH t=400.6 STATUS hubd: up (pid 5545 pgid 5545) 0 seconds
+H   408.01 CH t=400.6 STATUS s6rc-fdholder: up (pid 132 pgid 132) 400 seconds, ready 399 seconds
+H   408.01 CH t=400.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   408.01 CH t=400.6 STATUS seatd-log: up (pid 167 pgid 167) 399 seconds
+H   408.01 CH t=400.6 STATUS seatd: up (pid 1305 pgid 1305) 318 seconds, ready 317 seconds
+H   408.01 CH t=400.6 STATUS stage2: up (pid 108 pgid 108) 400 seconds
+H   408.01 CH t=400.6 STATUS udevd-log: up (pid 155 pgid 155) 399 seconds
+H   408.01 CH t=400.6 STATUS udevd: up (pid 1445 pgid 1445) 309 seconds, ready 308 seconds
+H   408.01 CH t=400.6 STATUS watcher: up (pid 272 pgid 272) 393 seconds
+H   408.02 CH t=400.6 STATUS waybar-log: up (pid 156 pgid 156) 399 seconds
+H   408.02 CH t=400.6 STATUS waybar: up (pid 5495 pgid 5495) 3 seconds
+H   408.02 CH t=400.6 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=42 bar-down
+H   408.50 watcher: round 394 comp=FAIL hubd=FAIL failed_round=true streak=41 since_first=40.0s
+H   408.51 watcher: round 394 comp=FAIL hubd=FAIL failed_round=true streak=41 since_first=40.0s
+H   408.53 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   408.55 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   409.51 watcher: round 395 comp=FAIL hubd=FAIL failed_round=true streak=42 since_first=41.0s
+H   409.52 watcher: round 395 comp=FAIL hubd=FAIL failed_round=true streak=42 since_first=41.0s
+H   409.53 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   409.53 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   410.51 watcher: round 396 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   410.51 watcher: round 396 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   411.51 watcher: round 397 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   411.51 watcher: round 397 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   412.51 watcher: round 398 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   412.51 watcher: round 398 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   413.47 CH t=406.0 EV ev=26 fault=storm target=driftwm rec=5.25 ok=1 fixed=0 starts=26 last10=6 cpu=42 bar-down
+H   413.51 watcher: round 399 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   413.51 watcher: round 399 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   414.51 watcher: round 400 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   414.51 watcher: round 400 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   415.51 watcher: round 401 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   415.51 watcher: round 401 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   416.48 CH t=409.0 STEP 27 fDep
+H   416.67 watcher: round 402 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   416.67 watcher: round 402 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   417.50 watcher: round 403 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   417.50 watcher: round 403 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   418.51 watcher: round 404 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   418.51 watcher: round 404 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   419.50 watcher: round 405 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   419.51 watcher: round 405 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   420.50 watcher: round 406 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   420.50 watcher: round 406 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   421.51 watcher: round 407 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   421.51 watcher: round 407 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   422.51 watcher: round 408 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   422.51 watcher: round 408 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   423.50 watcher: round 409 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   423.50 watcher: round 409 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   424.50 watcher: round 410 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   424.50 watcher: round 410 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   425.50 watcher: round 411 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   425.50 watcher: round 411 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   426.50 watcher: round 412 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   426.51 watcher: round 412 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   427.50 watcher: round 413 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   427.50 watcher: round 413 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   428.50 watcher: round 414 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   428.50 watcher: round 414 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   429.50 watcher: round 415 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   429.51 watcher: round 415 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   430.50 watcher: round 416 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   430.50 watcher: round 416 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   431.50 watcher: round 417 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   431.50 watcher: round 417 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   432.50 watcher: round 418 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   432.50 watcher: round 418 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   433.50 watcher: round 419 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   433.50 watcher: round 419 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   434.51 watcher: round 420 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   434.51 watcher: round 420 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   435.50 watcher: round 421 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   435.51 watcher: round 421 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   436.51 watcher: round 422 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   436.51 watcher: round 422 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   437.20 CH t=429.8 EV ev=27 fault=dep-slow target=seatd rec=20.51 ok=1 fixed=0 
+H   437.20 CH t=429.8 DEPSTARTS mode=slow seatd=1 driftwm=11 waybar=6 hubd=3
+H   437.51 watcher: round 423 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   437.51 watcher: round 423 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   438.51 watcher: round 424 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   438.51 watcher: round 424 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   439.51 watcher: round 425 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   439.51 watcher: round 425 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   440.20 CH t=432.8 STEP 28 fDep
+H   440.50 watcher: round 426 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   440.50 watcher: round 426 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   441.50 watcher: round 427 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   441.50 watcher: round 427 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   442.50 watcher: round 428 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   442.50 watcher: round 428 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   443.50 watcher: round 429 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   443.50 watcher: round 429 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   444.51 watcher: round 430 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   444.51 watcher: round 430 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   445.50 watcher: round 431 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   446.51 watcher: round 431 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   446.51 watcher: round 432 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   446.51 watcher: round 432 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   447.50 watcher: round 433 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   447.50 watcher: round 433 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   448.50 watcher: round 434 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   448.50 watcher: round 434 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   449.50 watcher: round 435 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   449.51 watcher: round 435 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   450.50 watcher: round 436 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   450.51 watcher: round 436 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   451.50 watcher: round 437 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   451.51 watcher: round 437 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   452.51 watcher: round 438 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   452.52 watcher: round 438 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   453.50 watcher: round 439 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   453.50 watcher: round 439 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   454.50 watcher: round 440 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   454.50 watcher: round 440 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   455.51 watcher: round 441 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   455.51 watcher: round 441 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   456.50 watcher: round 442 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   456.50 watcher: round 442 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   457.50 watcher: round 443 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   457.51 watcher: round 443 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   458.50 watcher: round 444 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.0s
+H   458.50 watcher: round 444 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.0s
+H   459.50 watcher: round 445 comp=FAIL hubd=FAIL failed_round=true streak=20 since_first=19.0s
+H   459.50 watcher: round 445 comp=FAIL hubd=FAIL failed_round=true streak=20 since_first=19.0s
+H   460.50 watcher: round 446 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.0s
+H   460.51 watcher: round 446 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.0s
+H   461.51 watcher: round 447 comp=FAIL hubd=FAIL failed_round=true streak=22 since_first=21.0s
+H   461.52 watcher: round 447 comp=FAIL hubd=FAIL failed_round=true streak=22 since_first=21.0s
+H   462.50 watcher: round 448 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.0s
+H   462.51 watcher: round 448 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.0s
+H   463.51 watcher: round 449 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.0s
+H   463.52 watcher: round 449 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.0s
+H   464.52 watcher: round 450 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   465.52 watcher: round 450 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   465.52 watcher: round 451 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   465.52 watcher: round 451 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   466.51 watcher: round 452 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   466.52 watcher: round 452 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   466.94 CH t=459.5 EV ev=28 fault=dep-fail target=seatd rec=6.52 ok=1 fixed=0 
+H   466.94 CH t=459.5 DEPSTARTS mode=fail seatd=19 driftwm=15 waybar=8 hubd=2
+H   467.52 watcher: round 453 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   467.52 watcher: round 453 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   468.51 watcher: round 454 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   468.51 watcher: round 454 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   469.51 watcher: round 455 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   469.51 watcher: round 455 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   469.94 CH t=462.5 STEP 29 fDisk
+H   469.99 CH t=462.6 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   470.51 watcher: round 456 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   470.51 watcher: round 456 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   471.52 watcher: round 457 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   471.52 watcher: round 457 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   472.51 watcher: round 458 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   472.51 watcher: round 458 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   473.51 watcher: round 459 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   473.51 watcher: round 459 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   474.51 watcher: round 460 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   474.51 watcher: round 460 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   475.53 watcher: round 461 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   475.54 watcher: round 461 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   476.52 watcher: round 462 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   476.52 watcher: round 462 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   477.51 watcher: round 463 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   477.51 watcher: round 463 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   478.51 watcher: round 464 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   478.51 watcher: round 464 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   479.52 watcher: round 465 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   479.52 watcher: round 465 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   480.51 watcher: round 466 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   480.51 watcher: round 466 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   481.51 watcher: round 467 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   481.51 watcher: round 467 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   482.51 watcher: round 468 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   482.51 watcher: round 468 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   483.51 watcher: round 469 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   483.51 watcher: round 469 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   484.51 watcher: round 470 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   484.51 watcher: round 470 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   485.51 watcher: round 471 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   485.51 watcher: round 471 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   486.51 watcher: round 472 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   486.51 watcher: round 472 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   487.53 watcher: round 473 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   487.53 watcher: round 473 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   488.51 watcher: round 474 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   488.51 watcher: round 474 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   489.51 watcher: round 475 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   489.51 watcher: round 475 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   490.51 watcher: round 476 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   490.51 watcher: round 476 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   491.02 CH t=483.6 STATUS dbus-log: up (pid 169 pgid 169) 482 seconds
+H   491.02 CH t=483.6 STATUS dbus: up (pid 1505 pgid 1505) 387 seconds, ready 387 seconds
+H   491.02 CH t=483.6 STATUS driftwm-log: up (pid 165 pgid 165) 482 seconds
+H   491.02 CH t=483.6 STATUS driftwm: up (pid 6649 pgid 6649) 29 seconds, ready 27 seconds
+H   491.02 CH t=483.6 STATUS guard-log: up (pid 168 pgid 168) 482 seconds
+H   491.02 CH t=483.6 STATUS guard: up (pid 188 pgid 188) 482 seconds
+H   491.03 CH t=483.6 STATUS hubd-log: up (pid 159 pgid 159) 482 seconds
+H   491.03 CH t=483.6 STATUS hubd: up (pid 6698 pgid 6698) 26 seconds, ready 24 seconds
+H   491.03 CH t=483.6 STATUS s6rc-fdholder: up (pid 132 pgid 132) 483 seconds, ready 482 seconds
+H   491.03 CH t=483.6 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   491.03 CH t=483.6 STATUS seatd-log: up (pid 167 pgid 167) 482 seconds
+H   491.03 CH t=483.6 STATUS seatd: up (pid 6629 pgid 6629) 30 seconds, ready 30 seconds
+H   491.03 CH t=483.6 STATUS stage2: up (pid 108 pgid 108) 483 seconds
+H   491.04 CH t=483.6 STATUS udevd-log: up (pid 155 pgid 155) 482 seconds
+H   491.04 CH t=483.6 STATUS udevd: up (pid 1445 pgid 1445) 392 seconds, ready 391 seconds
+H   491.04 CH t=483.6 STATUS watcher: up (pid 272 pgid 272) 476 seconds
+H   491.04 CH t=483.6 STATUS waybar-log: up (pid 156 pgid 156) 482 seconds
+H   491.04 CH t=483.6 STATUS waybar: up (pid 6837 pgid 6837) 15 seconds, ready 13 seconds
+H   491.50 CH t=484.1 EV ev=29 fault=disk-full target=waybar rec=0.19 ok=1 fixed=0 ok_during=18/19 all_alive_at_end=1
+H   491.51 watcher: round 477 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   491.51 watcher: round 477 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   492.52 watcher: round 478 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   492.52 watcher: round 478 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   493.51 watcher: round 479 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   493.52 watcher: round 479 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   494.51 CH t=487.1 STEP 30 fDisk
+H   494.51 watcher: round 480 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   494.52 watcher: round 480 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   494.55 CH t=487.1 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   495.51 watcher: round 481 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   495.51 watcher: round 481 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   496.51 watcher: round 482 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   496.51 watcher: round 482 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   497.51 watcher: round 483 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   497.51 watcher: round 483 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   498.52 watcher: round 484 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   498.52 watcher: round 484 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   499.51 watcher: round 485 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   499.51 watcher: round 485 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   500.51 watcher: round 486 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   500.51 watcher: round 486 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   501.51 watcher: round 487 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   501.52 watcher: round 487 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   502.51 watcher: round 488 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   502.52 watcher: round 488 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   503.51 watcher: round 489 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   503.51 watcher: round 489 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   504.51 watcher: round 490 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   504.51 watcher: round 490 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   505.52 watcher: round 491 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   505.52 watcher: round 491 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   506.52 watcher: round 492 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   506.52 watcher: round 492 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   507.51 watcher: round 493 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   507.52 watcher: round 493 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   508.51 watcher: round 494 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   508.51 watcher: round 494 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   509.51 watcher: round 495 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   509.51 watcher: round 495 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   510.51 watcher: round 496 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   510.51 watcher: round 496 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   511.51 watcher: round 497 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   511.51 watcher: round 497 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   512.51 watcher: round 498 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   512.52 watcher: round 498 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   513.51 watcher: round 499 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   513.52 watcher: round 499 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   514.52 watcher: round 500 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   514.52 watcher: round 500 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   515.53 watcher: round 501 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   515.53 watcher: round 501 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   515.78 CH t=508.3 STATUS dbus-log: up (pid 169 pgid 169) 507 seconds
+H   515.79 CH t=508.3 STATUS dbus: up (pid 1505 pgid 1505) 412 seconds, ready 412 seconds
+H   515.79 CH t=508.3 STATUS driftwm-log: up (pid 165 pgid 165) 507 seconds
+H   515.79 CH t=508.4 STATUS driftwm: up (pid 6649 pgid 6649) 54 seconds, ready 52 seconds
+H   515.79 CH t=508.4 STATUS guard-log: up (pid 168 pgid 168) 507 seconds
+H   515.79 CH t=508.4 STATUS guard: up (pid 188 pgid 188) 507 seconds
+H   515.79 CH t=508.4 STATUS hubd-log: up (pid 159 pgid 159) 507 seconds
+H   515.80 CH t=508.4 STATUS hubd: up (pid 6698 pgid 6698) 51 seconds, ready 49 seconds
+H   515.80 CH t=508.4 STATUS s6rc-fdholder: up (pid 132 pgid 132) 507 seconds, ready 507 seconds
+H   515.80 CH t=508.4 STATUS s6rc-oneshot-runner: down (not started yet) 
+H   515.80 CH t=508.4 STATUS seatd-log: up (pid 167 pgid 167) 507 seconds
+H   515.80 CH t=508.4 STATUS seatd: up (pid 6629 pgid 6629) 55 seconds, ready 55 seconds
+H   515.80 CH t=508.4 STATUS stage2: up (pid 108 pgid 108) 508 seconds
+H   515.80 CH t=508.4 STATUS udevd-log: up (pid 155 pgid 155) 507 seconds
+H   515.81 CH t=508.4 STATUS udevd: up (pid 1445 pgid 1445) 417 seconds, ready 415 seconds
+H   515.81 CH t=508.4 STATUS watcher: up (pid 272 pgid 272) 501 seconds
+H   515.81 CH t=508.4 STATUS waybar-log: up (pid 156 pgid 156) 507 seconds
+H   515.81 CH t=508.4 STATUS waybar: up (pid 7150 pgid 7150) 14 seconds, ready 13 seconds
+H   516.24 CH t=508.8 EV ev=30 fault=disk-full target=waybar rec=0.15 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H   516.51 watcher: round 502 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   516.51 watcher: round 502 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   517.51 watcher: round 503 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   517.51 watcher: round 503 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   518.51 watcher: round 504 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   518.52 watcher: round 504 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   519.24 CH t=511.8 STEP 31 fSupKill
+H   519.53 watcher: round 505 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   519.53 watcher: round 505 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   520.51 watcher: round 506 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   520.51 watcher: round 506 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   521.52 watcher: round 507 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   521.52 watcher: round 507 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   522.53 watcher: round 508 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   522.53 watcher: round 508 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   523.51 watcher: round 509 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   523.51 watcher: round 509 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   524.51 watcher: round 510 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   524.51 watcher: round 510 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   525.51 watcher: round 511 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   525.51 watcher: round 511 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   526.52 watcher: round 512 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   526.52 watcher: round 512 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   527.51 watcher: round 513 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   527.51 watcher: round 513 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   527.75 CH t=520.3 EV ev=31 fault=supervisor-killed target=driftwm rec=6.76 ok=1 fixed=0 child_kept_running=1
+H   528.52 watcher: round 514 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   528.52 watcher: round 514 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   529.52 watcher: round 515 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   529.52 watcher: round 515 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   530.50 watcher: round 516 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   530.51 watcher: round 516 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   531.50 watcher: round 517 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   531.51 watcher: round 517 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   532.51 watcher: round 518 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   532.52 watcher: round 518 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   533.50 watcher: round 519 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   533.51 watcher: round 519 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   534.29 CH t=526.9 EV ev=32 fault=after-supervisor-killed target=driftwm rec=4.16 ok=1 fixed=0 supervisor_back=1
+H   534.51 watcher: round 520 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   534.51 watcher: round 520 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   535.51 watcher: round 521 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   535.51 watcher: round 521 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   536.51 watcher: round 522 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   536.51 watcher: round 522 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   537.30 CH t=529.9 STEP 32 fSupKill
+H   537.51 watcher: round 523 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   537.51 watcher: round 523 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   538.51 watcher: round 524 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   538.51 watcher: round 524 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   539.19 CH t=531.8 EV ev=33 fault=supervisor-killed target=waybar rec=0.14 ok=1 fixed=0 child_kept_running=1
+H   539.51 watcher: round 525 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   539.51 watcher: round 525 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   540.52 watcher: round 526 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   540.52 watcher: round 526 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   541.52 watcher: round 527 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   541.52 watcher: round 527 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   542.25 CH t=534.8 EV ev=34 fault=after-supervisor-killed target=waybar rec=0.80 ok=1 fixed=0 supervisor_back=1
+H   542.51 watcher: round 528 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   542.51 watcher: round 528 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   543.51 watcher: round 529 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   543.51 watcher: round 529 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   544.51 watcher: round 530 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   544.51 watcher: round 530 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   545.25 CH t=537.8 STEP 33 fSupKill
+H   545.51 watcher: round 531 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   545.52 watcher: round 531 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   546.51 watcher: round 532 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   546.51 watcher: round 532 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   547.50 watcher: round 533 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   547.50 watcher: round 533 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   548.50 watcher: round 534 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   548.51 watcher: round 534 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   549.53 watcher: round 535 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   549.53 watcher: round 535 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   550.53 watcher: round 536 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   550.54 watcher: round 536 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   551.51 watcher: round 537 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   551.51 watcher: round 537 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   552.52 watcher: round 538 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   552.52 watcher: round 538 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   553.51 watcher: round 539 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   553.52 watcher: round 539 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   554.28 CH t=546.8 EV ev=35 fault=supervisor-killed target=driftwm rec=7.26 ok=1 fixed=0 child_kept_running=1
+H   554.51 watcher: round 540 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   554.51 watcher: round 540 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   555.52 watcher: round 541 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   555.52 watcher: round 541 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   556.50 watcher: round 542 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   556.51 watcher: round 542 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   557.51 watcher: round 543 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   557.51 watcher: round 543 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   558.50 watcher: round 544 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   558.51 watcher: round 544 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   559.51 watcher: round 545 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   559.51 watcher: round 545 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   560.52 watcher: round 546 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   560.53 watcher: round 546 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   561.51 watcher: round 547 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   561.51 watcher: round 547 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   561.73 CH t=554.3 EV ev=36 fault=after-supervisor-killed target=driftwm rec=5.20 ok=1 fixed=0 supervisor_back=1
+H   562.51 watcher: round 548 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   562.51 watcher: round 548 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   563.51 watcher: round 549 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   563.51 watcher: round 549 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   564.51 watcher: round 550 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   564.52 watcher: round 550 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   564.74 CH t=557.3 STEP 34 fSupKill
+H   565.51 watcher: round 551 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   565.51 watcher: round 551 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   566.51 watcher: round 552 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   566.52 watcher: round 552 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   566.75 CH t=559.3 EV ev=37 fault=supervisor-killed target=waybar rec=0.19 ok=1 fixed=0 child_kept_running=1
+H   567.51 watcher: round 553 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   567.51 watcher: round 553 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   568.51 watcher: round 554 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   568.51 watcher: round 554 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   569.48 CH t=562.0 EV ev=38 fault=after-supervisor-killed target=waybar rec=0.47 ok=1 fixed=0 supervisor_back=1
+H   569.51 watcher: round 555 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   569.51 watcher: round 555 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   570.51 watcher: round 556 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   570.51 watcher: round 556 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   571.51 watcher: round 557 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   571.51 watcher: round 557 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   572.49 CH t=565.0 STEP 35 fSupKill
+H   572.52 watcher: round 558 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   572.52 watcher: round 558 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   573.51 watcher: round 559 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   573.51 watcher: round 559 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   574.52 watcher: round 560 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   574.52 watcher: round 560 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   575.51 watcher: round 561 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   575.51 watcher: round 561 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   576.51 watcher: round 562 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   576.51 watcher: round 562 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   576.96 CH t=569.5 EV ev=39 fault=supervisor-killed target=driftwm rec=2.67 ok=1 fixed=0 child_kept_running=1
+H   577.51 watcher: round 563 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   577.51 watcher: round 563 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   578.51 watcher: round 564 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   578.51 watcher: round 564 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   579.50 watcher: round 565 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   579.50 watcher: round 565 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   580.50 watcher: round 566 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   580.50 watcher: round 566 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   581.53 watcher: round 567 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   581.54 watcher: round 567 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   582.51 watcher: round 568 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   582.51 watcher: round 568 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   583.51 watcher: round 569 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   583.51 watcher: round 569 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   584.51 watcher: round 570 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   584.51 watcher: round 570 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   584.81 CH t=577.4 EV ev=40 fault=after-supervisor-killed target=driftwm rec=5.47 ok=1 fixed=0 supervisor_back=1
+H   585.51 watcher: round 571 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   585.51 watcher: round 571 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   586.51 watcher: round 572 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   586.51 watcher: round 572 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   587.51 watcher: round 573 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   587.51 watcher: round 573 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   587.81 CH t=580.4 STEP 36 fSupKill
+H   588.51 watcher: round 574 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   588.51 watcher: round 574 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   589.51 watcher: round 575 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   589.52 watcher: round 575 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   589.77 CH t=582.3 EV ev=41 fault=supervisor-killed target=waybar rec=0.19 ok=1 fixed=0 child_kept_running=1
+H   590.51 watcher: round 576 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   590.51 watcher: round 576 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   591.51 watcher: round 577 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   591.51 watcher: round 577 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   592.50 CH t=585.1 EV ev=42 fault=after-supervisor-killed target=waybar rec=0.48 ok=1 fixed=0 supervisor_back=1
+H   592.51 watcher: round 578 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   592.52 watcher: round 578 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   593.51 watcher: round 579 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   593.51 watcher: round 579 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   594.51 watcher: round 580 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   594.51 watcher: round 580 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   595.51 CH t=588.1 STEP 37 fScanKill
+H   595.52 watcher: round 581 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   595.52 watcher: round 581 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   596.51 watcher: round 582 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   596.51 watcher: round 582 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   597.52 watcher: round 583 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   597.53 watcher: round 583 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   598.52 CH t=591.1 STEP 38 fBrainKill
+H   598.53 watcher: round 584 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   598.53 watcher: round 584 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   599.51 watcher: round 585 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   599.52 watcher: round 585 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   600.51 watcher: round 586 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   600.51 watcher: round 586 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   601.51 watcher: round 587 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   601.51 watcher: round 587 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   601.52 CH t=594.1 STEP 39 fBrainKill
+H   602.51 watcher: round 588 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   602.51 watcher: round 588 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   603.51 watcher: round 589 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   603.51 watcher: round 589 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   604.51 watcher: round 590 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   604.51 watcher: round 590 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   604.52 CH t=597.1 STEP 40 fClock
+H   605.50 watcher: round 591 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   605.51 watcher: round 591 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   606.50 watcher: round 592 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   606.50 watcher: round 592 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   607.50 watcher: round 593 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   607.50 watcher: round 593 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   608.51 watcher: round 594 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   608.52 watcher: round 594 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   609.40 CH t=602.0 EV ev=43 fault=clock-3600 target=driftwm rec=4.66 ok=1 fixed=0 
+H   609.51 watcher: round 595 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   609.51 watcher: round 595 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   610.52 watcher: round 596 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   610.53 watcher: round 596 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   611.51 watcher: round 597 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   611.51 watcher: round 597 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   612.51 watcher: round 598 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   612.51 watcher: round 598 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   613.51 watcher: round 599 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   613.51 watcher: round 599 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   613.82 CH t=606.4 EV ev=44 fault=after-clock-3600 target=hubd rec=3.20 ok=1 fixed=0 
+H   614.51 watcher: round 600 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   614.51 watcher: round 600 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   615.51 watcher: round 601 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   615.51 watcher: round 601 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   616.51 watcher: round 602 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   616.51 watcher: round 602 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   616.82 CH t=609.4 STEP 41 fClock
+H   617.50 watcher: round 603 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   617.50 watcher: round 603 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   618.51 watcher: round 604 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   618.51 watcher: round 604 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   619.51 watcher: round 605 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   619.51 watcher: round 605 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   620.51 watcher: round 606 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   620.51 watcher: round 606 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   621.51 watcher: round 607 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   621.51 watcher: round 607 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   621.68 CH t=614.2 EV ev=45 fault=clock+86400 target=driftwm rec=4.64 ok=1 fixed=0 
+H   622.51 watcher: round 608 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   622.51 watcher: round 608 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   623.51 watcher: round 609 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   623.51 watcher: round 609 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   624.51 watcher: round 610 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   624.52 watcher: round 610 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   624.99 CH t=617.6 EV ev=46 fault=after-clock+86400 target=hubd rec=2.09 ok=1 fixed=0 
+H   625.51 watcher: round 611 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   625.51 watcher: round 611 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   626.51 watcher: round 612 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   626.51 watcher: round 612 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   627.51 watcher: round 613 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   627.51 watcher: round 613 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   628.00 CH t=620.6 STEP 42 fOOM
+H   628.08 CH t=620.6 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   628.52 watcher: round 614 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   628.52 watcher: round 614 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   629.52 watcher: round 615 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   629.53 watcher: round 615 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   630.53 watcher: round 616 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   630.53 watcher: round 616 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   631.52 watcher: round 617 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   631.52 watcher: round 617 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   632.53 watcher: round 618 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   632.53 watcher: round 618 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   633.52 watcher: round 619 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   633.52 watcher: round 619 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   634.52 watcher: round 620 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   634.53 watcher: round 620 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   635.53 watcher: round 621 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   635.53 watcher: round 621 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   636.11 CH t=628.7 EV ev=47 fault=oom target=hog rec=0.20 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   636.51 watcher: round 622 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   636.51 watcher: round 622 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   637.51 watcher: round 623 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   637.51 watcher: round 623 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   638.51 watcher: round 624 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   638.51 watcher: round 624 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   639.12 CH t=631.7 STEP 43 fOOM
+H   639.23 CH t=631.8 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   639.52 watcher: round 625 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   639.52 watcher: round 625 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   640.52 watcher: round 626 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   640.52 watcher: round 626 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   641.56 watcher: round 627 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   641.56 watcher: round 627 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   642.52 watcher: round 628 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   642.52 watcher: round 628 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   643.52 watcher: round 629 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   643.52 watcher: round 629 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   644.51 watcher: round 630 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   644.52 watcher: round 630 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   644.55 CH t=637.1 EV ev=48 fault=oom target=hog rec=0.14 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   645.52 watcher: round 631 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   645.52 watcher: round 631 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   646.51 watcher: round 632 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   646.51 watcher: round 632 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   647.52 watcher: round 633 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   647.52 watcher: round 633 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   647.56 CH t=640.1 STEP 44 fWatcherKill
+H   648.62 watcher: started pid=9330 mode=compositor (TEST STAND-IN, not the product watcher)
+H   648.62 watcher: started pid=9330 mode=compositor (TEST STAND-IN, not the product watcher)
+H   648.73 CH t=641.3 EV ev=49 fault=watcher-killed target=watcher rec=1.15 ok=1 fixed=0 old_pid=272 new_pid=9330
+H   649.65 watcher: round 1 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   649.65 watcher: round 1 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   650.64 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   650.64 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   651.63 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   651.64 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   651.73 CH t=644.3 STEP 45 fWatcherKill
+H   652.80 watcher: started pid=9375 mode=compositor (TEST STAND-IN, not the product watcher)
+H   652.80 watcher: started pid=9375 mode=compositor (TEST STAND-IN, not the product watcher)
+H   652.86 CH t=645.4 EV ev=50 fault=watcher-killed target=watcher rec=1.10 ok=1 fixed=0 old_pid=9330 new_pid=9375
+H   652.86 CH t=645.4 SUITE-DONE
+H   653.82 watcher: round 1 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   653.82 watcher: round 1 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   654.81 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   654.81 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   654.87 [  653.255721] reboot: Power down
+H# vm exit code 0 after 655s, loadavg ['0.69', '0.55', '0.56']
+H# end wall=654.9s launches=1 suite_done=True

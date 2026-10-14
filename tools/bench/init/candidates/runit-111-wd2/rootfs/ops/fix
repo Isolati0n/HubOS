@@ -1,0 +1,2 @@
+#!/bin/sh
+sv -w 3 force-restart /run/service/$1 2>/dev/null; sv up /run/service/$1

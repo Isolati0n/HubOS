@@ -1,0 +1,252 @@
+H# start 2026-10-10 15:30:19 cand=s6plain suite=faults cpus_seen=4 loadavg_at_start=['0.43', '0.46', '0.62']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     6.63 Booting from ROM..c[?7l[2JCH STAGE1 up=4.56
+H     6.70 CH CAND s6plain pid1=s6-svscan
+H     6.75 CH SUP-START up=4.68
+H     7.11 CH t=0.2 CHAOS start cand=s6plain suite=faults seed=200 cpus=2
+H    12.80 CH t=6.0 BOOT-OK up=10.74 ok=1 (seconds since kernel start; waited 5.5)
+H    12.86 CH t=6.1 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=733772 init_side_cpu_ticks=238
+H    17.81 CH t=11.0 STEP 1 fKill
+H    22.93 CH t=16.1 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725472 init_side_cpu_ticks=244
+H    23.65 CH t=16.8 EV ev=1 fault=kill target=seatd rec=5.63 ok=1 fixed=0 
+H    26.65 CH t=19.9 STEP 2 fKill
+H    29.69 CH t=22.9 EV ev=2 fault=kill target=udevd rec=2.83 ok=1 fixed=0 
+H    32.69 CH t=25.9 STEP 3 fKill
+H    32.99 CH t=26.2 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725472 init_side_cpu_ticks=244
+H    34.29 CH t=27.5 EV ev=3 fault=kill target=dbus rec=1.38 ok=1 fixed=0 
+H    37.29 CH t=30.5 STEP 4 fKill
+H    43.03 CH t=36.2 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=723864 init_side_cpu_ticks=248
+H    43.70 CH t=36.9 EV ev=4 fault=kill target=driftwm rec=6.19 ok=1 fixed=0 
+H    46.70 CH t=39.9 STEP 5 fKill
+H    49.25 CH t=42.5 EV ev=5 fault=kill target=waybar rec=2.33 ok=1 fixed=0 
+H    52.26 CH t=45.5 STEP 6 fKill
+H    53.09 CH t=46.3 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=723864 init_side_cpu_ticks=250
+H    55.50 CH t=48.7 EV ev=6 fault=kill target=hubd rec=3.03 ok=1 fixed=0 
+H    58.50 CH t=51.7 STEP 7 fKill
+H    63.16 CH t=56.4 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=731888 init_side_cpu_ticks=252
+H    65.08 CH t=58.3 EV ev=7 fault=kill target=seatd rec=6.36 ok=1 fixed=0 
+H    68.08 CH t=61.3 STEP 8 fKill
+H    71.16 CH t=64.4 EV ev=8 fault=kill target=udevd rec=2.87 ok=1 fixed=0 
+H    73.21 CH t=66.4 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=729892 init_side_cpu_ticks=254
+H    74.17 CH t=67.4 STEP 9 fKill
+H    75.78 CH t=69.0 EV ev=9 fault=kill target=dbus rec=1.39 ok=1 fixed=0 
+H    78.79 CH t=72.0 STEP 10 fKill
+H    83.26 CH t=76.5 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=729920 init_side_cpu_ticks=258
+H    84.47 CH t=77.7 EV ev=10 fault=kill target=driftwm rec=5.47 ok=1 fixed=0 
+H    87.47 CH t=80.7 STEP 11 fKill
+H    89.98 CH t=83.2 EV ev=11 fault=kill target=waybar rec=2.30 ok=1 fixed=0 
+H    92.98 CH t=86.2 STEP 12 fKill
+H    93.33 CH t=86.5 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=729668 init_side_cpu_ticks=259
+H    96.02 CH t=89.2 EV ev=12 fault=kill target=hubd rec=2.83 ok=1 fixed=0 
+H    99.02 CH t=92.2 STEP 13 fKill
+H   103.40 CH t=96.6 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=721856 init_side_cpu_ticks=265
+H   104.67 CH t=97.9 EV ev=13 fault=kill target=seatd rec=5.43 ok=1 fixed=0 
+H   107.68 CH t=100.9 STEP 14 fKill
+H   110.55 CH t=103.7 EV ev=14 fault=kill target=udevd rec=2.66 ok=1 fixed=0 
+H   113.45 CH t=106.6 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=721856 init_side_cpu_ticks=266
+H   113.55 CH t=106.7 STEP 15 fKill
+H   115.02 CH t=108.2 EV ev=15 fault=kill target=dbus rec=1.27 ok=1 fixed=0 
+H   118.03 CH t=111.2 STEP 16 fKill
+H   123.52 CH t=116.7 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=729704 init_side_cpu_ticks=271
+H   123.75 CH t=116.9 EV ev=16 fault=kill target=driftwm rec=5.51 ok=1 fixed=0 
+H   126.75 CH t=120.0 STEP 17 fKill
+H   129.24 CH t=122.4 EV ev=17 fault=kill target=waybar rec=2.28 ok=1 fixed=0 
+H   132.25 CH t=125.4 STEP 18 fKill
+H   133.64 CH t=126.8 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=728696 init_side_cpu_ticks=272
+H   136.35 CH t=129.5 EV ev=18 fault=kill target=hubd rec=3.88 ok=1 fixed=0 
+H   139.35 CH t=132.5 STEP 19 fHang
+H   143.68 CH t=136.9 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725952 init_side_cpu_ticks=272
+H   153.75 CH t=146.9 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725952 init_side_cpu_ticks=273
+H   163.80 CH t=157.0 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725448 init_side_cpu_ticks=273
+H   173.86 CH t=167.1 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725448 init_side_cpu_ticks=273
+H   183.92 CH t=177.1 SAMPLE zombies=0 nproc=93 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725448 init_side_cpu_ticks=273
+H   193.96 CH t=187.2 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725448 init_side_cpu_ticks=273
+H   199.50 CH t=192.7 UNRECOVERED ev=19 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   199.62 CH t=192.8 STATUS dbus: up (pid 1567 pgid 1567) 84 seconds
+H   199.62 CH t=192.8 STATUS driftwm: up (pid 1614 pgid 1614) 80 seconds
+H   199.63 CH t=192.8 STATUS guard: up (pid 139 pgid 139) 192 seconds
+H   199.63 CH t=192.8 STATUS hubd: up (pid 1814 pgid 1814) 65 seconds
+H   199.63 CH t=192.8 STATUS seatd: up (pid 1364 pgid 1364) 99 seconds
+H   199.63 CH t=192.8 STATUS udevd: up (pid 1499 pgid 1499) 90 seconds
+H   199.63 CH t=192.8 STATUS waybar: up (pid 1741 pgid 1741) 71 seconds
+H   199.67 CH t=192.9 operator-action target=driftwm why="driftwm stopped"
+H   204.01 CH t=197.2 SAMPLE zombies=0 nproc=92 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=713284 init_side_cpu_ticks=277
+H   205.37 CH t=198.6 EV ev=19 fault=hang-stop target=driftwm rec=65.43 ok=0 fixed=1 
+H   208.37 CH t=201.6 STEP 20 fHang
+H   214.12 CH t=207.3 SAMPLE zombies=0 nproc=93 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=713284 init_side_cpu_ticks=278
+H   224.17 CH t=217.4 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=713052 init_side_cpu_ticks=278
+H   234.29 CH t=227.5 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=712800 init_side_cpu_ticks=278
+H   244.35 CH t=237.6 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=712552 init_side_cpu_ticks=278
+H   254.43 CH t=247.6 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=711896 init_side_cpu_ticks=278
+H   264.58 CH t=257.8 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=712200 init_side_cpu_ticks=278
+H   269.71 CH t=262.9 UNRECOVERED ev=20 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   269.83 CH t=263.0 STATUS dbus: up (pid 1567 pgid 1567) 155 seconds
+H   269.83 CH t=263.0 STATUS driftwm: up (pid 2551 pgid 2551) 69 seconds
+H   269.83 CH t=263.0 STATUS guard: up (pid 139 pgid 139) 262 seconds
+H   269.83 CH t=263.0 STATUS hubd: up (pid 2599 pgid 2599) 66 seconds
+H   269.83 CH t=263.0 STATUS seatd: up (pid 1364 pgid 1364) 169 seconds
+H   269.84 CH t=263.0 STATUS udevd: up (pid 1499 pgid 1499) 161 seconds
+H   269.84 CH t=263.0 STATUS waybar: up (pid 2604 pgid 2604) 65 seconds
+H   270.92 CH t=264.1 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   274.66 CH t=267.9 SAMPLE zombies=0 nproc=87 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720660 init_side_cpu_ticks=281
+H   276.95 CH t=270.1 EV ev=20 fault=hang-spin target=driftwm rec=65.77 ok=0 fixed=1 
+H   279.95 CH t=273.2 STEP 21 fHang
+H   284.72 CH t=277.9 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720408 init_side_cpu_ticks=283
+H   294.79 CH t=288.0 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720408 init_side_cpu_ticks=283
+H   304.86 CH t=298.1 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720408 init_side_cpu_ticks=283
+H   314.90 CH t=308.1 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720408 init_side_cpu_ticks=283
+H   325.04 CH t=318.2 SAMPLE zombies=0 nproc=93 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720160 init_side_cpu_ticks=283
+H   335.13 CH t=328.3 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720160 init_side_cpu_ticks=284
+H   340.19 CH t=333.4 UNRECOVERED ev=21 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   340.29 CH t=333.5 STATUS dbus: up (pid 1567 pgid 1567) 225 seconds
+H   340.29 CH t=333.5 STATUS driftwm: up (pid 3349 pgid 3349) 68 seconds
+H   340.29 CH t=333.5 STATUS guard: up (pid 139 pgid 139) 333 seconds
+H   340.29 CH t=333.5 STATUS hubd: up (pid 3397 pgid 3397) 65 seconds
+H   340.29 CH t=333.5 STATUS seatd: up (pid 1364 pgid 1364) 240 seconds
+H   340.30 CH t=333.5 STATUS udevd: up (pid 1499 pgid 1499) 231 seconds
+H   340.30 CH t=333.5 STATUS waybar: up (pid 3402 pgid 3402) 65 seconds
+H   340.33 CH t=333.5 operator-action target=driftwm why="driftwm stopped"
+H   345.20 CH t=338.4 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720988 init_side_cpu_ticks=289
+H   346.61 CH t=339.8 EV ev=21 fault=hang-stop target=driftwm rec=66.03 ok=0 fixed=1 
+H   349.61 CH t=342.8 STEP 22 fHang
+H   355.29 CH t=348.5 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720988 init_side_cpu_ticks=289
+H   365.37 CH t=358.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720988 init_side_cpu_ticks=289
+H   375.44 CH t=368.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720988 init_side_cpu_ticks=289
+H   385.49 CH t=378.7 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720996 init_side_cpu_ticks=289
+H   395.59 CH t=388.8 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=720996 init_side_cpu_ticks=289
+H   405.66 CH t=398.9 SAMPLE zombies=0 nproc=92 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=721004 init_side_cpu_ticks=290
+H   411.69 CH t=404.9 UNRECOVERED ev=22 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   411.86 CH t=405.1 STATUS dbus: up (pid 1567 pgid 1567) 297 seconds
+H   411.87 CH t=405.1 STATUS driftwm: up (pid 4131 pgid 4131) 70 seconds
+H   411.87 CH t=405.1 STATUS guard: up (pid 139 pgid 139) 404 seconds
+H   411.87 CH t=405.1 STATUS hubd: up (pid 4183 pgid 4183) 67 seconds
+H   411.87 CH t=405.1 STATUS seatd: up (pid 1364 pgid 1364) 311 seconds
+H   411.87 CH t=405.1 STATUS udevd: up (pid 1499 pgid 1499) 303 seconds
+H   411.87 CH t=405.1 STATUS waybar: up (pid 4188 pgid 4188) 66 seconds
+H   412.97 CH t=406.2 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   415.77 CH t=409.0 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=729504 init_side_cpu_ticks=293
+H   419.32 CH t=412.5 EV ev=22 fault=hang-spin target=driftwm rec=66.09 ok=0 fixed=1 
+H   422.33 CH t=415.5 STEP 23 fHang
+H   425.82 CH t=419.0 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=729252 init_side_cpu_ticks=293
+H   435.89 CH t=429.1 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=728496 init_side_cpu_ticks=293
+H   445.97 CH t=439.2 SAMPLE zombies=0 nproc=92 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=727992 init_side_cpu_ticks=293
+H   456.04 CH t=449.2 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=727992 init_side_cpu_ticks=294
+H   466.09 CH t=459.3 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=727992 init_side_cpu_ticks=294
+H   476.15 CH t=469.3 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=726736 init_side_cpu_ticks=294
+H   482.48 CH t=475.7 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   482.62 CH t=475.8 STATUS dbus: up (pid 1567 pgid 1567) 367 seconds
+H   482.62 CH t=475.8 STATUS driftwm: up (pid 4942 pgid 4942) 68 seconds
+H   482.62 CH t=475.8 STATUS guard: up (pid 139 pgid 139) 475 seconds
+H   482.62 CH t=475.8 STATUS hubd: up (pid 4993 pgid 4993) 65 seconds
+H   482.62 CH t=475.8 STATUS seatd: up (pid 1364 pgid 1364) 382 seconds
+H   482.63 CH t=475.8 STATUS udevd: up (pid 1499 pgid 1499) 373 seconds
+H   482.63 CH t=475.8 STATUS waybar: up (pid 4998 pgid 4998) 64 seconds
+H   482.68 CH t=475.9 operator-action target=driftwm why="driftwm stopped"
+H   486.24 CH t=479.4 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=709096 init_side_cpu_ticks=298
+H   488.59 CH t=481.8 EV ev=23 fault=hang-stop target=driftwm rec=65.65 ok=0 fixed=1 
+H   491.59 CH t=484.8 STEP 24 fHang
+H   496.31 CH t=489.5 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=708844 init_side_cpu_ticks=299
+H   506.39 CH t=499.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=708844 init_side_cpu_ticks=299
+H   516.46 CH t=509.7 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=708844 init_side_cpu_ticks=300
+H   526.54 CH t=519.7 SAMPLE zombies=0 nproc=92 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=708844 init_side_cpu_ticks=300
+H   536.62 CH t=529.8 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=708844 init_side_cpu_ticks=300
+H   546.68 CH t=539.9 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=708844 init_side_cpu_ticks=300
+H   553.96 CH t=547.2 UNRECOVERED ev=24 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   554.09 CH t=547.3 STATUS dbus: up (pid 1567 pgid 1567) 439 seconds
+H   554.09 CH t=547.3 STATUS driftwm: up (pid 5729 pgid 5729) 70 seconds
+H   554.09 CH t=547.3 STATUS guard: up (pid 139 pgid 139) 546 seconds
+H   554.09 CH t=547.3 STATUS hubd: up (pid 5778 pgid 5778) 67 seconds
+H   554.10 CH t=547.3 STATUS seatd: up (pid 1364 pgid 1364) 453 seconds
+H   554.10 CH t=547.3 STATUS udevd: up (pid 1499 pgid 1499) 445 seconds
+H   554.10 CH t=547.3 STATUS waybar: up (pid 5783 pgid 5783) 67 seconds
+H   555.17 CH t=548.4 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   556.74 CH t=549.9 SAMPLE zombies=0 nproc=88 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=725564 init_side_cpu_ticks=302
+H   561.05 CH t=554.3 EV ev=24 fault=hang-spin target=driftwm rec=65.62 ok=0 fixed=1 
+H   564.06 CH t=557.3 STEP 25 fStorm
+H   566.79 CH t=560.0 SAMPLE zombies=0 nproc=88 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=732368 init_side_cpu_ticks=304
+H   576.84 CH t=570.0 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=732116 init_side_cpu_ticks=310
+H   586.90 CH t=580.1 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=732116 init_side_cpu_ticks=314
+H   596.95 CH t=590.1 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=731864 init_side_cpu_ticks=318
+H   604.24 CH t=597.4 STATUS dbus: up (pid 1567 pgid 1567) 489 seconds
+H   604.24 CH t=597.4 STATUS driftwm: up (pid 6533 pgid 6533) 47 seconds
+H   604.25 CH t=597.4 STATUS guard: up (pid 139 pgid 139) 597 seconds
+H   604.25 CH t=597.4 STATUS hubd: down (exitcode 0) 0 seconds, normally up, want up, ready 0 seconds
+H   604.25 CH t=597.4 STATUS seatd: up (pid 1364 pgid 1364) 504 seconds
+H   604.25 CH t=597.4 STATUS udevd: up (pid 1499 pgid 1499) 495 seconds
+H   604.25 CH t=597.4 STATUS waybar: up (pid 6596 pgid 6596) 44 seconds
+H   604.25 CH t=597.4 STORM target=hubd dur=40 starts=18 starts_last10s=5 cpu_ticks_init_side=18 bar-up
+H   607.03 CH t=600.2 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=730856 init_side_cpu_ticks=321
+H   607.04 CH t=600.2 EV ev=25 fault=storm target=hubd rec=2.59 ok=1 fixed=0 starts=18 last10=5 cpu=18 bar-up
+H   610.05 CH t=603.2 STEP 26 fStorm
+H   617.10 CH t=610.3 SAMPLE zombies=0 nproc=88 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=791284 init_side_cpu_ticks=330
+H   627.21 CH t=620.4 SAMPLE zombies=0 nproc=88 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=752788 init_side_cpu_ticks=342
+H   637.27 CH t=630.5 SAMPLE zombies=0 nproc=88 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=785272 init_side_cpu_ticks=350
+H   647.34 CH t=640.5 SAMPLE zombies=0 nproc=86 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=809928 init_side_cpu_ticks=362
+H   650.33 CH t=643.5 STATUS dbus: up (pid 1567 pgid 1567) 535 seconds
+H   650.33 CH t=643.5 STATUS driftwm: down (exitcode 1) 0 seconds, normally up, want up, ready 0 seconds
+H   650.33 CH t=643.5 STATUS guard: up (pid 139 pgid 139) 643 seconds
+H   650.34 CH t=643.5 STATUS hubd: down (exitcode 0) 0 seconds, normally up, want up, ready 0 seconds
+H   650.34 CH t=643.5 STATUS seatd: up (pid 1364 pgid 1364) 550 seconds
+H   650.34 CH t=643.5 STATUS udevd: up (pid 1499 pgid 1499) 541 seconds
+H   650.34 CH t=643.5 STATUS waybar: down (exitcode 0) 0 seconds, normally up, want up, ready 0 seconds
+H   650.34 CH t=643.5 STORM target=driftwm dur=40 starts=25 starts_last10s=6 cpu_ticks_init_side=43 bar-down
+H   655.84 CH t=649.0 EV ev=26 fault=storm target=driftwm rec=5.30 ok=1 fixed=0 starts=25 last10=6 cpu=43 bar-down
+H   657.39 CH t=650.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=704660 init_side_cpu_ticks=367
+H   658.84 CH t=652.0 STEP 27 fDep
+H   667.44 CH t=660.6 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=813036 init_side_cpu_ticks=377
+H   677.49 CH t=670.7 SAMPLE zombies=0 nproc=87 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=731056 init_side_cpu_ticks=386
+H   680.55 CH t=673.8 EV ev=27 fault=dep-slow target=seatd rec=21.50 ok=1 fixed=0 
+H   680.56 CH t=673.8 DEPSTARTS mode=slow seatd=1 driftwm=11 waybar=7 hubd=3
+H   683.56 CH t=676.8 STEP 28 fDep
+H   687.55 CH t=680.7 SAMPLE zombies=0 nproc=85 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=817720 init_side_cpu_ticks=396
+H   697.60 CH t=690.8 SAMPLE zombies=0 nproc=86 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=755648 init_side_cpu_ticks=413
+H   707.64 CH t=700.8 SAMPLE zombies=0 nproc=87 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=708772 init_side_cpu_ticks=427
+H   709.73 CH t=702.9 EV ev=28 fault=dep-fail target=seatd rec=5.95 ok=1 fixed=0 
+H   709.73 CH t=702.9 DEPSTARTS mode=fail seatd=19 driftwm=14 waybar=8 hubd=2
+H   712.73 CH t=705.9 STEP 29 fDisk
+H   712.78 CH t=706.0 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   717.70 CH t=710.9 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=708564 init_side_cpu_ticks=427
+H   727.74 CH t=720.9 SAMPLE zombies=0 nproc=92 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=708564 init_side_cpu_ticks=430
+H   733.49 CH t=726.7 STATUS dbus: up (pid 1567 pgid 1567) 618 seconds
+H   733.49 CH t=726.7 STATUS driftwm: up (pid 9144 pgid 9144) 28 seconds
+H   733.49 CH t=726.7 STATUS guard: up (pid 139 pgid 139) 726 seconds
+H   733.49 CH t=726.7 STATUS hubd: up (pid 9191 pgid 9191) 26 seconds
+H   733.49 CH t=726.7 STATUS seatd: up (pid 9140 pgid 9140) 29 seconds
+H   733.49 CH t=726.7 STATUS udevd: up (pid 1499 pgid 1499) 624 seconds
+H   733.49 CH t=726.7 STATUS waybar: up (pid 9335 pgid 9335) 14 seconds
+H   733.96 CH t=727.2 EV ev=29 fault=disk-full target=waybar rec=0.17 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H   736.96 CH t=730.2 STEP 30 fDisk
+H   737.00 CH t=730.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   737.80 CH t=731.0 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=708564 init_side_cpu_ticks=430
+H   747.88 CH t=741.1 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=708564 init_side_cpu_ticks=431
+H   757.76 CH t=751.0 STATUS dbus: up (pid 1567 pgid 1567) 643 seconds
+H   757.76 CH t=751.0 STATUS driftwm: up (pid 9144 pgid 9144) 53 seconds
+H   757.76 CH t=751.0 STATUS guard: up (pid 139 pgid 139) 750 seconds
+H   757.76 CH t=751.0 STATUS hubd: up (pid 9191 pgid 9191) 51 seconds
+H   757.76 CH t=751.0 STATUS seatd: up (pid 9140 pgid 9140) 53 seconds
+H   757.76 CH t=751.0 STATUS udevd: up (pid 1499 pgid 1499) 649 seconds
+H   757.77 CH t=751.0 STATUS waybar: up (pid 9622 pgid 9622) 13 seconds
+H   757.94 CH t=751.1 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=708564 init_side_cpu_ticks=431
+H   758.23 CH t=751.4 EV ev=30 fault=disk-full target=waybar rec=0.18 ok=1 fixed=0 ok_during=16/19 all_alive_at_end=1
+H   761.23 CH t=754.4 STEP 31 fSupKill
+H   766.91 CH t=760.1 EV ev=31 fault=supervisor-killed target=driftwm rec=3.93 ok=1 fixed=0 child_kept_running=1
+H   768.01 CH t=761.2 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=659836 init_side_cpu_ticks=384
+H   773.75 CH t=767.0 EV ev=32 fault=after-supervisor-killed target=driftwm rec=4.57 ok=1 fixed=0 supervisor_back=1
+H   776.76 CH t=770.0 STEP 32 fSupKill
+H   778.08 CH t=771.3 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=724572 init_side_cpu_ticks=343
+H   778.64 CH t=771.8 EV ev=33 fault=supervisor-killed target=waybar rec=0.16 ok=1 fixed=0 child_kept_running=1
+H   781.48 CH t=774.7 EV ev=34 fault=after-supervisor-killed target=waybar rec=0.63 ok=1 fixed=0 supervisor_back=1
+H   784.49 CH t=777.7 STEP 33 fSupKill
+H   788.14 CH t=781.3 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=629932 init_side_cpu_ticks=344
+H   791.99 CH t=785.2 EV ev=35 fault=supervisor-killed target=driftwm rec=5.73 ok=1 fixed=0 child_kept_running=1
+H   798.27 CH t=791.5 EV ev=36 fault=after-supervisor-killed target=driftwm rec=4.07 ok=1 fixed=0 supervisor_back=1
+H   798.31 CH t=791.5 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=664516 init_side_cpu_ticks=352
+H   801.28 CH t=794.5 STEP 34 fSupKill
+H   808.37 CH t=801.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=709196 init_side_cpu_ticks=359
+H   818.43 CH t=811.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=634376 init_side_cpu_ticks=369
+H   828.44 CH t=821.6 EV ev=37 fault=supervisor-killed target=waybar rec=25.40 ok=1 fixed=0 child_kept_running=1
+H   828.53 CH t=821.7 SAMPLE zombies=0 nproc=93 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=680816 init_side_cpu_ticks=378
+H# TIMEOUT, killing qemu
+H# vm exit code -9 after 5400s, loadavg ['0.42', '0.59', '0.55']
+H# end wall=5400.0s launches=1 suite_done=False

@@ -1,0 +1,2 @@
+#!/bin/sh
+for d in /run/service/*/; do sv status $d; done

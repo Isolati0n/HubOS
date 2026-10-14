@@ -1,0 +1,2216 @@
+H# chunk 1 of candidate runit-111, seed 7210, planned 1800 s 
+H# start 2026-10-12 06:35:51 cand=runit-111 suite=soak cpus_seen=4 loadavg_at_start=['0.36', '0.52', '0.51']
+H# launch 1 skip=0 dur=1800 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-111.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=soak hub.dur=1800 hub.seed=7210 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir
+H     0.18 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.27 Booting from ROM...
+H     5.96 c[?7l[2JCH STAGE1 up=2.76
+H     6.02 CH CAND runit pid1=runit stage2=runsvdir
+H     6.10 CH SUP-START up=2.90
+H     6.14 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     6.14 - runit: enter stage: /etc/runit/1
+H     6.16 - runit: leave stage: /etc/runit/1
+H     6.16 - runit: enter stage: /etc/runit/2
+H     6.18 CH t=0.1 CHAOS start cand=runit suite=soak seed=7210 cpus=2
+H    11.96 CH t=5.8 BOOT-OK up=8.75 ok=1 (seconds since kernel start; waited 5.6)
+H    16.97 CH t=10.9 STEP 1 fKill
+H    16.98 CH t=10.9 SOAKMEM t=0 restarts=0 faults=0
+H    17.17 CH t=11.1 MEM pid=1 comm=runit rss_kb=1312 pss_kb=212
+H    17.17 CH t=11.1 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=208
+H    17.18 CH t=11.1 MEM pid=110 comm=runsv rss_kb=1448 pss_kb=237
+H    17.18 CH t=11.1 MEM pid=111 comm=runsv rss_kb=1456 pss_kb=204
+H    17.19 CH t=11.1 MEM pid=112 comm=runsv rss_kb=1552 pss_kb=247
+H    17.19 CH t=11.1 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=196
+H    17.19 CH t=11.1 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H    17.19 CH t=11.1 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=206
+H    17.19 CH t=11.1 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=221
+H    18.52 CH t=12.4 EV ev=1 fault=kill target=waybar rec=1.34 ok=1 fixed=0 
+H    28.52 CH t=22.4 STEP 2 fSupKill
+H    30.37 CH t=24.2 EV ev=2 fault=supervisor-killed target=hubd rec=0.09 ok=1 fixed=0 child_kept_running=1
+H    34.71 CH t=28.6 EV ev=3 fault=after-supervisor-killed target=hubd rec=2.01 ok=1 fixed=0 supervisor_back=0
+H    50.71 CH t=44.6 STEP 3 fKill
+H    51.06 CH t=44.9 EV ev=4 fault=kill target=dbus rec=0.14 ok=1 fixed=0 
+H    65.07 CH t=59.0 STEP 4 fKill
+H    67.24 CH t=61.1 EV ev=5 fault=kill target=hubd rec=1.95 ok=1 fixed=0 
+H    77.20 CH t=71.1 SOAKMEM t=60 restarts=3 faults=4
+H    77.27 CH t=71.2 MEM pid=1 comm=runit rss_kb=1312 pss_kb=200
+H    77.28 CH t=71.2 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=213
+H    77.28 CH t=71.2 MEM pid=110 comm=runsv rss_kb=1448 pss_kb=230
+H    77.28 CH t=71.2 MEM pid=112 comm=runsv rss_kb=1552 pss_kb=247
+H    77.28 CH t=71.2 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=197
+H    77.28 CH t=71.2 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=208
+H    77.29 CH t=71.2 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=198
+H    77.29 CH t=71.2 MEM pid=475 comm=runsv rss_kb=1452 pss_kb=213
+H    77.29 CH t=71.2 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=221
+H    79.24 CH t=73.1 STEP 5 fKill
+H    80.86 CH t=74.7 EV ev=6 fault=kill target=waybar rec=1.40 ok=1 fixed=0 
+H    90.87 CH t=84.7 STEP 6 fKill
+H    92.94 CH t=86.8 EV ev=7 fault=kill target=udevd rec=1.85 ok=1 fixed=0 
+H   101.94 CH t=95.8 STEP 7 fKill
+H   103.96 CH t=97.8 EV ev=8 fault=kill target=hubd rec=1.80 ok=1 fixed=0 
+H   112.97 CH t=106.9 STEP 8 fKill
+H   117.48 CH t=111.4 EV ev=9 fault=kill target=seatd rec=4.30 ok=1 fixed=0 
+H   126.48 CH t=120.4 STEP 9 fKill
+H   131.46 CH t=125.3 EV ev=10 fault=kill target=driftwm rec=4.77 ok=1 fixed=0 
+H   137.30 CH t=131.2 SOAKMEM t=120 restarts=14 faults=9
+H   137.39 CH t=131.3 MEM pid=1 comm=runit rss_kb=1312 pss_kb=200
+H   137.39 CH t=131.3 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=213
+H   137.39 CH t=131.3 MEM pid=110 comm=runsv rss_kb=1448 pss_kb=230
+H   137.40 CH t=131.3 MEM pid=112 comm=runsv rss_kb=1552 pss_kb=247
+H   137.40 CH t=131.3 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=197
+H   137.40 CH t=131.3 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=208
+H   137.40 CH t=131.3 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=198
+H   137.41 CH t=131.3 MEM pid=475 comm=runsv rss_kb=1452 pss_kb=213
+H   137.41 CH t=131.3 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=221
+H   146.47 CH t=140.4 STEP 10 fStorm
+H   171.99 CH t=165.9 STATUS run: /run/service/dbus/: (pid 684) 121s; run: log: (pid 117) 165s
+H   171.99 CH t=165.9 STATUS run: /run/service/driftwm/: (pid 1569) 45s; run: log: (pid 118) 165s
+H   171.99 CH t=165.9 STATUS run: /run/service/guard/: (pid 125) 165s
+H   171.99 CH t=165.9 STATUS run: /run/service/hubd/: (pid 1626) 43s; run: log: (pid 476) 139s
+H   171.99 CH t=165.9 STATUS run: /run/service/seatd/: (pid 1371) 59s; run: log: (pid 119) 165s
+H   172.00 CH t=165.9 STATUS run: /run/service/udevd/: (pid 1126) 81s; run: log: (pid 120) 165s
+H   172.00 CH t=165.9 STATUS run: /run/service/waybar/: (pid 2228) 1s; run: log: (pid 116) 165s
+H   172.00 CH t=165.9 STORM target=waybar dur=25 starts=19 starts_last10s=8 cpu_ticks_init_side=17 bar-up
+H   172.61 CH t=166.5 EV ev=11 fault=storm target=waybar rec=0.41 ok=1 fixed=0 starts=19 last10=8 cpu=17 bar-up
+H   183.62 CH t=177.5 STEP 11 fKill
+H   185.90 CH t=179.8 EV ev=12 fault=kill target=hubd rec=2.08 ok=1 fixed=0 
+H   197.42 CH t=191.3 SOAKMEM t=180 restarts=17 faults=11
+H   197.52 CH t=191.4 MEM pid=1 comm=runit rss_kb=1312 pss_kb=200
+H   197.52 CH t=191.4 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=213
+H   197.52 CH t=191.4 MEM pid=110 comm=runsv rss_kb=1448 pss_kb=230
+H   197.53 CH t=191.4 MEM pid=112 comm=runsv rss_kb=1552 pss_kb=247
+H   197.53 CH t=191.4 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=197
+H   197.53 CH t=191.4 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=208
+H   197.53 CH t=191.4 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=198
+H   197.53 CH t=191.4 MEM pid=475 comm=runsv rss_kb=1452 pss_kb=213
+H   197.54 CH t=191.4 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=221
+H   199.91 CH t=193.8 STEP 12 fClock
+H   204.26 CH t=198.1 EV ev=13 fault=clock+86400 target=driftwm rec=4.15 ok=1 fixed=0 
+H   208.33 runsvdir /run/service: warning: time warp: resetting time stamp.
+H   209.55 CH t=203.4 EV ev=14 fault=after-clock+86400 target=hubd rec=4.05 ok=1 fixed=0 
+H   217.56 CH t=211.4 STEP 13 fOOM
+H   217.64 CH t=211.5 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   229.02 CH t=222.9 EV ev=15 fault=oom target=hog rec=0.13 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   234.03 CH t=227.9 STEP 14 fSupKill
+H   236.13 CH t=230.0 EV ev=16 fault=supervisor-killed target=seatd rec=0.37 ok=1 fixed=0 child_kept_running=1
+H   243.70 CH t=237.6 EV ev=17 fault=after-supervisor-killed target=seatd rec=5.33 ok=1 fixed=0 supervisor_back=0
+H   254.71 CH t=248.6 STEP 15 fKill
+H   256.93 CH t=250.8 EV ev=18 fault=kill target=hubd rec=2.01 ok=1 fixed=0 
+H   257.54 CH t=251.4 SOAKMEM t=241 restarts=26 faults=15
+H   257.63 CH t=251.5 MEM pid=1 comm=runit rss_kb=1312 pss_kb=205
+H   257.63 CH t=251.5 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=203
+H   257.64 CH t=251.5 MEM pid=112 comm=runsv rss_kb=1552 pss_kb=236
+H   257.64 CH t=251.5 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   257.64 CH t=251.5 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   257.64 CH t=251.5 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=194
+H   257.65 CH t=251.5 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=198
+H   257.65 CH t=251.5 MEM pid=475 comm=runsv rss_kb=1516 pss_kb=237
+H   257.65 CH t=251.5 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=219
+H   265.93 CH t=259.8 STEP 16 fDep
+H   285.65 CH t=279.5 EV ev=19 fault=dep-slow target=seatd rec=19.51 ok=1 fixed=0 
+H   285.66 CH t=279.5 DEPSTARTS mode=slow seatd=1 driftwm=10 waybar=8 hubd=2
+H   303.66 CH t=297.5 STEP 17 fSupKill
+H   303.93 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   303.93 svlogd: fatal: no functional log directories.
+H   305.01 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   305.01 svlogd: fatal: no functional log directories.
+H   305.59 CH t=299.5 EV ev=20 fault=supervisor-killed target=waybar rec=0.20 ok=1 fixed=0 child_kept_running=1
+H   306.08 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   306.08 svlogd: fatal: no functional log directories.
+H   307.16 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   307.16 svlogd: fatal: no functional log directories.
+H   309.85 CH t=303.7 EV ev=21 fault=after-supervisor-killed target=waybar rec=1.99 ok=1 fixed=0 supervisor_back=1
+H   317.65 CH t=311.5 SOAKMEM t=301 restarts=38 faults=17
+H   317.74 CH t=311.6 MEM pid=1 comm=runit rss_kb=1312 pss_kb=209
+H   317.74 CH t=311.6 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=201
+H   317.74 CH t=311.6 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   317.75 CH t=311.6 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   317.75 CH t=311.6 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=194
+H   317.75 CH t=311.6 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=197
+H   317.75 CH t=311.6 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=239
+H   317.76 CH t=311.6 MEM pid=475 comm=runsv rss_kb=1516 pss_kb=242
+H   317.76 CH t=311.6 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=219
+H   320.85 CH t=314.7 STEP 18 fKill
+H   322.48 CH t=316.4 EV ev=22 fault=kill target=waybar rec=1.41 ok=1 fixed=0 
+H   340.49 CH t=334.4 STEP 19 fClock
+H   345.61 CH t=339.5 EV ev=23 fault=clock+86400 target=driftwm rec=4.90 ok=1 fixed=0 
+H   349.06 runsvdir /run/service: warning: time warp: resetting time stamp.
+H   349.70 CH t=343.6 EV ev=24 fault=after-clock+86400 target=hubd rec=2.88 ok=1 fixed=0 
+H   358.70 CH t=352.6 STEP 20 fKill
+H   359.31 CH t=353.2 EV ev=25 fault=kill target=dbus rec=0.39 ok=1 fixed=0 
+H   369.31 CH t=363.2 STEP 21 fKill
+H   374.80 CH t=368.7 EV ev=26 fault=kill target=driftwm rec=5.27 ok=1 fixed=0 
+H   377.76 CH t=371.6 SOAKMEM t=361 restarts=48 faults=21
+H   377.85 CH t=371.7 MEM pid=1 comm=runit rss_kb=1312 pss_kb=209
+H   377.86 CH t=371.7 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=201
+H   377.86 CH t=371.7 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   377.86 CH t=371.7 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   377.87 CH t=371.8 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=194
+H   377.87 CH t=371.8 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=197
+H   377.87 CH t=371.8 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=239
+H   377.87 CH t=371.8 MEM pid=475 comm=runsv rss_kb=1516 pss_kb=242
+H   377.88 CH t=371.8 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=219
+H   383.80 CH t=377.7 STEP 22 fKill
+H   385.91 CH t=379.8 EV ev=27 fault=kill target=hubd rec=1.88 ok=1 fixed=0 
+H   402.91 CH t=396.8 STEP 23 fKill
+H   404.92 CH t=398.8 EV ev=28 fault=kill target=udevd rec=1.80 ok=1 fixed=0 
+H   419.92 CH t=413.8 STEP 24 fKill
+H   422.06 CH t=415.9 EV ev=29 fault=kill target=udevd rec=1.92 ok=1 fixed=0 
+H   432.06 CH t=425.9 STEP 25 fKill
+H   434.58 CH t=428.5 EV ev=30 fault=kill target=waybar rec=2.30 ok=1 fixed=0 
+H   437.88 CH t=431.8 SOAKMEM t=421 restarts=52 faults=25
+H   438.05 CH t=431.9 MEM pid=1 comm=runit rss_kb=1312 pss_kb=209
+H   438.05 CH t=431.9 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=201
+H   438.06 CH t=431.9 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   438.06 CH t=431.9 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   438.06 CH t=431.9 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=194
+H   438.06 CH t=431.9 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=197
+H   438.07 CH t=432.0 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=239
+H   438.07 CH t=432.0 MEM pid=475 comm=runsv rss_kb=1516 pss_kb=242
+H   438.07 CH t=432.0 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=219
+H   449.58 CH t=443.5 STEP 26 fBrainKill
+H   455.58 CH t=449.5 STEP 27 fKill
+H   457.12 CH t=451.0 EV ev=31 fault=kill target=waybar rec=1.32 ok=1 fixed=0 
+H   464.12 CH t=458.0 STEP 28 fStorm
+H   489.68 CH t=483.6 STATUS run: /run/service/dbus/: (pid 4660) 130s; run: log: (pid 117) 482s
+H   489.68 CH t=483.6 STATUS run: /run/service/driftwm/: (pid 4785) 118s; run: log: (pid 118) 482s
+H   489.69 CH t=483.6 STATUS run: /run/service/guard/: (pid 125) 483s
+H   489.69 CH t=483.6 STATUS run: /run/service/hubd/: (pid 4958) 106s; run: log: (pid 476) 457s
+H   489.70 CH t=483.6 STATUS run: /run/service/seatd/: (pid 3358) 224s; run: log: (pid 3013) 251s
+H   489.70 CH t=483.6 STATUS run: /run/service/udevd/: (pid 5355) 70s; run: log: (pid 120) 483s
+H   489.71 CH t=483.6 STATUS run: /run/service/waybar/: (pid 6251) 1s; run: log: (pid 4064) 182s
+H   489.72 CH t=483.6 STORM target=waybar dur=25 starts=19 starts_last10s=7 cpu_ticks_init_side=13 bar-up
+H   493.01 CH t=486.9 EV ev=32 fault=storm target=waybar rec=3.08 ok=1 fixed=0 starts=19 last10=7 cpu=13 bar-up
+H   498.07 CH t=492.0 SOAKMEM t=481 restarts=56 faults=28
+H   498.21 CH t=492.1 MEM pid=1 comm=runit rss_kb=1312 pss_kb=209
+H   498.21 CH t=492.1 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=201
+H   498.22 CH t=492.1 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   498.22 CH t=492.1 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   498.22 CH t=492.1 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=194
+H   498.23 CH t=492.1 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=197
+H   498.23 CH t=492.1 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=239
+H   498.23 CH t=492.1 MEM pid=475 comm=runsv rss_kb=1516 pss_kb=242
+H   498.24 CH t=492.1 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=219
+H   508.01 CH t=501.9 STEP 29 fKill
+H   511.88 CH t=505.8 EV ev=33 fault=kill target=driftwm rec=3.66 ok=1 fixed=0 
+H   520.88 CH t=514.8 STEP 30 fSupKill
+H   522.81 CH t=516.7 EV ev=34 fault=supervisor-killed target=hubd rec=0.16 ok=1 fixed=0 child_kept_running=1
+H   527.21 CH t=521.1 EV ev=35 fault=after-supervisor-killed target=hubd rec=2.13 ok=1 fixed=0 supervisor_back=0
+H   539.22 CH t=533.1 STEP 31 fKill
+H   544.44 CH t=538.3 EV ev=36 fault=kill target=seatd rec=5.01 ok=1 fixed=0 
+H   554.45 CH t=548.3 STEP 32 fOOM
+H   554.53 CH t=548.4 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   558.24 CH t=552.1 SOAKMEM t=541 restarts=64 faults=31
+H   558.38 CH t=552.3 MEM pid=1 comm=runit rss_kb=1312 pss_kb=206
+H   558.38 CH t=552.3 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=203
+H   558.38 CH t=552.3 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   558.38 CH t=552.3 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   558.39 CH t=552.3 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   558.39 CH t=552.3 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=199
+H   558.39 CH t=552.3 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=248
+H   558.39 CH t=552.3 MEM pid=6697 comm=runsv rss_kb=1448 pss_kb=235
+H   558.40 CH t=552.3 MEM pid=108 comm=runsvdir rss_kb=1420 pss_kb=219
+H   560.27 CH t=554.2 EV ev=37 fault=oom target=hog rec=0.15 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   574.28 CH t=568.2 STEP 33 fScanKill
+H   574.31 Killed
+H   574.31 - runit: warning: child failed: /etc/runit/2
+H   574.32 - runit: warning: killing all processes in stage 2...
+H   576.18 CH t=570.1 EV ev=38 fault=scanner-killed target=runsvdir rec=0.14 ok=1 fixed=0 child_kept_running=1 scanner_back=0
+H   578.31 CH t=572.2 EV ev=39 fault=after-scanner-killed target=hubd rec=1.91 ok=1 fixed=0 
+H   579.32 - runit: warning: restarting.
+H   579.33 - runit: enter stage: /etc/runit/2
+H   579.55 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   579.57 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   579.58 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   579.60 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   579.61 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   579.61 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   580.62 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   580.67 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   580.70 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   580.70 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   580.71 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   580.73 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   585.63 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   585.66 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   585.70 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   585.72 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   585.73 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   585.73 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   585.74 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   588.31 CH t=582.2 STEP 34 fKill
+H   590.39 CH t=584.3 EV ev=40 fault=kill target=hubd rec=1.86 ok=1 fixed=0 
+H   590.71 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   590.73 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   590.74 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   590.75 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   590.79 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   590.79 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   590.79 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   595.85 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   595.87 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   595.89 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   595.89 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   595.89 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   595.90 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   595.90 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   599.39 CH t=593.3 STEP 35 fBrainKill
+H   600.85 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   600.88 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   600.89 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   600.90 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   600.91 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   600.92 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   600.94 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   605.95 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   605.96 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   605.99 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   606.01 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   606.03 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   606.03 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   606.04 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   611.06 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   611.07 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   611.07 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   611.11 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   611.12 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   611.13 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   611.14 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   615.40 CH t=609.3 STEP 36 fKill
+H   616.17 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   616.18 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   616.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   616.21 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   617.49 CH t=611.4 EV ev=41 fault=kill target=hubd rec=1.88 ok=1 fixed=0 
+H   618.40 CH t=612.3 SOAKMEM t=601 restarts=67 faults=36
+H   618.53 CH t=612.4 MEM pid=1 comm=runit rss_kb=1376 pss_kb=221
+H   618.54 CH t=612.4 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=202
+H   618.54 CH t=612.4 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   618.54 CH t=612.4 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=205
+H   618.55 CH t=612.4 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   618.55 CH t=612.4 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=199
+H   618.56 CH t=612.4 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=220
+H   618.56 CH t=612.4 MEM pid=6697 comm=runsv rss_kb=1448 pss_kb=232
+H   618.56 CH t=612.4 MEM pid=7806 comm=runsv rss_kb=0 pss_kb=0
+H   618.57 CH t=612.5 MEM pid=7807 comm=runsv rss_kb=0 pss_kb=0
+H   618.57 CH t=612.5 MEM pid=7808 comm=runsv rss_kb=0 pss_kb=0
+H   618.57 CH t=612.5 MEM pid=7809 comm=runsv rss_kb=0 pss_kb=0
+H   618.57 CH t=612.5 MEM pid=7810 comm=runsv rss_kb=0 pss_kb=0
+H   618.58 CH t=612.5 MEM pid=7811 comm=runsv rss_kb=0 pss_kb=0
+H   618.59 CH t=612.5 MEM pid=7812 comm=runsv rss_kb=0 pss_kb=0
+H   618.59 CH t=612.5 MEM pid=7346 comm=runsvdir rss_kb=1496 pss_kb=236
+H   621.20 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   621.25 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   621.27 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   621.27 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   621.28 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   626.35 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   626.38 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   626.43 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   626.44 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   626.52 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   626.53 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   631.43 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   631.43 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   631.43 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   631.44 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   631.45 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   631.46 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   631.47 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   636.48 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   636.48 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   636.49 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   636.50 CH t=630.4 STEP 37 fDep
+H   636.51 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   636.51 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   636.52 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   636.54 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   641.58 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   641.59 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   641.62 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   641.67 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   641.67 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   641.68 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   646.57 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   646.64 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   646.65 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   646.69 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   646.70 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   651.70 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   651.73 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   651.73 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   651.74 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   651.77 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   651.78 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   651.79 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   656.86 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   656.92 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   656.94 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   656.97 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   657.00 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   657.00 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   661.36 CH t=655.2 EV ev=42 fault=dep-fail target=seatd rec=4.62 ok=1 fixed=0 
+H   661.37 CH t=655.3 DEPSTARTS mode=fail seatd=19 driftwm=14 waybar=11 hubd=3
+H   661.88 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   661.89 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   661.91 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   661.94 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   661.95 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   661.96 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   662.00 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   666.95 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   666.96 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   666.96 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   666.97 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   666.98 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   666.98 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   671.37 CH t=665.3 STEP 38 fKill
+H   672.13 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   672.15 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   672.16 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   672.18 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   672.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   672.20 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   672.20 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   673.21 CH t=667.1 EV ev=43 fault=kill target=waybar rec=1.62 ok=1 fixed=0 
+H   677.10 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   677.12 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   677.12 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   677.13 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   677.13 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   677.15 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   678.59 CH t=672.5 SOAKMEM t=662 restarts=83 faults=38
+H   678.72 CH t=672.6 MEM pid=1 comm=runit rss_kb=1376 pss_kb=221
+H   678.73 CH t=672.6 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=202
+H   678.73 CH t=672.6 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=195
+H   678.74 CH t=672.6 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=205
+H   678.74 CH t=672.6 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   678.74 CH t=672.6 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=199
+H   678.74 CH t=672.6 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=220
+H   678.75 CH t=672.6 MEM pid=6697 comm=runsv rss_kb=1448 pss_kb=232
+H   678.75 CH t=672.6 MEM pid=8908 comm=runsv rss_kb=0 pss_kb=0
+H   678.75 CH t=672.6 MEM pid=8909 comm=runsv rss_kb=0 pss_kb=0
+H   678.75 CH t=672.6 MEM pid=8910 comm=runsv rss_kb=0 pss_kb=0
+H   678.76 CH t=672.6 MEM pid=8911 comm=runsv rss_kb=0 pss_kb=0
+H   678.76 CH t=672.6 MEM pid=8912 comm=runsv rss_kb=0 pss_kb=0
+H   678.76 CH t=672.6 MEM pid=8913 comm=runsv rss_kb=0 pss_kb=0
+H   678.76 CH t=672.6 MEM pid=8914 comm=runsv rss_kb=0 pss_kb=0
+H   678.77 CH t=672.7 MEM pid=7346 comm=runsvdir rss_kb=1496 pss_kb=236
+H   682.25 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   682.25 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   682.29 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   682.30 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   682.31 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   682.31 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   682.35 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   687.26 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   687.27 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   687.28 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   687.29 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   687.30 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   687.30 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   687.30 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   691.22 CH t=685.1 STEP 39 fKill
+H   692.33 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   692.34 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   692.36 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   692.39 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   692.39 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   692.81 CH t=686.7 EV ev=44 fault=kill target=waybar rec=1.37 ok=1 fixed=0 
+H   697.31 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   697.37 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   697.38 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   697.39 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   697.43 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   697.44 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   697.46 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   702.46 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   702.51 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   702.54 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   702.55 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   702.58 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   702.58 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   707.56 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   707.56 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   707.57 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   707.58 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   707.58 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   707.58 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   707.60 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   709.81 CH t=703.7 STEP 40 fKill
+H   712.61 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   712.62 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   712.67 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   712.70 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   712.71 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   712.72 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   714.06 CH t=707.9 EV ev=45 fault=kill target=driftwm rec=4.03 ok=1 fixed=0 
+H   717.72 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   717.76 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   717.76 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   717.77 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   717.78 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   722.81 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   722.82 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   722.85 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   722.87 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   722.87 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   722.87 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   722.89 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   726.07 CH t=719.9 STEP 41 fScanKill
+H   726.20 Killed
+H   726.21 - runit: warning: child failed: /etc/runit/2
+H   726.21 - runit: warning: killing all processes in stage 2...
+H   728.09 CH t=722.0 EV ev=46 fault=scanner-killed target=runsvdir rec=0.15 ok=1 fixed=0 child_kept_running=1 scanner_back=0
+H   730.24 CH t=724.1 EV ev=47 fault=after-scanner-killed target=hubd rec=1.93 ok=1 fixed=0 
+H   731.22 - runit: warning: restarting.
+H   731.22 - runit: enter stage: /etc/runit/2
+H   731.44 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   731.48 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   731.50 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   731.52 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   731.58 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   732.45 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   732.56 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   732.58 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   732.59 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   732.62 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   732.66 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   732.73 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   737.24 CH t=731.1 STEP 42 fKill
+H   737.57 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   737.57 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   737.60 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   737.63 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   737.66 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   737.66 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   737.71 CH t=731.6 EV ev=48 fault=kill target=dbus rec=0.26 ok=1 fixed=0 
+H   738.77 CH t=732.7 SOAKMEM t=722 restarts=89 faults=42
+H   738.87 CH t=732.8 MEM pid=1 comm=runit rss_kb=1376 pss_kb=229
+H   738.87 CH t=732.8 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=201
+H   738.88 CH t=732.8 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=196
+H   738.88 CH t=732.8 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   738.88 CH t=732.8 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   738.88 CH t=732.8 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=198
+H   738.88 CH t=732.8 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=230
+H   738.89 CH t=732.8 MEM pid=6697 comm=runsv rss_kb=1448 pss_kb=234
+H   738.89 CH t=732.8 MEM pid=9691 comm=runsv rss_kb=0 pss_kb=0
+H   738.89 CH t=732.8 MEM pid=9692 comm=runsv rss_kb=0 pss_kb=0
+H   738.89 CH t=732.8 MEM pid=9693 comm=runsv rss_kb=0 pss_kb=0
+H   738.90 CH t=732.8 MEM pid=9694 comm=runsv rss_kb=0 pss_kb=0
+H   738.90 CH t=732.8 MEM pid=9695 comm=runsv rss_kb=0 pss_kb=0
+H   738.90 CH t=732.8 MEM pid=9696 comm=runsv rss_kb=0 pss_kb=0
+H   738.90 CH t=732.8 MEM pid=9697 comm=runsv rss_kb=0 pss_kb=0
+H   738.90 CH t=732.8 MEM pid=9606 comm=runsvdir rss_kb=1416 pss_kb=222
+H   742.59 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   742.63 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   742.63 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   742.66 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   742.67 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   742.68 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   744.72 CH t=738.6 STEP 43 fStorm
+H   747.73 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   747.74 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   747.75 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   747.75 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   747.75 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   747.78 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   747.78 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   752.85 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   752.87 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   752.87 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   752.89 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   752.94 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   752.96 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   752.98 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   757.87 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   757.91 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   757.93 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   757.94 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   757.95 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   757.96 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   762.95 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   762.99 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   762.99 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   763.01 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   763.05 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   763.06 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   763.08 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   768.08 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   768.10 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   768.12 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   768.12 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   770.31 CH t=764.2 STATUS run: /run/service/dbus/: (pid 9687) 33s; run: log: (pid 117) 763s
+H   770.32 CH t=764.2 STATUS run: /run/service/driftwm/: (pid 9307) 60s; run: log: (pid 118) 763s
+H   770.32 CH t=764.2 STATUS run: /run/service/guard/: (pid 125) 763s
+H   770.33 CH t=764.2 STATUS run: /run/service/hubd/: (pid 10329) 0s; run: log: (pid 6698) 245s
+H   770.33 CH t=764.2 STATUS run: /run/service/seatd/: (pid 8625) 113s; run: log: (pid 3013) 531s
+H   770.33 CH t=764.2 STATUS run: /run/service/udevd/: (pid 5355) 350s; run: log: (pid 120) 763s
+H   770.34 CH t=764.2 STATUS run: /run/service/waybar/: (pid 9363) 58s; run: log: (pid 4064) 462s
+H   770.34 CH t=764.2 STORM target=hubd dur=25 starts=20 starts_last10s=8 cpu_ticks_init_side=0 bar-up
+H   771.64 CH t=765.5 EV ev=49 fault=storm target=hubd rec=1.09 ok=1 fixed=0 starts=20 last10=8 cpu=0 bar-up
+H   773.20 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   773.22 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   773.25 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   773.25 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   773.27 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   778.19 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   778.21 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   778.21 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   778.22 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   778.22 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   778.23 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   778.24 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   783.36 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   783.38 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   783.40 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   783.42 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   783.42 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   784.64 CH t=778.5 STEP 44 fKill
+H   788.30 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   788.38 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   788.40 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   788.41 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   788.41 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   788.42 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   788.71 CH t=782.6 EV ev=50 fault=kill target=seatd rec=3.82 ok=1 fixed=0 
+H   793.46 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   793.47 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   793.47 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   793.49 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   793.50 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   793.51 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   798.51 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   798.53 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   798.55 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   798.56 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   798.57 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   798.58 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   798.60 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   798.91 CH t=792.8 SOAKMEM t=782 restarts=95 faults=44
+H   799.08 CH t=793.0 MEM pid=1 comm=runit rss_kb=1376 pss_kb=229
+H   799.08 CH t=793.0 MEM pid=10731 comm=runsv rss_kb=0 pss_kb=0
+H   799.08 CH t=793.0 MEM pid=10732 comm=runsv rss_kb=0 pss_kb=0
+H   799.08 CH t=793.0 MEM pid=10733 comm=runsv rss_kb=0 pss_kb=0
+H   799.09 CH t=793.0 MEM pid=10734 comm=runsv rss_kb=0 pss_kb=0
+H   799.09 CH t=793.0 MEM pid=10735 comm=runsv rss_kb=0 pss_kb=0
+H   799.09 CH t=793.0 MEM pid=10736 comm=runsv rss_kb=0 pss_kb=0
+H   799.09 CH t=793.0 MEM pid=10737 comm=runsv rss_kb=0 pss_kb=0
+H   799.09 CH t=793.0 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=201
+H   799.10 CH t=793.0 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=196
+H   799.10 CH t=793.0 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H   799.10 CH t=793.0 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   799.10 CH t=793.0 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=198
+H   799.10 CH t=793.0 MEM pid=3992 comm=runsv rss_kb=1552 pss_kb=230
+H   799.10 CH t=793.0 MEM pid=6697 comm=runsv rss_kb=1448 pss_kb=234
+H   799.10 CH t=793.0 MEM pid=9606 comm=runsvdir rss_kb=1416 pss_kb=222
+H   801.71 CH t=795.6 STEP 45 fSupKill
+H   803.54 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   803.63 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   803.65 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   803.65 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   803.66 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   803.68 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   803.73 CH t=797.6 EV ev=51 fault=supervisor-killed target=waybar rec=0.25 ok=1 fixed=0 child_kept_running=1
+H   803.79 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   803.79 svlogd: fatal: no functional log directories.
+H   804.88 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   804.88 svlogd: fatal: no functional log directories.
+H   807.39 CH t=801.3 EV ev=52 fault=after-supervisor-killed target=waybar rec=1.43 ok=1 fixed=0 supervisor_back=1
+H   808.61 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   808.62 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   808.64 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   808.64 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   808.64 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   808.65 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   813.71 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   813.73 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   813.76 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   813.78 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   813.79 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   813.81 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   818.72 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   818.79 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   818.80 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   818.83 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   818.85 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   818.86 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   823.83 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   823.85 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   823.86 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   823.87 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   823.87 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   825.34 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   825.39 CH t=819.3 STEP 46 fScanKill
+H   825.43 Killed
+H   825.43 - runit: warning: child failed: /etc/runit/2
+H   825.43 - runit: warning: killing all processes in stage 2...
+H   827.23 CH t=821.1 EV ev=53 fault=scanner-killed target=runsvdir rec=0.08 ok=1 fixed=0 child_kept_running=1 scanner_back=0
+H   829.35 CH t=823.2 EV ev=54 fault=after-scanner-killed target=hubd rec=1.91 ok=1 fixed=0 
+H   830.43 - runit: warning: restarting.
+H   830.44 - runit: enter stage: /etc/runit/2
+H   830.65 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   830.68 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   830.68 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   830.69 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   830.71 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   830.72 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   831.75 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   831.79 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   831.80 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   831.85 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   831.85 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   836.80 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   836.81 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   836.82 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   836.84 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   836.84 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   836.85 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   836.86 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   839.35 CH t=833.2 STEP 47 fStorm
+H   841.90 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   841.91 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   841.93 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   841.94 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   841.94 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   841.94 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   841.96 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   847.06 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   847.06 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   847.09 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   847.11 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   847.13 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   847.16 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   852.00 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   852.05 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   852.06 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   852.06 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   852.07 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   852.10 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   857.03 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   857.06 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   857.07 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   857.09 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   857.12 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   857.12 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   857.13 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   859.10 CH t=853.0 SOAKMEM t=842 restarts=97 faults=46
+H   859.23 CH t=853.1 MEM pid=1 comm=runit rss_kb=1376 pss_kb=226
+H   859.23 CH t=853.1 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=243
+H   859.24 CH t=853.1 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=205
+H   859.24 CH t=853.1 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=199
+H   859.24 CH t=853.1 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=208
+H   859.25 CH t=853.1 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   859.25 CH t=853.1 MEM pid=11622 comm=runsv rss_kb=0 pss_kb=0
+H   859.25 CH t=853.1 MEM pid=11623 comm=runsv rss_kb=0 pss_kb=0
+H   859.25 CH t=853.1 MEM pid=11624 comm=runsv rss_kb=0 pss_kb=0
+H   859.26 CH t=853.1 MEM pid=11625 comm=runsv rss_kb=0 pss_kb=0
+H   859.26 CH t=853.1 MEM pid=11626 comm=runsv rss_kb=0 pss_kb=0
+H   859.26 CH t=853.1 MEM pid=11627 comm=runsv rss_kb=0 pss_kb=0
+H   859.26 CH t=853.1 MEM pid=11628 comm=runsv rss_kb=0 pss_kb=0
+H   859.27 CH t=853.2 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=201
+H   859.27 CH t=853.2 MEM pid=6697 comm=runsv rss_kb=1448 pss_kb=227
+H   859.27 CH t=853.2 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=207
+H   862.14 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   862.15 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   862.17 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   862.17 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   862.20 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   862.21 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   864.87 CH t=858.8 STATUS run: /run/service/dbus/: (pid 9687) 128s; run: log: (pid 117) 858s
+H   864.88 CH t=858.8 STATUS run: /run/service/driftwm/: (pid 10535) 80s; run: log: (pid 118) 858s
+H   864.88 CH t=858.8 STATUS run: /run/service/guard/: (pid 125) 858s
+H   864.88 CH t=858.8 STATUS run: /run/service/hubd/: (pid 11775) 1s; run: log: (pid 6698) 340s
+H   864.88 CH t=858.8 STATUS run: /run/service/seatd/: (pid 10528) 80s; run: log: (pid 3013) 626s
+H   864.89 CH t=858.8 STATUS run: /run/service/udevd/: (pid 5355) 445s; run: log: (pid 120) 858s
+H   864.89 CH t=858.8 STATUS run: /run/service/waybar/: (pid 10838) 59s; run: log: (pid 10837) 59s
+H   864.89 CH t=858.8 STORM target=hubd dur=25 starts=19 starts_last10s=8 cpu_ticks_init_side=-4 bar-up
+H   866.81 CH t=860.7 EV ev=55 fault=storm target=hubd rec=1.72 ok=1 fixed=0 starts=19 last10=8 cpu=-4 bar-up
+H   867.18 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   867.19 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   867.21 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   867.21 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   867.23 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   867.24 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   872.26 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   872.26 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   872.28 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   872.28 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   872.29 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   872.31 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   872.32 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   877.41 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   877.41 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   877.44 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   877.46 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   877.47 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   877.48 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   877.49 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   879.82 CH t=873.7 STEP 48 fBrainKill
+H   882.39 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   882.41 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   882.42 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   882.43 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   882.45 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   882.46 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   882.47 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   887.48 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   887.48 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   887.50 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   887.51 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   887.51 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   887.52 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   889.82 CH t=883.7 STEP 49 fKill
+H   892.54 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   892.61 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   892.62 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   892.62 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   892.63 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   892.65 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   892.68 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   893.87 CH t=887.8 EV ev=56 fault=kill target=driftwm rec=3.84 ok=1 fixed=0 
+H   897.64 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   897.68 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   897.69 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   897.72 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   897.74 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   897.75 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   902.74 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   902.75 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   902.76 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   902.78 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   902.78 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   902.80 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   903.87 CH t=897.8 STEP 50 fKill
+H   905.94 CH t=899.8 EV ev=57 fault=kill target=udevd rec=1.85 ok=1 fixed=0 
+H   907.78 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   907.80 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   907.82 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   907.84 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   907.86 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   907.87 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   912.89 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   912.91 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   912.93 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   912.94 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   912.94 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   912.95 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   915.94 CH t=909.8 STEP 51 fKill
+H   917.55 CH t=911.4 EV ev=58 fault=kill target=waybar rec=1.40 ok=1 fixed=0 
+H   917.87 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   917.90 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   917.94 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   917.94 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   917.95 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   917.95 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   917.96 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   919.28 CH t=913.2 SOAKMEM t=902 restarts=104 faults=51
+H   919.39 CH t=913.3 MEM pid=1 comm=runit rss_kb=1376 pss_kb=226
+H   919.39 CH t=913.3 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=243
+H   919.39 CH t=913.3 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=205
+H   919.40 CH t=913.3 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=199
+H   919.40 CH t=913.3 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=208
+H   919.40 CH t=913.3 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   919.41 CH t=913.3 MEM pid=12505 comm=runsv rss_kb=0 pss_kb=0
+H   919.41 CH t=913.3 MEM pid=12506 comm=runsv rss_kb=0 pss_kb=0
+H   919.42 CH t=913.3 MEM pid=12507 comm=runsv rss_kb=0 pss_kb=0
+H   919.42 CH t=913.3 MEM pid=12508 comm=runsv rss_kb=0 pss_kb=0
+H   919.42 CH t=913.3 MEM pid=12509 comm=runsv rss_kb=0 pss_kb=0
+H   919.43 CH t=913.3 MEM pid=12510 comm=runsv rss_kb=0 pss_kb=0
+H   919.43 CH t=913.3 MEM pid=12511 comm=runsv rss_kb=0 pss_kb=0
+H   919.43 CH t=913.3 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=201
+H   919.44 CH t=913.3 MEM pid=6697 comm=runsv rss_kb=1448 pss_kb=227
+H   919.44 CH t=913.3 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=207
+H   923.10 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   923.10 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   923.12 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   923.13 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   923.13 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   923.14 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   923.15 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   928.12 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   928.13 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   928.14 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   928.14 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   928.16 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   928.19 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   933.13 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   933.17 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   933.17 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   933.18 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   933.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   933.20 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   933.20 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   933.55 CH t=927.4 STEP 52 fKill
+H   935.66 CH t=929.5 EV ev=59 fault=kill target=hubd rec=1.90 ok=1 fixed=0 
+H   938.21 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   938.27 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   938.29 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   938.31 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   938.32 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   938.32 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   938.33 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   943.34 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   943.38 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   943.39 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   943.40 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   943.41 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   943.42 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   943.42 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   948.41 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   948.44 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   948.47 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   948.48 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   948.49 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   951.66 CH t=945.5 STEP 53 fClock
+H   953.54 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   953.57 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   953.59 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   953.61 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   953.65 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   953.66 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   953.67 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   956.18 CH t=950.1 EV ev=60 fault=clock+86400 target=driftwm rec=4.31 ok=1 fixed=0 
+H   958.39 runsvdir /run/service: warning: time warp: resetting time stamp.
+H   958.50 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   958.54 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   958.68 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   958.72 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   958.73 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   958.73 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   960.18 CH t=954.1 EV ev=61 fault=after-clock+86400 target=hubd rec=2.78 ok=1 fixed=0 
+H   963.55 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   963.59 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   963.62 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   963.63 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   963.64 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   963.65 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   968.69 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   968.73 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   968.73 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   968.76 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   968.77 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   968.78 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   973.79 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   973.79 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   973.79 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   973.81 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   973.82 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   973.85 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   976.18 CH t=970.1 STEP 54 fDisk
+H   976.26 CH t=970.1 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   978.85 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   978.88 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   978.88 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   978.90 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   978.91 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   979.45 CH t=973.3 SOAKMEM t=962 restarts=109 faults=53
+H   979.59 CH t=973.5 MEM pid=1 comm=runit rss_kb=1376 pss_kb=220
+H   979.59 CH t=973.5 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=237
+H   979.59 CH t=973.5 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=205
+H   979.59 CH t=973.5 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=198
+H   979.60 CH t=973.5 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=207
+H   979.60 CH t=973.5 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H   979.60 CH t=973.5 MEM pid=13294 comm=runsv rss_kb=0 pss_kb=0
+H   979.60 CH t=973.5 MEM pid=13295 comm=runsv rss_kb=0 pss_kb=0
+H   979.61 CH t=973.5 MEM pid=13296 comm=runsv rss_kb=0 pss_kb=0
+H   979.61 CH t=973.5 MEM pid=13297 comm=runsv rss_kb=0 pss_kb=0
+H   979.62 CH t=973.5 MEM pid=13298 comm=runsv rss_kb=0 pss_kb=0
+H   979.62 CH t=973.5 MEM pid=13299 comm=runsv rss_kb=0 pss_kb=0
+H   979.63 CH t=973.5 MEM pid=13300 comm=runsv rss_kb=0 pss_kb=0
+H   979.63 CH t=973.5 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=200
+H   979.63 CH t=973.5 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=242
+H   979.64 CH t=973.5 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=207
+H   981.30 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   983.92 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   983.94 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   983.95 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   983.96 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   983.98 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   983.98 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   983.98 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   984.31 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   987.31 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   987.36 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   987.73 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H   988.93 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   988.97 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   988.99 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   989.01 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   989.03 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   989.03 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   989.04 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   990.31 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   990.37 svlogd: pausing: unable to write to current: /var/log/hubd: out of disk space
+H   990.74 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H   992.65 CH t=986.5 STATUS run: /run/service/dbus/: (pid 9687) 255s; run: log: (pid 117) 985s
+H   992.66 CH t=986.5 STATUS run: /run/service/driftwm/: (pid 12919) 0s; run: log: (pid 118) 986s
+H   992.66 CH t=986.5 STATUS run: /run/service/guard/: (pid 125) 986s
+H   992.66 CH t=986.5 STATUS run: /run/service/hubd/: (pid 13035) 35s; run: log: (pid 6698) 468s
+H   992.66 CH t=986.5 STATUS run: /run/service/seatd/: (pid 10528) 208s; run: log: (pid 3013) 754s
+H   992.66 CH t=986.5 STATUS run: /run/service/udevd/: (pid 12332) 89s; run: log: (pid 120) 986s
+H   992.67 CH t=986.6 STATUS run: /run/service/waybar/: (pid 13334) 10s; run: log: (pid 10837) 187s
+H   992.99 CH t=986.9 EV ev=62 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H   994.03 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   994.10 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   994.10 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   994.12 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   994.12 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   994.13 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   994.13 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   999.09 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   999.14 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   999.16 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   999.17 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   999.18 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   999.99 CH t=993.9 STEP 55 fKill
+H  1004.19 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1004.21 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1004.24 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1004.26 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1004.28 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1004.28 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1004.89 CH t=998.8 EV ev=63 fault=kill target=seatd rec=4.69 ok=1 fixed=0 
+H  1009.28 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1009.28 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1009.29 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1009.30 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1009.31 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1009.32 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1009.33 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1014.32 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1014.34 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1014.35 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1014.36 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1014.36 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1014.37 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1019.43 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1019.43 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1019.45 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1019.46 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1019.48 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1019.49 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1019.50 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1022.89 CH t=1016.8 STEP 56 fKill
+H  1023.46 CH t=1017.3 EV ev=64 fault=kill target=dbus rec=0.34 ok=1 fixed=0 
+H  1024.43 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1024.45 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1024.45 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1024.46 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1024.48 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1024.49 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1024.50 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1029.60 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1029.61 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1029.63 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1029.65 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1029.67 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1029.68 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1029.70 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1033.47 CH t=1027.4 STEP 57 fKill
+H  1034.64 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1034.67 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1034.67 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1034.67 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1034.68 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1034.69 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1034.72 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1035.68 CH t=1029.6 EV ev=65 fault=kill target=hubd rec=2.00 ok=1 fixed=0 
+H  1039.63 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1039.66 CH t=1033.5 SOAKMEM t=1023 restarts=116 faults=57
+H  1039.67 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1039.69 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1039.70 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1039.71 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1039.72 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1039.74 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1039.85 CH t=1033.7 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1039.85 CH t=1033.7 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=228
+H  1039.86 CH t=1033.7 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=204
+H  1039.86 CH t=1033.7 MEM pid=113 comm=runsv rss_kb=1472 pss_kb=196
+H  1039.86 CH t=1033.7 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=205
+H  1039.86 CH t=1033.7 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=199
+H  1039.87 CH t=1033.8 MEM pid=14087 comm=runsv rss_kb=0 pss_kb=0
+H  1039.87 CH t=1033.8 MEM pid=14088 comm=runsv rss_kb=0 pss_kb=0
+H  1039.87 CH t=1033.8 MEM pid=14089 comm=runsv rss_kb=0 pss_kb=0
+H  1039.87 CH t=1033.8 MEM pid=14090 comm=runsv rss_kb=0 pss_kb=0
+H  1039.87 CH t=1033.8 MEM pid=14091 comm=runsv rss_kb=0 pss_kb=0
+H  1039.88 CH t=1033.8 MEM pid=14092 comm=runsv rss_kb=0 pss_kb=0
+H  1039.88 CH t=1033.8 MEM pid=14093 comm=runsv rss_kb=0 pss_kb=0
+H  1039.88 CH t=1033.8 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=199
+H  1039.89 CH t=1033.8 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=233
+H  1039.89 CH t=1033.8 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=206
+H  1044.68 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1044.72 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1044.75 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1044.75 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1044.76 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H  1044.77 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1044.77 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1046.68 CH t=1040.6 STEP 58 fSupKill
+H  1048.55 CH t=1042.4 EV ev=66 fault=supervisor-killed target=driftwm rec=0.14 ok=1 fixed=0 child_kept_running=1
+H  1049.75 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1049.81 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1049.83 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1049.83 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1049.84 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1049.84 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1049.90 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H  1049.90 svlogd: fatal: no functional log directories.
+H  1054.88 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1054.89 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1054.91 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1054.92 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1054.93 CH t=1048.8 EV ev=67 fault=after-supervisor-killed target=driftwm rec=4.15 ok=1 fixed=0 supervisor_back=1
+H  1054.93 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1059.98 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1059.99 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1060.00 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1065.00 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1065.02 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1065.04 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1065.04 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1065.06 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1065.07 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1070.03 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1070.08 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1070.09 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1070.09 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1070.10 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1072.93 CH t=1066.8 STEP 59 fKill
+H  1074.93 CH t=1068.8 EV ev=68 fault=kill target=hubd rec=1.78 ok=1 fixed=0 
+H  1075.13 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1075.15 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1075.15 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1075.16 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1075.17 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1075.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1080.19 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1080.20 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1080.22 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1080.24 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1080.25 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1080.26 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1085.21 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1085.26 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1085.27 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1085.29 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1085.29 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1085.30 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1090.33 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1090.34 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1090.36 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1090.38 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1090.39 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1090.39 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1091.93 CH t=1085.8 STEP 60 fStorm
+H  1095.38 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1095.41 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1095.43 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1095.45 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1095.46 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1095.47 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1099.89 CH t=1093.8 SOAKMEM t=1083 restarts=120 faults=59
+H  1099.98 CH t=1093.9 MEM pid=1 comm=runit rss_kb=1376 pss_kb=209
+H  1099.98 CH t=1093.9 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=217
+H  1099.98 CH t=1093.9 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=205
+H  1099.99 CH t=1093.9 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H  1099.99 CH t=1093.9 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=200
+H  1099.99 CH t=1093.9 MEM pid=14213 comm=runsv rss_kb=1568 pss_kb=217
+H  1099.99 CH t=1093.9 MEM pid=14837 comm=runsv rss_kb=0 pss_kb=0
+H  1100.00 CH t=1093.9 MEM pid=14838 comm=runsv rss_kb=0 pss_kb=0
+H  1100.00 CH t=1093.9 MEM pid=14839 comm=runsv rss_kb=0 pss_kb=0
+H  1100.00 CH t=1093.9 MEM pid=14840 comm=runsv rss_kb=0 pss_kb=0
+H  1100.00 CH t=1093.9 MEM pid=14841 comm=runsv rss_kb=0 pss_kb=0
+H  1100.00 CH t=1093.9 MEM pid=14842 comm=runsv rss_kb=0 pss_kb=0
+H  1100.01 CH t=1093.9 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=201
+H  1100.01 CH t=1093.9 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=220
+H  1100.01 CH t=1093.9 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=206
+H  1100.47 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1100.49 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1100.52 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1100.54 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1100.54 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1100.55 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1105.54 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1105.55 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1105.55 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1105.56 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1110.93 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1110.99 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1111.05 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1115.66 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1115.67 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1115.68 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1115.68 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1115.69 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1115.70 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1117.42 CH t=1111.3 STATUS run: /run/service/dbus/: (pid 13883) 94s; run: log: (pid 117) 1110s
+H  1117.42 CH t=1111.3 STATUS run: /run/service/driftwm/: (pid 14256) 66s; run: log: (pid 14255) 66s
+H  1117.43 CH t=1111.3 STATUS run: /run/service/guard/: (pid 125) 1110s
+H  1117.43 CH t=1111.3 STATUS run: /run/service/hubd/: (pid 14551) 44s; run: log: (pid 6698) 592s
+H  1117.43 CH t=1111.3 STATUS run: /run/service/seatd/: (pid 13567) 117s; run: log: (pid 3013) 878s
+H  1117.44 CH t=1111.3 STATUS run: /run/service/udevd/: (pid 12332) 213s; run: log: (pid 120) 1110s
+H  1117.44 CH t=1111.3 STATUS run: /run/service/waybar/: (pid 15229) 1s; run: log: (pid 10837) 312s
+H  1117.45 CH t=1111.3 STORM target=waybar dur=25 starts=19 starts_last10s=8 cpu_ticks_init_side=-3 bar-up
+H  1118.48 CH t=1112.4 EV ev=69 fault=storm target=waybar rec=0.83 ok=1 fixed=0 starts=19 last10=8 cpu=-3 bar-up
+H  1120.74 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1120.78 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1120.78 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1120.80 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1120.82 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1120.82 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1125.79 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1125.82 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1125.82 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1125.83 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1125.84 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1125.85 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1130.86 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1130.87 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1130.89 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1130.90 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1131.49 CH t=1125.4 STEP 61 fSupKill
+H  1133.30 CH t=1127.2 EV ev=70 fault=supervisor-killed target=driftwm rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  1135.87 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1135.90 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1135.90 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1135.91 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1135.92 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1135.94 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1140.61 CH t=1134.5 EV ev=71 fault=after-supervisor-killed target=driftwm rec=5.03 ok=1 fixed=0 supervisor_back=0
+H  1140.97 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1140.98 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1140.98 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1141.00 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1141.00 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1146.00 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1146.02 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1146.03 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1146.04 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1149.61 CH t=1143.5 STEP 62 fOOM
+H  1149.67 CH t=1143.6 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  1151.09 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1151.12 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1151.13 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1151.13 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1156.14 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1156.14 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1156.15 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1156.18 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1156.21 CH t=1150.1 EV ev=72 fault=oom target=hog rec=0.21 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1156.22 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1156.24 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1160.02 CH t=1153.9 SOAKMEM t=1143 restarts=125 faults=62
+H  1160.27 CH t=1154.2 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1160.27 CH t=1154.2 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=225
+H  1160.28 CH t=1154.2 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=197
+H  1160.28 CH t=1154.2 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=205
+H  1160.28 CH t=1154.2 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=189
+H  1160.28 CH t=1154.2 MEM pid=15477 comm=runsv rss_kb=1476 pss_kb=203
+H  1160.29 CH t=1154.2 MEM pid=15749 comm=runsv rss_kb=0 pss_kb=0
+H  1160.29 CH t=1154.2 MEM pid=15750 comm=runsv rss_kb=0 pss_kb=0
+H  1160.29 CH t=1154.2 MEM pid=15751 comm=runsv rss_kb=0 pss_kb=0
+H  1160.30 CH t=1154.2 MEM pid=15752 comm=runsv rss_kb=0 pss_kb=0
+H  1160.30 CH t=1154.2 MEM pid=15753 comm=runsv rss_kb=0 pss_kb=0
+H  1160.31 CH t=1154.2 MEM pid=15754 comm=runsv rss_kb=0 pss_kb=0
+H  1160.31 CH t=1154.2 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=193
+H  1160.32 CH t=1154.2 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=225
+H  1160.33 CH t=1154.2 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1161.15 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1161.18 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1161.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1161.20 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1161.21 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1161.21 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1163.21 CH t=1157.1 STEP 63 fKill
+H  1163.76 CH t=1157.6 EV ev=73 fault=kill target=dbus rec=0.33 ok=1 fixed=0 
+H  1166.26 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1166.28 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1166.29 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1166.29 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1166.30 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1166.31 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1171.29 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1171.30 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1171.31 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1171.31 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1171.32 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1171.32 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1176.32 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1176.35 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1176.36 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1176.37 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1176.37 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1180.76 CH t=1174.6 STEP 64 fKill
+H  1181.52 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1181.54 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1181.55 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1181.58 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1181.59 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1184.88 CH t=1178.8 EV ev=74 fault=kill target=seatd rec=3.91 ok=1 fixed=0 
+H  1186.49 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1186.52 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1186.53 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1186.54 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1186.56 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1186.57 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1191.56 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1191.59 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1191.60 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1191.60 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1191.60 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1196.62 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1196.65 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1196.65 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1196.66 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1196.67 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1201.64 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1201.68 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1201.70 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1201.71 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1201.73 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1201.74 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1201.89 CH t=1195.8 STEP 65 fKill
+H  1205.83 CH t=1199.7 EV ev=75 fault=kill target=driftwm rec=3.73 ok=1 fixed=0 
+H  1206.72 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1206.76 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1206.76 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1206.77 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1206.77 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1211.76 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1211.82 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1211.83 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1211.83 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1211.84 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1216.88 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1216.89 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1216.95 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1216.96 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1216.96 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1216.97 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1218.83 CH t=1212.7 STEP 66 fKill
+H  1220.33 CH t=1214.2 SOAKMEM t=1203 restarts=134 faults=65
+H  1220.43 CH t=1214.3 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1220.43 CH t=1214.3 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=222
+H  1220.43 CH t=1214.3 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=195
+H  1220.44 CH t=1214.3 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1220.44 CH t=1214.3 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=188
+H  1220.44 CH t=1214.3 MEM pid=15477 comm=runsv rss_kb=1476 pss_kb=201
+H  1220.44 CH t=1214.3 MEM pid=16559 comm=runsv rss_kb=0 pss_kb=0
+H  1220.45 CH t=1214.3 MEM pid=16560 comm=runsv rss_kb=0 pss_kb=0
+H  1220.45 CH t=1214.3 MEM pid=16561 comm=runsv rss_kb=0 pss_kb=0
+H  1220.45 CH t=1214.3 MEM pid=16562 comm=runsv rss_kb=0 pss_kb=0
+H  1220.45 CH t=1214.3 MEM pid=16563 comm=runsv rss_kb=0 pss_kb=0
+H  1220.46 CH t=1214.3 MEM pid=16564 comm=runsv rss_kb=0 pss_kb=0
+H  1220.46 CH t=1214.3 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=191
+H  1220.46 CH t=1214.3 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=221
+H  1220.46 CH t=1214.3 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1220.83 CH t=1214.7 EV ev=76 fault=kill target=udevd rec=1.79 ok=1 fixed=0 
+H  1221.92 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1221.93 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1221.94 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1221.94 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1226.98 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1226.99 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1227.00 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1227.01 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1227.02 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1229.83 CH t=1223.7 STEP 67 fBrainKill
+H  1232.00 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1232.03 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1232.03 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1232.04 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1232.04 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1232.05 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1236.84 CH t=1230.7 STEP 68 fKill
+H  1237.08 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1237.11 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1237.11 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1237.13 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1237.14 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1237.14 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1238.84 CH t=1232.7 EV ev=77 fault=kill target=udevd rec=1.79 ok=1 fixed=0 
+H  1242.17 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1242.21 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1242.22 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1242.23 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1242.24 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1244.85 CH t=1238.7 STEP 69 fKill
+H  1247.19 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1247.25 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1247.28 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1247.32 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1247.34 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1249.55 CH t=1243.4 EV ev=78 fault=kill target=seatd rec=4.49 ok=1 fixed=0 
+H  1252.27 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1252.28 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1252.29 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1252.29 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1256.55 CH t=1250.4 STEP 70 fKill
+H  1257.35 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1257.37 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1257.38 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1257.39 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1257.40 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1257.40 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1258.15 CH t=1252.0 EV ev=79 fault=kill target=waybar rec=1.38 ok=1 fixed=0 
+H  1262.41 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1262.45 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1262.46 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1262.46 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1262.46 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1267.48 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1267.49 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1267.50 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1267.51 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1267.51 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1268.15 CH t=1262.0 STEP 71 fHang
+H  1272.55 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1272.55 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1272.57 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1272.59 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1272.60 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1272.60 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1277.61 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1277.63 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1277.63 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1277.64 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1277.65 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1277.65 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1280.47 CH t=1274.4 SOAKMEM t=1263 restarts=140 faults=70
+H  1280.59 CH t=1274.5 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1280.60 CH t=1274.5 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=222
+H  1280.60 CH t=1274.5 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=195
+H  1280.61 CH t=1274.5 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1280.62 CH t=1274.5 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=188
+H  1280.62 CH t=1274.5 MEM pid=15477 comm=runsv rss_kb=1476 pss_kb=201
+H  1280.62 CH t=1274.5 MEM pid=17334 comm=runsv rss_kb=0 pss_kb=0
+H  1280.62 CH t=1274.5 MEM pid=17335 comm=runsv rss_kb=0 pss_kb=0
+H  1280.63 CH t=1274.5 MEM pid=17336 comm=runsv rss_kb=0 pss_kb=0
+H  1280.63 CH t=1274.5 MEM pid=17337 comm=runsv rss_kb=0 pss_kb=0
+H  1280.64 CH t=1274.5 MEM pid=17338 comm=runsv rss_kb=0 pss_kb=0
+H  1280.64 CH t=1274.5 MEM pid=17339 comm=runsv rss_kb=0 pss_kb=0
+H  1280.64 CH t=1274.5 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=191
+H  1280.65 CH t=1274.5 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=221
+H  1280.65 CH t=1274.5 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1282.75 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1282.80 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1282.81 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1282.82 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1287.84 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1287.87 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1287.88 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1287.89 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1292.98 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1293.02 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1293.03 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1293.03 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1293.06 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1293.06 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1298.03 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1298.04 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1298.04 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1298.05 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1303.07 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1303.07 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1303.10 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1303.11 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1303.12 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1303.13 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1308.10 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1308.12 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1308.14 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1308.16 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1308.22 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1308.23 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1313.27 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1313.30 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1313.30 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1313.30 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1313.31 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1313.32 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1318.28 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1318.31 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1318.32 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1318.33 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1323.29 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1323.30 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1323.32 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1323.32 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1323.34 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1323.35 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1328.44 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1328.45 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1328.46 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1328.47 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1328.49 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1328.49 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1329.81 CH t=1323.7 UNRECOVERED ev=80 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H  1330.08 CH t=1324.0 STATUS run: /run/service/dbus/: (pid 15844) 167s; run: log: (pid 117) 1323s
+H  1330.08 CH t=1324.0 STATUS run: /run/service/driftwm/: (pid 16902) 85s; run: log: (pid 15480) 194s
+H  1330.08 CH t=1324.0 STATUS run: /run/service/guard/: (pid 125) 1323s
+H  1330.09 CH t=1324.0 STATUS run: /run/service/hubd/: (pid 16961) 82s; run: log: (pid 6698) 805s
+H  1330.09 CH t=1324.0 STATUS run: /run/service/seatd/: (pid 16898) 85s; run: log: (pid 3013) 1091s
+H  1330.09 CH t=1324.0 STATUS run: /run/service/udevd/: (pid 16804) 93s; run: log: (pid 120) 1323s
+H  1330.09 CH t=1324.0 STATUS run: /run/service/waybar/: (pid 17081) 73s; run: log: (pid 10837) 524s
+H  1331.15 CH t=1325.0 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H  1331.30 ok: run: /run/service/driftwm: (pid 17964) 0s
+H  1333.41 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1333.44 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1333.44 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1333.45 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1333.46 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1333.47 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1336.32 CH t=1330.2 EV ev=80 fault=hang-spin target=driftwm rec=64.71 ok=0 fixed=1 
+H  1338.46 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1338.49 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1338.49 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1338.50 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1338.51 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1340.66 CH t=1334.5 SOAKMEM t=1324 restarts=144 faults=71
+H  1340.76 CH t=1334.6 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1340.76 CH t=1334.6 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=222
+H  1340.76 CH t=1334.6 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=195
+H  1340.77 CH t=1334.7 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1340.77 CH t=1334.7 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=188
+H  1340.77 CH t=1334.7 MEM pid=15477 comm=runsv rss_kb=1476 pss_kb=201
+H  1340.78 CH t=1334.7 MEM pid=18087 comm=runsv rss_kb=0 pss_kb=0
+H  1340.78 CH t=1334.7 MEM pid=18088 comm=runsv rss_kb=0 pss_kb=0
+H  1340.78 CH t=1334.7 MEM pid=18089 comm=runsv rss_kb=0 pss_kb=0
+H  1340.78 CH t=1334.7 MEM pid=18090 comm=runsv rss_kb=0 pss_kb=0
+H  1340.79 CH t=1334.7 MEM pid=18091 comm=runsv rss_kb=0 pss_kb=0
+H  1340.79 CH t=1334.7 MEM pid=18092 comm=runsv rss_kb=0 pss_kb=0
+H  1340.79 CH t=1334.7 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=191
+H  1340.80 CH t=1334.7 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=221
+H  1340.80 CH t=1334.7 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1343.56 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1343.57 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1343.58 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1343.58 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1343.59 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1348.67 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1348.67 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1348.68 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1348.69 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1348.71 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1348.73 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1350.33 CH t=1344.2 STEP 72 fDisk
+H  1350.38 CH t=1344.3 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1350.92 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H  1353.67 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1353.68 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1353.69 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1353.70 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1353.71 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1353.74 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1353.92 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H  1356.93 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H  1357.94 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H  1358.72 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1358.72 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1358.73 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1358.74 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1358.74 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1358.75 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1359.93 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H  1360.94 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H  1362.94 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H  1363.75 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1363.78 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1363.80 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1363.81 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1363.82 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1363.83 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1363.94 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H  1365.94 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H  1366.59 CH t=1360.5 STATUS run: /run/service/dbus/: (pid 15844) 203s; run: log: (pid 117) 1359s
+H  1366.59 CH t=1360.5 STATUS run: /run/service/driftwm/: (pid 17976) 35s; run: log: (pid 15480) 231s
+H  1366.59 CH t=1360.5 STATUS run: /run/service/guard/: (pid 125) 1360s
+H  1366.59 CH t=1360.5 STATUS run: /run/service/hubd/: (pid 18018) 33s; run: log: (pid 6698) 842s
+H  1366.60 CH t=1360.5 STATUS run: /run/service/seatd/: (pid 16898) 122s; run: log: (pid 3013) 1128s
+H  1366.60 CH t=1360.5 STATUS run: /run/service/udevd/: (pid 16804) 130s; run: log: (pid 120) 1360s
+H  1366.60 CH t=1360.5 STATUS run: /run/service/waybar/: (pid 18297) 11s; run: log: (pid 10837) 561s
+H  1366.93 CH t=1360.8 EV ev=81 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H  1368.86 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1368.87 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1368.88 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1368.89 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1368.90 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1373.95 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1373.97 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1373.98 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1373.98 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1373.99 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1378.96 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1378.98 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1378.98 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1378.99 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1378.99 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1379.00 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1379.93 CH t=1373.8 STEP 73 fKill
+H  1381.52 CH t=1375.4 EV ev=82 fault=kill target=waybar rec=1.37 ok=1 fixed=0 
+H  1384.03 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1384.06 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1384.06 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1384.06 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1384.08 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1388.52 CH t=1382.4 STEP 74 fKill
+H  1389.14 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1389.17 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1389.18 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1389.19 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1389.21 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1390.47 CH t=1384.4 EV ev=83 fault=kill target=udevd rec=1.73 ok=1 fixed=0 
+H  1394.15 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1394.18 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1394.19 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1394.19 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1394.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1394.19 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1399.20 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1399.22 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1399.23 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1399.24 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1399.24 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1399.25 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1400.47 CH t=1394.4 STEP 75 fKill
+H  1400.80 CH t=1394.7 SOAKMEM t=1384 restarts=147 faults=74
+H  1400.94 CH t=1394.8 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1400.95 CH t=1394.8 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=222
+H  1400.95 CH t=1394.8 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=195
+H  1400.96 CH t=1394.8 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1400.96 CH t=1394.8 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=188
+H  1400.97 CH t=1394.9 MEM pid=15477 comm=runsv rss_kb=1476 pss_kb=201
+H  1400.98 CH t=1394.9 MEM pid=18826 comm=runsv rss_kb=0 pss_kb=0
+H  1400.99 CH t=1394.9 MEM pid=18827 comm=runsv rss_kb=0 pss_kb=0
+H  1401.00 CH t=1394.9 MEM pid=18828 comm=runsv rss_kb=0 pss_kb=0
+H  1401.00 CH t=1394.9 MEM pid=18829 comm=runsv rss_kb=0 pss_kb=0
+H  1401.01 CH t=1394.9 MEM pid=18830 comm=runsv rss_kb=0 pss_kb=0
+H  1401.02 CH t=1394.9 MEM pid=18831 comm=runsv rss_kb=0 pss_kb=0
+H  1401.03 CH t=1394.9 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=191
+H  1401.03 CH t=1394.9 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=221
+H  1401.04 CH t=1394.9 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1404.31 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1404.36 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1404.37 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1404.39 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1404.40 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1404.40 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1405.18 CH t=1399.1 EV ev=84 fault=kill target=driftwm rec=4.49 ok=1 fixed=0 
+H  1409.34 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1409.36 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1409.38 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1409.39 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1409.39 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1409.40 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1414.43 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1414.44 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1414.45 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1414.45 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1414.46 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1419.49 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1419.50 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1419.51 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1419.52 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1419.52 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1419.52 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1423.18 CH t=1417.1 STEP 76 fKill
+H  1424.60 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1424.60 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1424.62 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1424.63 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1424.63 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1424.63 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1424.81 CH t=1418.7 EV ev=85 fault=kill target=waybar rec=1.42 ok=1 fixed=0 
+H  1429.61 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1429.64 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1429.65 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1429.66 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1429.66 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1432.81 CH t=1426.7 STEP 77 fKill
+H  1434.66 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1434.71 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1434.72 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1434.72 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1434.73 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1434.73 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1434.80 CH t=1428.7 EV ev=86 fault=kill target=udevd rec=1.78 ok=1 fixed=0 
+H  1439.71 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1439.74 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1439.75 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1439.76 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1444.76 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1444.83 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1444.85 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1444.85 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1444.87 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1444.88 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1445.81 CH t=1439.7 STEP 78 fDisk
+H  1445.86 CH t=1439.7 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1449.90 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1449.92 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1449.95 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1449.96 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1449.97 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1449.98 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1453.44 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H  1454.94 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1454.94 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1454.95 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1454.96 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1454.96 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1454.96 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1456.44 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H  1459.44 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H  1460.00 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1460.01 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1460.02 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1460.04 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1460.05 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1461.04 CH t=1454.9 SOAKMEM t=1444 restarts=153 faults=77
+H  1461.16 CH t=1455.0 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1461.16 CH t=1455.0 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=222
+H  1461.17 CH t=1455.1 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=195
+H  1461.17 CH t=1455.1 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1461.17 CH t=1455.1 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=188
+H  1461.18 CH t=1455.1 MEM pid=15477 comm=runsv rss_kb=1476 pss_kb=201
+H  1461.18 CH t=1455.1 MEM pid=19605 comm=runsv rss_kb=0 pss_kb=0
+H  1461.19 CH t=1455.1 MEM pid=19606 comm=runsv rss_kb=0 pss_kb=0
+H  1461.19 CH t=1455.1 MEM pid=19607 comm=runsv rss_kb=0 pss_kb=0
+H  1461.19 CH t=1455.1 MEM pid=19608 comm=runsv rss_kb=0 pss_kb=0
+H  1461.19 CH t=1455.1 MEM pid=19609 comm=runsv rss_kb=0 pss_kb=0
+H  1461.20 CH t=1455.1 MEM pid=19610 comm=runsv rss_kb=0 pss_kb=0
+H  1461.20 CH t=1455.1 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=191
+H  1461.20 CH t=1455.1 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=221
+H  1461.21 CH t=1455.1 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1462.05 CH t=1455.9 STATUS run: /run/service/dbus/: (pid 15844) 299s; run: log: (pid 117) 1455s
+H  1462.05 CH t=1455.9 STATUS run: /run/service/driftwm/: (pid 18844) 61s; run: log: (pid 15480) 326s
+H  1462.05 CH t=1455.9 STATUS run: /run/service/guard/: (pid 125) 1455s
+H  1462.05 CH t=1455.9 STATUS run: /run/service/hubd/: (pid 18897) 59s; run: log: (pid 6698) 937s
+H  1462.05 CH t=1455.9 STATUS run: /run/service/seatd/: (pid 16898) 217s; run: log: (pid 3013) 1223s
+H  1462.05 CH t=1455.9 STATUS run: /run/service/udevd/: (pid 19271) 29s; run: log: (pid 120) 1455s
+H  1462.06 CH t=1455.9 STATUS run: /run/service/waybar/: (pid 19497) 11s; run: log: (pid 10837) 656s
+H  1462.38 CH t=1456.3 EV ev=87 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H  1465.05 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1465.07 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1465.08 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1465.08 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1465.08 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1470.08 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1470.12 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1470.14 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1470.14 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1470.15 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1473.38 CH t=1467.3 STEP 79 fKill
+H  1475.17 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1475.19 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1475.23 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1475.24 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1475.28 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1477.93 CH t=1471.8 EV ev=88 fault=kill target=seatd rec=4.35 ok=1 fixed=0 
+H  1480.21 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1480.23 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1480.23 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1480.24 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1482.93 CH t=1476.8 STEP 80 fOOM
+H  1482.99 CH t=1476.9 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  1485.33 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1485.34 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1485.36 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1485.37 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1485.38 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1485.38 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1489.26 CH t=1483.1 EV ev=89 fault=oom target=hog rec=0.14 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1490.36 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1490.38 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1490.39 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1490.39 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1490.40 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1490.40 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1495.42 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1495.44 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1495.44 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1495.45 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1499.27 CH t=1493.2 STEP 81 fKill
+H  1500.47 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1500.49 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1500.50 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1500.58 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1503.13 CH t=1497.0 EV ev=90 fault=kill target=seatd rec=3.65 ok=1 fixed=0 
+H  1505.48 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1505.50 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1505.50 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1505.51 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1505.52 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1510.56 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1510.58 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1510.59 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1510.60 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1510.61 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1510.62 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1515.62 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1515.63 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1515.64 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1515.66 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1515.66 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1515.67 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1517.13 CH t=1511.0 STEP 82 fDep
+H  1520.70 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1520.76 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1520.76 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1520.78 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1520.79 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1521.21 CH t=1515.1 SOAKMEM t=1504 restarts=165 faults=81
+H  1521.32 CH t=1515.2 MEM pid=1 comm=runit rss_kb=1376 pss_kb=211
+H  1521.32 CH t=1515.2 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=222
+H  1521.33 CH t=1515.2 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=195
+H  1521.33 CH t=1515.2 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1521.33 CH t=1515.2 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=188
+H  1521.33 CH t=1515.2 MEM pid=15477 comm=runsv rss_kb=1476 pss_kb=201
+H  1521.34 CH t=1515.2 MEM pid=20478 comm=runsv rss_kb=0 pss_kb=0
+H  1521.34 CH t=1515.2 MEM pid=20479 comm=runsv rss_kb=0 pss_kb=0
+H  1521.34 CH t=1515.2 MEM pid=20480 comm=runsv rss_kb=0 pss_kb=0
+H  1521.34 CH t=1515.2 MEM pid=20481 comm=runsv rss_kb=0 pss_kb=0
+H  1521.34 CH t=1515.2 MEM pid=20482 comm=runsv rss_kb=0 pss_kb=0
+H  1521.34 CH t=1515.2 MEM pid=20483 comm=runsv rss_kb=0 pss_kb=0
+H  1521.35 CH t=1515.2 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=192
+H  1521.35 CH t=1515.2 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=221
+H  1521.35 CH t=1515.2 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1525.81 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1525.81 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1525.83 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1525.85 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1525.87 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1525.88 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1530.86 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1530.90 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1530.92 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1530.94 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1530.95 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1535.94 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1535.95 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1535.96 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1535.97 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1535.97 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1536.61 CH t=1530.5 EV ev=91 fault=dep-slow target=seatd rec=19.26 ok=1 fixed=0 
+H  1536.61 CH t=1530.5 DEPSTARTS mode=slow seatd=1 driftwm=10 waybar=10 hubd=3
+H  1541.01 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1541.01 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1541.03 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1541.03 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1541.04 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1542.62 CH t=1536.5 STEP 83 fSupKill
+H  1544.46 CH t=1538.3 EV ev=92 fault=supervisor-killed target=driftwm rec=0.10 ok=1 fixed=0 child_kept_running=1
+H  1546.06 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1546.07 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1546.09 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1546.10 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1546.12 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1546.12 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1546.19 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H  1546.19 svlogd: fatal: no functional log directories.
+H  1550.38 CH t=1544.3 EV ev=93 fault=after-supervisor-killed target=driftwm rec=3.67 ok=1 fixed=0 supervisor_back=1
+H  1551.16 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1551.18 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1551.19 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1551.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1551.19 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1551.20 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1556.20 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1556.21 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1556.23 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1556.23 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1556.24 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1556.24 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1559.38 CH t=1553.3 STEP 84 fKill
+H  1560.89 CH t=1554.8 EV ev=94 fault=kill target=waybar rec=1.29 ok=1 fixed=0 
+H  1561.25 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1561.29 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1561.30 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1561.31 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1561.31 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1561.32 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1565.89 CH t=1559.8 STEP 85 fStorm
+H  1566.27 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1566.29 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1566.30 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1566.31 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1566.31 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1566.32 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1571.35 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1571.38 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1571.39 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1571.40 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1576.39 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1576.39 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1576.40 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1576.41 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1576.41 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1576.42 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1581.35 CH t=1575.2 SOAKMEM t=1564 restarts=177 faults=84
+H  1581.49 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1581.51 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1581.51 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1581.56 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1581.57 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1581.58 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1581.67 CH t=1575.6 MEM pid=1 comm=runit rss_kb=1376 pss_kb=207
+H  1581.67 CH t=1575.6 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=221
+H  1581.67 CH t=1575.6 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=196
+H  1581.68 CH t=1575.6 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1581.68 CH t=1575.6 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=187
+H  1581.68 CH t=1575.6 MEM pid=20962 comm=runsv rss_kb=1456 pss_kb=192
+H  1581.68 CH t=1575.6 MEM pid=21529 comm=runsv rss_kb=0 pss_kb=0
+H  1581.68 CH t=1575.6 MEM pid=21530 comm=runsv rss_kb=0 pss_kb=0
+H  1581.68 CH t=1575.6 MEM pid=21531 comm=runsv rss_kb=0 pss_kb=0
+H  1581.68 CH t=1575.6 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=192
+H  1581.68 CH t=1575.6 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=218
+H  1581.69 CH t=1575.6 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1586.57 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1586.59 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1586.60 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1586.61 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1591.46 CH t=1585.3 STATUS run: /run/service/dbus/: (pid 15844) 428s; run: log: (pid 117) 1584s
+H  1591.46 CH t=1585.3 STATUS run: /run/service/driftwm/: (pid 20966) 45s; run: log: (pid 20986) 44s
+H  1591.46 CH t=1585.3 STATUS run: /run/service/guard/: (pid 125) 1584s
+H  1591.46 CH t=1585.3 STATUS run: /run/service/hubd/: (pid 20984) 44s; run: log: (pid 6698) 1066s
+H  1591.47 CH t=1585.3 STATUS run: /run/service/seatd/: (pid 20384) 74s; run: log: (pid 3013) 1352s
+H  1591.47 CH t=1585.4 STATUS run: /run/service/udevd/: (pid 19271) 159s; run: log: (pid 120) 1585s
+H  1591.47 CH t=1585.4 STATUS run: /run/service/waybar/: (pid 21689) 1s; run: log: (pid 10837) 786s
+H  1591.47 CH t=1585.4 STORM target=waybar dur=25 starts=20 starts_last10s=8 cpu_ticks_init_side=-7 bar-up
+H  1591.69 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1591.71 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1591.72 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1591.74 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1591.74 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1591.75 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1592.14 CH t=1586.0 EV ev=95 fault=storm target=waybar rec=0.46 ok=1 fixed=0 starts=20 last10=8 cpu=-7 bar-up
+H  1596.73 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1596.76 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1596.78 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1596.79 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1601.75 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1601.78 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1601.79 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1601.83 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1601.85 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1606.88 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1606.89 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1606.89 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1606.90 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1606.90 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1610.15 CH t=1604.0 STEP 86 fKill
+H  1612.01 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1612.02 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1612.04 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1612.07 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1612.09 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1614.11 CH t=1608.0 EV ev=96 fault=kill target=driftwm rec=3.75 ok=1 fixed=0 
+H  1616.91 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1616.92 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1616.92 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1616.94 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1616.94 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1621.98 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1621.98 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1621.99 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1621.99 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1622.00 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1622.01 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1622.11 CH t=1616.0 STEP 87 fStorm
+H  1627.09 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1627.09 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1627.10 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1627.12 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1627.13 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1632.04 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1632.10 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1632.12 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1632.12 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1632.13 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1632.15 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1637.17 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1637.17 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1637.18 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1637.19 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1641.69 CH t=1635.6 SOAKMEM t=1625 restarts=183 faults=86
+H  1641.82 CH t=1635.7 MEM pid=1 comm=runit rss_kb=1376 pss_kb=207
+H  1641.82 CH t=1635.7 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=221
+H  1641.82 CH t=1635.7 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=196
+H  1641.83 CH t=1635.7 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=203
+H  1641.83 CH t=1635.7 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=187
+H  1641.84 CH t=1635.7 MEM pid=20962 comm=runsv rss_kb=1456 pss_kb=192
+H  1641.84 CH t=1635.7 MEM pid=22389 comm=runsv rss_kb=0 pss_kb=0
+H  1641.85 CH t=1635.7 MEM pid=22390 comm=runsv rss_kb=0 pss_kb=0
+H  1641.85 CH t=1635.7 MEM pid=22391 comm=runsv rss_kb=0 pss_kb=0
+H  1641.85 CH t=1635.7 MEM pid=22392 comm=runsv rss_kb=0 pss_kb=0
+H  1641.86 CH t=1635.7 MEM pid=22393 comm=runsv rss_kb=0 pss_kb=0
+H  1641.86 CH t=1635.7 MEM pid=22394 comm=runsv rss_kb=0 pss_kb=0
+H  1641.86 CH t=1635.7 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=192
+H  1641.87 CH t=1635.7 MEM pid=6697 comm=runsv rss_kb=1512 pss_kb=218
+H  1641.87 CH t=1635.8 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1642.24 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1642.24 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1642.25 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1642.28 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1642.29 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1647.28 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1647.35 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1647.38 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1647.39 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1647.40 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1647.40 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1647.73 CH t=1641.6 STATUS run: /run/service/dbus/: (pid 15844) 485s; run: log: (pid 117) 1641s
+H  1647.74 CH t=1641.6 STATUS run: /run/service/driftwm/: (pid 21936) 38s; run: log: (pid 20986) 101s
+H  1647.74 CH t=1641.6 STATUS run: /run/service/guard/: (pid 125) 1641s
+H  1647.74 CH t=1641.6 STATUS run: /run/service/hubd/: (pid 21993) 36s; run: log: (pid 6698) 1123s
+H  1647.74 CH t=1641.6 STATUS run: /run/service/seatd/: (pid 20384) 131s; run: log: (pid 3013) 1409s
+H  1647.74 CH t=1641.6 STATUS run: /run/service/udevd/: (pid 19271) 215s; run: log: (pid 120) 1641s
+H  1647.75 CH t=1641.6 STATUS run: /run/service/waybar/: (pid 22564) 1s; run: log: (pid 10837) 842s
+H  1647.75 CH t=1641.6 STORM target=waybar dur=25 starts=19 starts_last10s=8 cpu_ticks_init_side=-3 bar-up
+H  1648.30 CH t=1642.2 EV ev=97 fault=storm target=waybar rec=0.35 ok=1 fixed=0 starts=19 last10=8 cpu=-3 bar-up
+H  1652.40 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1652.42 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1652.43 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1652.43 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1652.44 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1652.45 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1657.43 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1657.44 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1657.45 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1657.46 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1657.47 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1657.48 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1662.50 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1662.54 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1662.54 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1662.55 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1662.56 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1662.57 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1665.31 CH t=1659.2 STEP 88 fKill
+H  1667.55 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1667.56 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1667.57 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1667.58 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1667.59 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1667.60 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1669.93 CH t=1663.8 EV ev=98 fault=kill target=seatd rec=4.41 ok=1 fixed=0 
+H  1672.63 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1672.63 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1672.64 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1672.66 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1672.67 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1672.68 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1677.71 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1677.74 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1677.74 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1677.74 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1677.74 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1682.76 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1682.77 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H  1682.77 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1682.78 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1682.78 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1682.79 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1686.93 CH t=1680.8 STEP 89 fSupKill
+H  1687.81 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1687.83 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1687.84 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1687.85 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1687.90 svlogd: warning: unable to lock directory: /var/log/hubd: temporary failure
+H  1687.91 svlogd: fatal: no functional log directories.
+H  1688.79 CH t=1682.7 EV ev=99 fault=supervisor-killed target=hubd rec=0.08 ok=1 fixed=0 child_kept_running=1
+H  1688.98 svlogd: warning: unable to lock directory: /var/log/hubd: temporary failure
+H  1688.98 svlogd: fatal: no functional log directories.
+H  1690.07 svlogd: warning: unable to lock directory: /var/log/hubd: temporary failure
+H  1690.07 svlogd: fatal: no functional log directories.
+H  1691.99 CH t=1685.9 EV ev=100 fault=after-supervisor-killed target=hubd rec=0.95 ok=1 fixed=0 supervisor_back=1
+H  1692.90 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1692.91 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1692.93 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1692.93 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1692.94 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1697.96 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1698.01 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1698.06 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1698.08 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1698.99 CH t=1692.9 STEP 90 fHang
+H  1701.87 CH t=1695.8 SOAKMEM t=1685 restarts=189 faults=89
+H  1701.95 CH t=1695.8 MEM pid=1 comm=runit rss_kb=1376 pss_kb=219
+H  1701.95 CH t=1695.8 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=229
+H  1701.95 CH t=1695.8 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=196
+H  1701.96 CH t=1695.8 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H  1701.96 CH t=1695.8 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=190
+H  1701.96 CH t=1695.8 MEM pid=20962 comm=runsv rss_kb=1456 pss_kb=192
+H  1701.96 CH t=1695.8 MEM pid=23101 comm=runsv rss_kb=1516 pss_kb=199
+H  1701.96 CH t=1695.8 MEM pid=23260 comm=runsv rss_kb=0 pss_kb=0
+H  1701.97 CH t=1695.9 MEM pid=23261 comm=runsv rss_kb=0 pss_kb=0
+H  1701.97 CH t=1695.9 MEM pid=23262 comm=runsv rss_kb=0 pss_kb=0
+H  1701.97 CH t=1695.9 MEM pid=23263 comm=runsv rss_kb=0 pss_kb=0
+H  1701.97 CH t=1695.9 MEM pid=23264 comm=runsv rss_kb=0 pss_kb=0
+H  1701.97 CH t=1695.9 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=191
+H  1701.98 CH t=1695.9 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1703.00 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1703.01 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1703.02 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1703.05 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1703.05 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1708.03 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1708.04 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1708.05 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1708.06 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1713.11 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1713.15 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1713.15 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1713.16 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1713.17 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1718.15 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1718.16 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1718.17 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1718.18 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1718.19 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1723.20 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1723.21 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1723.22 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1723.23 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1723.24 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1728.25 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1728.26 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1728.27 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1728.28 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1733.33 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1733.34 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1733.36 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1733.36 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1738.36 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1738.37 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1738.39 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1738.39 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1738.40 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1743.44 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1743.45 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1743.46 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1743.46 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1743.46 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1748.46 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1748.48 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1748.49 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1748.50 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1748.51 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1753.56 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1753.56 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1753.57 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1753.59 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1758.68 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1758.70 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1758.71 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1759.15 CH t=1753.0 UNRECOVERED ev=101 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H  1759.49 CH t=1753.4 STATUS run: /run/service/dbus/: (pid 15844) 596s; run: log: (pid 117) 1752s
+H  1759.49 CH t=1753.4 STATUS run: /run/service/driftwm/: (pid 22801) 93s; run: log: (pid 20986) 212s
+H  1759.49 CH t=1753.4 STATUS run: /run/service/guard/: (pid 125) 1752s
+H  1759.49 CH t=1753.4 STATUS run: /run/service/hubd/: (pid 23152) 69s; run: log: (pid 23167) 68s
+H  1759.50 CH t=1753.4 STATUS run: /run/service/seatd/: (pid 22797) 95s; run: log: (pid 3013) 1521s
+H  1759.50 CH t=1753.4 STATUS run: /run/service/udevd/: (pid 19271) 327s; run: log: (pid 120) 1753s
+H  1759.50 CH t=1753.4 STATUS run: /run/service/waybar/: (pid 22865) 92s; run: log: (pid 10837) 954s
+H  1759.55 CH t=1753.4 operator-action target=driftwm why="driftwm stopped"
+H  1760.92 ok: run: /run/service/driftwm: (pid 23993) 0s
+H  1761.98 CH t=1755.9 SOAKMEM t=1745 restarts=190 faults=89
+H  1762.06 CH t=1755.9 MEM pid=1 comm=runit rss_kb=1376 pss_kb=219
+H  1762.07 CH t=1756.0 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=229
+H  1762.07 CH t=1756.0 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=196
+H  1762.07 CH t=1756.0 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H  1762.07 CH t=1756.0 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=190
+H  1762.07 CH t=1756.0 MEM pid=20962 comm=runsv rss_kb=1456 pss_kb=192
+H  1762.08 CH t=1756.0 MEM pid=23101 comm=runsv rss_kb=1516 pss_kb=199
+H  1762.08 CH t=1756.0 MEM pid=23947 comm=runsv rss_kb=0 pss_kb=0
+H  1762.08 CH t=1756.0 MEM pid=23950 comm=runsv rss_kb=0 pss_kb=0
+H  1762.09 CH t=1756.0 MEM pid=23951 comm=runsv rss_kb=0 pss_kb=0
+H  1762.09 CH t=1756.0 MEM pid=23952 comm=runsv rss_kb=0 pss_kb=0
+H  1762.10 CH t=1756.0 MEM pid=23953 comm=runsv rss_kb=0 pss_kb=0
+H  1762.10 CH t=1756.0 MEM pid=3011 comm=runsv rss_kb=1456 pss_kb=191
+H  1762.11 CH t=1756.0 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1763.62 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1763.63 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1763.65 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1763.65 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1763.66 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1765.62 CH t=1759.5 EV ev=101 fault=hang-stop target=driftwm rec=64.42 ok=0 fixed=1 
+H  1768.69 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H  1768.72 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1768.72 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1768.73 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1768.73 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1773.74 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1773.76 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1773.77 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1773.77 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1778.63 CH t=1772.5 STEP 91 fSupKill
+H  1778.79 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1778.80 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1778.81 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1778.83 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1779.56 svlogd: warning: unable to lock directory: /var/log/seatd: temporary failure
+H  1779.56 svlogd: fatal: no functional log directories.
+H  1780.62 CH t=1774.5 EV ev=102 fault=supervisor-killed target=seatd rec=0.23 ok=1 fixed=0 child_kept_running=1
+H  1780.78 svlogd: warning: unable to lock directory: /var/log/seatd: temporary failure
+H  1780.79 svlogd: fatal: no functional log directories.
+H  1781.82 svlogd: warning: unable to lock directory: /var/log/seatd: temporary failure
+H  1781.82 svlogd: fatal: no functional log directories.
+H  1783.85 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1783.86 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1783.87 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1783.87 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1787.00 CH t=1780.9 EV ev=103 fault=after-supervisor-killed target=seatd rec=4.13 ok=1 fixed=0 supervisor_back=1
+H  1788.89 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1788.91 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1788.91 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1788.92 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1793.95 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1793.96 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1793.96 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1793.97 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1794.00 CH t=1787.9 STEP 92 fKill
+H  1796.08 CH t=1790.0 EV ev=104 fault=kill target=udevd rec=1.85 ok=1 fixed=0 
+H  1798.98 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1799.00 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1799.01 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1799.01 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1804.05 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1804.06 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1804.07 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1804.08 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1805.08 CH t=1799.0 STEP 93 fKill
+H  1807.21 CH t=1801.1 EV ev=105 fault=kill target=hubd rec=1.92 ok=1 fixed=0 
+H  1809.06 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1809.07 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1809.07 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1809.07 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1814.11 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1814.14 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1814.18 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1814.19 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1819.15 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H  1819.15 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1819.16 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1822.12 CH t=1816.0 SOAKMEM t=1805 restarts=199 faults=93
+H  1822.21 CH t=1816.1 MEM pid=1 comm=runit rss_kb=1376 pss_kb=216
+H  1822.21 CH t=1816.1 MEM pid=10799 comm=runsv rss_kb=1568 pss_kb=226
+H  1822.22 CH t=1816.1 MEM pid=109 comm=runsv rss_kb=1460 pss_kb=200
+H  1822.23 CH t=1816.1 MEM pid=114 comm=runsv rss_kb=1484 pss_kb=206
+H  1822.23 CH t=1816.1 MEM pid=115 comm=runsv rss_kb=1392 pss_kb=188
+H  1822.23 CH t=1816.1 MEM pid=20962 comm=runsv rss_kb=1456 pss_kb=196
+H  1822.24 CH t=1816.1 MEM pid=23101 comm=runsv rss_kb=1516 pss_kb=199
+H  1822.24 CH t=1816.1 MEM pid=24234 comm=runsv rss_kb=1460 pss_kb=202
+H  1822.25 CH t=1816.1 MEM pid=24770 comm=runsv rss_kb=0 pss_kb=0
+H  1822.25 CH t=1816.1 MEM pid=24771 comm=runsv rss_kb=0 pss_kb=0
+H  1822.25 CH t=1816.1 MEM pid=24772 comm=runsv rss_kb=0 pss_kb=0
+H  1822.25 CH t=1816.1 MEM pid=24773 comm=runsv rss_kb=0 pss_kb=0
+H  1822.26 CH t=1816.1 MEM pid=11136 comm=runsvdir rss_kb=1332 pss_kb=205
+H  1824.23 CH t=1818.1 SOAK-END restarts=199 faults=93
+H  1824.23 CH t=1818.1 SUITE-DONE
+H  1824.24 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H  1824.24 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H  1824.25 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H  1826.26 [ 1823.050889] reboot: Power down
+H# vm exit code 0 after 1826s, loadavg ['0.52', '0.63', '0.60']
+H# end wall=1826.3s launches=1 suite_done=True

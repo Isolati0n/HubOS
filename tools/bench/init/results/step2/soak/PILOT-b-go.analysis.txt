@@ -1,0 +1,4 @@
+== /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/soak/pilot-b-go.log: 1 launch(es), first 600 s of each left out
+TOTAL          slope +6395.89 kB per 1000 restarts (std.err 2097.54)  noise sd  793.1 kB  range 4604..8608 kB  samples 36  restarts covered 219
+brain          slope +6395.89 kB per 1000 restarts (std.err 2097.54)  noise sd  793.1 kB  range 3508..7512 kB  samples 36  restarts covered 219
+s6-svscan      slope    +0.00 kB per 1000 restarts (std.err   0.00)  noise sd    0.0 kB  range 1096..1096 kB  samples 36  restarts covered 219

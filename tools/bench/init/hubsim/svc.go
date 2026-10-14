@@ -2,8 +2,11 @@ package main
 
 import (
 	"bufio"
+	"encoding/binary"
 	"flag"
 	"fmt"
+	"io"
+	"math/rand"
 	"net"
 	"os"
 	"sort"
@@ -25,6 +28,20 @@ const (
 var held []byte
 
 func exists(p string) bool { _, err := os.Stat(p); return err == nil }
+
+// STAND-IN CHANGE (follow-up 5, item 2g): a slow but alive compositor. While the file <faultDir>/driftwm.slow exists, an answer
+// is delayed by 3 to 4 seconds: the file says "both" (the "state" answer and the sync answer are late) or "sync" (only the sync
+// answer is late). The process keeps running and every connection has its own goroutine, so a late answer does not block the
+// other probe. Nothing else about the stand-in changes.
+func slowDelay(kind string) {
+	b, err := os.ReadFile(faultDir + "/driftwm.slow")
+	if err != nil {
+		return
+	}
+	if m := strings.TrimSpace(string(b)); m == "both" || m == kind {
+		time.Sleep(3*time.Second + time.Duration(rand.Intn(1000))*time.Millisecond)
+	}
+}
 
 func logf(name, f string, a ...any) {
 	fmt.Printf("%s: %s\n", name, fmt.Sprintf(f, a...))
@@ -98,6 +115,13 @@ func runService(name string, args []string) {
 		time.Sleep(50 * time.Millisecond)
 		os.Exit(1)
 	}
+	// STAND-IN CHANGE (follow-up 9): two more faults. NAME.exit0: exit with code 0 at once on every start (a clean exit, for the test that
+	// the helper counts exit code 0). NAME.quit: the running process exits with code 0 (read by the heartbeat tick, then removed).
+	if exists(faultDir + "/" + name + ".exit0") {
+		logf(name, "fault: clean exit on start")
+		time.Sleep(50 * time.Millisecond)
+		os.Exit(0)
+	}
 	if *wait != "" && !waitFor(name, strings.Split(*wait, ","), 300*time.Second) {
 		logf(name, "gave up waiting")
 		os.Exit(1)
@@ -111,8 +135,22 @@ func runService(name string, args []string) {
 	hung := &hangState{}
 	go func() { // heartbeat log lines, and the spin fault
 		t := time.NewTicker(time.Second / time.Duration(max(*rate, 1)))
+		seq := 0
 		for range t.C {
-			logf(name, "heartbeat")
+			seq++
+			// STAND-IN CHANGE (follow-up 4, item 4): pid and sequence number in the log line, so that a lost or doubled
+			// line in the log service can be counted. Nothing else about the heartbeat changed.
+			logf(name, "heartbeat pid=%d seq=%d", os.Getpid(), seq)
+			if exists(faultDir + "/" + name + ".quit") {
+				os.Remove(faultDir + "/" + name + ".quit")
+				logf(name, "fault: quitting with exit code 0")
+				os.Exit(0)
+			}
+			if exists(faultDir+"/"+name+".deadlock") && !hung.get() { // follow-up 4: a hang with no CPU use (a deadlock), State S
+				hung.set()
+				os.Remove(faultDir + "/" + name + ".deadlock")
+				logf(name, "fault: deadlock, no longer answers")
+			}
 			if exists(faultDir+"/"+name+".spin") && !hung.get() {
 				hung.set()
 				os.Remove(faultDir + "/" + name + ".spin") // one-shot: it belongs to this process only
@@ -216,6 +254,34 @@ func compositor(name string, nfd int, hung *hangState) {
 			defer func() { mu.Lock(); delete(clients, c); mu.Unlock(); c.Close() }()
 			r := bufio.NewReader(c)
 			for {
+				// STAND-IN CHANGE (follow-up 4, item 1a): answer a Wayland wl_display.sync on this same socket and in this same
+				// handler as "state", behind the same hung check, so that anything that freezes or hangs the "state" handler
+				// (SIGSTOP, the busy loop, the deadlock fault) freezes the sync answer too. Only this one request is understood;
+				// the stand-in speaks no other Wayland. A Wayland message starts with the object id (1 = wl_display, first byte
+				// 0x01); the text requests start with a letter, so the two cannot be confused.
+				if b, err := r.Peek(1); err != nil {
+					return
+				} else if b[0] == 1 {
+					var m [12]byte
+					if _, err := io.ReadFull(r, m[:]); err != nil {
+						return
+					}
+					if hung.get() {
+						select {} // alive but not answering
+					}
+					slowDelay("sync")
+					if binary.LittleEndian.Uint32(m[4:8])&0xffff == 0 { // opcode 0 = sync; m[8:12] is the callback's new id
+						var out [24]byte
+						binary.LittleEndian.PutUint32(out[0:], 1) // wl_display.delete_id(callback id)
+						binary.LittleEndian.PutUint32(out[4:], 12<<16|1)
+						copy(out[8:12], m[8:12])
+						copy(out[12:16], m[8:12]) // wl_callback.done(serial) on the callback object
+						binary.LittleEndian.PutUint32(out[16:], 12<<16|0)
+						binary.LittleEndian.PutUint32(out[20:], 1)
+						c.Write(out[:])
+					}
+					continue
+				}
 				line, err := r.ReadString('\n')
 				if err != nil {
 					return
@@ -230,6 +296,7 @@ func compositor(name string, nfd int, hung *hangState) {
 					clients[c] = strings.TrimPrefix(line, "hello ")
 					mu.Unlock()
 				case line == "state":
+					slowDelay("state")
 					mu.Lock()
 					var n []string
 					for _, v := range clients {
@@ -260,19 +327,39 @@ func client(name string, nfd int, hung *hangState) {
 	time.Sleep(500 * time.Millisecond)
 	connected := true
 	var mu sync.Mutex
+	// STAND-IN CHANGE (follow-up 8): the stand-in hubd now reconnects to the compositor when it comes back (every 500 ms) and registers
+	// again, as docs/hubd-slice2.md section 18 says the real hubd does ("brings the windows back by itself"; SOURCE, not tested with the
+	// real hubd). Before this change it stayed "stale" for ever, which made the harness's desktop check fail after every compositor
+	// restart in the candidates that start hubd the image's way (follow-driftwm --once). waybar is unchanged (it exits).
 	go func() {
-		buf := make([]byte, 64)
 		for {
-			if _, e := c.Read(buf); e != nil {
-				if name == "waybar" {
-					logf(name, "compositor connection lost, exiting")
-					os.Exit(1)
+			buf := make([]byte, 64)
+			for {
+				if _, e := c.Read(buf); e != nil {
+					break
 				}
-				logf(name, "compositor connection lost (stale, still running)")
+			}
+			if name == "waybar" {
+				logf(name, "compositor connection lost, exiting")
+				os.Exit(1)
+			}
+			logf(name, "compositor connection lost (stale, still running)")
+			mu.Lock()
+			connected = false
+			mu.Unlock()
+			for {
+				time.Sleep(500 * time.Millisecond)
+				nc, err := net.Dial("unix", waySock)
+				if err != nil {
+					continue
+				}
+				c = nc
+				fmt.Fprintf(c, "hello %s\n", name)
 				mu.Lock()
-				connected = false
+				connected = true
 				mu.Unlock()
-				return
+				logf(name, "compositor connection re-established")
+				break
 			}
 		}
 	}()

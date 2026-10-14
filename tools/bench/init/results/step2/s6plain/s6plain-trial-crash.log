@@ -1,0 +1,23 @@
+H# start 2026-10-10 15:28:25 cand=s6plain suite=trial cpus_seen=4 loadavg_at_start=['0.45', '0.44', '0.63']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.17 Booting from ROM...
+H     5.62 c[?7l[2JCH STAGE1 up=3.77
+H     5.67 CH CAND s6plain pid1=s6-svscan
+H     5.72 CH SUP-START up=3.87
+H     6.12 CH t=0.3 CHAOS start cand=s6plain suite=trial seed=131 cpus=2
+H    66.27 CH t=60.5 TRIAL ROLLBACK scenario=crash after=60s true_state="waybar not running" guard_still_feeding=true
+H    66.47 CH t=60.7 STATUS dbus: up (pid 132 pgid 132) 60 seconds
+H    66.47 CH t=60.7 STATUS driftwm: up (pid 1797 pgid 1797) 0 seconds
+H    66.47 CH t=60.7 STATUS guard: up (pid 136 pgid 136) 60 seconds
+H    66.47 CH t=60.7 STATUS hubd: up (pid 125 pgid 125) 60 seconds
+H    66.47 CH t=60.7 STATUS seatd: up (pid 118 pgid 118) 60 seconds
+H    66.48 CH t=60.7 STATUS udevd: up (pid 122 pgid 122) 60 seconds
+H    66.48 CH t=60.7 STATUS waybar: up (pid 119 pgid 119) 60 seconds
+H    67.49 [   65.671523] reboot: Restarting system
+H    67.60 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    67.61 Booting from ROM...
+H    72.62 c[?7l[2JCH STAGE1 up=3.37
+H# trial finished
+H# vm exit code -9 after 73s, loadavg ['0.56', '0.47', '0.63']
+H# end wall=72.6s launches=1 suite_done=True

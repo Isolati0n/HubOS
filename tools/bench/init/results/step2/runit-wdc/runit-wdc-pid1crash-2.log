@@ -1,0 +1,73 @@
+H# start 2026-10-12 17:37:53 cand=runit-wdc suite=pid1crash cpus_seen=4 loadavg_at_start=['0.50', '0.52', '0.54']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-wdc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1crash hub.dur=600 hub.seed=112 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir hub.watcher=watcher hub.wmode=compositor
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.74 Booting from ROM..c[?7l[2JCH STAGE1 up=2.98
+H     4.78 CH CAND runit pid1=runit stage2=runsvdir
+H     4.86 CH SUP-START up=3.10
+H     4.91 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.92 - runit: enter stage: /etc/runit/1
+H     4.94 - runit: leave stage: /etc/runit/1
+H     4.95 - runit: enter stage: /etc/runit/2
+H     4.97 CH t=0.1 CHAOS start cand=runit suite=pid1crash seed=112 cpus=2
+H     6.26 watcher: started pid=123 mode=compositor (TEST STAND-IN, not the product watcher)
+H     7.29 watcher: round 1 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H     8.28 watcher: round 2 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H     9.34 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    10.29 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    11.26 CH t=6.4 BOOT-OK up=9.50 ok=1 (seconds since kernel start; waited 6.1)
+H    11.29 watcher: round 5 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    12.29 watcher: round 6 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    13.28 watcher: round 7 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    14.29 watcher: round 8 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    15.29 watcher: round 9 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    16.27 CH t=11.4 INJECT pid1-segv
+H    16.29 watcher: round 10 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    16.32 [   14.597957] runit[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffdcd40cec8 error 15 likely on CPU 0 (core 0, socket 0)
+H    16.33 [   14.602172] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.33 [   14.608618] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    16.33 [   14.608835] CPU: 0 PID: 1 Comm: runit Not tainted 6.8.0-146-generic #146-Ubuntu
+H    16.33 [   14.608835] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    16.33 [   14.608835] Call Trace:
+H    16.33 [   14.608835]  <TASK>
+H    16.33 [   14.608835]  dump_stack_lvl+0x27/0xa0
+H    16.33 [   14.608835]  dump_stack+0x10/0x20
+H    16.33 [   14.608835]  panic+0x366/0x3c0
+H    16.34 [   14.608835]  do_exit+0x513/0x530
+H    16.34 [   14.608835]  do_group_exit+0x35/0x90
+H    16.34 [   14.608835]  get_signal+0x96e/0x9b0
+H    16.34 [   14.608835]  ? native_load_gs_index.part.0+0x20/0x50
+H    16.34 [   14.608835]  arch_do_signal_or_restart+0x42/0x210
+H    16.34 [   14.608835]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    16.34 [   14.608835]  irqentry_exit+0x43/0x50
+H    16.34 [   14.608835]  exc_page_fault+0x94/0x1b0
+H    16.34 [   14.608835]  asm_exc_page_fault+0x27/0x30
+H    16.34 [   14.608835] RIP: 0033:0xfffffffffffffffe
+H    16.34 [   14.608835] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    16.34 [   14.608835] RSP: 002b:00007ffdcd40cec8 EFLAGS: 00000202
+H    16.34 [   14.608835] RAX: 00000000000000db RBX: 00007ffdcd40cef3 RCX: 00007ec7b52de4c4
+H    16.34 [   14.608835] RDX: 00000000000036b0 RSI: 0000000000000001 RDI: 00007ffdcd40cef8
+H    16.34 [   14.608835] RBP: 00007ffdcd40d070 R08: 0000000000000002 R09: 00007ec7b53dc380
+H    16.34 [   14.608835] R10: 0000000000000008 R11: 0000000000000202 R12: 000000000000006b
+H    16.34 [   14.608835] R13: 00007ffdcd40cef4 R14: 00005a3322327190 R15: 00007ffdcd40cfa0
+H    16.34 [   14.608835]  </TASK>
+H    16.34 [   14.608835] Kernel Offset: 0x37c00000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    16.34 [   14.608835] Rebooting in 5 seconds..
+H    21.51 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    21.52 Booting from ROM...
+H    26.02 c[?7l[2JCH STAGE1 up=3.17
+H    26.07 CH CAND runit pid1=runit stage2=runsvdir
+H    26.13 CH SUP-START up=3.29
+H    26.18 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H    26.19 - runit: enter stage: /etc/runit/1
+H    26.20 - runit: leave stage: /etc/runit/1
+H    26.20 - runit: enter stage: /etc/runit/2
+H    26.24 CH t=0.1 CHAOS start cand=runit suite=pid1crash seed=112 cpus=2
+H    27.33 watcher: started pid=123 mode=compositor (TEST STAND-IN, not the product watcher)
+H    28.40 watcher: round 1 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    29.34 watcher: round 2 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    30.35 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    31.35 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    32.05 CH t=5.9 BOOT-OK up=9.21 ok=1 (seconds since kernel start; waited 5.6)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 32s, loadavg ['0.77', '0.59', '0.57']
+H# end wall=32.1s launches=1 suite_done=True

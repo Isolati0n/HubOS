@@ -1,0 +1,5 @@
+# soak_ci.py output, 2026-10-12 (method: see the docstring of tools/bench/init/soak_ci.py)
+s6plain   segments 3  restarts  1228  PSS start   2457 end   2464 kB  slope    +20.9 kB/1000 restarts  95% CI [    +1.7,    +40.0]  noise sd    3.6 kB  lag-1 r 0.84
+s6rc-par  segments 2  restarts  1357  PSS start   2687 end   2681 kB  slope     -8.6 kB/1000 restarts  95% CI [   -19.5,     +2.2]  noise sd    4.9 kB  lag-1 r 0.85
+b-go      segments 2  restarts  1644  PSS start   6242 end   6948 kB  slope    +99.9 kB/1000 restarts  95% CI [ -1084.2,  +1284.0]  noise sd  992.5 kB  lag-1 r 0.64
+runit     segments 2  restarts   646  PSS start   1900 end   1879 kB  slope    -70.4 kB/1000 restarts  95% CI [  -168.9,    +28.1]  noise sd   23.7 kB  lag-1 r 0.64

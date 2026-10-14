@@ -1,0 +1,23 @@
+#!/bin/sh
+# restart-limit SERVICE : called by the finish script of a service (follow-up 6, Part C; BENCH CODE, a test helper, not the product's).
+# Rule of the owner: 5 crashes within 60 s -> the service is STOPPED, an alert file is written, dependents are not touched.
+# It uses only documented s6 behaviour (SOURCE: s6 2.15.1.0 doc/servicedir.html and doc/s6-supervise.html: "if ./finish exits 125,
+# s6-supervise does not restart the service, as if s6-svc -O had been called"; doc/s6-svdt.html: the supervisor keeps a death tally with
+# a TAI64N timestamp per death; src/supervision/s6-supervise.c records the death in the tally BEFORE it spawns ./finish).
+# No process of our own keeps state: the history is the supervisor's death tally. A requested stop (s6-svc -d clears "wanted up"
+# before it signals) is not a crash and does not stop the service for good. The tally uses the wall clock (TAI64N).
+svc=$1
+dir=/run/service/$svc; alerts=/run/hubos/alerts
+[ "$(s6-svstat -o wantedup "$dir" 2>/dev/null)" = true ] || exit 0
+set -- $(s6-svdt -n 5 "$dir" | cut -c2-17)
+n=$#
+[ "$n" -ge 5 ] || { echo "restart-limit: $svc death $n in the tally (the limit looks at the last 5)"; exit 0; }
+first=$(( 0x$1 )); last=$(( 0x$5 ))
+echo "restart-limit: $svc: last 5 deaths span $((last - first)) s"
+if [ $((last - first)) -le 60 ]; then
+  mkdir -p "$alerts"
+  echo "$svc stopped: tried 5 times in 60 s" > "$alerts/$svc.new" && mv -f "$alerts/$svc.new" "$alerts/$svc"
+  echo "restart-limit: $svc stopped for good (alert written)"
+  exit 125
+fi
+exit 0

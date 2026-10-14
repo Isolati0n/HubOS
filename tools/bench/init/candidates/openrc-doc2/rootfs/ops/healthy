@@ -1,0 +1,7 @@
+#!/bin/sh
+# Same definitions as openrc-doc. Only this test hook differs: one call of rc-status (documented in rc-status(8):
+# -i = services in a given state, -c = crashed services) instead of six calls of rc-service, because under QEMU without KVM
+# six rc-service calls took 3 to 4 s and the trial needs 15 good checks in 60 s.
+out=$(rc-status -C -i started 2>/dev/null) || exit 1
+for s in seatd udevd dbus driftwm waybar hubd; do echo "$out" | grep -qw "$s" || exit 1; done
+[ -z "$(rc-status -C -c 2>/dev/null)" ] || exit 1

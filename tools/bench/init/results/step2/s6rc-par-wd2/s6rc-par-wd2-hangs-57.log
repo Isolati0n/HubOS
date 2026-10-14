@@ -1,0 +1,303 @@
+H# start 2026-10-12 21:29:17 cand=s6rc-par-wd2 suite=hangs cpus_seen=4 loadavg_at_start=['0.89', '0.66', '0.68']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/rf/s6rc-par-wd2.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=hangs hub.dur=600 hub.seed=57 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=s6rc hub.sup=s6-supervise hub.watcher=watcher
+H     0.19 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.62 Booting from ROM...
+H    10.21 c[?7l[2JCH STAGE1 up=7.19
+H    10.27 CH CAND s6rc pid1=s6-svscan + s6-rc
+H    10.31 CH SUP-START up=7.29
+H    10.49 CH t=0.1 CHAOS start cand=s6rc suite=hangs seed=57 cpus=2
+H    18.17 CH S6RC-UP up=15.14
+H    18.29 watcher: started pid=272 probes=state+wl_display.sync, hubd ping is information only (TEST STAND-IN, not the product watcher)
+H    18.30 watcher: started pid=272 probes=state+wl_display.sync, hubd ping is information only (TEST STAND-IN, not the product watcher)
+H    18.30 watcher: budget file missing: starting with an empty budget (/run/hubos/watcher.budget)
+H    18.30 watcher: budget file missing: starting with an empty budget (/run/hubos/watcher.budget)
+H    18.56 CH t=8.2 BOOT-OK up=15.51 ok=1 (seconds since kernel start; waited 7.8)
+H    19.34 watcher: round 1 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    19.34 watcher: round 1 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    20.33 watcher: round 2 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    20.33 watcher: round 2 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    21.33 watcher: round 3 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    21.33 watcher: round 3 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    22.33 watcher: round 4 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    22.33 watcher: round 4 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    23.32 watcher: round 5 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    23.33 watcher: round 5 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    23.57 CH t=13.2 STEP 1 fHang
+H    25.31 watcher: round 6 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H    25.31 watcher: round 6 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H    26.33 watcher: round 7 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=2 since_first=1.0s
+H    26.33 watcher: round 7 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=2 since_first=1.0s
+H    27.35 watcher: round 8 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s
+H    27.35 watcher: round 8 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s
+H    28.37 watcher: round 9 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s
+H    28.37 watcher: round 9 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s
+H    29.39 watcher: round 10 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=4.1s
+H    29.39 watcher: round 10 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=4.1s
+H    30.40 watcher: round 11 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=5.1s
+H    30.41 watcher: round 11 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=5.1s
+H    31.43 watcher: round 12 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=7 since_first=6.1s
+H    31.44 watcher: round 12 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=7 since_first=6.1s
+H    32.46 watcher: round 13 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=8 since_first=7.1s
+H    32.46 watcher: round 13 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=8 since_first=7.1s
+H    33.48 watcher: round 14 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=8.2s
+H    33.48 watcher: round 14 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=8.2s
+H    34.51 watcher: round 15 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.2s
+H    34.51 watcher: round 15 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.2s
+H    35.53 watcher: round 16 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.2s
+H    35.53 watcher: round 16 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.2s
+H    36.54 watcher: round 17 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.2s
+H    36.54 watcher: round 17 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.2s
+H    37.55 watcher: round 18 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=13 since_first=12.2s
+H    37.55 watcher: round 18 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=13 since_first=12.2s
+H    38.56 watcher: round 19 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=14 since_first=13.3s
+H    38.57 watcher: round 19 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=14 since_first=13.3s
+H    39.57 watcher: round 20 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=15 since_first=14.3s
+H    39.58 watcher: round 20 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=15 since_first=14.3s
+H    40.59 watcher: round 21 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=16 since_first=15.3s
+H    40.59 watcher: round 21 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=16 since_first=15.3s
+H    41.61 watcher: round 22 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=17 since_first=16.3s
+H    41.61 watcher: round 22 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=17 since_first=16.3s
+H    42.62 watcher: round 23 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=18 since_first=17.3s
+H    42.62 watcher: round 23 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=18 since_first=17.3s
+H    43.63 watcher: round 24 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=19 since_first=18.3s
+H    43.63 watcher: round 24 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=19 since_first=18.3s
+H    44.65 watcher: round 25 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=20 since_first=19.3s
+H    44.65 watcher: round 25 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=20 since_first=19.3s
+H    45.66 watcher: round 26 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=21 since_first=20.3s
+H    45.66 watcher: round 26 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=21 since_first=20.3s
+H    46.68 watcher: round 27 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=22 since_first=21.4s
+H    46.68 watcher: round 27 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=22 since_first=21.4s
+H    47.70 watcher: round 28 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=23 since_first=22.4s
+H    47.70 watcher: round 28 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=23 since_first=22.4s
+H    48.73 watcher: round 29 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=24 since_first=23.4s
+H    48.73 watcher: round 29 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=24 since_first=23.4s
+H    49.76 watcher: round 30 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=25 since_first=24.4s
+H    49.76 watcher: round 30 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=25 since_first=24.4s
+H    50.77 watcher: round 31 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=26 since_first=25.5s
+H    50.77 watcher: round 31 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=26 since_first=25.5s
+H    51.80 watcher: round 32 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=27 since_first=26.5s
+H    51.80 watcher: round 32 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=27 since_first=26.5s
+H    52.82 watcher: round 33 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=28 since_first=27.5s
+H    52.82 watcher: round 33 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=28 since_first=27.5s
+H    53.83 watcher: round 34 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=29 since_first=28.5s
+H    53.84 watcher: round 34 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=29 since_first=28.5s
+H    54.85 watcher: round 35 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=30 since_first=29.5s
+H    54.86 watcher: round 35 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=30 since_first=29.5s
+H    55.92 watcher: round 36 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s
+H    55.92 watcher: round 36 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s
+H    55.92 watcher: BUDGET kill 1 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H    55.92 watcher: BUDGET kill 1 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H    56.11 watcher: EVIDENCE pid=215 state=T wchan=do_signal_stop cpu_ticks=109 age=42.32s
+H    56.11 watcher: EVIDENCE pid=215 state=T wchan=do_signal_stop cpu_ticks=109 age=42.32s
+H    56.12 watcher: KILL driftwm pid=215 err=<nil>
+H    56.12 watcher: KILL driftwm pid=215 err=<nil>
+H    56.25 watcher: round 37 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H    56.27 watcher: round 37 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H    56.33 watcher: round 38 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.2s
+H    56.33 watcher: round 38 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.2s
+H    57.31 watcher: round 39 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.2s
+H    57.31 watcher: round 39 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.2s
+H    58.31 watcher: round 40 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=2.2s
+H    58.31 watcher: round 40 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=2.2s
+H    59.32 watcher: round 41 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    59.33 watcher: round 41 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    60.32 watcher: round 42 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    60.32 watcher: round 42 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    61.32 watcher: round 43 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    61.32 watcher: round 43 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    61.75 CH t=51.4 EV ev=1 fault=hang-stop target=driftwm rec=37.38 ok=1 fixed=0 
+H    61.77 CH t=51.4 HANG n=1 mode=stop arm_delay=0.00 old_pid=215 new_pid=683 fault_to_pidchange=32.17 fault_to_desktop=37.38 windows_back=1 needed_person=0 watcher_state="" budget_entries=1 
+H    62.33 watcher: round 44 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    62.33 watcher: round 44 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    63.33 watcher: round 45 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    63.33 watcher: round 45 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H    64.32 watcher: round 46 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    64.32 watcher: round 46 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H    64.77 CH t=54.4 STEP 2 fHang
+H    66.31 watcher: round 47 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H    66.32 watcher: round 47 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H    67.33 watcher: round 48 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s
+H    67.33 watcher: round 48 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s
+H    68.35 watcher: round 49 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=3 since_first=2.0s
+H    68.35 watcher: round 49 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=3 since_first=2.0s
+H    69.40 watcher: round 50 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.1s
+H    69.40 watcher: round 50 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.1s
+H    70.46 watcher: round 51 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=4.1s
+H    71.47 watcher: round 51 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=4.1s
+H    71.47 watcher: round 52 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=5.2s
+H    71.48 watcher: round 52 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=5.2s
+H    72.50 watcher: round 53 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.2s
+H    72.51 watcher: round 53 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.2s
+H    73.55 watcher: round 54 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.2s
+H    73.55 watcher: round 54 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.2s
+H    74.59 watcher: round 55 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=8.3s
+H    74.59 watcher: round 55 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=8.3s
+H    75.66 watcher: round 56 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.3s
+H    75.66 watcher: round 56 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.3s
+H    76.69 watcher: round 57 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.4s
+H    76.70 watcher: round 57 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.4s
+H    77.73 watcher: round 58 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=12 since_first=11.4s
+H    77.73 watcher: round 58 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=12 since_first=11.4s
+H    78.75 watcher: round 59 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=13 since_first=12.4s
+H    78.76 watcher: round 59 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=13 since_first=12.4s
+H    79.79 watcher: round 60 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=14 since_first=13.5s
+H    79.79 watcher: round 60 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=14 since_first=13.5s
+H    80.81 watcher: round 61 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=15 since_first=14.5s
+H    80.81 watcher: round 61 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=15 since_first=14.5s
+H    81.83 watcher: round 62 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=16 since_first=15.5s
+H    81.84 watcher: round 62 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=16 since_first=15.5s
+H    82.86 watcher: round 63 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=17 since_first=16.5s
+H    82.87 watcher: round 63 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=17 since_first=16.5s
+H    83.88 watcher: round 64 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=18 since_first=17.6s
+H    83.88 watcher: round 64 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=18 since_first=17.6s
+H    84.90 watcher: round 65 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=19 since_first=18.6s
+H    84.90 watcher: round 65 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=19 since_first=18.6s
+H    85.92 watcher: round 66 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=20 since_first=19.6s
+H    85.93 watcher: round 66 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=20 since_first=19.6s
+H    86.94 watcher: round 67 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=21 since_first=20.6s
+H    86.94 watcher: round 67 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=21 since_first=20.6s
+H    87.97 watcher: round 68 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=22 since_first=21.6s
+H    87.97 watcher: round 68 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=22 since_first=21.6s
+H    88.99 watcher: round 69 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=23 since_first=22.7s
+H    88.99 watcher: round 69 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=23 since_first=22.7s
+H    90.00 watcher: round 70 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=24 since_first=23.7s
+H    90.01 watcher: round 70 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=24 since_first=23.7s
+H    91.05 watcher: round 71 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=25 since_first=24.7s
+H    91.05 watcher: round 71 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=25 since_first=24.7s
+H    92.10 watcher: round 72 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=26 since_first=25.8s
+H    92.10 watcher: round 72 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=26 since_first=25.8s
+H    93.12 watcher: round 73 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=27 since_first=26.8s
+H    93.12 watcher: round 73 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=27 since_first=26.8s
+H    94.17 watcher: round 74 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=28 since_first=27.8s
+H    94.18 watcher: round 74 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=28 since_first=27.8s
+H    95.21 watcher: round 75 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=29 since_first=28.9s
+H    95.21 watcher: round 75 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=29 since_first=28.9s
+H    96.26 watcher: round 76 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=30 since_first=29.9s
+H    96.27 watcher: round 76 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=30 since_first=29.9s
+H    97.33 watcher: round 77 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s
+H    97.33 watcher: round 77 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s
+H    97.34 watcher: BUDGET kill 2 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H    97.34 watcher: BUDGET kill 2 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H    97.39 watcher: EVIDENCE pid=683 state=S wchan=futex_wait_queue cpu_ticks=2940 age=41.09s
+H    97.39 watcher: EVIDENCE pid=683 state=S wchan=futex_wait_queue cpu_ticks=2940 age=41.09s
+H    97.39 watcher: KILL driftwm pid=683 err=<nil>
+H    97.40 watcher: KILL driftwm pid=683 err=<nil>
+H    97.48 watcher: round 78 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s
+H    97.48 watcher: round 78 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s
+H    98.31 watcher: round 79 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.9s
+H    98.31 watcher: round 79 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.9s
+H    99.31 watcher: round 80 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.9s
+H    99.31 watcher: round 80 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.9s
+H   100.31 watcher: round 81 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   100.31 watcher: round 81 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   101.31 watcher: round 82 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   101.32 watcher: round 82 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   102.32 watcher: round 83 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   102.32 watcher: round 83 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   102.94 CH t=92.6 EV ev=2 fault=hang-spin target=driftwm rec=37.74 ok=1 fixed=0 
+H   102.95 CH t=92.6 HANG n=2 mode=spin arm_delay=0.02 old_pid=683 new_pid=1132 fault_to_pidchange=32.56 fault_to_desktop=37.74 windows_back=1 needed_person=0 watcher_state="" budget_entries=2 
+H   103.31 watcher: round 84 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   103.31 watcher: round 84 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   104.32 watcher: round 85 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   104.32 watcher: round 85 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   105.32 watcher: round 86 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   105.32 watcher: round 86 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   105.95 CH t=95.6 STEP 3 fHang
+H   106.31 watcher: round 87 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   106.32 watcher: round 87 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   108.31 watcher: round 88 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H   108.31 watcher: round 88 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s
+H   109.32 watcher: round 89 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s
+H   109.32 watcher: round 89 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s
+H   110.33 watcher: round 90 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=3 since_first=2.0s
+H   110.33 watcher: round 90 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=3 since_first=2.0s
+H   111.34 watcher: round 91 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=4 since_first=3.0s
+H   111.34 watcher: round 91 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=4 since_first=3.0s
+H   112.36 watcher: round 92 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s
+H   112.36 watcher: round 92 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s
+H   113.38 watcher: round 93 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.1s
+H   113.39 watcher: round 93 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.1s
+H   114.39 watcher: round 94 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.1s
+H   114.40 watcher: round 94 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.1s
+H   115.41 watcher: round 95 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=8 since_first=7.1s
+H   115.42 watcher: round 95 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=8 since_first=7.1s
+H   116.43 watcher: round 96 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=8.1s
+H   116.43 watcher: round 96 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=8.1s
+H   117.45 watcher: round 97 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.1s
+H   117.46 watcher: round 97 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.1s
+H   118.47 watcher: round 98 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.2s
+H   118.48 watcher: round 98 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.2s
+H   119.49 watcher: round 99 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.2s
+H   119.49 watcher: round 99 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.2s
+H   120.50 watcher: round 100 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=13 since_first=12.2s
+H   120.51 watcher: round 100 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=13 since_first=12.2s
+H   121.53 watcher: round 101 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=14 since_first=13.2s
+H   121.53 watcher: round 101 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=14 since_first=13.2s
+H   122.55 watcher: round 102 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=15 since_first=14.2s
+H   122.56 watcher: round 102 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=15 since_first=14.2s
+H   123.57 watcher: round 103 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=16 since_first=15.3s
+H   123.57 watcher: round 103 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=16 since_first=15.3s
+H   124.61 watcher: round 104 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=17 since_first=16.3s
+H   124.61 watcher: round 104 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=17 since_first=16.3s
+H   125.63 watcher: round 105 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=18 since_first=17.3s
+H   125.63 watcher: round 105 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=18 since_first=17.3s
+H   126.64 watcher: round 106 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=19 since_first=18.3s
+H   126.65 watcher: round 106 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=19 since_first=18.3s
+H   127.66 watcher: round 107 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=20 since_first=19.3s
+H   127.66 watcher: round 107 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=20 since_first=19.3s
+H   128.68 watcher: round 108 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=21 since_first=20.4s
+H   128.68 watcher: round 108 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=21 since_first=20.4s
+H   129.69 watcher: round 109 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=22 since_first=21.4s
+H   129.69 watcher: round 109 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=22 since_first=21.4s
+H   130.70 watcher: round 110 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=23 since_first=22.4s
+H   130.70 watcher: round 110 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=23 since_first=22.4s
+H   131.72 watcher: round 111 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=24 since_first=23.4s
+H   131.72 watcher: round 111 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=24 since_first=23.4s
+H   132.74 watcher: round 112 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=25 since_first=24.4s
+H   132.74 watcher: round 112 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=25 since_first=24.4s
+H   133.74 watcher: round 113 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=26 since_first=25.4s
+H   133.75 watcher: round 113 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=26 since_first=25.4s
+H   134.76 watcher: round 114 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=27 since_first=26.4s
+H   134.76 watcher: round 114 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=27 since_first=26.4s
+H   135.78 watcher: round 115 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=28 since_first=27.5s
+H   135.78 watcher: round 115 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=28 since_first=27.5s
+H   136.80 watcher: round 116 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=29 since_first=28.5s
+H   136.80 watcher: round 116 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=29 since_first=28.5s
+H   137.81 watcher: round 117 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=30 since_first=29.5s
+H   137.81 watcher: round 117 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=30 since_first=29.5s
+H   138.83 watcher: round 118 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s
+H   138.83 watcher: round 118 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s
+H   138.84 watcher: BUDGET kill 3 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H   138.84 watcher: BUDGET kill 3 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H   138.88 watcher: EVIDENCE pid=1132 state=S wchan=futex_wait_queue cpu_ticks=125 age=41.39s
+H   138.88 watcher: EVIDENCE pid=1132 state=S wchan=futex_wait_queue cpu_ticks=125 age=41.39s
+H   138.88 watcher: KILL driftwm pid=1132 err=<nil>
+H   138.88 watcher: KILL driftwm pid=1132 err=<nil>
+H   138.96 watcher: round 119 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s
+H   138.97 watcher: round 119 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s
+H   139.32 watcher: round 120 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.4s
+H   139.32 watcher: round 120 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.4s
+H   140.31 watcher: round 121 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.4s
+H   140.31 watcher: round 121 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.4s
+H   141.31 watcher: round 122 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   141.32 watcher: round 122 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   142.31 watcher: round 123 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   142.32 watcher: round 123 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   143.34 watcher: round 124 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   143.34 watcher: round 124 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   144.22 CH t=133.8 EV ev=3 fault=hang-deadlock target=driftwm rec=36.88 ok=1 fixed=0 
+H   144.23 CH t=133.8 HANG n=3 mode=deadlock arm_delay=0.23 old_pid=1132 new_pid=1607 fault_to_pidchange=31.87 fault_to_desktop=36.88 windows_back=1 needed_person=0 watcher_state="" budget_entries=3 
+H   144.31 watcher: round 125 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   144.31 watcher: round 125 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   145.32 watcher: round 126 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   145.32 watcher: round 126 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   146.31 watcher: round 127 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   146.31 watcher: round 127 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   147.23 CH t=136.9 SUITE-DONE
+H   147.33 watcher: round 128 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   147.33 watcher: round 128 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s
+H   148.31 watcher: round 129 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   148.32 watcher: round 129 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s
+H   149.24 [  146.287635] reboot: Power down
+H# vm exit code 0 after 149s, loadavg ['0.61', '0.71', '0.70']
+H# end wall=149.3s launches=1 suite_done=True

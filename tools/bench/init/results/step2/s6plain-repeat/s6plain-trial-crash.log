@@ -1,0 +1,23 @@
+H# start 2026-10-11 02:10:14 cand=s6plain suite=trial cpus_seen=4 loadavg_at_start=['0.50', '0.50', '0.47']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6plain.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=131 hub.reps=5 hub.skip=0 hub.trial=crash hub.preflag=driftwm.crash hub.cand=s6plain hub.sup=s6-supervise
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     5.56 c[?7l[2JCH STAGE1 up=3.68
+H     5.62 CH CAND s6plain pid1=s6-svscan
+H     5.67 CH SUP-START up=3.79
+H     6.04 CH t=0.2 CHAOS start cand=s6plain suite=trial seed=131 cpus=2
+H    66.50 CH t=60.8 TRIAL ROLLBACK scenario=crash after=60s true_state="driftwm not running" guard_still_feeding=true
+H    66.62 CH t=60.9 STATUS dbus: up (pid 138 pgid 138) 60 seconds
+H    66.62 CH t=60.9 STATUS driftwm: down (exitcode 1) 0 seconds, normally up, want up, ready 0 seconds
+H    66.62 CH t=60.9 STATUS guard: up (pid 141 pgid 141) 60 seconds
+H    66.62 CH t=60.9 STATUS hubd: up (pid 116 pgid 116) 60 seconds
+H    66.62 CH t=60.9 STATUS seatd: up (pid 113 pgid 113) 60 seconds
+H    66.62 CH t=60.9 STATUS udevd: up (pid 115 pgid 115) 60 seconds
+H    66.63 CH t=60.9 STATUS waybar: up (pid 123 pgid 123) 60 seconds
+H    67.63 [   65.798808] reboot: Restarting system
+H    67.75 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    67.76 Booting from ROM...
+H    72.71 c[?7l[2JCH STAGE1 up=3.65
+H# trial finished
+H# vm exit code -9 after 73s, loadavg ['0.91', '0.65', '0.53']
+H# end wall=72.7s launches=1 suite_done=True

@@ -1,0 +1,31 @@
+H# start 2026-10-11 01:36:53 cand=dinit-sm suite=trial cpus_seen=4 loadavg_at_start=['0.42', '0.49', '0.79']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=131 hub.reps=5 hub.skip=0 hub.trial=crash hub.preflag=driftwm.crash hub.cand=dinit
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.93 Booting from ROM..c[?7l[2JCH STAGE1 up=3.04
+H     4.97 CH CAND dinit pid1=dinit
+H     4.98 CH SUP-START up=3.09
+H     5.12 [  OK  ] guard
+H     5.13 CH t=0.0 CHAOS start cand=dinit suite=trial seed=131 cpus=2
+H     5.25 [  OK  ] dbus
+H     5.25 [  OK  ] seatd
+H     6.71 [  OK  ] udevd
+H     7.53 [FAILED] driftwm
+H     7.53 [FAILED] hubd
+H     7.53 [FAILED] waybar
+H     7.53 [  OK  ] boot
+H    65.50 CH t=60.4 TRIAL ROLLBACK scenario=crash after=60s true_state="driftwm not running" guard_still_feeding=true
+H    65.53 CH t=60.5 STATUS [[+]     ] boot
+H    65.54 CH t=60.5 STATUS [{+}     ] guard (pid: 102)
+H    65.54 CH t=60.5 STATUS [{+}     ] seatd (pid: 103)
+H    65.54 CH t=60.5 STATUS [{+}     ] udevd (pid: 104)
+H    65.54 CH t=60.5 STATUS [{+}     ] dbus (pid: 105)
+H    65.54 CH t=60.5 STATUS [     {-}] driftwm
+H    65.54 CH t=60.5 STATUS [     {X}] waybar
+H    65.54 CH t=60.5 STATUS [     {X}] hubd
+H    66.56 [   64.705198] reboot: Restarting system
+H    66.66 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    66.67 Booting from ROM...
+H    70.97 c[?7l[2JCH STAGE1 up=3.03
+H# trial finished
+H# vm exit code -9 after 71s, loadavg ['0.29', '0.44', '0.75']
+H# end wall=71.0s launches=1 suite_done=True

@@ -1,0 +1,50 @@
+H# start 2026-10-11 02:07:57 cand=s6plain suite=pid1crash cpus_seen=4 loadavg_at_start=['0.77', '0.49', '0.47']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6plain.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1crash hub.dur=600 hub.seed=112 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=s6plain hub.sup=s6-supervise
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     5.04 c[?7l[2JCH STAGE1 up=3.31
+H     5.09 CH CAND s6plain pid1=s6-svscan
+H     5.17 CH SUP-START up=3.45
+H     5.32 CH t=0.1 CHAOS start cand=s6plain suite=pid1crash seed=112 cpus=2
+H    10.70 CH t=5.5 BOOT-OK up=8.97 ok=1 (seconds since kernel start; waited 5.2)
+H    15.70 CH t=10.5 INJECT pid1-segv
+H    15.73 [   14.053083] s6-svscan[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffc722c8d80 error 15 likely on CPU 0 (core 0, socket 0)
+H    15.73 [   14.054857] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    15.74 [   14.058589] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    15.74 [   14.059030] CPU: 0 PID: 1 Comm: s6-svscan Not tainted 6.8.0-146-generic #146-Ubuntu
+H    15.74 [   14.059109] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    15.74 [   14.059109] Call Trace:
+H    15.74 [   14.059109]  <TASK>
+H    15.74 [   14.059109]  dump_stack_lvl+0x27/0xa0
+H    15.74 [   14.059109]  dump_stack+0x10/0x20
+H    15.74 [   14.059109]  panic+0x366/0x3c0
+H    15.74 [   14.059109]  do_exit+0x513/0x530
+H    15.74 [   14.059109]  do_group_exit+0x35/0x90
+H    15.74 [   14.059109]  get_signal+0x96e/0x9b0
+H    15.74 [   14.059109]  ? native_load_gs_index.part.0+0x20/0x50
+H    15.74 [   14.059109]  arch_do_signal_or_restart+0x42/0x210
+H    15.74 [   14.059109]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    15.74 [   14.059109]  irqentry_exit+0x43/0x50
+H    15.74 [   14.059109]  exc_page_fault+0x94/0x1b0
+H    15.74 [   14.059109]  asm_exc_page_fault+0x27/0x30
+H    15.74 [   14.059109] RIP: 0033:0xfffffffffffffffe
+H    15.74 [   14.059109] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    15.74 [   14.059109] RSP: 002b:00007ffc722c8d80 EFLAGS: 00000202
+H    15.75 [   14.059109] RAX: 000000000000010f RBX: 00007ffc7231dfa0 RCX: 00000000004267ed
+H    15.75 [   14.059109] RDX: 00007ffc722c8da0 RSI: 0000000000000002 RDI: 00007ffc7231dfa0
+H    15.75 [   14.059109] RBP: 00007ffc722c8dd0 R08: 0000000000000008 R09: 000000000040d440
+H    15.75 [   14.059109] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000002
+H    15.75 [   14.059109] R13: 00007ffc722c8da0 R14: 00007ffc722c8de0 R15: 00007ffc722c8df0
+H    15.75 [   14.059109]  </TASK>
+H    15.75 [   14.059109] Kernel Offset: 0x1b800000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    15.75 [   14.059109] Rebooting in 5 seconds..
+H    20.91 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    20.92 Booting from ROM...
+H    26.26 c[?7l[2JCH STAGE1 up=3.63
+H    26.31 CH CAND s6plain pid1=s6-svscan
+H    26.37 CH SUP-START up=3.74
+H    26.73 CH t=0.3 CHAOS start cand=s6plain suite=pid1crash seed=112 cpus=2
+H    32.54 CH t=6.1 BOOT-OK up=9.90 ok=1 (seconds since kernel start; waited 5.6)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 33s, loadavg ['0.88', '0.55', '0.49']
+H# end wall=32.5s launches=1 suite_done=True
