@@ -1779,9 +1779,15 @@ func stormC(s string, extra time.Duration) {
 	say("STORM-C %s hub-retry output=%q: alert now=%q (exists=%v); desktop ok=%v after %.2fs; svstat=%q; pids before %s / after %s; kept=%s", s, out, alertText(s), exists(alertDir+"/"+s), ok, time.Since(tr).Seconds(), sh("s6-svstat /run/service/"+s), pre, allPids(), keptList(pre))
 	_ = rec
 	if !ok {
-		say("STORM-C %s DESKTOP NOT BACK after hub-retry: %s", s, why())
-		operator(s)
-		waitOK(60 * time.Second)
+		say("STORM-C %s DESKTOP NOT BACK after hub-retry %s: %s; alert files now: %s", s, s, why(), sh("ls "+alertDir))
+		// a service that depends on this one may have been stopped too (its own alert): the person retries each of them
+		for _, a := range strings.Fields(sh("ls " + alertDir)) {
+			say("PERSON-COMMAND *** the harness plays the person again: hub-retry %s (alert text %q) ***", a, alertText(a))
+			sh("/bin/hub-retry " + a + " 2>&1")
+		}
+		rec2, ok2 := waitOK(60 * time.Second)
+		say("STORM-C %s after the second round of hub-retry: desktop ok=%v after %.2fs; alert files: %q; pids %s", s, ok2, rec2, sh("ls "+alertDir), allPids())
+		ok = ok2
 	}
 	say("EV ev=%d fault=stormC-%s target=%s rec=%.2f ok=%d fixed=0", evn, s, s, time.Since(tr).Seconds(), b2i(ok))
 }
@@ -1854,7 +1860,7 @@ func alertSuite(kase string) {
 		stormC("hubd", 15*time.Second)
 	case "storm-seatd":
 		stormC("seatd", 30*time.Second)
-	case "mustnot":
+	case "mustnot1": // each case runs in its own fresh VM: the death tally of the supervisor must hold only the deaths of that case
 		say("MUSTNOT part 1: three watcher kills (hangs) inside 10 minutes")
 		t := time.Now()
 		for _, m := range []string{"stop", "spin", "deadlock"} {
@@ -1862,11 +1868,11 @@ func alertSuite(kase string) {
 			say("MUSTNOT hang kill: alert driftwm exists=%v", exists(alertDir+"/driftwm"))
 			between()
 		}
-		say("MUSTNOT part 1 result after %.0fs: alert exists=%v; svdt driftwm: %s; budget=%q", time.Since(t).Seconds(), exists(alertDir+"/driftwm"), strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/driftwm"), "\n", " | "), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
-		personReset("so that later parts start with an empty budget")
-		say("MUSTNOT part 2: a service that crashes 4 times in 60 s (driftwm)")
+		say("MUSTNOT part 1 result after %.0fs: alert exists=%v; desktop why=%q; svstat=%q; svdt driftwm: %s; budget=%q", time.Since(t).Seconds(), exists(alertDir+"/driftwm"), why(), sh("s6-svstat /run/service/driftwm"), strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/driftwm"), "\n", " | "), strings.ReplaceAll(readFile(wBudget), "\n", " | "))
+	case "mustnot2":
+		say("MUSTNOT part 2: a service that crashes 4 times in 60 s (driftwm: 1 kill + 3 crashing starts)")
 		crashN("driftwm", 4)
-		time.Sleep(10 * time.Second)
+	case "mustnot3":
 		say("MUSTNOT part 3: 5 crashes spread over 5 minutes (driftwm, a kill every 70 s)")
 		spread("driftwm", 5, 70*time.Second)
 	}
