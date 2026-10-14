@@ -31,6 +31,8 @@ func dispatch(args []string, stdout, stderr io.Writer) int {
 		switch {
 		case args[0] == "check":
 			return run(args[1:], stdout, stderr, defaultConfig)
+		case args[0] == "reload":
+			return reloadCmd(args[1:], stdout, stderr)
 		case subcommands[args[0]]:
 			return slice2(args[0], args[1:], stdout, stderr)
 		}
