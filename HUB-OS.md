@@ -25,7 +25,7 @@ Hub OS has two parts:
 1. **Every machine runs its own purpose-built operating system or distribution, chosen for that machine's services and workflows.** The machines are expected to differ and that never matters. Hub OS is the hub, the contracts between hub and nodes (the display protocol, the node helper API, the update and recovery interfaces) and shared tools any distro may use, including the image build, update and recovery plumbing. The A/B update and recovery plumbing (A/B slots, signed updates, rollback, recovery with a network recovery agent) is required on every machine; each distro implements that contract in its own way, and this project's tools are the reference implementation.
 2. **On the hub** (the machine at the desk), a thin broker that checks which machines are reachable and opens each machine's display as a normal native window on the driftwm infinite canvas.
 
-The hub is the owner's daily driver. Every capability is outsourced to a specialized node. The hub runs nothing but viewers.
+The hub is the owner's daily driver. Every capability is outsourced to a specialized node. The hub runs no workloads: only viewers, plus the broker, the bar and the compositor.
 
 The hub is one computer: the main node and daily driver of the cluster, which handles remote sessions while specific work (AI, NAS and so on) is done by other nodes and shown on the hub.
 
@@ -39,7 +39,7 @@ The hub is eventually built from scratch: every component chosen, built from sou
 - **The Linux kernel stays.** driftwm, the display servers and GPU drivers depend on it.
 - **glibc where a machine needs it** (Steam and Proton on the gaming box, NVIDIA's driver); the hub stays glibc as built; other nodes may use any libc (confirmed by the owner).
 - **Say when something is unverified.** Never present a guess as fact. Never invent a protocol.
-- **No systemd on any machine in the cluster** (owner correction, 2026-10-05). The only exception is experiments (VMs and guests) the owner tinkers with on the dev node (the VM host).
+- **No systemd programs run on any machine running Hub OS or its distros. The only exception is tinkering guests on the VM host. Two libraries built from its source package (libsystemd0, libudev1) are tolerated for now.** (owner correction, 2026-10-05; wording of 2026-10-10)
 - **The hub must never freeze or crash:** it is designed to remove as many causes of instability as possible, for maximum uptime (see docs/proposals/hub-stability.md). The hardware watchdog stays only as a last resort for a dead kernel or PID 1; the design goal is that it never fires.
 - **When principles collide the order is:** (1) uptime and stability, (2) integration, (3) optimization built for the hub's one use, (4) building it ourselves, only when it measurably wins, (5) simplicity.
 - **The hub is built to need as little maintenance and as few updates as possible;** the goal is the most rock-solid, stable, reliable, feature-packed distro possible. There are no spare hubs.
@@ -87,7 +87,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - **Updates come from the hub over the network, only when the owner chooses.**
 - **First install of a new machine: network boot.**
 - **Images are digitally signed.** A machine refuses an image that is not signed by the owner.
-- **A machine refuses to update or restart while a game or long job is running.**
+- **A machine never updates or restarts on its own while a game or long job is running. The owner's Restart and Shut down buttons ask for confirmation naming what will be lost, then proceed.**
 - **Master copies of the code and every built image live on the NAS.** GitHub is a convenience mirror. Long term, builds happen on a machine inside the cluster, so the cluster can rebuild itself if GitHub disappears.
 - **Init:** start with an existing small init (candidates: s6, dinit), kept swappable. Write our own only once a measurable benefit is shown. systemd is never used, under any circumstances (the only exception: the owner's experiments in VMs and guests on the dev node). The init comparison (docs/proposals/init-comparison.md) runs at least 4 hours of soak per candidate; its scorecard says a crash-storming service "returns by itself within the retry limit, then degraded and alert"; the owner's action on a degraded service is a bar button and a command; the confirm step asks the init for health.
 - systemd programs are never installed or run. The hub uses eudev's libudev (not the systemd-built one); libsystemd0 is tolerated for now as a plain library because Waybar and dbus-daemon link it. Headless role images may drop it later with rebuilt packages. See docs/proposals/systemd-libraries.md and docs/proposals/phase-b-desktop.md.
@@ -254,7 +254,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - When a machine is down, the **bar item itself shows an alert** (for example, "3 of 4 up" in red).
 - A machine that is off just shows as down. No wake-on-LAN.
 - If a machine drops while its window is open, leave the window alone. Only the alert changes.
-- The bar shows which machine currently owns the keyboard and mouse (hub or gaming box).
+- The bar shows which machine is currently receiving the keyboard and mouse (hub or gaming box; the physical devices always stay on the gaming box).
 - No alerts are sent to the owner's phone.
 - Panel states: up, down (that machine does not answer), in recovery, unreachable (the hub suspects its own network, for example many machines failing at once).
 - A master volume button on the bar opens a mixer that lists every node's sound with its own volume slider and mute button, plus a master volume and a mute-all control. Each node's volume and mute are remembered and restored when its window opens; a node with no saved state starts unmuted at the normal level the first time its window opens (owner decision).
@@ -338,7 +338,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - **Full protection:** redundant disks, detection and repair of silent corruption, snapshots, ECC memory. Engineering effort and budget are not limits.
 - **Filesystem:** OpenZFS on the NAS and the backup NAS (an out-of-tree module declared in their configs, on a kernel version OpenZFS supports). A restore from the backup NAS must be tested before either machine is trusted. Btrfs stays the fallback if OpenZFS cannot be built for a needed kernel.
 - **Workloads that need different tuning** (for example, AI datasets) get separately tuned areas on the same NAS. The AI box keeps its active dataset on its own fast SSD; the NAS holds the master copy.
-- Opens on click in the hub's file manager. Non-Linux devices do not need access.
+- Opens with an ssh terminal for now; the bespoke file manager comes later. Non-Linux devices do not need access.
 - **Backups:** a local backup NAS, plus a copy off-site or in another room. No encryption.
 - The inventory and viewers.toml get the NAS backup copy. Secrets do not; secrets handling is a separate step.
 - /etc/hubos/wofi.css (the menu look) is a backed-up per-machine file too, and gets the NAS backup copy next to the inventory and viewers.toml. /config/hubos/layouts is in the NAS backup list too.
@@ -461,7 +461,7 @@ HubOS/
 - A release build of driftwm: speed and memory
 - Waybar as a non-root user under s6 or dinit
 - wofi single-click selection was tested with xdotool in the build environment only
-- hubd, the panel and wofi at 100 and at 5000 machines
+- hubd, the panel and wofi at 100 and at 5000 machines: measured only in the cloud sandbox with fake nodes on this computer's own addresses (docs/hubd-slice2.md section 7). NOT measured: 5000 real windows (only a handful of fake windows were opened), the load of 5000 viewers, a real network, release builds, real hardware
 - remote-viewer shows a small error dialog that carries the chosen app-id when the connection fails; hubd cannot tell it from the viewer window
 - tmux new-session -A -s hubos over ssh (not run against a real server)
 - libudev-zero with libinput, driftwm, OpenZFS and QEMU/libvirt (symbols match; nothing was run with them)
@@ -509,7 +509,7 @@ HubOS/
 - The clipboard bridge and the node helper API (see docs/proposals/node-helper-api.md)
 - The network recovery agent in the recovery kernel: protocol, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
-- AI box: NVIDIA with CUDA, or AMD with ROCm, decided in December from the generative-media software the owner will run (images, video, music, language models); VRAM matters most
+- AI box GPU: re-check price and availability in December
 - Forwarder design: always grab and re-inject, or grab only while forwarding (decided after December measurements)
 - N64: confirm RMG against Gopher64 in a December test
 - MesenCE's Linux release format (AppImage or other): the owner checks
@@ -518,6 +518,7 @@ HubOS/
 - Unattended recovery for machines without a keyboard: after December, when the boards' serial and BMC options are known
 - File transfer questions (docs/proposals/file-transfer.md section 8) and from-scratch hub questions (docs/proposals/from-scratch-hub.md): the owner will answer later.
 - Which distro each node gets (undecided); node GUIs are designed after that
+- How does a new machine learn the owner's public key at first network install? (key built into the network-boot image, trust on first install, or something else.)
 - Language of the session layer's native core (workers and presenter): Rust with Kani, Ada with SPARK or Zig; a bake-off with the gates listed under The session layer decides (not started)
 - From-scratch hub: which components stay upstream and which are ours (see docs/proposals/from-scratch-hub.md)
 - Moonlight and Sunshine are not planned for use; hubd's Moonlight support (title matching, the session field, the default port) stays in the code and is not removed until the display protocol is final, and is then deleted.
@@ -587,3 +588,10 @@ HubOS/
 - **2026-10-06:** driftwm patch set adopted: Smithay P7 to P11, driftwm D1 to D5, BC-11 to BC-13 fixes, config checks, protocol list; window stacking order restored.
 - **2026-10-06:** Recovery agent prototype: request signing removed (no challenge, signature or nonces); the image signature check stays.
 - **2026-10-06:** Compositor patch set, recovery agent without signing and clipboard and notification designs merged; compositor follow-up decisions recorded.
+- **2026-10-10:** The hub runs no workloads: only viewers, plus the broker, the bar and the compositor (wording fix).
+- **2026-10-10:** No-systemd line reworded: no systemd programs on any Hub OS machine or its distros, tinkering guests on the VM host excepted; libsystemd0 and libudev1 tolerated for now.
+- **2026-10-10:** Restart rule reworded: a machine never updates or restarts on its own while a game or long job runs; the owner's Restart and Shut down buttons confirm, then proceed.
+- **2026-10-10:** AI box open question replaced with: AI box GPU: re-check price and availability in December.
+- **2026-10-10:** NAS opens with an ssh terminal for now; the bespoke file manager comes later.
+- **2026-10-10:** The bar shows which machine is currently receiving the keyboard and mouse (the physical devices always stay on the gaming box).
+- **2026-10-10:** Open question added: how a new machine learns the owner's public key at first network install. Unverified list entry on the 100 and 5000 machine scale test narrowed to what was not measured.
