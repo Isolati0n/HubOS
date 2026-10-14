@@ -1854,6 +1854,14 @@ func alertSuite(kase string) {
 	switch kase {
 	case "c1", "c2", "c3", "c4":
 		clockStorm(kase)
+	case "c5":
+		c5()
+	case "c6":
+		c6()
+	case "c7":
+		c7()
+	case "markerB":
+		markerB()
 	case "retry7":
 		retry7()
 	case "followB", "followB2":
@@ -2083,4 +2091,157 @@ func followB(kase string) {
 	say("FOLLOWB 5. hub-retry output=%q; driftwm pid=%d; desktop ok=%v after %.2fs (why=%q); pids before %s / after %s; hubd ping=%q; alert files [%s]; hubd log tail: %s", out, pidOf("driftwm"), ok, time.Since(tr).Seconds(), why(), pre, allPids(), ping(), alertFiles(), hubdLog())
 	_ = rec
 	say("EV ev=%d fault=followB target=hubd rec=%.2f ok=%d fixed=0", evn, time.Since(tr).Seconds(), b2i(ok))
+}
+
+// ---------- follow-up 8, Part A: the boot-clock history of the restart-limit helper (candidate s6rc-par-wd4d) ----------
+
+const histDir = "/run/hubos/restarts"
+
+// c5: 5 deaths of driftwm spread over about 10 minutes of real time (a kill every 150 s, the desktop back before the next), the wall clock
+// stepped BACK 3600 s in the middle (after the 3rd kill). The rule says: not 5 deaths within 60 s, so NO stop. (On s6rc-par-wd4a, whose
+// helper reads the wall-clock tally, the negative span falsely stops it: follow-up 7.)
+func c5() {
+	s := "driftwm"
+	up0 := uptime()
+	for i := 1; i <= 5; i++ {
+		if !begin("c5-" + s) {
+			continue
+		}
+		evn++
+		t := time.Now()
+		say("C5 death %d: kill of driftwm at uptime %.1f wall %d", i, uptime(), time.Now().Unix())
+		killp(pidOf(s), syscall.SIGKILL)
+		rec, ok := waitOK(60 * time.Second)
+		say("C5 death %d: desktop back ok=%v after %.1fs; alert exists=%v; history file: %q", i, ok, rec, exists(alertDir+"/"+s), strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","))
+		if i == 3 {
+			time.Sleep(2 * time.Second)
+			setClock(-3600)
+			say("C5 CLOCK JUMP -3600 s after death 3 at uptime %.1f; wall now %d", uptime(), time.Now().Unix())
+		}
+		if i < 5 {
+			time.Sleep(150*time.Second - time.Since(t))
+		}
+	}
+	time.Sleep(3 * time.Second)
+	say("C5 RESULT after %.0f s of real time (boot clock): stopped=%v alert=%q svstat=%q history file: %q tally: %s", uptime()-up0, exists(alertDir+"/"+s), alertText(s), sh("s6-svstat /run/service/"+s), strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","), strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/"+s), "\n", " | "))
+	say("C5 helper lines from the service log: %s", strings.ReplaceAll(sh("grep -a 'restart-limit' /var/log/driftwm/current 2>/dev/null | tail -n 8"), "\n", " | "))
+}
+
+// c6: the history file is deleted in the middle of a storm (after the 2nd start is seen). The storm goes on (crash fault stays).
+func c6() {
+	s := "driftwm"
+	if !begin("c6-" + s) {
+		return
+	}
+	evn++
+	s0 := starts(s)
+	os.WriteFile(faultDir+"/"+s+".crash", nil, 0o644)
+	tk := time.Now()
+	killp(pidOf(s), syscall.SIGKILL)
+	deleted, last := false, 0
+	tAlert := -1.0
+	for time.Since(tk) < 45*time.Second {
+		n := starts(s) - s0
+		if n != last {
+			last = n
+			say("C6 start %d seen at uptime %.2f; history file: %q", n, uptime(), strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","))
+		}
+		if n >= 2 && !deleted {
+			deleted = true
+			os.Remove(histDir + "/" + s)
+			say("C6 history file DELETED after start 2 (deaths so far in it: 2); exists now=%v", exists(histDir+"/"+s))
+		}
+		if tAlert < 0 && exists(alertDir+"/"+s) {
+			tAlert = time.Since(tk).Seconds()
+			say("C6 ALERT after %.2fs: starts since the kill=%d; text=%q", tAlert, n, alertText(s))
+			time.Sleep(2 * time.Second)
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
+	}
+	os.Remove(faultDir + "/" + s + ".crash")
+	say("C6 RESULT stopped=%v starts_since_first_kill=%d stop_after=%.2fs history file: %q; helper lines: %s", exists(alertDir+"/"+s), starts(s)-s0, tAlert, strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","), strings.ReplaceAll(sh("grep -a 'restart-limit' /var/log/driftwm/current 2>/dev/null | tail -n 10"), "\n", " | "))
+}
+
+// c7: a service stopped BY HAND with s6-svc -d and started again, six times in under a minute: not a crash, not counted.
+func c7() {
+	s := "driftwm"
+	if !begin("c7-" + s) {
+		return
+	}
+	evn++
+	t := time.Now()
+	for i := 1; i <= 6; i++ {
+		a := sh("s6-svc -wD -d /run/service/" + s + " 2>&1; echo $?")
+		b := sh("s6-svc -wU -u /run/service/" + s + " 2>&1; echo $?")
+		say("C7 requested stop+start %d at %.1fs: down exit=%q up exit=%q; history file: %q; alert exists=%v", i, time.Since(t).Seconds(), a, b, strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","), exists(alertDir+"/"+s))
+	}
+	rec, ok := waitOK(60 * time.Second)
+	say("C7 RESULT after %.1fs: desktop ok=%v (%.1fs); alert exists=%v; history file exists=%v content %q; svdt (wall-clock tally, for comparison only): %s", time.Since(t).Seconds(), ok, rec, exists(alertDir+"/"+s), exists(histDir+"/"+s), strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","), strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/"+s), "\n", " | "))
+}
+
+// ---------- follow-up 8, Part B: marker and alert (candidate s6rc-par-wd4d, hubd started the image's way) ----------
+
+func markerB() {
+	const marker = "/run/hub/driftwm-gave-up"
+	ping := func() string { o, _ := probe(hubdSock, "ping", time.Second); return o }
+	files := func() string {
+		return fmt.Sprintf("alert=%v marker=%v history=%v", exists(alertDir+"/driftwm"), exists(marker), exists(histDir+"/driftwm"))
+	}
+	storm := func(tag string) {
+		os.WriteFile(faultDir+"/driftwm.crash", nil, 0o644)
+		t := time.Now()
+		killp(pidOf("driftwm"), syscall.SIGKILL)
+		for time.Since(t) < 20*time.Second && !exists(alertDir+"/driftwm") {
+			time.Sleep(50 * time.Millisecond)
+		}
+		os.Remove(faultDir + "/driftwm.crash")
+		time.Sleep(time.Second)
+		say("MARKERB %s: driftwm stopped after %.2fs; %s; alert text %q; svstat %q", tag, time.Since(t).Seconds(), files(), alertText("driftwm"), sh("s6-svstat /run/service/driftwm"))
+	}
+	if !begin("markerB") {
+		return
+	}
+	evn++
+	say("MARKERB start: pids %s; %s; hubd ping=%q", allPids(), files(), ping())
+	h0 := pidOf("hubd")
+	// 1. a driftwm storm: hubd stays, marker present
+	storm("1 storm")
+	time.Sleep(15 * time.Second)
+	say("MARKERB 1. 15 s later: hubd pid %d -> %d (same=%v) state %s ping=%q; waybar pid=%d; %s", h0, pidOf("hubd"), pidOf("hubd") == h0, stateOf(pidOf("hubd")), ping(), pidOf("waybar"), files())
+	pre := allPids()
+	tr := time.Now()
+	out := sh("/bin/hub-retry driftwm 2>&1; echo exit=$?")
+	waitOKBut := func() (bool, string) { // the stand-in hubd cannot reconnect: look at driftwm and waybar first
+		for t := time.Now(); time.Since(t) < 30*time.Second; time.Sleep(200 * time.Millisecond) {
+			if pidOf("driftwm") != 0 && pidOf("waybar") != 0 {
+				if _, ok := probe(waySock, "state", time.Second); ok {
+					return true, ""
+				}
+			}
+		}
+		return false, why()
+	}
+	okc, w := waitOKBut()
+	say("MARKERB 2. hub-retry driftwm output=%q; after %.2fs driftwm+waybar answer=%v %s; hubd pid same=%v ping=%q; %s; compositor client list: %q; pids before %s / after %s", out, time.Since(tr).Seconds(), okc, w, pidOf("hubd") == h0, ping(), files(), func() string { o, _ := probe(waySock, "state", time.Second); return o }(), pre, allPids())
+	// the stand-in hubd has no reconnect code: restart it by hand (this stands in for the REAL hubd's own reconnect, which is not tested here)
+	killp(pidOf("hubd"), syscall.SIGKILL)
+	rec, ok := waitOK(40 * time.Second)
+	say("MARKERB 2b. (harness stands in for the real hubd's reconnect: the stand-in hubd is killed and restarted by s6) desktop ok=%v after %.2fs (why=%q)", ok, rec, why())
+	// 3. a marker left behind, no alert
+	os.MkdirAll("/run/hub", 0o755)
+	os.WriteFile(marker, nil, 0o644)
+	out = sh("/bin/hub-retry driftwm 2>&1; echo exit=$?")
+	say("MARKERB 3. marker left behind, no alert, driftwm running: hub-retry driftwm printed %q; %s; desktop why=%q", out, files(), why())
+	// 4. an alert left behind, no marker: storm again, then the marker is removed by hand
+	storm("4 second storm")
+	os.Remove(marker)
+	say("MARKERB 4. marker removed by hand: %s", files())
+	out = sh("/bin/hub-retry driftwm 2>&1; echo exit=$?")
+	rec, ok = waitOK(60 * time.Second)
+	say("MARKERB 4. alert left behind, no marker: hub-retry driftwm printed %q; %s; desktop ok=%v after %.2fs (why=%q)", out, files(), ok, rec, why())
+	// 5. nothing wrong at all
+	out = sh("/bin/hub-retry driftwm 2>&1; echo exit=$?")
+	say("MARKERB 5. nothing wrong: hub-retry driftwm printed %q; %s", out, files())
+	say("EV ev=%d fault=markerB target=driftwm rec=%.2f ok=%d fixed=0", evn, time.Since(tr).Seconds(), b2i(ok))
 }
