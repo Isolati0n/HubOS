@@ -315,19 +315,39 @@ func client(name string, nfd int, hung *hangState) {
 	time.Sleep(500 * time.Millisecond)
 	connected := true
 	var mu sync.Mutex
+	// STAND-IN CHANGE (follow-up 8): the stand-in hubd now reconnects to the compositor when it comes back (every 500 ms) and registers
+	// again, as docs/hubd-slice2.md section 18 says the real hubd does ("brings the windows back by itself"; SOURCE, not tested with the
+	// real hubd). Before this change it stayed "stale" for ever, which made the harness's desktop check fail after every compositor
+	// restart in the candidates that start hubd the image's way (follow-driftwm --once). waybar is unchanged (it exits).
 	go func() {
-		buf := make([]byte, 64)
 		for {
-			if _, e := c.Read(buf); e != nil {
-				if name == "waybar" {
-					logf(name, "compositor connection lost, exiting")
-					os.Exit(1)
+			buf := make([]byte, 64)
+			for {
+				if _, e := c.Read(buf); e != nil {
+					break
 				}
-				logf(name, "compositor connection lost (stale, still running)")
+			}
+			if name == "waybar" {
+				logf(name, "compositor connection lost, exiting")
+				os.Exit(1)
+			}
+			logf(name, "compositor connection lost (stale, still running)")
+			mu.Lock()
+			connected = false
+			mu.Unlock()
+			for {
+				time.Sleep(500 * time.Millisecond)
+				nc, err := net.Dial("unix", waySock)
+				if err != nil {
+					continue
+				}
+				c = nc
+				fmt.Fprintf(c, "hello %s\n", name)
 				mu.Lock()
-				connected = false
+				connected = true
 				mu.Unlock()
-				return
+				logf(name, "compositor connection re-established")
+				break
 			}
 		}
 	}()

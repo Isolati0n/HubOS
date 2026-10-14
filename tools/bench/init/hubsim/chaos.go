@@ -2224,10 +2224,9 @@ func markerB() {
 	}
 	okc, w := waitOKBut()
 	say("MARKERB 2. hub-retry driftwm output=%q; after %.2fs driftwm+waybar answer=%v %s; hubd pid same=%v ping=%q; %s; compositor client list: %q; pids before %s / after %s", out, time.Since(tr).Seconds(), okc, w, pidOf("hubd") == h0, ping(), files(), func() string { o, _ := probe(waySock, "state", time.Second); return o }(), pre, allPids())
-	// the stand-in hubd has no reconnect code: restart it by hand (this stands in for the REAL hubd's own reconnect, which is not tested here)
-	killp(pidOf("hubd"), syscall.SIGKILL)
+	// the stand-in hubd reconnects by itself since follow-up 8 (flagged stand-in change in svc.go)
 	rec, ok := waitOK(40 * time.Second)
-	say("MARKERB 2b. (harness stands in for the real hubd's reconnect: the stand-in hubd is killed and restarted by s6) desktop ok=%v after %.2fs (why=%q)", ok, rec, why())
+	say("MARKERB 2b. desktop ok=%v after %.2fs (why=%q); hubd pid same as before the stop=%v; hubd ping=%q", ok, rec, why(), pidOf("hubd") == h0, ping())
 	// 3. a marker left behind, no alert
 	os.MkdirAll("/run/hub", 0o755)
 	os.WriteFile(marker, nil, 0o644)
