@@ -1,0 +1,24 @@
+H# start 2026-10-10 21:50:36 cand=b-go suite=trial cpus_seen=4 loadavg_at_start=['0.38', '0.44', '0.55']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.21 Booting from ROM..c[?7l[2JCH STAGE1 up=3.49
+H     5.26 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H     5.28 CH SUP-START up=3.56
+H     5.51 CH t=0.1 CHAOS start cand=b-go suite=trial seed=131 cpus=2
+H     5.71 brain: started mode=direct pid=106
+H     8.72 brain: starting driftwm: its dependencies are ready
+H    10.73 brain: driftwm failed (exit status 1), failures=1 action=0
+H    66.41 CH t=61.0 TRIAL ROLLBACK scenario=crash after=60s true_state="driftwm not running" guard_still_feeding=true
+H    66.46 CH t=61.1 STATUS dbus state=running up=true pid=145 restarts=0 last_failure=never needs=[] cause=""
+H    66.46 CH t=61.1 STATUS driftwm state=running up=false pid=167 restarts=1 last_failure=56s needs=[seatd udevd] cause="exit status 1"
+H    66.47 CH t=61.1 STATUS hubd state=running up=false pid=0 restarts=0 last_failure=never needs=[driftwm] cause=""
+H    66.47 CH t=61.1 STATUS seatd state=running up=true pid=140 restarts=0 last_failure=never needs=[] cause=""
+H    66.47 CH t=61.1 STATUS udevd state=running up=true pid=143 restarts=0 last_failure=never needs=[] cause=""
+H    66.47 CH t=61.1 STATUS waybar state=running up=false pid=0 restarts=0 last_failure=never needs=[driftwm dbus] cause=""
+H    67.49 [   65.807040] reboot: Restarting system
+H    67.61 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    67.62 Booting from ROM...
+H    73.05 c[?7l[2JCH STAGE1 up=2.95
+H# trial finished
+H# vm exit code -9 after 73s, loadavg ['0.63', '0.51', '0.56']
+H# end wall=73.1s launches=1 suite_done=True

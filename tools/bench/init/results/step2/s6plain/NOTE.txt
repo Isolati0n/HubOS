@@ -1,0 +1,1 @@
+NOTE: 25978 repeated lines 's6-log: fatal: unable to lock /var/log/X/lock' and 'guard: cannot open watchdog' (2.6 MB) were removed from s6plain-faults-1.log after ev=37; see the run log.

@@ -1,0 +1,52 @@
+H# start 2026-10-12 15:58:26 cand=openrc-doc suite=boot cpus_seen=4 loadavg_at_start=['0.51', '0.44', '0.30']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/openrc-doc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=boot hub.dur=600 hub.seed=103 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=openrc hub.sup=supervise-daemon
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.14 Booting from ROM...
+H     6.41 c[?7l[2JCH STAGE1 up=3.68
+H     6.47 CH CAND openrc pid1=openrc-init
+H     6.49 CH SUP-START up=3.76
+H     6.66 OpenRC init version 0.63.3 starting
+H     6.68 Starting sysinit runlevel
+H     6.70 CH t=0.1 CHAOS start cand=openrc suite=boot seed=103 cpus=2
+H     6.87 
+H     6.88    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     6.88 
+H     7.04  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     7.09  [1m[32m*[m Mounting /proc[K ...
+H     7.15  [1m[31m*[m /etc/fstab does not exist[K
+H     7.21  [ ok ]
+H     7.40  [1m[32m*[m /run/openrc: creating directory[K
+H     7.46  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     7.49  [1m[32m*[m Caching service dependencies[K ...
+H     7.83  [ ok ]
+H     7.86 Starting boot runlevel
+H     7.95 Starting default runlevel
+H     8.67  [1m[32m*[m Starting seatd[K ...
+H     8.79  [1m[32m*[m Starting udevd[K ...
+H     8.83  [1m[32m*[m Starting dbus[K ...
+H     9.14  [ ok ]
+H     9.23  [ ok ]
+H    10.77  [ ok ]
+H    11.03  [1m[32m*[m Starting driftwm[K ...
+H    13.70  [ ok ]
+H    14.04  [1m[32m*[m Starting hubd[K ...
+H    14.11  [1m[32m*[m Starting waybar[K ...
+H    15.99  [ ok ]
+H    16.00  [ ok ]
+H    16.22 CH t=9.6 BOOT-OK up=13.49 ok=1 (seconds since kernel start; waited 9.3)
+H    61.33 CH t=54.7 IDLE-CPU window=30s whole_vm_busy_ticks=891 whole_vm_idle_ticks=4876 init_side_ticks=5 (1 tick = 10 ms, 2 vCPUs)
+H    61.37 CH t=54.8 MEM pid=1 comm=openrc-init rss_kb=1924 pss_kb=677
+H    61.38 CH t=54.8 MEM pid=210 comm=supervise-daemo rss_kb=1568 pss_kb=380
+H    61.38 CH t=54.8 MEM pid=217 comm=supervise-daemo rss_kb=1580 pss_kb=403
+H    61.38 CH t=54.8 MEM pid=225 comm=supervise-daemo rss_kb=1540 pss_kb=388
+H    61.38 CH t=54.8 MEM pid=268 comm=supervise-daemo rss_kb=1564 pss_kb=376
+H    61.38 CH t=54.8 MEM pid=327 comm=supervise-daemo rss_kb=1568 pss_kb=380
+H    61.39 CH t=54.8 MEM pid=332 comm=supervise-daemo rss_kb=1664 pss_kb=452
+H    61.47 CH t=54.9 POLICY driftwm oom_score_adj=-900 nice=0 cgroup=0::/hub
+H    61.52 CH t=54.9 POLICY hubd oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    61.57 CH t=55.0 POLICY waybar oom_score_adj=0 nice=0 cgroup=0::/
+H    61.60 CH t=55.0 LISTEN tcp_listening_sockets=0 epmd_running=false
+H    61.60 CH t=55.0 SUITE-DONE
+H    63.61 [   60.861802] reboot: Power down
+H# vm exit code 0 after 64s, loadavg ['0.30', '0.41', '0.30']
+H# end wall=63.6s launches=1 suite_done=True

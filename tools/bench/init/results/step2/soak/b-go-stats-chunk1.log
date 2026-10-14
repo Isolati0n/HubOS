@@ -1,0 +1,2635 @@
+H# chunk 1 of candidate b-go-stats, seed 7510, planned 7200 s 
+H# start 2026-10-12 11:49:12 cand=b-go-stats suite=soak cpus_seen=4 loadavg_at_start=['0.20', '0.30', '0.28']
+H# launch 1 skip=0 dur=7200 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/b-go-stats.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=soak hub.dur=7200 hub.seed=7510 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=b-go hub.brain=brain hub.gcstats=1
+H     0.18 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.34 Booting from ROM...
+H     7.55 c[?7l[2JCH STAGE1 up=4.71
+H     7.64 CH CAND b-go pid1=s6-svscan, supervisor=brain(go, direct)
+H     7.66 CH SUP-START up=4.82
+H     8.01 brain: started mode=direct pid=106
+H     8.06 CH t=0.2 CHAOS start cand=b-go suite=soak seed=7510 cpus=2
+H    11.02 brain: starting driftwm: its dependencies are ready
+H    14.02 brain: starting waybar: its dependencies are ready
+H    14.02 brain: starting hubd: its dependencies are ready
+H    15.06 CH t=7.2 BOOT-OK up=12.23 ok=1 (seconds since kernel start; waited 6.8)
+H    20.07 CH t=12.2 STEP 1 fKill
+H    20.08 CH t=12.2 SOAKMEM t=0 restarts=0 faults=0
+H    20.23 CH t=12.3 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=123576 heap_sys=3571712 heap_released=2973696 goroutines=13 fds=16 num_gc=1
+H    20.28 CH t=12.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H    20.28 CH t=12.4 MEM pid=106 comm=brain rss_kb=3788 pss_kb=3784
+H    21.04 brain: driftwm failed (signal: killed), failures=1 action=0
+H    21.05 brain: holding hubd: a dependency is down
+H    23.02 brain: starting waybar: its dependencies are ready
+H    23.03 brain: starting hubd: its dependencies are ready
+H    24.00 CH t=16.1 EV ev=1 fault=kill target=driftwm rec=3.71 ok=1 fixed=0 
+H    36.00 CH t=28.1 STEP 2 fSupKill
+H    36.00 CH t=28.1 skip supkill seatd: no per-service supervisor
+H    43.00 CH t=35.1 STEP 3 fKill
+H    43.03 brain: dbus failed (signal: killed), failures=1 action=0
+H    43.04 brain: holding waybar: a dependency is down
+H    44.02 brain: starting waybar: its dependencies are ready
+H    44.47 CH t=36.6 EV ev=2 fault=kill target=dbus rec=1.25 ok=1 fixed=0 
+H    51.47 CH t=43.6 STEP 4 fKill
+H    52.02 brain: dbus failed (signal: killed), failures=2 action=1
+H    52.03 brain: holding waybar: a dependency is down
+H    54.03 brain: starting waybar: its dependencies are ready
+H    54.54 CH t=46.7 EV ev=3 fault=kill target=dbus rec=2.86 ok=1 fixed=0 
+H    62.54 CH t=54.7 STEP 5 fHang
+H    66.04 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H    67.02 brain: driftwm failed (signal: killed), failures=3 action=1
+H    67.02 brain: holding hubd: a dependency is down
+H    72.02 brain: starting waybar: its dependencies are ready
+H    72.03 brain: starting hubd: its dependencies are ready
+H    73.01 CH t=65.1 EV ev=4 fault=hang-stop target=driftwm rec=10.25 ok=1 fixed=0 
+H    78.01 CH t=70.1 STEP 6 fScanKill
+H    80.28 CH t=72.4 SOAKMEM t=60 restarts=10 faults=6
+H    80.40 CH t=72.5 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=133384 heap_sys=3506176 heap_released=2891776 goroutines=15 fds=20 num_gc=2
+H    80.47 CH t=72.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H    80.48 CH t=72.6 MEM pid=106 comm=brain rss_kb=4100 pss_kb=4096
+H    88.01 CH t=80.1 STEP 7 fKill
+H    89.02 brain: udevd failed (signal: killed), failures=1 action=0
+H    89.03 brain: holding driftwm: a dependency is down
+H    90.02 brain: holding hubd: a dependency is down
+H    91.02 brain: starting driftwm: its dependencies are ready
+H    93.02 brain: starting waybar: its dependencies are ready
+H    93.03 brain: starting hubd: its dependencies are ready
+H    93.91 CH t=86.0 EV ev=5 fault=kill target=udevd rec=5.68 ok=1 fixed=0 
+H    98.91 CH t=91.0 STEP 8 fKill
+H   100.02 brain: dbus failed (signal: killed), failures=3 action=1
+H   100.02 brain: holding waybar: a dependency is down
+H   103.02 brain: starting waybar: its dependencies are ready
+H   103.41 CH t=95.5 EV ev=6 fault=kill target=dbus rec=4.29 ok=1 fixed=0 
+H   113.41 CH t=105.5 STEP 9 fSupKill
+H   113.41 CH t=105.5 skip supkill waybar: no per-service supervisor
+H   119.41 CH t=111.5 STEP 10 fKill
+H   120.02 brain: driftwm failed (signal: killed), failures=3 action=1
+H   120.02 brain: holding hubd: a dependency is down
+H   124.02 brain: starting waybar: its dependencies are ready
+H   124.02 brain: starting hubd: its dependencies are ready
+H   125.03 CH t=117.1 EV ev=7 fault=kill target=driftwm rec=5.40 ok=1 fixed=0 
+H   135.03 CH t=127.2 STEP 11 fKill
+H   136.02 brain: driftwm failed (signal: killed), failures=2 action=1
+H   136.02 brain: holding hubd: a dependency is down
+H   140.02 brain: starting waybar: its dependencies are ready
+H   140.03 brain: starting hubd: its dependencies are ready
+H   140.48 CH t=132.6 SOAKMEM t=120 restarts=20 faults=10
+H   140.54 CH t=132.7 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=141136 heap_sys=3473408 heap_released=2842624 goroutines=20 fds=22 num_gc=3
+H   140.65 CH t=132.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   140.65 CH t=132.8 MEM pid=106 comm=brain rss_kb=4200 pss_kb=4196
+H   140.93 CH t=133.0 EV ev=8 fault=kill target=driftwm rec=5.67 ok=1 fixed=0 
+H   159.93 CH t=152.1 STEP 12 fKill
+H   160.03 brain: udevd failed (signal: killed), failures=1 action=0
+H   160.03 brain: holding driftwm: a dependency is down
+H   161.02 brain: holding hubd: a dependency is down
+H   162.02 brain: starting driftwm: its dependencies are ready
+H   164.02 brain: starting waybar: its dependencies are ready
+H   164.02 brain: starting hubd: its dependencies are ready
+H   165.03 CH t=157.2 EV ev=9 fault=kill target=udevd rec=4.89 ok=1 fixed=0 
+H   180.03 CH t=172.2 STEP 13 fBrainKill
+H   181.15 brain: started mode=direct pid=786
+H   182.47 CH t=174.6 EV ev=10 fault=brain-killed target=brain rec=0.15 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H   196.48 CH t=188.6 STEP 14 fHang
+H   196.86 CH t=189.0 EV ev=11 fault=hang-spin target=driftwm rec=0.16 ok=1 fixed=0 
+H   200.66 CH t=192.8 SOAKMEM t=181 restarts=26 faults=14
+H   200.77 CH t=192.9 BRAINSTAT gcstats heap_inuse=458752 heap_alloc=77048 heap_sys=3899392 heap_released=3440640 goroutines=3 fds=8 num_gc=1
+H   200.81 CH t=192.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   200.81 CH t=192.9 MEM pid=786 comm=brain rss_kb=3532 pss_kb=3528
+H   209.86 CH t=202.0 STEP 15 fKill
+H   210.16 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H   210.18 brain: holding waybar: a dependency is down
+H   211.16 brain: starting waybar: its dependencies are ready
+H   211.71 CH t=203.8 EV ev=12 fault=kill target=dbus rec=1.63 ok=1 fixed=0 
+H   217.71 CH t=209.8 STEP 16 fKill
+H   218.16 brain: driftwm failed (exit status unknown (adopted)), failures=1 action=0
+H   218.17 brain: holding hubd: a dependency is down
+H   221.15 brain: starting waybar: its dependencies are ready
+H   221.16 brain: starting hubd: its dependencies are ready
+H   222.23 CH t=214.4 EV ev=13 fault=kill target=driftwm rec=4.30 ok=1 fixed=0 
+H   238.23 CH t=230.4 STEP 17 fKill
+H   239.16 brain: driftwm failed (signal: killed), failures=2 action=1
+H   239.16 brain: holding hubd: a dependency is down
+H   243.15 brain: starting waybar: its dependencies are ready
+H   243.16 brain: starting hubd: its dependencies are ready
+H   244.04 CH t=236.2 EV ev=14 fault=kill target=driftwm rec=5.59 ok=1 fixed=0 
+H   260.81 CH t=252.9 SOAKMEM t=241 restarts=34 faults=17
+H   260.88 CH t=253.0 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=111248 heap_sys=3670016 heap_released=3072000 goroutines=11 fds=16 num_gc=2
+H   260.92 CH t=253.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   260.93 CH t=253.0 MEM pid=786 comm=brain rss_kb=3984 pss_kb=3980
+H   262.04 CH t=254.2 STEP 18 fKill
+H   262.16 brain: waybar failed (signal: killed), failures=1 action=0
+H   262.61 CH t=254.7 EV ev=15 fault=kill target=waybar rec=0.36 ok=1 fixed=0 
+H   271.61 CH t=263.7 STEP 19 fKill
+H   272.17 brain: hubd failed (signal: killed), failures=1 action=0
+H   273.19 CH t=265.3 EV ev=16 fault=kill target=hubd rec=1.38 ok=1 fixed=0 
+H   283.19 CH t=275.3 STEP 20 fKill
+H   284.16 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H   284.16 brain: holding driftwm: a dependency is down
+H   285.16 brain: holding hubd: a dependency is down
+H   286.15 brain: starting driftwm: its dependencies are ready
+H   288.15 brain: starting waybar: its dependencies are ready
+H   288.16 brain: starting hubd: its dependencies are ready
+H   289.09 CH t=281.2 EV ev=17 fault=kill target=udevd rec=5.68 ok=1 fixed=0 
+H   294.09 CH t=286.2 STEP 21 fKill
+H   295.16 brain: driftwm failed (signal: killed), failures=2 action=1
+H   295.16 brain: holding hubd: a dependency is down
+H   300.15 brain: starting waybar: its dependencies are ready
+H   300.16 brain: starting hubd: its dependencies are ready
+H   300.99 CH t=293.1 EV ev=18 fault=kill target=driftwm rec=6.69 ok=1 fixed=0 
+H   308.99 CH t=301.1 STEP 22 fKill
+H   309.16 brain: dbus failed (signal: killed), failures=1 action=0
+H   309.17 brain: holding waybar: a dependency is down
+H   310.16 brain: starting waybar: its dependencies are ready
+H   310.44 CH t=302.6 EV ev=19 fault=kill target=dbus rec=1.23 ok=1 fixed=0 
+H   320.93 CH t=313.1 SOAKMEM t=301 restarts=45 faults=22
+H   320.98 CH t=313.1 BRAINSTAT gcstats heap_inuse=589824 heap_alloc=128160 heap_sys=3538944 heap_released=2949120 goroutines=13 fds=18 num_gc=3
+H   321.03 CH t=313.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   321.03 CH t=313.1 MEM pid=786 comm=brain rss_kb=4168 pss_kb=4164
+H   326.44 CH t=318.6 STEP 23 fHang
+H   330.18 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H   330.25 brain: holding waybar: a dependency is down
+H   330.25 brain: holding hubd: a dependency is down
+H   331.16 brain: driftwm failed (restarted unseen), failures=3 action=1
+H   336.15 brain: starting waybar: its dependencies are ready
+H   336.16 brain: starting hubd: its dependencies are ready
+H   337.20 CH t=329.3 EV ev=20 fault=hang-spin target=driftwm rec=10.55 ok=1 fixed=0 
+H   343.21 CH t=335.3 STEP 24 fKill
+H   344.16 brain: driftwm failed (signal: killed), failures=4 action=2
+H   344.16 brain: holding hubd: a dependency is down
+H   351.15 brain: starting waybar: its dependencies are ready
+H   351.16 brain: starting hubd: its dependencies are ready
+H   352.07 CH t=344.2 EV ev=21 fault=kill target=driftwm rec=8.65 ok=1 fixed=0 
+H   360.07 CH t=352.2 STEP 25 fKill
+H   360.16 brain: dbus failed (signal: killed), failures=2 action=1
+H   360.16 brain: holding waybar: a dependency is down
+H   362.16 brain: starting waybar: its dependencies are ready
+H   362.63 CH t=354.8 EV ev=22 fault=kill target=dbus rec=2.36 ok=1 fixed=0 
+H   374.64 CH t=366.8 STEP 26 fOOM
+H   374.71 CH t=366.8 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   381.03 CH t=373.1 SOAKMEM t=361 restarts=54 faults=25
+H   381.11 CH t=373.2 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=129304 heap_sys=3538944 heap_released=2932736 goroutines=13 fds=18 num_gc=4
+H   381.18 CH t=373.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   381.19 CH t=373.3 MEM pid=786 comm=brain rss_kb=4296 pss_kb=4292
+H   384.35 CH t=376.5 EV ev=23 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   394.35 CH t=386.5 STEP 27 fClock
+H   395.15 brain: driftwm failed (signal: killed), failures=2 action=1
+H   395.16 brain: holding hubd: a dependency is down
+H   399.16 brain: starting waybar: its dependencies are ready
+H   399.16 brain: starting hubd: its dependencies are ready
+H   399.98 CH t=392.1 EV ev=24 fault=clock-3600 target=driftwm rec=5.42 ok=1 fixed=0 
+H   401.16 brain: hubd failed (signal: killed), failures=1 action=0
+H   402.00 CH t=394.1 EV ev=25 fault=after-clock-3600 target=hubd rec=0.81 ok=1 fixed=0 
+H   415.00 CH t=407.1 STEP 28 fKill
+H   415.16 brain: driftwm failed (signal: killed), failures=2 action=1
+H   415.16 brain: holding hubd: a dependency is down
+H   419.15 brain: starting waybar: its dependencies are ready
+H   419.16 brain: starting hubd: its dependencies are ready
+H   420.11 CH t=412.2 EV ev=26 fault=kill target=driftwm rec=4.90 ok=1 fixed=0 
+H   435.12 CH t=427.2 STEP 29 fKill
+H   435.16 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H   435.17 brain: holding driftwm: a dependency is down
+H   436.15 brain: starting driftwm: its dependencies are ready
+H   436.17 brain: holding hubd: a dependency is down
+H   438.15 brain: starting waybar: its dependencies are ready
+H   438.18 brain: starting hubd: its dependencies are ready
+H   439.13 CH t=431.2 EV ev=27 fault=kill target=seatd rec=3.81 ok=1 fixed=0 
+H   441.19 CH t=433.3 SOAKMEM t=421 restarts=65 faults=29
+H   441.25 CH t=433.4 BRAINSTAT gcstats heap_inuse=589824 heap_alloc=131824 heap_sys=3538944 heap_released=2949120 goroutines=15 fds=20 num_gc=5
+H   441.30 CH t=433.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   441.30 CH t=433.4 MEM pid=786 comm=brain rss_kb=4320 pss_kb=4316
+H   445.13 CH t=437.2 STEP 30 fOOM
+H   445.22 CH t=437.3 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   450.98 CH t=443.1 EV ev=28 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   466.99 CH t=459.1 STEP 31 fKill
+H   467.16 brain: driftwm failed (signal: killed), failures=2 action=1
+H   467.16 brain: holding hubd: a dependency is down
+H   471.15 brain: starting waybar: its dependencies are ready
+H   471.16 brain: starting hubd: its dependencies are ready
+H   471.99 CH t=464.1 EV ev=29 fault=kill target=driftwm rec=4.79 ok=1 fixed=0 
+H   486.99 CH t=479.1 STEP 32 fDisk
+H   487.04 CH t=479.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   493.16 brain: waybar failed (signal: killed), failures=1 action=0
+H   501.30 CH t=493.4 SOAKMEM t=481 restarts=69 faults=31
+H   501.37 CH t=493.5 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=136688 heap_sys=3506176 heap_released=2908160 goroutines=15 fds=20 num_gc=6
+H   501.41 CH t=493.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   501.41 CH t=493.5 MEM pid=786 comm=brain rss_kb=4336 pss_kb=4332
+H   502.80 CH t=494.9 STATUS dbus state=running up=true pid=1451 restarts=3 last_failure=143s needs=[] cause="signal: killed"
+H   502.81 CH t=494.9 STATUS driftwm state=running up=true pid=1856 restarts=9 last_failure=36s needs=[seatd udevd] cause="signal: killed"
+H   502.81 CH t=494.9 STATUS hubd state=running up=true pid=1861 restarts=2 last_failure=102s needs=[driftwm] cause="signal: killed"
+H   502.81 CH t=494.9 STATUS seatd state=running up=true pid=1728 restarts=1 last_failure=68s needs=[] cause="exit status unknown (adopted)"
+H   502.81 CH t=494.9 STATUS udevd state=running up=true pid=1152 restarts=1 last_failure=219s needs=[] cause="exit status unknown (adopted)"
+H   502.81 CH t=494.9 STATUS waybar state=running up=true pid=1943 restarts=2 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H   503.12 CH t=495.2 EV ev=30 fault=disk-full target=waybar rec=0.07 ok=1 fixed=0 ok_during=14/15 all_alive_at_end=1
+H   514.12 CH t=506.2 STEP 33 fOOM
+H   514.23 CH t=506.3 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   520.50 CH t=512.6 EV ev=31 fault=oom target=hog rec=0.12 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   525.51 CH t=517.6 STEP 34 fKill
+H   526.16 brain: dbus failed (signal: killed), failures=1 action=0
+H   526.17 brain: holding waybar: a dependency is down
+H   527.18 brain: starting waybar: its dependencies are ready
+H   527.68 CH t=519.8 EV ev=32 fault=kill target=dbus rec=1.97 ok=1 fixed=0 
+H   543.68 CH t=535.8 STEP 35 fOOM
+H   543.77 CH t=535.9 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   549.57 CH t=541.7 EV ev=33 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   557.57 CH t=549.7 STEP 36 fBrainKill
+H   558.71 brain: started mode=direct pid=2173
+H   561.02 CH t=553.1 EV ev=34 fault=brain-killed target=brain rec=0.09 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H   561.41 CH t=553.5 SOAKMEM t=541 restarts=71 faults=36
+H   561.46 CH t=553.6 BRAINSTAT gcstats heap_inuse=458752 heap_alloc=76680 heap_sys=3899392 heap_released=3440640 goroutines=3 fds=8 num_gc=1
+H   561.50 CH t=553.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   561.51 CH t=553.6 MEM pid=2173 comm=brain rss_kb=3520 pss_kb=3516
+H   580.02 CH t=572.1 STEP 37 fHang
+H   583.74 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H   583.76 brain: driftwm failed (exit status unknown (adopted)), failures=2 action=1
+H   584.72 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H   585.74 brain: holding hubd: a dependency is down
+H   587.72 brain: starting waybar: its dependencies are ready
+H   587.73 brain: starting hubd: its dependencies are ready
+H   588.58 CH t=580.7 EV ev=35 fault=hang-stop target=driftwm rec=8.35 ok=1 fixed=0 
+H   602.58 CH t=594.7 STEP 38 fKill
+H   602.72 brain: driftwm failed (signal: killed), failures=3 action=1
+H   602.72 brain: holding hubd: a dependency is down
+H   608.72 brain: starting waybar: its dependencies are ready
+H   608.73 brain: starting hubd: its dependencies are ready
+H   609.61 CH t=601.7 EV ev=36 fault=kill target=driftwm rec=6.82 ok=1 fixed=0 
+H   621.51 CH t=613.6 SOAKMEM t=601 restarts=77 faults=38
+H   621.56 CH t=613.7 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=103656 heap_sys=3735552 heap_released=3137536 goroutines=9 fds=14 num_gc=2
+H   621.58 CH t=613.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   621.59 CH t=613.7 MEM pid=2173 comm=brain rss_kb=3964 pss_kb=3960
+H   628.61 CH t=620.7 STEP 39 fSupKill
+H   628.61 CH t=620.7 skip supkill seatd: no per-service supervisor
+H   634.62 CH t=626.7 STEP 40 fKill
+H   634.72 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H   634.73 brain: holding hubd: a dependency is down
+H   635.72 brain: starting driftwm: its dependencies are ready
+H   637.72 brain: starting waybar: its dependencies are ready
+H   637.73 brain: starting hubd: its dependencies are ready
+H   638.56 CH t=630.7 EV ev=37 fault=kill target=seatd rec=3.73 ok=1 fixed=0 
+H   645.56 CH t=637.7 STEP 41 fKill
+H   645.72 brain: driftwm failed (signal: killed), failures=2 action=1
+H   645.73 brain: holding hubd: a dependency is down
+H   650.73 brain: starting waybar: its dependencies are ready
+H   650.74 brain: starting hubd: its dependencies are ready
+H   651.57 CH t=643.7 EV ev=38 fault=kill target=driftwm rec=5.81 ok=1 fixed=0 
+H   662.58 CH t=654.7 STEP 42 fHang
+H   665.73 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H   665.80 brain: holding waybar: a dependency is down
+H   665.80 brain: holding hubd: a dependency is down
+H   666.72 brain: driftwm failed (restarted unseen), failures=3 action=1
+H   670.72 brain: starting waybar: its dependencies are ready
+H   670.73 brain: starting hubd: its dependencies are ready
+H   671.68 CH t=663.8 EV ev=39 fault=hang-stop target=driftwm rec=8.89 ok=1 fixed=0 
+H   677.68 CH t=669.8 STEP 43 fKill
+H   677.72 brain: hubd failed (signal: killed), failures=1 action=0
+H   678.78 CH t=670.9 EV ev=40 fault=kill target=hubd rec=0.88 ok=1 fixed=0 
+H   681.59 CH t=673.7 SOAKMEM t=662 restarts=89 faults=43
+H   681.65 CH t=673.8 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=114160 heap_sys=3670016 heap_released=3063808 goroutines=11 fds=16 num_gc=3
+H   681.70 CH t=673.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   681.70 CH t=673.8 MEM pid=2173 comm=brain rss_kb=4120 pss_kb=4116
+H   689.78 CH t=681.9 STEP 44 fOOM
+H   689.92 CH t=682.0 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   695.91 CH t=688.0 EV ev=41 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   710.92 CH t=703.0 STEP 45 fKill
+H   711.72 brain: seatd failed (signal: killed), failures=1 action=0
+H   711.73 brain: holding hubd: a dependency is down
+H   712.72 brain: starting driftwm: its dependencies are ready
+H   715.72 brain: starting waybar: its dependencies are ready
+H   715.72 brain: starting hubd: its dependencies are ready
+H   716.63 CH t=708.7 EV ev=42 fault=kill target=seatd rec=5.50 ok=1 fixed=0 
+H   733.63 CH t=725.7 STEP 46 fSupKill
+H   733.63 CH t=725.7 skip supkill driftwm: no per-service supervisor
+H   739.63 CH t=731.8 STEP 47 fSupKill
+H   739.63 CH t=731.8 skip supkill driftwm: no per-service supervisor
+H   741.70 CH t=733.8 SOAKMEM t=722 restarts=93 faults=47
+H   741.76 CH t=733.9 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=121040 heap_sys=3637248 heap_released=3014656 goroutines=11 fds=16 num_gc=4
+H   741.79 CH t=733.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   741.79 CH t=733.9 MEM pid=2173 comm=brain rss_kb=4232 pss_kb=4228
+H   757.63 CH t=749.8 STEP 48 fKill
+H   757.73 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H   757.74 brain: holding driftwm: a dependency is down
+H   758.72 brain: holding hubd: a dependency is down
+H   759.72 brain: starting driftwm: its dependencies are ready
+H   761.72 brain: starting waybar: its dependencies are ready
+H   761.73 brain: starting hubd: its dependencies are ready
+H   762.74 CH t=754.9 EV ev=43 fault=kill target=udevd rec=4.90 ok=1 fixed=0 
+H   773.74 CH t=765.9 STEP 49 fKill
+H   774.73 brain: waybar failed (signal: killed), failures=1 action=0
+H   775.07 CH t=767.2 EV ev=44 fault=kill target=waybar rec=1.11 ok=1 fixed=0 
+H   788.07 CH t=780.2 STEP 50 fKill
+H   788.72 brain: driftwm failed (signal: killed), failures=1 action=0
+H   788.74 brain: holding hubd: a dependency is down
+H   790.72 brain: starting waybar: its dependencies are ready
+H   790.73 brain: starting hubd: its dependencies are ready
+H   791.57 CH t=783.7 EV ev=45 fault=kill target=driftwm rec=3.29 ok=1 fixed=0 
+H   800.57 CH t=792.7 STEP 51 fKill
+H   800.72 brain: seatd failed (signal: killed), failures=1 action=0
+H   800.73 brain: holding hubd: a dependency is down
+H   801.72 brain: starting driftwm: its dependencies are ready
+H   801.79 CH t=793.9 SOAKMEM t=782 restarts=102 faults=50
+H   801.87 CH t=794.0 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=134072 heap_sys=3538944 heap_released=2899968 goroutines=11 fds=15 num_gc=5
+H   801.93 CH t=794.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   801.93 CH t=794.1 MEM pid=2173 comm=brain rss_kb=4376 pss_kb=4372
+H   803.72 brain: starting waybar: its dependencies are ready
+H   803.73 brain: starting hubd: its dependencies are ready
+H   804.64 CH t=796.8 EV ev=46 fault=kill target=seatd rec=3.86 ok=1 fixed=0 
+H   822.64 CH t=814.8 STEP 52 fDep
+H   822.72 brain: seatd failed (signal: killed), failures=2 action=1
+H   822.72 brain: holding hubd: a dependency is down
+H   843.72 brain: starting driftwm: its dependencies are ready
+H   845.72 brain: starting waybar: its dependencies are ready
+H   845.73 brain: starting hubd: its dependencies are ready
+H   846.85 CH t=839.0 EV ev=47 fault=dep-fail target=seatd rec=4.00 ok=1 fixed=0 
+H   846.85 CH t=839.0 DEPSTARTS mode=fail seatd=20 driftwm=1 waybar=1 hubd=1
+H   857.86 CH t=850.0 STEP 53 fKill
+H   858.72 brain: udevd failed (signal: killed), failures=1 action=0
+H   858.73 brain: holding driftwm: a dependency is down
+H   859.72 brain: holding hubd: a dependency is down
+H   860.72 brain: starting driftwm: its dependencies are ready
+H   861.93 CH t=854.1 SOAKMEM t=842 restarts=112 faults=52
+H   861.98 CH t=854.1 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=138416 heap_sys=3506176 heap_released=2875392 goroutines=14 fds=15 num_gc=6
+H   862.01 CH t=854.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   862.01 CH t=854.1 MEM pid=2173 comm=brain rss_kb=4420 pss_kb=4416
+H   863.72 brain: starting waybar: its dependencies are ready
+H   863.73 brain: starting hubd: its dependencies are ready
+H   864.83 CH t=857.0 EV ev=48 fault=kill target=udevd rec=6.77 ok=1 fixed=0 
+H   877.84 CH t=870.0 STEP 54 fKill
+H   878.72 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H   878.74 brain: holding waybar: a dependency is down
+H   879.72 brain: starting waybar: its dependencies are ready
+H   880.03 CH t=872.2 EV ev=49 fault=kill target=dbus rec=1.99 ok=1 fixed=0 
+H   897.03 CH t=889.2 STEP 55 fKill
+H   897.72 brain: seatd failed (signal: killed), failures=1 action=0
+H   897.73 brain: holding hubd: a dependency is down
+H   898.72 brain: starting driftwm: its dependencies are ready
+H   901.72 brain: starting waybar: its dependencies are ready
+H   901.72 brain: starting hubd: its dependencies are ready
+H   902.71 CH t=894.8 EV ev=50 fault=kill target=seatd rec=5.46 ok=1 fixed=0 
+H   917.71 CH t=909.8 STEP 56 fKill
+H   918.72 brain: waybar failed (signal: killed), failures=1 action=0
+H   919.23 CH t=911.4 EV ev=51 fault=kill target=waybar rec=1.30 ok=1 fixed=0 
+H   922.01 CH t=914.1 SOAKMEM t=902 restarts=121 faults=56
+H   922.06 CH t=914.2 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=142480 heap_sys=3440640 heap_released=2793472 goroutines=15 fds=20 num_gc=7
+H   922.09 CH t=914.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   922.09 CH t=914.2 MEM pid=2173 comm=brain rss_kb=4456 pss_kb=4452
+H   934.23 CH t=926.4 STEP 57 fKill
+H   934.72 brain: seatd failed (signal: killed), failures=2 action=1
+H   934.72 brain: holding hubd: a dependency is down
+H   936.72 brain: starting driftwm: its dependencies are ready
+H   938.72 brain: starting waybar: its dependencies are ready
+H   938.72 brain: starting hubd: its dependencies are ready
+H   939.61 CH t=931.7 EV ev=52 fault=kill target=seatd rec=5.17 ok=1 fixed=0 
+H   945.61 CH t=937.7 STEP 58 fKill
+H   945.72 brain: waybar failed (signal: killed), failures=2 action=1
+H   947.12 CH t=939.2 EV ev=53 fault=kill target=waybar rec=1.30 ok=1 fixed=0 
+H   954.12 CH t=946.2 STEP 59 fKill
+H   954.72 brain: seatd failed (signal: killed), failures=3 action=1
+H   954.72 brain: holding hubd: a dependency is down
+H   958.72 brain: starting driftwm: its dependencies are ready
+H   961.72 brain: starting waybar: its dependencies are ready
+H   961.72 brain: starting hubd: its dependencies are ready
+H   962.66 CH t=954.8 EV ev=54 fault=kill target=seatd rec=8.32 ok=1 fixed=0 
+H   969.66 CH t=961.8 STEP 60 fDisk
+H   969.72 CH t=961.8 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   975.72 brain: waybar failed (signal: killed), failures=3 action=1
+H   982.09 CH t=974.2 SOAKMEM t=962 restarts=131 faults=59
+H   982.14 CH t=974.3 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=143248 heap_sys=3440640 heap_released=2793472 goroutines=15 fds=20 num_gc=8
+H   982.17 CH t=974.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H   982.17 CH t=974.3 MEM pid=2173 comm=brain rss_kb=4460 pss_kb=4456
+H   985.62 CH t=977.7 STATUS dbus state=running up=true pid=3425 restarts=1 last_failure=107s needs=[] cause="exit status unknown (adopted)"
+H   985.62 CH t=977.7 STATUS driftwm state=running up=true pid=3721 restarts=7 last_failure=197s needs=[seatd udevd] cause="signal: killed"
+H   985.62 CH t=977.7 STATUS hubd state=running up=true pid=3735 restarts=1 last_failure=308s needs=[driftwm] cause="signal: killed"
+H   985.62 CH t=977.7 STATUS seatd state=running up=true pid=3717 restarts=7 last_failure=31s needs=[] cause="signal: killed"
+H   985.62 CH t=977.7 STATUS udevd state=running up=true pid=3350 restarts=2 last_failure=127s needs=[] cause="signal: killed"
+H   985.62 CH t=977.7 STATUS waybar state=running up=true pid=3800 restarts=5 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H   986.01 CH t=978.1 EV ev=55 fault=disk-full target=waybar rec=0.13 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H   992.01 CH t=984.1 STEP 61 fDisk
+H   992.07 CH t=984.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   997.73 brain: waybar failed (signal: killed), failures=3 action=1
+H  1007.95 CH t=1000.1 STATUS dbus state=running up=true pid=3425 restarts=1 last_failure=129s needs=[] cause="exit status unknown (adopted)"
+H  1007.95 CH t=1000.1 STATUS driftwm state=running up=true pid=3721 restarts=7 last_failure=219s needs=[seatd udevd] cause="signal: killed"
+H  1007.96 CH t=1000.1 STATUS hubd state=running up=true pid=3735 restarts=1 last_failure=330s needs=[driftwm] cause="signal: killed"
+H  1007.96 CH t=1000.1 STATUS seatd state=running up=true pid=3717 restarts=7 last_failure=53s needs=[] cause="signal: killed"
+H  1007.96 CH t=1000.1 STATUS udevd state=running up=true pid=3350 restarts=2 last_failure=149s needs=[] cause="signal: killed"
+H  1007.96 CH t=1000.1 STATUS waybar state=running up=true pid=3883 restarts=6 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H  1008.31 CH t=1000.4 EV ev=56 fault=disk-full target=waybar rec=0.10 ok=1 fixed=0 ok_during=12/15 all_alive_at_end=1
+H  1021.31 CH t=1013.4 STEP 62 fBrainKill
+H  1022.41 brain: started mode=direct pid=3962
+H  1024.75 CH t=1016.9 EV ev=57 fault=brain-killed target=brain rec=0.11 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H  1041.75 CH t=1033.9 STEP 63 fDisk
+H  1041.79 CH t=1033.9 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1042.17 CH t=1034.3 SOAKMEM t=1022 restarts=132 faults=62
+H  1042.23 CH t=1034.4 BRAINSTAT gcstats heap_inuse=466944 heap_alloc=76776 heap_sys=3899392 heap_released=3432448 goroutines=3 fds=8 num_gc=1
+H  1042.29 CH t=1034.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1042.29 CH t=1034.4 MEM pid=3962 comm=brain rss_kb=3536 pss_kb=3532
+H  1047.42 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  1056.97 CH t=1049.1 STATUS dbus state=running up=true pid=3425 restarts=0 last_failure=never needs=[] cause=""
+H  1056.98 CH t=1049.1 STATUS driftwm state=running up=true pid=3721 restarts=0 last_failure=never needs=[seatd udevd] cause=""
+H  1056.98 CH t=1049.1 STATUS hubd state=running up=true pid=3735 restarts=0 last_failure=never needs=[driftwm] cause=""
+H  1056.98 CH t=1049.1 STATUS seatd state=running up=true pid=3717 restarts=0 last_failure=never needs=[] cause=""
+H  1056.98 CH t=1049.1 STATUS udevd state=running up=true pid=3350 restarts=0 last_failure=never needs=[] cause=""
+H  1056.99 CH t=1049.1 STATUS waybar state=running up=true pid=4056 restarts=1 last_failure=10s needs=[driftwm dbus] cause="exit status unknown (adopted)"
+H  1057.34 CH t=1049.5 EV ev=58 fault=disk-full target=waybar rec=0.11 ok=1 fixed=0 ok_during=13/14 all_alive_at_end=1
+H  1062.34 CH t=1054.5 STEP 64 fHang
+H  1062.65 CH t=1054.8 EV ev=59 fault=hang-spin target=driftwm rec=0.10 ok=1 fixed=0 
+H  1071.65 CH t=1063.8 STEP 65 fKill
+H  1072.41 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  1072.42 brain: holding driftwm: a dependency is down
+H  1073.42 brain: waybar failed (exit status 1), failures=2 action=1
+H  1074.42 brain: starting driftwm: its dependencies are ready
+H  1074.44 brain: holding hubd: a dependency is down
+H  1077.42 brain: starting hubd: its dependencies are ready
+H  1078.75 CH t=1070.9 EV ev=60 fault=kill target=udevd rec=6.88 ok=1 fixed=0 
+H  1094.75 CH t=1086.9 STEP 66 fKill
+H  1095.42 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  1095.44 brain: holding waybar: a dependency is down
+H  1096.42 brain: starting waybar: its dependencies are ready
+H  1096.87 CH t=1089.0 EV ev=61 fault=kill target=dbus rec=1.92 ok=1 fixed=0 
+H  1102.29 CH t=1094.4 SOAKMEM t=1082 restarts=139 faults=66
+H  1102.34 CH t=1094.5 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=122368 heap_sys=3571712 heap_released=2965504 goroutines=13 fds=18 num_gc=2
+H  1102.39 CH t=1094.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1102.39 CH t=1094.5 MEM pid=3962 comm=brain rss_kb=4056 pss_kb=4052
+H  1112.88 CH t=1105.0 STEP 67 fKill
+H  1113.41 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  1113.43 brain: holding hubd: a dependency is down
+H  1114.41 brain: starting driftwm: its dependencies are ready
+H  1117.41 brain: starting waybar: its dependencies are ready
+H  1117.42 brain: starting hubd: its dependencies are ready
+H  1118.34 CH t=1110.5 EV ev=62 fault=kill target=seatd rec=5.25 ok=1 fixed=0 
+H  1132.34 CH t=1124.5 STEP 68 fKill
+H  1132.42 brain: udevd failed (signal: killed), failures=1 action=0
+H  1132.43 brain: holding driftwm: a dependency is down
+H  1133.41 brain: holding hubd: a dependency is down
+H  1134.41 brain: starting driftwm: its dependencies are ready
+H  1137.41 brain: starting waybar: its dependencies are ready
+H  1137.42 brain: starting hubd: its dependencies are ready
+H  1138.53 CH t=1130.6 EV ev=63 fault=kill target=udevd rec=5.97 ok=1 fixed=0 
+H  1154.53 CH t=1146.7 STEP 69 fKill
+H  1155.42 brain: waybar failed (signal: killed), failures=1 action=0
+H  1155.86 CH t=1148.0 EV ev=64 fault=kill target=waybar rec=1.12 ok=1 fixed=0 
+H  1162.39 CH t=1154.5 SOAKMEM t=1142 restarts=148 faults=69
+H  1162.45 CH t=1154.6 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=127472 heap_sys=3538944 heap_released=2908160 goroutines=15 fds=20 num_gc=3
+H  1162.51 CH t=1154.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1162.52 CH t=1154.6 MEM pid=3962 comm=brain rss_kb=4204 pss_kb=4200
+H  1172.86 CH t=1165.0 STEP 70 fHang
+H  1176.44 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  1176.49 brain: holding waybar: a dependency is down
+H  1176.49 brain: holding hubd: a dependency is down
+H  1177.41 brain: driftwm failed (signal: killed), failures=2 action=1
+H  1180.42 brain: starting waybar: its dependencies are ready
+H  1180.45 brain: starting hubd: its dependencies are ready
+H  1181.62 CH t=1173.7 EV ev=65 fault=hang-spin target=driftwm rec=8.55 ok=1 fixed=0 
+H  1187.63 CH t=1179.7 STEP 71 fDisk
+H  1187.66 CH t=1179.8 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1193.42 brain: waybar failed (signal: killed), failures=2 action=1
+H  1203.68 CH t=1195.8 STATUS dbus state=running up=true pid=4223 restarts=1 last_failure=108s needs=[] cause="exit status unknown (adopted)"
+H  1203.68 CH t=1195.8 STATUS driftwm state=running up=true pid=4530 restarts=2 last_failure=26s needs=[seatd udevd] cause="signal: killed"
+H  1203.69 CH t=1195.8 STATUS hubd state=running up=true pid=4535 restarts=0 last_failure=never needs=[driftwm] cause=""
+H  1203.69 CH t=1195.8 STATUS seatd state=running up=true pid=4291 restarts=1 last_failure=90s needs=[] cause="exit status unknown (adopted)"
+H  1203.69 CH t=1195.8 STATUS udevd state=running up=true pid=4370 restarts=2 last_failure=71s needs=[] cause="signal: killed"
+H  1203.69 CH t=1195.8 STATUS waybar state=running up=true pid=4590 restarts=4 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H  1204.12 CH t=1196.2 EV ev=66 fault=disk-full target=waybar rec=0.18 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H  1217.13 CH t=1209.2 STEP 72 fKill
+H  1217.42 brain: waybar failed (signal: killed), failures=2 action=1
+H  1220.00 CH t=1212.1 EV ev=67 fault=kill target=waybar rec=2.66 ok=1 fixed=0 
+H  1222.52 CH t=1214.6 SOAKMEM t=1202 restarts=153 faults=72
+H  1222.57 CH t=1214.7 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=130512 heap_sys=3538944 heap_released=2916352 goroutines=16 fds=20 num_gc=4
+H  1222.60 CH t=1214.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1222.60 CH t=1214.7 MEM pid=3962 comm=brain rss_kb=4260 pss_kb=4256
+H  1228.00 CH t=1220.1 STEP 73 fKill
+H  1228.41 brain: dbus failed (signal: killed), failures=1 action=0
+H  1228.44 brain: holding waybar: a dependency is down
+H  1229.43 brain: starting waybar: its dependencies are ready
+H  1229.88 CH t=1222.0 EV ev=68 fault=kill target=dbus rec=1.67 ok=1 fixed=0 
+H  1238.88 CH t=1231.0 STEP 74 fBrainKill
+H  1239.99 brain: started mode=direct pid=4756
+H  1242.38 CH t=1234.5 EV ev=69 fault=brain-killed target=brain rec=0.15 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H  1257.38 CH t=1249.5 STEP 75 fKill
+H  1258.00 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  1258.01 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  1259.00 brain: starting driftwm: its dependencies are ready
+H  1259.02 brain: holding hubd: a dependency is down
+H  1261.99 brain: starting waybar: its dependencies are ready
+H  1262.01 brain: starting hubd: its dependencies are ready
+H  1263.08 CH t=1255.2 EV ev=70 fault=kill target=seatd rec=5.49 ok=1 fixed=0 
+H  1278.08 CH t=1270.2 STEP 76 fKill
+H  1279.00 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  1279.00 brain: holding driftwm: a dependency is down
+H  1279.99 brain: holding hubd: a dependency is down
+H  1280.99 brain: starting driftwm: its dependencies are ready
+H  1282.61 CH t=1274.7 SOAKMEM t=1263 restarts=161 faults=75
+H  1282.67 CH t=1274.8 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=117296 heap_sys=3637248 heap_released=3022848 goroutines=11 fds=15 num_gc=1
+H  1282.76 CH t=1274.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1282.76 CH t=1274.9 MEM pid=4756 comm=brain rss_kb=3844 pss_kb=3840
+H  1283.00 brain: starting waybar: its dependencies are ready
+H  1283.00 brain: starting hubd: its dependencies are ready
+H  1284.20 CH t=1276.3 EV ev=71 fault=kill target=udevd rec=5.90 ok=1 fixed=0 
+H  1294.21 CH t=1286.3 STEP 77 fKill
+H  1295.00 brain: udevd failed (signal: killed), failures=2 action=1
+H  1295.00 brain: holding driftwm: a dependency is down
+H  1296.00 brain: holding hubd: a dependency is down
+H  1297.99 brain: starting driftwm: its dependencies are ready
+H  1299.99 brain: starting waybar: its dependencies are ready
+H  1300.00 brain: starting hubd: its dependencies are ready
+H  1300.91 CH t=1293.0 EV ev=72 fault=kill target=udevd rec=6.50 ok=1 fixed=0 
+H  1316.92 CH t=1309.0 STEP 78 fClock
+H  1318.01 brain: driftwm failed (signal: killed), failures=1 action=0
+H  1318.04 brain: holding hubd: a dependency is down
+H  1320.99 brain: starting waybar: its dependencies are ready
+H  1321.00 brain: starting hubd: its dependencies are ready
+H  1321.99 CH t=1314.1 EV ev=73 fault=clock+86400 target=driftwm rec=4.86 ok=1 fixed=0 
+H  1324.00 brain: hubd failed (signal: killed), failures=1 action=0
+H  1324.95 CH t=1317.1 EV ev=74 fault=after-clock+86400 target=hubd rec=1.74 ok=1 fixed=0 
+H  1330.95 CH t=1323.1 STEP 79 fKill
+H  1331.00 brain: udevd failed (signal: killed), failures=3 action=1
+H  1331.01 brain: holding driftwm: a dependency is down
+H  1331.99 brain: holding hubd: a dependency is down
+H  1335.99 brain: starting driftwm: its dependencies are ready
+H  1338.99 brain: starting waybar: its dependencies are ready
+H  1339.00 brain: starting hubd: its dependencies are ready
+H  1340.12 CH t=1332.2 EV ev=75 fault=kill target=udevd rec=8.95 ok=1 fixed=0 
+H  1342.76 CH t=1334.9 SOAKMEM t=1323 restarts=175 faults=79
+H  1342.83 CH t=1334.9 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=127200 heap_sys=3571712 heap_released=2957312 goroutines=13 fds=18 num_gc=2
+H  1342.86 CH t=1335.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1342.86 CH t=1335.0 MEM pid=4756 comm=brain rss_kb=4096 pss_kb=4092
+H  1346.12 CH t=1338.2 STEP 80 fKill
+H  1347.01 brain: hubd failed (signal: killed), failures=2 action=1
+H  1348.97 CH t=1341.1 EV ev=76 fault=kill target=hubd rec=2.64 ok=1 fixed=0 
+H  1366.97 CH t=1359.1 STEP 81 fClock
+H  1367.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  1368.00 brain: holding hubd: a dependency is down
+H  1370.99 brain: starting waybar: its dependencies are ready
+H  1371.00 brain: starting hubd: its dependencies are ready
+H  1372.05 CH t=1364.2 EV ev=77 fault=clock-3600 target=driftwm rec=4.86 ok=1 fixed=0 
+H  1373.99 brain: hubd failed (signal: killed), failures=3 action=1
+H  1376.89 CH t=1369.0 EV ev=78 fault=after-clock-3600 target=hubd rec=3.62 ok=1 fixed=0 
+H  1383.89 CH t=1376.0 STEP 82 fStorm
+H  1384.00 brain: waybar failed (signal: killed), failures=1 action=0
+H  1402.86 CH t=1395.0 SOAKMEM t=1383 restarts=180 faults=81
+H  1402.91 CH t=1395.0 BRAINSTAT gcstats heap_inuse=655360 heap_alloc=144896 heap_sys=3571712 heap_released=2916352 goroutines=21 fds=16 num_gc=3
+H  1402.94 CH t=1395.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1402.94 CH t=1395.1 MEM pid=4756 comm=brain rss_kb=4236 pss_kb=4232
+H  1408.98 CH t=1401.1 STATUS dbus state=running up=true pid=4710 restarts=0 last_failure=never needs=[] cause=""
+H  1408.98 CH t=1401.1 STATUS driftwm state=running up=true pid=5252 restarts=2 last_failure=41s needs=[seatd udevd] cause="signal: killed"
+H  1408.99 CH t=1401.1 STATUS hubd state=running up=true pid=5291 restarts=3 last_failure=35s needs=[driftwm] cause="signal: killed"
+H  1408.99 CH t=1401.1 STATUS seatd state=running up=true pid=4816 restarts=1 last_failure=151s needs=[] cause="exit status unknown (adopted)"
+H  1408.99 CH t=1401.1 STATUS udevd state=running up=true pid=5128 restarts=3 last_failure=78s needs=[] cause="signal: killed"
+H  1408.99 CH t=1401.1 STATUS waybar state=running up=false pid=5265 restarts=2 last_failure=25s needs=[driftwm dbus] cause="signal: killed"
+H  1408.99 CH t=1401.1 STORM target=waybar dur=25 starts=25 starts_last10s=10 cpu_ticks_init_side=50 bar-up
+H  1409.37 CH t=1401.5 EV ev=79 fault=storm target=waybar rec=0.17 ok=1 fixed=0 starts=25 last10=10 cpu=50 bar-up
+H  1416.37 CH t=1408.5 STEP 83 fStorm
+H  1416.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  1417.00 brain: holding hubd: a dependency is down
+H  1441.50 CH t=1433.6 STATUS dbus state=running up=true pid=4710 restarts=0 last_failure=never needs=[] cause=""
+H  1441.50 CH t=1433.6 STATUS driftwm state=running up=false pid=5252 restarts=3 last_failure=24s needs=[seatd udevd] cause="signal: killed"
+H  1441.51 CH t=1433.6 STATUS hubd state=running up=false pid=5291 restarts=3 last_failure=67s needs=[driftwm] cause="signal: killed"
+H  1441.51 CH t=1433.6 STATUS seatd state=running up=true pid=4816 restarts=1 last_failure=183s needs=[] cause="exit status unknown (adopted)"
+H  1441.51 CH t=1433.6 STATUS udevd state=running up=true pid=5128 restarts=3 last_failure=110s needs=[] cause="signal: killed"
+H  1441.51 CH t=1433.6 STATUS waybar state=running up=false pid=5501 restarts=2 last_failure=57s needs=[driftwm dbus] cause="signal: killed"
+H  1441.51 CH t=1433.6 STORM target=driftwm dur=25 starts=24 starts_last10s=11 cpu_ticks_init_side=47 bar-down
+H  1444.99 brain: starting waybar: its dependencies are ready
+H  1445.00 brain: starting hubd: its dependencies are ready
+H  1446.09 CH t=1438.2 EV ev=80 fault=storm target=driftwm rec=4.38 ok=1 fixed=0 starts=24 last10=11 cpu=47 bar-down
+H  1451.10 CH t=1443.2 STEP 84 fKill
+H  1451.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  1452.00 brain: holding hubd: a dependency is down
+H  1455.00 brain: starting waybar: its dependencies are ready
+H  1455.01 brain: starting hubd: its dependencies are ready
+H  1456.05 CH t=1448.2 EV ev=81 fault=kill target=driftwm rec=4.74 ok=1 fixed=0 
+H  1462.94 CH t=1455.1 SOAKMEM t=1443 restarts=197 faults=84
+H  1462.99 CH t=1455.1 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=136000 heap_sys=3538944 heap_released=2891776 goroutines=13 fds=18 num_gc=4
+H  1463.04 CH t=1455.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1463.04 CH t=1455.2 MEM pid=4756 comm=brain rss_kb=4392 pss_kb=4388
+H  1470.05 CH t=1462.2 STEP 85 fDisk
+H  1470.10 CH t=1462.2 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1476.00 brain: waybar failed (signal: killed), failures=1 action=0
+H  1485.29 CH t=1477.4 STATUS dbus state=running up=true pid=4710 restarts=0 last_failure=never needs=[] cause=""
+H  1485.29 CH t=1477.4 STATUS driftwm state=running up=true pid=5757 restarts=4 last_failure=33s needs=[seatd udevd] cause="signal: killed"
+H  1485.29 CH t=1477.4 STATUS hubd state=running up=true pid=5774 restarts=3 last_failure=111s needs=[driftwm] cause="signal: killed"
+H  1485.30 CH t=1477.4 STATUS seatd state=running up=true pid=4816 restarts=1 last_failure=227s needs=[] cause="exit status unknown (adopted)"
+H  1485.30 CH t=1477.4 STATUS udevd state=running up=true pid=5128 restarts=3 last_failure=154s needs=[] cause="signal: killed"
+H  1485.30 CH t=1477.4 STATUS waybar state=running up=true pid=5839 restarts=3 last_failure=9s needs=[driftwm dbus] cause="signal: killed"
+H  1485.72 CH t=1477.8 EV ev=82 fault=disk-full target=waybar rec=0.15 ok=1 fixed=0 ok_during=13/14 all_alive_at_end=1
+H  1499.72 CH t=1491.8 STEP 86 fKill
+H  1500.01 brain: waybar failed (signal: killed), failures=2 action=1
+H  1502.34 CH t=1494.5 EV ev=83 fault=kill target=waybar rec=2.40 ok=1 fixed=0 
+H  1510.34 CH t=1502.5 STEP 87 fStorm
+H  1511.01 brain: waybar failed (signal: killed), failures=3 action=1
+H  1523.05 CH t=1515.2 SOAKMEM t=1503 restarts=199 faults=86
+H  1523.10 CH t=1515.2 BRAINSTAT gcstats heap_inuse=663552 heap_alloc=147824 heap_sys=3538944 heap_released=2875392 goroutines=21 fds=16 num_gc=5
+H  1523.14 CH t=1515.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1523.14 CH t=1515.3 MEM pid=4756 comm=brain rss_kb=4452 pss_kb=4448
+H  1535.48 CH t=1527.6 STATUS dbus state=running up=true pid=4710 restarts=0 last_failure=never needs=[] cause=""
+H  1535.48 CH t=1527.6 STATUS driftwm state=running up=true pid=5757 restarts=4 last_failure=83s needs=[seatd udevd] cause="signal: killed"
+H  1535.49 CH t=1527.6 STATUS hubd state=running up=true pid=5774 restarts=3 last_failure=161s needs=[driftwm] cause="signal: killed"
+H  1535.49 CH t=1527.6 STATUS seatd state=running up=true pid=4816 restarts=1 last_failure=277s needs=[] cause="exit status unknown (adopted)"
+H  1535.49 CH t=1527.6 STATUS udevd state=running up=true pid=5128 restarts=3 last_failure=204s needs=[] cause="signal: killed"
+H  1535.49 CH t=1527.6 STATUS waybar state=running up=false pid=5933 restarts=5 last_failure=24s needs=[driftwm dbus] cause="signal: killed"
+H  1535.50 CH t=1527.6 STORM target=waybar dur=25 starts=22 starts_last10s=10 cpu_ticks_init_side=48 bar-up
+H  1536.41 CH t=1528.5 EV ev=84 fault=storm target=waybar rec=0.71 ok=1 fixed=0 starts=22 last10=10 cpu=48 bar-up
+H  1543.42 CH t=1535.5 STEP 88 fKill
+H  1544.00 brain: udevd failed (signal: killed), failures=1 action=0
+H  1544.00 brain: holding driftwm: a dependency is down
+H  1544.99 brain: holding hubd: a dependency is down
+H  1545.99 brain: starting driftwm: its dependencies are ready
+H  1548.00 brain: starting waybar: its dependencies are ready
+H  1548.00 brain: starting hubd: its dependencies are ready
+H  1548.99 CH t=1541.1 EV ev=85 fault=kill target=udevd rec=5.35 ok=1 fixed=0 
+H  1565.99 CH t=1558.1 STEP 89 fBrainKill
+H  1567.12 brain: started mode=direct pid=6249
+H  1569.46 CH t=1561.6 EV ev=86 fault=brain-killed target=brain rec=0.12 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H  1583.14 CH t=1575.3 SOAKMEM t=1563 restarts=204 faults=89
+H  1583.19 CH t=1575.3 BRAINSTAT gcstats heap_inuse=491520 heap_alloc=76776 heap_sys=3899392 heap_released=3407872 goroutines=3 fds=8 num_gc=1
+H  1583.23 CH t=1575.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1583.23 CH t=1575.3 MEM pid=6249 comm=brain rss_kb=3568 pss_kb=3564
+H  1588.47 CH t=1580.6 STEP 90 fKill
+H  1589.14 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  1589.60 CH t=1581.7 EV ev=87 fault=kill target=waybar rec=0.92 ok=1 fixed=0 
+H  1603.60 CH t=1595.7 STEP 91 fKill
+H  1604.14 brain: driftwm failed (exit status unknown (adopted)), failures=1 action=0
+H  1604.18 brain: holding hubd: a dependency is down
+H  1607.13 brain: starting waybar: its dependencies are ready
+H  1607.13 brain: starting hubd: its dependencies are ready
+H  1607.97 CH t=1600.1 EV ev=88 fault=kill target=driftwm rec=4.16 ok=1 fixed=0 
+H  1613.97 CH t=1606.1 STEP 92 fScanKill
+H  1629.98 CH t=1622.1 STEP 93 fKill
+H  1630.13 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  1630.14 brain: holding hubd: a dependency is down
+H  1631.13 brain: starting driftwm: its dependencies are ready
+H  1633.13 brain: starting waybar: its dependencies are ready
+H  1633.13 brain: starting hubd: its dependencies are ready
+H  1634.20 CH t=1626.3 EV ev=89 fault=kill target=seatd rec=4.00 ok=1 fixed=0 
+H  1643.23 CH t=1635.4 SOAKMEM t=1623 restarts=212 faults=93
+H  1643.29 CH t=1635.4 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=116256 heap_sys=3637248 heap_released=3022848 goroutines=11 fds=16 num_gc=2
+H  1643.32 CH t=1635.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1643.33 CH t=1635.4 MEM pid=6249 comm=brain rss_kb=4032 pss_kb=4028
+H  1644.20 CH t=1636.3 STEP 94 fDep
+H  1645.13 brain: seatd failed (signal: killed), failures=2 action=1
+H  1645.13 brain: holding hubd: a dependency is down
+H  1666.13 brain: starting driftwm: its dependencies are ready
+H  1668.13 brain: starting waybar: its dependencies are ready
+H  1668.14 brain: starting hubd: its dependencies are ready
+H  1669.10 CH t=1661.2 EV ev=90 fault=dep-fail target=seatd rec=4.68 ok=1 fixed=0 
+H  1669.10 CH t=1661.2 DEPSTARTS mode=fail seatd=20 driftwm=1 waybar=1 hubd=1
+H  1685.10 CH t=1677.2 STEP 95 fSupKill
+H  1685.10 CH t=1677.2 skip supkill seatd: no per-service supervisor
+H  1690.10 CH t=1682.2 STEP 96 fSupKill
+H  1690.10 CH t=1682.2 skip supkill waybar: no per-service supervisor
+H  1703.33 CH t=1695.5 SOAKMEM t=1683 restarts=216 faults=96
+H  1703.37 CH t=1695.5 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=121592 heap_sys=3571712 heap_released=2965504 goroutines=11 fds=16 num_gc=3
+H  1703.41 CH t=1695.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1703.41 CH t=1695.5 MEM pid=6249 comm=brain rss_kb=4200 pss_kb=4196
+H  1708.11 CH t=1700.2 STEP 97 fKill
+H  1709.13 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  1709.14 brain: holding driftwm: a dependency is down
+H  1710.13 brain: holding hubd: a dependency is down
+H  1711.13 brain: starting driftwm: its dependencies are ready
+H  1714.13 brain: starting waybar: its dependencies are ready
+H  1714.13 brain: starting hubd: its dependencies are ready
+H  1715.18 CH t=1707.3 EV ev=91 fault=kill target=udevd rec=6.85 ok=1 fixed=0 
+H  1729.18 CH t=1721.3 STEP 98 fDep
+H  1730.13 brain: seatd failed (signal: killed), failures=1 action=0
+H  1730.14 brain: holding hubd: a dependency is down
+H  1751.13 brain: starting driftwm: its dependencies are ready
+H  1753.13 brain: starting waybar: its dependencies are ready
+H  1753.14 brain: starting hubd: its dependencies are ready
+H  1754.14 CH t=1746.3 EV ev=92 fault=dep-fail target=seatd rec=4.73 ok=1 fixed=0 
+H  1754.14 CH t=1746.3 DEPSTARTS mode=fail seatd=21 driftwm=1 waybar=1 hubd=1
+H  1763.42 CH t=1755.5 SOAKMEM t=1743 restarts=224 faults=98
+H  1763.46 CH t=1755.6 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=129592 heap_sys=3538944 heap_released=2940928 goroutines=13 fds=18 num_gc=4
+H  1763.50 CH t=1755.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1763.50 CH t=1755.6 MEM pid=6249 comm=brain rss_kb=4276 pss_kb=4272
+H  1768.15 CH t=1760.3 STEP 99 fOOM
+H  1768.23 CH t=1760.3 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  1774.71 CH t=1766.8 EV ev=93 fault=oom target=hog rec=0.25 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  1786.71 CH t=1778.8 STEP 100 fDisk
+H  1786.74 CH t=1778.9 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  1793.14 brain: waybar failed (signal: killed), failures=1 action=0
+H  1802.04 CH t=1794.2 STATUS dbus state=running up=true pid=4710 restarts=0 last_failure=never needs=[] cause=""
+H  1802.04 CH t=1794.2 STATUS driftwm state=running up=true pid=7053 restarts=1 last_failure=198s needs=[seatd udevd] cause="exit status unknown (adopted)"
+H  1802.04 CH t=1794.2 STATUS hubd state=running up=true pid=7068 restarts=0 last_failure=never needs=[driftwm] cause=""
+H  1802.04 CH t=1794.2 STATUS seatd state=running up=true pid=7049 restarts=3 last_failure=72s needs=[] cause="signal: killed"
+H  1802.04 CH t=1794.2 STATUS udevd state=running up=true pid=6826 restarts=1 last_failure=93s needs=[] cause="exit status unknown (adopted)"
+H  1802.05 CH t=1794.2 STATUS waybar state=running up=true pid=7210 restarts=2 last_failure=9s needs=[driftwm dbus] cause="signal: killed"
+H  1802.48 CH t=1794.6 EV ev=94 fault=disk-full target=waybar rec=0.15 ok=1 fixed=0 ok_during=13/14 all_alive_at_end=1
+H  1815.48 CH t=1807.6 STEP 101 fKill
+H  1816.14 brain: hubd failed (signal: killed), failures=1 action=0
+H  1817.03 CH t=1809.1 EV ev=95 fault=kill target=hubd rec=1.33 ok=1 fixed=0 
+H  1823.03 CH t=1815.2 STEP 102 fKill
+H  1823.15 brain: hubd failed (signal: killed), failures=2 action=1
+H  1823.50 CH t=1815.6 SOAKMEM t=1803 restarts=226 faults=101
+H  1823.56 CH t=1815.7 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=128728 heap_sys=3538944 heap_released=2940928 goroutines=12 fds=16 num_gc=5
+H  1823.59 CH t=1815.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1823.59 CH t=1815.7 MEM pid=6249 comm=brain rss_kb=4360 pss_kb=4356
+H  1825.23 CH t=1817.4 EV ev=96 fault=kill target=hubd rec=1.98 ok=1 fixed=0 
+H  1830.24 CH t=1822.4 STEP 103 fKill
+H  1831.13 brain: seatd failed (signal: killed), failures=1 action=0
+H  1831.14 brain: holding hubd: a dependency is down
+H  1832.13 brain: starting driftwm: its dependencies are ready
+H  1835.13 brain: starting waybar: its dependencies are ready
+H  1835.14 brain: starting hubd: its dependencies are ready
+H  1836.19 CH t=1828.3 EV ev=97 fault=kill target=seatd rec=5.74 ok=1 fixed=0 
+H  1844.19 CH t=1836.3 STEP 104 fKill
+H  1845.14 brain: waybar failed (signal: killed), failures=2 action=1
+H  1847.50 CH t=1839.6 EV ev=98 fault=kill target=waybar rec=3.10 ok=1 fixed=0 
+H  1866.50 CH t=1858.6 STEP 105 fKill
+H  1867.13 brain: driftwm failed (signal: killed), failures=1 action=0
+H  1867.15 brain: holding hubd: a dependency is down
+H  1870.13 brain: starting waybar: its dependencies are ready
+H  1870.14 brain: starting hubd: its dependencies are ready
+H  1871.18 CH t=1863.3 EV ev=99 fault=kill target=driftwm rec=4.46 ok=1 fixed=0 
+H  1883.60 CH t=1875.7 SOAKMEM t=1864 restarts=235 faults=105
+H  1883.66 CH t=1875.8 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=129488 heap_sys=3538944 heap_released=2924544 goroutines=13 fds=18 num_gc=6
+H  1883.71 CH t=1875.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1883.71 CH t=1875.8 MEM pid=6249 comm=brain rss_kb=4376 pss_kb=4372
+H  1886.18 CH t=1878.3 STEP 106 fHang
+H  1890.15 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H  1891.13 brain: driftwm failed (signal: killed), failures=3 action=1
+H  1891.13 brain: holding hubd: a dependency is down
+H  1897.13 brain: starting waybar: its dependencies are ready
+H  1897.13 brain: starting hubd: its dependencies are ready
+H  1898.00 CH t=1890.1 EV ev=100 fault=hang-stop target=driftwm rec=11.60 ok=1 fixed=0 
+H  1905.00 CH t=1897.1 STEP 107 fHang
+H  1908.14 brain: driftwm failed (health probe: no answer), failures=4 action=2
+H  1915.13 brain: starting waybar: its dependencies are ready
+H  1915.13 brain: starting hubd: its dependencies are ready
+H  1916.22 CH t=1908.3 EV ev=101 fault=hang-stop target=driftwm rec=11.01 ok=1 fixed=0 
+H  1922.22 CH t=1914.3 STEP 108 fStorm
+H  1923.13 brain: driftwm failed (signal: killed), failures=5 action=2
+H  1923.13 brain: holding hubd: a dependency is down
+H  1943.71 CH t=1935.8 SOAKMEM t=1924 restarts=245 faults=107
+H  1943.75 CH t=1935.9 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=149568 heap_sys=3538944 heap_released=2924544 goroutines=17 fds=12 num_gc=7
+H  1943.78 CH t=1935.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  1943.78 CH t=1935.9 MEM pid=6249 comm=brain rss_kb=4368 pss_kb=4364
+H  1947.39 CH t=1939.5 STATUS dbus state=running up=true pid=4710 restarts=0 last_failure=never needs=[] cause=""
+H  1947.39 CH t=1939.5 STATUS driftwm state=running up=false pid=7635 restarts=6 last_failure=24s needs=[seatd udevd] cause="signal: killed"
+H  1947.40 CH t=1939.5 STATUS hubd state=running up=false pid=7649 restarts=2 last_failure=124s needs=[driftwm] cause="signal: killed"
+H  1947.40 CH t=1939.5 STATUS seatd state=running up=true pid=7342 restarts=4 last_failure=116s needs=[] cause="signal: killed"
+H  1947.40 CH t=1939.5 STATUS udevd state=running up=true pid=6826 restarts=1 last_failure=238s needs=[] cause="exit status unknown (adopted)"
+H  1947.41 CH t=1939.5 STATUS waybar state=running up=false pid=7648 restarts=3 last_failure=102s needs=[driftwm dbus] cause="signal: killed"
+H  1947.41 CH t=1939.5 STORM target=driftwm dur=25 starts=15 starts_last10s=10 cpu_ticks_init_side=43 bar-down
+H  1950.13 brain: starting waybar: its dependencies are ready
+H  1950.13 brain: starting hubd: its dependencies are ready
+H  1951.10 CH t=1943.2 EV ev=102 fault=storm target=driftwm rec=3.49 ok=1 fixed=0 starts=15 last10=10 cpu=43 bar-down
+H  1962.11 CH t=1954.2 STEP 109 fDep
+H  1962.13 brain: seatd failed (signal: killed), failures=1 action=0
+H  1962.15 brain: holding driftwm: a dependency is down
+H  1963.13 brain: holding hubd: a dependency is down
+H  1978.13 brain: starting driftwm: its dependencies are ready
+H  1981.13 brain: starting waybar: its dependencies are ready
+H  1981.14 brain: starting hubd: its dependencies are ready
+H  1982.16 CH t=1974.3 EV ev=103 fault=dep-slow target=seatd rec=19.84 ok=1 fixed=0 
+H  1982.16 CH t=1974.3 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  1988.16 CH t=1980.3 STEP 110 fKill
+H  1989.14 brain: hubd failed (signal: killed), failures=1 action=0
+H  1990.05 CH t=1982.2 EV ev=104 fault=kill target=hubd rec=1.67 ok=1 fixed=0 
+H  2003.79 CH t=1995.9 SOAKMEM t=1984 restarts=253 faults=110
+H  2003.85 CH t=1996.0 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=140552 heap_sys=3538944 heap_released=2932736 goroutines=13 fds=18 num_gc=8
+H  2003.90 CH t=1996.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2003.91 CH t=1996.0 MEM pid=6249 comm=brain rss_kb=4372 pss_kb=4368
+H  2008.05 CH t=2000.2 STEP 111 fKill
+H  2008.13 brain: driftwm failed (signal: killed), failures=1 action=0
+H  2008.15 brain: holding waybar: a dependency is down
+H  2008.15 brain: holding hubd: a dependency is down
+H  2011.13 brain: starting waybar: its dependencies are ready
+H  2011.13 brain: starting hubd: its dependencies are ready
+H  2012.19 CH t=2004.3 EV ev=105 fault=kill target=driftwm rec=3.93 ok=1 fixed=0 
+H  2029.19 CH t=2021.3 STEP 112 fDep
+H  2030.13 brain: seatd failed (signal: killed), failures=1 action=0
+H  2030.14 brain: holding hubd: a dependency is down
+H  2046.13 brain: starting driftwm: its dependencies are ready
+H  2049.13 brain: starting waybar: its dependencies are ready
+H  2049.14 brain: starting hubd: its dependencies are ready
+H  2050.21 CH t=2042.3 EV ev=106 fault=dep-slow target=seatd rec=20.80 ok=1 fixed=0 
+H  2050.22 CH t=2042.3 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  2055.22 CH t=2047.3 STEP 113 fKill
+H  2056.14 brain: hubd failed (signal: killed), failures=1 action=0
+H  2057.24 CH t=2049.4 EV ev=107 fault=kill target=hubd rec=1.81 ok=1 fixed=0 
+H  2063.92 CH t=2056.0 SOAKMEM t=2044 restarts=261 faults=113
+H  2063.96 CH t=2056.1 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=140264 heap_sys=3506176 heap_released=2891776 goroutines=13 fds=18 num_gc=9
+H  2064.01 CH t=2056.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2064.01 CH t=2056.1 MEM pid=6249 comm=brain rss_kb=4424 pss_kb=4420
+H  2072.25 CH t=2064.4 STEP 114 fKill
+H  2073.13 brain: driftwm failed (signal: killed), failures=1 action=0
+H  2073.15 brain: holding hubd: a dependency is down
+H  2075.13 brain: starting waybar: its dependencies are ready
+H  2075.14 brain: starting hubd: its dependencies are ready
+H  2076.28 CH t=2068.4 EV ev=108 fault=kill target=driftwm rec=3.81 ok=1 fixed=0 
+H  2084.28 CH t=2076.4 STEP 115 fKill
+H  2085.13 brain: udevd failed (signal: killed), failures=1 action=0
+H  2085.14 brain: holding driftwm: a dependency is down
+H  2086.13 brain: holding hubd: a dependency is down
+H  2087.13 brain: starting driftwm: its dependencies are ready
+H  2089.13 brain: starting waybar: its dependencies are ready
+H  2089.14 brain: starting hubd: its dependencies are ready
+H  2090.16 CH t=2082.3 EV ev=109 fault=kill target=udevd rec=5.67 ok=1 fixed=0 
+H  2109.17 CH t=2101.3 STEP 116 fOOM
+H  2109.29 CH t=2101.4 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  2115.26 CH t=2107.4 EV ev=110 fault=oom target=hog rec=0.20 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2124.01 CH t=2116.1 SOAKMEM t=2104 restarts=268 faults=116
+H  2124.08 CH t=2116.2 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=140312 heap_sys=3506176 heap_released=2883584 goroutines=13 fds=18 num_gc=10
+H  2124.14 CH t=2116.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2124.15 CH t=2116.3 MEM pid=6249 comm=brain rss_kb=4460 pss_kb=4456
+H  2126.26 CH t=2118.4 STEP 117 fOOM
+H  2126.36 CH t=2118.5 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  2132.51 CH t=2124.6 EV ev=111 fault=oom target=hog rec=0.20 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2139.51 CH t=2131.6 STEP 118 fHang
+H  2143.15 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  2144.13 brain: driftwm failed (signal: killed), failures=2 action=1
+H  2144.14 brain: holding hubd: a dependency is down
+H  2148.13 brain: starting waybar: its dependencies are ready
+H  2148.13 brain: starting hubd: its dependencies are ready
+H  2149.23 CH t=2141.3 EV ev=112 fault=hang-stop target=driftwm rec=9.50 ok=1 fixed=0 
+H  2164.23 CH t=2156.4 STEP 119 fDisk
+H  2164.29 CH t=2156.4 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  2170.14 brain: waybar failed (signal: killed), failures=1 action=0
+H  2179.58 CH t=2171.7 STATUS dbus state=running up=true pid=4710 restarts=0 last_failure=never needs=[] cause=""
+H  2179.59 CH t=2171.7 STATUS driftwm state=running up=true pid=8542 restarts=10 last_failure=35s needs=[seatd udevd] cause="signal: killed"
+H  2179.59 CH t=2171.7 STATUS hubd state=running up=true pid=8547 restarts=4 last_failure=123s needs=[driftwm] cause="signal: killed"
+H  2179.60 CH t=2171.7 STATUS seatd state=running up=true pid=8121 restarts=6 last_failure=149s needs=[] cause="signal: killed"
+H  2179.60 CH t=2171.7 STATUS udevd state=running up=true pid=8328 restarts=2 last_failure=94s needs=[] cause="signal: killed"
+H  2179.60 CH t=2171.7 STATUS waybar state=running up=true pid=8620 restarts=4 last_failure=9s needs=[driftwm dbus] cause="signal: killed"
+H  2180.17 CH t=2172.3 EV ev=113 fault=disk-full target=waybar rec=0.25 ok=1 fixed=0 ok_during=13/14 all_alive_at_end=1
+H  2184.15 CH t=2176.3 SOAKMEM t=2164 restarts=272 faults=119
+H  2184.26 CH t=2176.4 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=139944 heap_sys=3506176 heap_released=2883584 goroutines=13 fds=18 num_gc=11
+H  2184.32 CH t=2176.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2184.32 CH t=2176.4 MEM pid=6249 comm=brain rss_kb=4428 pss_kb=4424
+H  2185.17 CH t=2177.3 STEP 120 fKill
+H  2186.13 brain: udevd failed (signal: killed), failures=1 action=0
+H  2186.14 brain: holding driftwm: a dependency is down
+H  2187.13 brain: holding hubd: a dependency is down
+H  2188.13 brain: starting driftwm: its dependencies are ready
+H  2191.13 brain: starting waybar: its dependencies are ready
+H  2191.14 brain: starting hubd: its dependencies are ready
+H  2192.17 CH t=2184.3 EV ev=114 fault=kill target=udevd rec=6.77 ok=1 fixed=0 
+H  2205.17 CH t=2197.3 STEP 121 fKill
+H  2206.13 brain: driftwm failed (signal: killed), failures=1 action=0
+H  2206.15 brain: holding hubd: a dependency is down
+H  2209.13 brain: starting waybar: its dependencies are ready
+H  2209.13 brain: starting hubd: its dependencies are ready
+H  2210.18 CH t=2202.3 EV ev=115 fault=kill target=driftwm rec=4.79 ok=1 fixed=0 
+H  2223.18 CH t=2215.3 STEP 122 fKill
+H  2224.13 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  2224.15 brain: holding waybar: a dependency is down
+H  2225.14 brain: starting waybar: its dependencies are ready
+H  2225.62 CH t=2217.7 EV ev=116 fault=kill target=dbus rec=2.22 ok=1 fixed=0 
+H  2243.62 CH t=2235.7 STEP 123 fKill
+H  2244.13 brain: udevd failed (signal: killed), failures=2 action=1
+H  2244.13 brain: holding driftwm: a dependency is down
+H  2244.32 CH t=2236.4 SOAKMEM t=2224 restarts=281 faults=122
+H  2244.38 CH t=2236.5 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=141896 heap_sys=3506176 heap_released=2883584 goroutines=12 fds=14 num_gc=12
+H  2244.42 CH t=2236.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2244.42 CH t=2236.5 MEM pid=6249 comm=brain rss_kb=4432 pss_kb=4428
+H  2245.13 brain: holding hubd: a dependency is down
+H  2248.13 brain: starting driftwm: its dependencies are ready
+H  2251.13 brain: starting waybar: its dependencies are ready
+H  2251.14 brain: starting hubd: its dependencies are ready
+H  2252.19 CH t=2244.3 EV ev=117 fault=kill target=udevd rec=8.36 ok=1 fixed=0 
+H  2260.19 CH t=2252.3 STEP 124 fOOM
+H  2260.28 CH t=2252.4 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  2266.24 CH t=2258.4 EV ev=118 fault=oom target=hog rec=0.14 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2282.24 CH t=2274.4 STEP 125 fClock
+H  2283.13 brain: driftwm failed (signal: killed), failures=1 action=0
+H  2283.16 brain: holding hubd: a dependency is down
+H  2286.13 brain: starting waybar: its dependencies are ready
+H  2286.13 brain: starting hubd: its dependencies are ready
+H  2287.04 CH t=2279.2 EV ev=119 fault=clock-3600 target=driftwm rec=4.56 ok=1 fixed=0 
+H  2288.13 brain: hubd failed (signal: killed), failures=1 action=0
+H  2288.99 CH t=2281.1 EV ev=120 fault=after-clock-3600 target=hubd rec=0.73 ok=1 fixed=0 
+H  2297.99 CH t=2290.1 STEP 126 fBrainKill
+H  2299.13 brain: started mode=direct pid=9108
+H  2301.47 CH t=2293.6 EV ev=121 fault=brain-killed target=brain rec=0.13 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H  2304.43 CH t=2296.5 SOAKMEM t=2284 restarts=289 faults=126
+H  2304.48 CH t=2296.6 BRAINSTAT gcstats heap_inuse=491520 heap_alloc=76520 heap_sys=3899392 heap_released=3407872 goroutines=3 fds=8 num_gc=1
+H  2304.52 CH t=2296.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2304.52 CH t=2296.6 MEM pid=9108 comm=brain rss_kb=3568 pss_kb=3564
+H  2319.47 CH t=2311.6 STEP 127 fHang
+H  2323.18 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  2323.20 brain: driftwm failed (exit status unknown (adopted)), failures=2 action=1
+H  2324.13 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  2325.15 brain: holding hubd: a dependency is down
+H  2327.14 brain: starting waybar: its dependencies are ready
+H  2327.14 brain: starting hubd: its dependencies are ready
+H  2328.00 CH t=2320.1 EV ev=122 fault=hang-stop target=driftwm rec=8.30 ok=1 fixed=0 
+H  2342.00 CH t=2334.1 STEP 128 fKill
+H  2342.15 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  2342.16 brain: holding driftwm: a dependency is down
+H  2343.14 brain: holding hubd: a dependency is down
+H  2344.13 brain: starting driftwm: its dependencies are ready
+H  2346.13 brain: starting waybar: its dependencies are ready
+H  2346.15 brain: starting hubd: its dependencies are ready
+H  2347.10 CH t=2339.2 EV ev=123 fault=kill target=udevd rec=4.88 ok=1 fixed=0 
+H  2359.10 CH t=2351.2 STEP 129 fKill
+H  2359.14 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  2359.16 brain: holding waybar: a dependency is down
+H  2360.14 brain: starting waybar: its dependencies are ready
+H  2360.56 CH t=2352.7 EV ev=124 fault=kill target=dbus rec=1.25 ok=1 fixed=0 
+H  2364.52 CH t=2356.6 SOAKMEM t=2344 restarts=298 faults=129
+H  2364.59 CH t=2356.7 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=125784 heap_sys=3571712 heap_released=2932736 goroutines=14 fds=18 num_gc=2
+H  2364.63 CH t=2356.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2364.63 CH t=2356.7 MEM pid=9108 comm=brain rss_kb=4072 pss_kb=4068
+H  2371.57 CH t=2363.7 STEP 130 fKill
+H  2372.15 brain: driftwm failed (signal: killed), failures=3 action=1
+H  2372.15 brain: holding hubd: a dependency is down
+H  2376.13 brain: starting waybar: its dependencies are ready
+H  2376.14 brain: starting hubd: its dependencies are ready
+H  2377.22 CH t=2369.3 EV ev=125 fault=kill target=driftwm rec=5.44 ok=1 fixed=0 
+H  2395.22 CH t=2387.3 STEP 131 fHang
+H  2399.15 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H  2400.13 brain: driftwm failed (signal: killed), failures=3 action=1
+H  2400.14 brain: holding hubd: a dependency is down
+H  2404.13 brain: starting waybar: its dependencies are ready
+H  2404.14 brain: starting hubd: its dependencies are ready
+H  2405.12 CH t=2397.2 EV ev=126 fault=hang-stop target=driftwm rec=9.68 ok=1 fixed=0 
+H  2423.12 CH t=2415.2 STEP 132 fHang
+H  2424.63 CH t=2416.8 SOAKMEM t=2405 restarts=304 faults=131
+H  2426.15 brain: driftwm failed (health probe: no answer), failures=4 action=2
+H  2426.18 CH t=2418.3 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=125480 heap_sys=3538944 heap_released=2891776 goroutines=11 fds=14 num_gc=3
+H  2426.25 CH t=2418.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2426.25 CH t=2418.4 MEM pid=9108 comm=brain rss_kb=4272 pss_kb=4268
+H  2432.13 brain: starting waybar: its dependencies are ready
+H  2432.14 brain: starting hubd: its dependencies are ready
+H  2433.21 CH t=2425.3 EV ev=127 fault=hang-stop target=driftwm rec=9.88 ok=1 fixed=0 
+H  2451.22 CH t=2443.3 STEP 133 fSupKill
+H  2451.22 CH t=2443.3 skip supkill waybar: no per-service supervisor
+H  2465.22 CH t=2457.3 STEP 134 fKill
+H  2466.15 brain: hubd failed (signal: killed), failures=1 action=0
+H  2467.16 CH t=2459.3 EV ev=128 fault=kill target=hubd rec=1.72 ok=1 fixed=0 
+H  2476.16 CH t=2468.3 STEP 135 fKill
+H  2477.14 brain: waybar failed (signal: killed), failures=1 action=0
+H  2477.65 CH t=2469.8 EV ev=129 fault=kill target=waybar rec=1.27 ok=1 fixed=0 
+H  2486.25 CH t=2478.4 SOAKMEM t=2466 restarts=309 faults=135
+H  2486.30 CH t=2478.4 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=127808 heap_sys=3538944 heap_released=2899968 goroutines=13 fds=18 num_gc=4
+H  2486.33 CH t=2478.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2486.33 CH t=2478.5 MEM pid=9108 comm=brain rss_kb=4316 pss_kb=4312
+H  2492.66 CH t=2484.8 STEP 136 fKill
+H  2493.14 brain: udevd failed (signal: killed), failures=1 action=0
+H  2493.15 brain: holding driftwm: a dependency is down
+H  2494.14 brain: holding hubd: a dependency is down
+H  2495.13 brain: starting driftwm: its dependencies are ready
+H  2497.14 brain: starting waybar: its dependencies are ready
+H  2497.16 brain: starting hubd: its dependencies are ready
+H  2498.14 CH t=2490.3 EV ev=130 fault=kill target=udevd rec=5.26 ok=1 fixed=0 
+H  2508.15 CH t=2500.3 STEP 137 fKill
+H  2509.14 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  2509.14 brain: holding hubd: a dependency is down
+H  2510.13 brain: starting driftwm: its dependencies are ready
+H  2512.13 brain: starting waybar: its dependencies are ready
+H  2512.14 brain: starting hubd: its dependencies are ready
+H  2513.18 CH t=2505.3 EV ev=131 fault=kill target=seatd rec=4.82 ok=1 fixed=0 
+H  2518.18 CH t=2510.3 STEP 138 fKill
+H  2519.14 brain: hubd failed (signal: killed), failures=2 action=1
+H  2521.17 CH t=2513.3 EV ev=132 fault=kill target=hubd rec=2.76 ok=1 fixed=0 
+H  2528.17 CH t=2520.3 STEP 139 fKill
+H  2529.14 brain: hubd failed (signal: killed), failures=2 action=1
+H  2531.24 CH t=2523.4 EV ev=133 fault=kill target=hubd rec=2.85 ok=1 fixed=0 
+H  2544.25 CH t=2536.4 STEP 140 fKill
+H  2545.14 brain: dbus failed (signal: killed), failures=1 action=0
+H  2545.16 brain: holding waybar: a dependency is down
+H  2546.14 brain: starting waybar: its dependencies are ready
+H  2546.33 CH t=2538.5 SOAKMEM t=2526 restarts=320 faults=139
+H  2546.40 CH t=2538.5 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=140368 heap_sys=3473408 heap_released=2826240 goroutines=18 fds=21 num_gc=5
+H  2546.44 CH t=2538.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2546.44 CH t=2538.6 MEM pid=9108 comm=brain rss_kb=4408 pss_kb=4404
+H  2546.66 CH t=2538.8 EV ev=134 fault=kill target=dbus rec=2.20 ok=1 fixed=0 
+H  2563.67 CH t=2555.8 STEP 141 fHang
+H  2567.15 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  2568.13 brain: driftwm failed (signal: killed), failures=2 action=1
+H  2568.14 brain: holding hubd: a dependency is down
+H  2571.13 brain: starting waybar: its dependencies are ready
+H  2571.14 brain: starting hubd: its dependencies are ready
+H  2572.03 CH t=2564.1 EV ev=135 fault=hang-stop target=driftwm rec=8.15 ok=1 fixed=0 
+H  2577.03 CH t=2569.2 STEP 142 fKill
+H  2577.13 brain: waybar failed (signal: killed), failures=1 action=0
+H  2577.63 CH t=2569.8 EV ev=136 fault=kill target=waybar rec=0.39 ok=1 fixed=0 
+H  2593.64 CH t=2585.8 STEP 143 fScanKill
+H  2598.64 CH t=2590.8 STEP 144 fKill
+H  2599.14 brain: udevd failed (signal: killed), failures=1 action=0
+H  2599.15 brain: holding driftwm: a dependency is down
+H  2600.13 brain: holding hubd: a dependency is down
+H  2601.13 brain: starting driftwm: its dependencies are ready
+H  2603.13 brain: starting waybar: its dependencies are ready
+H  2603.13 brain: starting hubd: its dependencies are ready
+H  2604.07 CH t=2596.2 EV ev=137 fault=kill target=udevd rec=5.21 ok=1 fixed=0 
+H  2606.44 CH t=2598.6 SOAKMEM t=2586 restarts=329 faults=144
+H  2606.49 CH t=2598.6 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=140952 heap_sys=3506176 heap_released=2867200 goroutines=17 fds=20 num_gc=6
+H  2606.55 CH t=2598.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2606.56 CH t=2598.7 MEM pid=9108 comm=brain rss_kb=4400 pss_kb=4396
+H  2619.08 CH t=2611.2 STEP 145 fKill
+H  2619.16 brain: holding waybar: a dependency is down
+H  2619.16 brain: holding hubd: a dependency is down
+H  2620.13 brain: driftwm failed (signal: killed), failures=3 action=1
+H  2624.13 brain: starting waybar: its dependencies are ready
+H  2624.14 brain: starting hubd: its dependencies are ready
+H  2625.04 CH t=2617.2 EV ev=138 fault=kill target=driftwm rec=5.76 ok=1 fixed=0 
+H  2640.05 CH t=2632.2 STEP 146 fKill
+H  2640.14 brain: seatd failed (signal: killed), failures=1 action=0
+H  2640.14 brain: holding driftwm: a dependency is down
+H  2641.13 brain: starting driftwm: its dependencies are ready
+H  2641.15 brain: holding hubd: a dependency is down
+H  2644.13 brain: starting waybar: its dependencies are ready
+H  2644.14 brain: starting hubd: its dependencies are ready
+H  2645.18 CH t=2637.3 EV ev=139 fault=kill target=seatd rec=4.92 ok=1 fixed=0 
+H  2650.18 CH t=2642.3 STEP 147 fKill
+H  2651.14 brain: hubd failed (signal: killed), failures=1 action=0
+H  2652.15 CH t=2644.3 EV ev=140 fault=kill target=hubd rec=1.76 ok=1 fixed=0 
+H  2661.15 CH t=2653.3 STEP 148 fKill
+H  2662.14 brain: seatd failed (signal: killed), failures=2 action=1
+H  2662.14 brain: holding hubd: a dependency is down
+H  2665.13 brain: starting driftwm: its dependencies are ready
+H  2666.56 CH t=2658.7 SOAKMEM t=2646 restarts=339 faults=147
+H  2666.61 CH t=2658.7 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=140648 heap_sys=3506176 heap_released=2867200 goroutines=15 fds=17 num_gc=7
+H  2666.65 CH t=2658.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2666.65 CH t=2658.8 MEM pid=9108 comm=brain rss_kb=4392 pss_kb=4388
+H  2668.13 brain: starting waybar: its dependencies are ready
+H  2668.14 brain: starting hubd: its dependencies are ready
+H  2669.07 CH t=2661.2 EV ev=141 fault=kill target=seatd rec=7.71 ok=1 fixed=0 
+H  2678.08 CH t=2670.2 STEP 149 fSupKill
+H  2678.08 CH t=2670.2 skip supkill seatd: no per-service supervisor
+H  2684.08 CH t=2676.2 STEP 150 fOOM
+H  2684.12 CH t=2676.2 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  2689.90 CH t=2682.0 EV ev=142 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2697.91 CH t=2690.0 STEP 151 fHang
+H  2701.15 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  2701.22 brain: holding waybar: a dependency is down
+H  2701.22 brain: holding hubd: a dependency is down
+H  2702.13 brain: driftwm failed (signal: killed), failures=2 action=1
+H  2706.13 brain: starting waybar: its dependencies are ready
+H  2706.14 brain: starting hubd: its dependencies are ready
+H  2706.99 CH t=2699.1 EV ev=143 fault=hang-stop target=driftwm rec=8.88 ok=1 fixed=0 
+H  2712.99 CH t=2705.1 STEP 152 fSupKill
+H  2712.99 CH t=2705.1 skip supkill hubd: no per-service supervisor
+H  2726.66 CH t=2718.8 SOAKMEM t=2707 restarts=344 faults=152
+H  2726.71 CH t=2718.8 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=139040 heap_sys=3473408 heap_released=2834432 goroutines=15 fds=20 num_gc=8
+H  2726.74 CH t=2718.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2726.74 CH t=2718.9 MEM pid=9108 comm=brain rss_kb=4416 pss_kb=4412
+H  2727.99 CH t=2720.1 STEP 153 fBrainKill
+H  2729.07 brain: started mode=direct pid=10672
+H  2731.38 CH t=2723.5 EV ev=144 fault=brain-killed target=brain rec=0.10 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.0
+H  2750.38 CH t=2742.5 STEP 154 fSupKill
+H  2750.38 CH t=2742.5 skip supkill waybar: no per-service supervisor
+H  2767.38 CH t=2759.5 STEP 155 fClock
+H  2768.09 brain: driftwm failed (exit status unknown (adopted)), failures=1 action=0
+H  2768.10 brain: holding hubd: a dependency is down
+H  2770.08 brain: starting waybar: its dependencies are ready
+H  2770.09 brain: starting hubd: its dependencies are ready
+H  2770.95 CH t=2763.1 EV ev=145 fault=clock-3600 target=driftwm rec=3.36 ok=1 fixed=0 
+H  2772.09 brain: hubd failed (signal: killed), failures=1 action=0
+H  2772.98 CH t=2765.1 EV ev=146 fault=after-clock-3600 target=hubd rec=0.81 ok=1 fixed=0 
+H  2780.98 CH t=2773.1 STEP 156 fStorm
+H  2781.09 brain: hubd failed (signal: killed), failures=2 action=1
+H  2786.75 CH t=2778.9 SOAKMEM t=2767 restarts=348 faults=155
+H  2786.80 CH t=2778.9 BRAINSTAT gcstats heap_inuse=655360 heap_alloc=107216 heap_sys=3735552 heap_released=3080192 goroutines=11 fds=12 num_gc=1
+H  2786.83 CH t=2779.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2786.84 CH t=2779.0 MEM pid=10672 comm=brain rss_kb=3848 pss_kb=3844
+H  2806.11 CH t=2798.2 STATUS dbus state=running up=true pid=9991 restarts=0 last_failure=never needs=[] cause=""
+H  2806.11 CH t=2798.2 STATUS driftwm state=running up=true pid=10798 restarts=1 last_failure=38s needs=[seatd udevd] cause="exit status unknown (adopted)"
+H  2806.11 CH t=2798.2 STATUS hubd state=running up=false pid=10822 restarts=2 last_failure=25s needs=[driftwm] cause="signal: killed"
+H  2806.12 CH t=2798.2 STATUS seatd state=running up=true pid=10438 restarts=0 last_failure=never needs=[] cause=""
+H  2806.12 CH t=2798.2 STATUS udevd state=running up=true pid=10186 restarts=0 last_failure=never needs=[] cause=""
+H  2806.12 CH t=2798.2 STATUS waybar state=running up=true pid=10802 restarts=0 last_failure=never needs=[driftwm dbus] cause=""
+H  2806.12 CH t=2798.2 STORM target=hubd dur=25 starts=23 starts_last10s=10 cpu_ticks_init_side=62 bar-up
+H  2808.09 CH t=2800.2 EV ev=147 fault=storm target=hubd rec=1.77 ok=1 fixed=0 starts=23 last10=10 cpu=62 bar-up
+H  2813.09 CH t=2805.2 STEP 157 fClock
+H  2814.09 brain: driftwm failed (signal: killed), failures=2 action=1
+H  2814.10 brain: holding hubd: a dependency is down
+H  2817.08 brain: starting waybar: its dependencies are ready
+H  2817.09 brain: starting hubd: its dependencies are ready
+H  2818.10 CH t=2810.2 EV ev=148 fault=clock-3600 target=driftwm rec=4.80 ok=1 fixed=0 
+H  2820.08 brain: hubd failed (signal: killed), failures=3 action=1
+H  2823.95 CH t=2816.1 EV ev=149 fault=after-clock-3600 target=hubd rec=4.63 ok=1 fixed=0 
+H  2829.95 CH t=2822.1 STEP 158 fKill
+H  2830.09 brain: hubd failed (signal: killed), failures=4 action=2
+H  2834.90 CH t=2827.0 EV ev=150 fault=kill target=hubd rec=4.74 ok=1 fixed=0 
+H  2846.84 CH t=2839.0 SOAKMEM t=2827 restarts=355 faults=158
+H  2846.89 CH t=2839.0 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=111552 heap_sys=3702784 heap_released=3055616 goroutines=9 fds=14 num_gc=2
+H  2846.91 CH t=2839.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2846.91 CH t=2839.0 MEM pid=10672 comm=brain rss_kb=4116 pss_kb=4112
+H  2850.90 CH t=2843.0 STEP 159 fBrainKill
+H  2851.98 brain: started mode=direct pid=11205
+H  2853.21 CH t=2845.3 EV ev=151 fault=brain-killed target=brain rec=0.07 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H  2865.21 CH t=2857.3 STEP 160 fKill
+H  2865.99 brain: driftwm failed (exit status unknown (adopted)), failures=1 action=0
+H  2866.01 brain: holding hubd: a dependency is down
+H  2867.98 brain: starting waybar: its dependencies are ready
+H  2867.99 brain: starting hubd: its dependencies are ready
+H  2868.83 CH t=2861.0 EV ev=152 fault=kill target=driftwm rec=3.41 ok=1 fixed=0 
+H  2873.84 CH t=2866.0 STEP 161 fKill
+H  2873.99 brain: hubd failed (signal: killed), failures=1 action=0
+H  2874.90 CH t=2867.0 EV ev=153 fault=kill target=hubd rec=0.85 ok=1 fixed=0 
+H  2889.91 CH t=2882.0 STEP 162 fKill
+H  2890.00 brain: hubd failed (signal: killed), failures=2 action=1
+H  2892.88 CH t=2885.0 EV ev=154 fault=kill target=hubd rec=2.76 ok=1 fixed=0 
+H  2906.92 CH t=2899.0 SOAKMEM t=2887 restarts=360 faults=162
+H  2906.96 CH t=2899.1 BRAINSTAT gcstats heap_inuse=589824 heap_alloc=107064 heap_sys=3702784 heap_released=3112960 goroutines=9 fds=14 num_gc=1
+H  2907.00 CH t=2899.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2907.00 CH t=2899.1 MEM pid=11205 comm=brain rss_kb=3808 pss_kb=3804
+H  2907.88 CH t=2900.0 STEP 163 fKill
+H  2907.99 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  2908.00 brain: holding driftwm: a dependency is down
+H  2908.99 brain: holding hubd: a dependency is down
+H  2909.98 brain: starting driftwm: its dependencies are ready
+H  2911.99 brain: starting waybar: its dependencies are ready
+H  2911.99 brain: starting hubd: its dependencies are ready
+H  2912.95 CH t=2905.1 EV ev=155 fault=kill target=udevd rec=4.86 ok=1 fixed=0 
+H  2921.95 CH t=2914.1 STEP 164 fKill
+H  2921.98 brain: udevd failed (signal: killed), failures=2 action=1
+H  2921.99 brain: holding driftwm: a dependency is down
+H  2922.99 brain: holding hubd: a dependency is down
+H  2924.98 brain: starting driftwm: its dependencies are ready
+H  2926.99 brain: starting waybar: its dependencies are ready
+H  2926.99 brain: starting hubd: its dependencies are ready
+H  2927.86 CH t=2920.0 EV ev=156 fault=kill target=udevd rec=5.71 ok=1 fixed=0 
+H  2933.87 CH t=2926.0 STEP 165 fOOM
+H  2933.96 CH t=2926.1 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  2939.95 CH t=2932.1 EV ev=157 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  2956.96 CH t=2949.1 STEP 166 fKill
+H  2957.06 brain: holding waybar: a dependency is down
+H  2957.06 brain: holding hubd: a dependency is down
+H  2957.99 brain: driftwm failed (signal: killed), failures=1 action=0
+H  2960.99 brain: starting waybar: its dependencies are ready
+H  2960.99 brain: starting hubd: its dependencies are ready
+H  2961.93 CH t=2954.1 EV ev=158 fault=kill target=driftwm rec=4.77 ok=1 fixed=0 
+H  2967.00 CH t=2959.1 SOAKMEM t=2947 restarts=371 faults=166
+H  2967.05 CH t=2959.2 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=114472 heap_sys=3637248 heap_released=3039232 goroutines=11 fds=16 num_gc=2
+H  2967.09 CH t=2959.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  2967.09 CH t=2959.2 MEM pid=11205 comm=brain rss_kb=4076 pss_kb=4072
+H  2977.93 CH t=2970.1 STEP 167 fKill
+H  2978.00 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  2978.02 brain: holding waybar: a dependency is down
+H  2978.99 brain: starting waybar: its dependencies are ready
+H  2979.37 CH t=2971.5 EV ev=159 fault=kill target=dbus rec=1.22 ok=1 fixed=0 
+H  2997.37 CH t=2989.5 STEP 168 fKill
+H  2997.99 brain: dbus failed (signal: killed), failures=2 action=1
+H  2998.00 brain: holding waybar: a dependency is down
+H  3000.99 brain: starting waybar: its dependencies are ready
+H  3001.52 CH t=2993.6 EV ev=160 fault=kill target=dbus rec=3.94 ok=1 fixed=0 
+H  3009.53 CH t=3001.6 STEP 169 fSupKill
+H  3009.53 CH t=3001.6 skip supkill seatd: no per-service supervisor
+H  3022.53 CH t=3014.6 STEP 170 fKill
+H  3023.00 brain: hubd failed (signal: killed), failures=1 action=0
+H  3024.01 CH t=3016.1 EV ev=161 fault=kill target=hubd rec=1.28 ok=1 fixed=0 
+H  3027.10 CH t=3019.2 SOAKMEM t=3007 restarts=376 faults=170
+H  3027.14 CH t=3019.3 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=128440 heap_sys=3538944 heap_released=2916352 goroutines=14 fds=18 num_gc=3
+H  3027.19 CH t=3019.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3027.19 CH t=3019.3 MEM pid=11205 comm=brain rss_kb=4240 pss_kb=4236
+H  3037.01 CH t=3029.1 STEP 171 fDep
+H  3037.99 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  3038.00 brain: holding hubd: a dependency is down
+H  3058.98 brain: starting driftwm: its dependencies are ready
+H  3060.98 brain: starting waybar: its dependencies are ready
+H  3060.99 brain: starting hubd: its dependencies are ready
+H  3061.85 CH t=3054.0 EV ev=162 fault=dep-fail target=seatd rec=4.63 ok=1 fixed=0 
+H  3061.86 CH t=3054.0 DEPSTARTS mode=fail seatd=21 driftwm=1 waybar=1 hubd=1
+H  3067.86 CH t=3060.0 STEP 172 fDep
+H  3067.99 brain: seatd failed (signal: killed), failures=2 action=1
+H  3067.99 brain: holding hubd: a dependency is down
+H  3085.98 brain: starting driftwm: its dependencies are ready
+H  3087.19 CH t=3079.3 SOAKMEM t=3067 restarts=383 faults=171
+H  3087.26 CH t=3079.4 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=133992 heap_sys=3538944 heap_released=2916352 goroutines=12 fds=17 num_gc=4
+H  3087.30 CH t=3079.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3087.30 CH t=3079.4 MEM pid=11205 comm=brain rss_kb=4300 pss_kb=4296
+H  3087.98 brain: starting waybar: its dependencies are ready
+H  3087.99 brain: starting hubd: its dependencies are ready
+H  3088.81 CH t=3080.9 EV ev=163 fault=dep-slow target=seatd rec=20.74 ok=1 fixed=0 
+H  3088.81 CH t=3080.9 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  3101.82 CH t=3093.9 STEP 173 fSupKill
+H  3101.82 CH t=3093.9 skip supkill driftwm: no per-service supervisor
+H  3117.82 CH t=3109.9 STEP 174 fDisk
+H  3117.85 CH t=3110.0 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  3124.00 brain: waybar failed (signal: killed), failures=1 action=0
+H  3133.47 CH t=3125.6 STATUS dbus state=running up=true pid=11759 restarts=2 last_failure=135s needs=[] cause="signal: killed"
+H  3133.47 CH t=3125.6 STATUS driftwm state=running up=true pid=12134 restarts=2 last_failure=175s needs=[seatd udevd] cause="signal: killed"
+H  3133.47 CH t=3125.6 STATUS hubd state=running up=true pid=12152 restarts=3 last_failure=110s needs=[driftwm] cause="signal: killed"
+H  3133.47 CH t=3125.6 STATUS seatd state=running up=true pid=12085 restarts=2 last_failure=65s needs=[] cause="signal: killed"
+H  3133.47 CH t=3125.6 STATUS udevd state=running up=true pid=11479 restarts=2 last_failure=211s needs=[] cause="signal: killed"
+H  3133.47 CH t=3125.6 STATUS waybar state=running up=true pid=12273 restarts=1 last_failure=9s needs=[driftwm dbus] cause="signal: killed"
+H  3133.75 CH t=3125.9 EV ev=164 fault=disk-full target=waybar rec=0.06 ok=1 fixed=0 ok_during=14/15 all_alive_at_end=1
+H  3138.75 CH t=3130.9 STEP 175 fSupKill
+H  3138.75 CH t=3130.9 skip supkill seatd: no per-service supervisor
+H  3147.30 CH t=3139.4 SOAKMEM t=3127 restarts=386 faults=175
+H  3147.35 CH t=3139.5 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=137688 heap_sys=3473408 heap_released=2867200 goroutines=15 fds=20 num_gc=5
+H  3147.37 CH t=3139.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3147.38 CH t=3139.5 MEM pid=11205 comm=brain rss_kb=4388 pss_kb=4384
+H  3151.76 CH t=3143.9 STEP 176 fHang
+H  3155.00 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  3155.08 brain: holding waybar: a dependency is down
+H  3155.08 brain: holding hubd: a dependency is down
+H  3156.00 brain: driftwm failed (signal: killed), failures=2 action=1
+H  3159.99 brain: starting waybar: its dependencies are ready
+H  3159.99 brain: starting hubd: its dependencies are ready
+H  3160.84 CH t=3153.0 EV ev=165 fault=hang-stop target=driftwm rec=8.88 ok=1 fixed=0 
+H  3165.85 CH t=3158.0 STEP 177 fSupKill
+H  3165.85 CH t=3158.0 skip supkill hubd: no per-service supervisor
+H  3170.85 CH t=3163.0 STEP 178 fKill
+H  3170.99 brain: hubd failed (signal: killed), failures=1 action=0
+H  3171.82 CH t=3163.9 EV ev=166 fault=kill target=hubd rec=0.76 ok=1 fixed=0 
+H  3183.82 CH t=3175.9 STEP 179 fDep
+H  3183.98 brain: seatd failed (signal: killed), failures=1 action=0
+H  3183.99 brain: holding hubd: a dependency is down
+H  3199.98 brain: starting driftwm: its dependencies are ready
+H  3201.98 brain: starting waybar: its dependencies are ready
+H  3201.99 brain: starting hubd: its dependencies are ready
+H  3202.91 CH t=3195.0 EV ev=167 fault=dep-slow target=seatd rec=18.89 ok=1 fixed=0 
+H  3202.91 CH t=3195.0 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  3207.38 CH t=3199.5 SOAKMEM t=3187 restarts=394 faults=179
+H  3207.45 CH t=3199.6 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=138256 heap_sys=3473408 heap_released=2875392 goroutines=15 fds=20 num_gc=6
+H  3207.49 CH t=3199.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3207.50 CH t=3199.6 MEM pid=11205 comm=brain rss_kb=4376 pss_kb=4372
+H  3213.92 CH t=3206.0 STEP 180 fKill
+H  3213.99 brain: hubd failed (signal: killed), failures=2 action=1
+H  3215.81 CH t=3207.9 EV ev=168 fault=kill target=hubd rec=1.68 ok=1 fixed=0 
+H  3222.81 CH t=3214.9 STEP 181 fScanKill
+H  3229.81 CH t=3221.9 STEP 182 fSupKill
+H  3229.81 CH t=3221.9 skip supkill driftwm: no per-service supervisor
+H  3245.82 CH t=3237.9 STEP 183 fKill
+H  3245.99 brain: driftwm failed (signal: killed), failures=1 action=0
+H  3246.00 brain: holding hubd: a dependency is down
+H  3247.98 brain: starting waybar: its dependencies are ready
+H  3247.99 brain: starting hubd: its dependencies are ready
+H  3248.91 CH t=3241.0 EV ev=169 fault=kill target=driftwm rec=2.88 ok=1 fixed=0 
+H  3262.91 CH t=3255.0 STEP 184 fHang
+H  3263.18 CH t=3255.3 EV ev=170 fault=hang-spin target=driftwm rec=0.07 ok=1 fixed=0 
+H  3267.50 CH t=3259.6 SOAKMEM t=3247 restarts=398 faults=184
+H  3267.57 CH t=3259.7 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=138448 heap_sys=3473408 heap_released=2867200 goroutines=15 fds=20 num_gc=7
+H  3267.62 CH t=3259.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3267.63 CH t=3259.7 MEM pid=11205 comm=brain rss_kb=4384 pss_kb=4380
+H  3269.18 CH t=3261.3 STEP 185 fKill
+H  3269.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  3269.99 brain: holding hubd: a dependency is down
+H  3273.98 brain: starting waybar: its dependencies are ready
+H  3273.99 brain: starting hubd: its dependencies are ready
+H  3275.04 CH t=3267.2 EV ev=171 fault=kill target=driftwm rec=5.65 ok=1 fixed=0 
+H  3293.04 CH t=3285.2 STEP 186 fStorm
+H  3294.00 brain: hubd failed (signal: killed), failures=1 action=0
+H  3318.19 CH t=3310.3 STATUS dbus state=running up=true pid=11759 restarts=2 last_failure=320s needs=[] cause="signal: killed"
+H  3318.19 CH t=3310.3 STATUS driftwm state=running up=true pid=12786 restarts=6 last_failure=48s needs=[seatd udevd] cause="signal: killed"
+H  3318.19 CH t=3310.3 STATUS hubd state=running up=false pid=12800 restarts=6 last_failure=24s needs=[driftwm] cause="signal: killed"
+H  3318.20 CH t=3310.3 STATUS seatd state=running up=true pid=12481 restarts=3 last_failure=134s needs=[] cause="signal: killed"
+H  3318.20 CH t=3310.3 STATUS udevd state=running up=true pid=11479 restarts=2 last_failure=396s needs=[] cause="signal: killed"
+H  3318.20 CH t=3310.3 STATUS waybar state=running up=true pid=12799 restarts=1 last_failure=194s needs=[driftwm dbus] cause="signal: killed"
+H  3318.20 CH t=3310.3 STORM target=hubd dur=25 starts=25 starts_last10s=10 cpu_ticks_init_side=59 bar-up
+H  3319.85 CH t=3312.0 EV ev=172 fault=storm target=hubd rec=1.45 ok=1 fixed=0 starts=25 last10=10 cpu=59 bar-up
+H  3327.63 CH t=3319.7 SOAKMEM t=3308 restarts=405 faults=186
+H  3327.69 CH t=3319.8 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=145952 heap_sys=3473408 heap_released=2850816 goroutines=16 fds=20 num_gc=8
+H  3327.72 CH t=3319.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3327.72 CH t=3319.8 MEM pid=11205 comm=brain rss_kb=4420 pss_kb=4416
+H  3334.85 CH t=3327.0 STEP 187 fSupKill
+H  3334.85 CH t=3327.0 skip supkill hubd: no per-service supervisor
+H  3340.86 CH t=3333.0 STEP 188 fHang
+H  3341.15 CH t=3333.3 EV ev=173 fault=hang-spin target=driftwm rec=0.08 ok=1 fixed=0 
+H  3348.15 CH t=3340.3 STEP 189 fKill
+H  3348.99 brain: udevd failed (signal: killed), failures=1 action=0
+H  3348.99 brain: holding driftwm: a dependency is down
+H  3349.98 brain: holding hubd: a dependency is down
+H  3350.98 brain: starting driftwm: its dependencies are ready
+H  3353.99 brain: starting waybar: its dependencies are ready
+H  3354.00 brain: starting hubd: its dependencies are ready
+H  3354.94 CH t=3347.1 EV ev=174 fault=kill target=udevd rec=6.58 ok=1 fixed=0 
+H  3360.94 CH t=3353.1 STEP 190 fKill
+H  3360.99 brain: hubd failed (signal: killed), failures=1 action=0
+H  3361.92 CH t=3354.0 EV ev=175 fault=kill target=hubd rec=0.77 ok=1 fixed=0 
+H  3369.92 CH t=3362.0 STEP 191 fSupKill
+H  3369.92 CH t=3362.0 skip supkill hubd: no per-service supervisor
+H  3381.93 CH t=3374.0 STEP 192 fStorm
+H  3382.99 brain: driftwm failed (signal: killed), failures=1 action=0
+H  3383.00 brain: holding hubd: a dependency is down
+H  3387.72 CH t=3379.8 SOAKMEM t=3368 restarts=415 faults=191
+H  3387.77 CH t=3379.9 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=151304 heap_sys=3473408 heap_released=2859008 goroutines=16 fds=14 num_gc=9
+H  3387.82 CH t=3379.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3387.83 CH t=3379.9 MEM pid=11205 comm=brain rss_kb=4420 pss_kb=4416
+H  3407.11 CH t=3399.2 STATUS dbus state=running up=true pid=11759 restarts=2 last_failure=409s needs=[] cause="signal: killed"
+H  3407.11 CH t=3399.2 STATUS driftwm state=running up=false pid=13155 restarts=7 last_failure=24s needs=[seatd udevd] cause="signal: killed"
+H  3407.12 CH t=3399.2 STATUS hubd state=running up=false pid=13205 restarts=7 last_failure=46s needs=[driftwm] cause="signal: killed"
+H  3407.12 CH t=3399.2 STATUS seatd state=running up=true pid=12481 restarts=3 last_failure=223s needs=[] cause="signal: killed"
+H  3407.12 CH t=3399.2 STATUS udevd state=running up=true pid=13151 restarts=3 last_failure=58s needs=[] cause="signal: killed"
+H  3407.12 CH t=3399.2 STATUS waybar state=running up=false pid=13168 restarts=1 last_failure=283s needs=[driftwm dbus] cause="signal: killed"
+H  3407.12 CH t=3399.2 STORM target=driftwm dur=25 starts=24 starts_last10s=10 cpu_ticks_init_side=53 bar-down
+H  3408.98 brain: starting waybar: its dependencies are ready
+H  3408.99 brain: starting hubd: its dependencies are ready
+H  3409.83 CH t=3402.0 EV ev=176 fault=storm target=driftwm rec=2.51 ok=1 fixed=0 starts=24 last10=10 cpu=53 bar-down
+H  3416.84 CH t=3409.0 STEP 193 fKill
+H  3416.99 brain: udevd failed (signal: killed), failures=1 action=0
+H  3416.99 brain: holding driftwm: a dependency is down
+H  3417.98 brain: holding hubd: a dependency is down
+H  3418.98 brain: starting driftwm: its dependencies are ready
+H  3420.98 brain: starting waybar: its dependencies are ready
+H  3420.99 brain: starting hubd: its dependencies are ready
+H  3421.90 CH t=3414.0 EV ev=177 fault=kill target=udevd rec=4.86 ok=1 fixed=0 
+H  3434.91 CH t=3427.0 STEP 194 fKill
+H  3434.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  3434.99 brain: holding hubd: a dependency is down
+H  3438.98 brain: starting waybar: its dependencies are ready
+H  3438.99 brain: starting hubd: its dependencies are ready
+H  3439.87 CH t=3432.0 EV ev=178 fault=kill target=driftwm rec=4.75 ok=1 fixed=0 
+H  3446.87 CH t=3439.0 STEP 195 fKill
+H  3446.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  3446.99 brain: holding hubd: a dependency is down
+H  3447.83 CH t=3439.9 SOAKMEM t=3428 restarts=436 faults=194
+H  3447.89 CH t=3440.0 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=149920 heap_sys=3440640 heap_released=2809856 goroutines=11 fds=14 num_gc=10
+H  3447.92 CH t=3440.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3447.92 CH t=3440.0 MEM pid=11205 comm=brain rss_kb=4472 pss_kb=4468
+H  3450.98 brain: starting waybar: its dependencies are ready
+H  3450.99 brain: starting hubd: its dependencies are ready
+H  3451.79 CH t=3443.9 EV ev=179 fault=kill target=driftwm rec=4.71 ok=1 fixed=0 
+H  3467.80 CH t=3459.9 STEP 196 fSupKill
+H  3467.80 CH t=3459.9 skip supkill seatd: no per-service supervisor
+H  3472.80 CH t=3464.9 STEP 197 fKill
+H  3473.00 brain: waybar failed (signal: killed), failures=1 action=0
+H  3473.33 CH t=3465.5 EV ev=180 fault=kill target=waybar rec=0.32 ok=1 fixed=0 
+H  3479.33 CH t=3471.5 STEP 198 fHang
+H  3483.00 brain: driftwm failed (health probe: no answer), failures=3 action=1
+H  3483.09 brain: holding waybar: a dependency is down
+H  3483.09 brain: holding hubd: a dependency is down
+H  3486.98 brain: starting waybar: its dependencies are ready
+H  3486.99 brain: starting hubd: its dependencies are ready
+H  3487.88 CH t=3480.0 EV ev=181 fault=hang-stop target=driftwm rec=8.34 ok=1 fixed=0 
+H  3493.88 CH t=3486.0 STEP 199 fKill
+H  3493.99 brain: dbus failed (signal: killed), failures=1 action=0
+H  3494.01 brain: holding waybar: a dependency is down
+H  3494.99 brain: starting waybar: its dependencies are ready
+H  3495.31 CH t=3487.4 EV ev=182 fault=kill target=dbus rec=1.22 ok=1 fixed=0 
+H  3504.31 CH t=3496.4 STEP 200 fKill
+H  3504.99 brain: waybar failed (signal: killed), failures=2 action=1
+H  3506.30 CH t=3498.4 EV ev=183 fault=kill target=waybar rec=1.76 ok=1 fixed=0 
+H  3507.93 CH t=3500.0 SOAKMEM t=3488 restarts=446 faults=200
+H  3507.96 CH t=3500.1 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=148584 heap_sys=3440640 heap_released=2818048 goroutines=15 fds=20 num_gc=11
+H  3508.00 CH t=3500.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3508.00 CH t=3500.1 MEM pid=11205 comm=brain rss_kb=4496 pss_kb=4492
+H  3515.31 CH t=3507.4 STEP 201 fSupKill
+H  3515.31 CH t=3507.4 skip supkill hubd: no per-service supervisor
+H  3528.31 CH t=3520.4 STEP 202 fStorm
+H  3529.00 brain: hubd failed (signal: killed), failures=1 action=0
+H  3553.42 CH t=3545.5 STATUS dbus state=running up=true pid=13778 restarts=3 last_failure=59s needs=[] cause="signal: killed"
+H  3553.42 CH t=3545.5 STATUS driftwm state=running up=true pid=13739 restarts=10 last_failure=71s needs=[seatd udevd] cause="health probe: no answer"
+H  3553.43 CH t=3545.5 STATUS hubd state=running up=false pid=13753 restarts=8 last_failure=24s needs=[driftwm] cause="signal: killed"
+H  3553.43 CH t=3545.5 STATUS seatd state=running up=true pid=12481 restarts=3 last_failure=369s needs=[] cause="signal: killed"
+H  3553.43 CH t=3545.6 STATUS udevd state=running up=true pid=13491 restarts=4 last_failure=136s needs=[] cause="signal: killed"
+H  3553.43 CH t=3545.6 STATUS waybar state=running up=true pid=13824 restarts=3 last_failure=48s needs=[driftwm dbus] cause="signal: killed"
+H  3553.44 CH t=3545.6 STORM target=hubd dur=25 starts=25 starts_last10s=10 cpu_ticks_init_side=68 bar-up
+H  3554.84 CH t=3547.0 EV ev=184 fault=storm target=hubd rec=1.20 ok=1 fixed=0 starts=25 last10=10 cpu=68 bar-up
+H  3568.00 CH t=3560.1 SOAKMEM t=3548 restarts=449 faults=202
+H  3568.05 CH t=3560.2 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=149896 heap_sys=3440640 heap_released=2801664 goroutines=15 fds=20 num_gc=12
+H  3568.08 CH t=3560.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3568.09 CH t=3560.2 MEM pid=11205 comm=brain rss_kb=4484 pss_kb=4480
+H  3572.84 CH t=3565.0 STEP 203 fKill
+H  3572.99 brain: hubd failed (signal: killed), failures=2 action=1
+H  3574.77 CH t=3566.9 EV ev=185 fault=kill target=hubd rec=1.73 ok=1 fixed=0 
+H  3585.77 CH t=3577.9 STEP 204 fSupKill
+H  3585.77 CH t=3577.9 skip supkill waybar: no per-service supervisor
+H  3603.78 CH t=3595.9 STEP 205 fHang
+H  3607.00 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  3607.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  3607.99 brain: holding hubd: a dependency is down
+H  3611.98 brain: starting waybar: its dependencies are ready
+H  3611.99 brain: starting hubd: its dependencies are ready
+H  3612.87 CH t=3605.0 EV ev=186 fault=hang-stop target=driftwm rec=8.88 ok=1 fixed=0 
+H  3628.09 CH t=3620.2 SOAKMEM t=3608 restarts=453 faults=205
+H  3628.14 CH t=3620.3 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=148504 heap_sys=3407872 heap_released=2777088 goroutines=15 fds=20 num_gc=13
+H  3628.17 CH t=3620.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3628.17 CH t=3620.3 MEM pid=11205 comm=brain rss_kb=4492 pss_kb=4488
+H  3630.87 CH t=3623.0 STEP 206 fClock
+H  3630.99 brain: driftwm failed (signal: killed), failures=3 action=1
+H  3630.99 brain: holding hubd: a dependency is down
+H  3634.98 brain: starting waybar: its dependencies are ready
+H  3634.99 brain: starting hubd: its dependencies are ready
+H  3636.03 CH t=3628.1 EV ev=187 fault=clock+86400 target=driftwm rec=4.96 ok=1 fixed=0 
+H  3637.99 brain: hubd failed (signal: killed), failures=1 action=0
+H  3639.00 CH t=3631.1 EV ev=188 fault=after-clock+86400 target=hubd rec=1.76 ok=1 fixed=0 
+H  3651.00 CH t=3643.1 STEP 207 fClock
+H  3651.99 brain: driftwm failed (signal: killed), failures=4 action=2
+H  3651.99 brain: holding hubd: a dependency is down
+H  3658.98 brain: starting waybar: its dependencies are ready
+H  3658.99 brain: starting hubd: its dependencies are ready
+H  3659.82 CH t=3651.9 EV ev=189 fault=clock-3600 target=driftwm rec=8.61 ok=1 fixed=0 
+H  3660.98 brain: hubd failed (signal: killed), failures=2 action=1
+H  3662.79 CH t=3654.9 EV ev=190 fault=after-clock-3600 target=hubd rec=1.77 ok=1 fixed=0 
+H  3672.80 CH t=3664.9 STEP 208 fKill
+H  3672.99 brain: driftwm failed (signal: killed), failures=3 action=1
+H  3672.99 brain: holding hubd: a dependency is down
+H  3676.98 brain: starting waybar: its dependencies are ready
+H  3677.00 brain: starting hubd: its dependencies are ready
+H  3677.96 CH t=3670.1 EV ev=191 fault=kill target=driftwm rec=4.95 ok=1 fixed=0 
+H  3688.18 CH t=3680.3 SOAKMEM t=3668 restarts=464 faults=208
+H  3688.23 CH t=3680.3 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=149304 heap_sys=3440640 heap_released=2801664 goroutines=15 fds=20 num_gc=14
+H  3688.27 CH t=3680.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3688.27 CH t=3680.4 MEM pid=11205 comm=brain rss_kb=4492 pss_kb=4488
+H  3690.96 CH t=3683.1 STEP 209 fKill
+H  3691.06 brain: holding waybar: a dependency is down
+H  3691.06 brain: holding hubd: a dependency is down
+H  3691.99 brain: driftwm failed (signal: killed), failures=3 action=1
+H  3697.98 brain: starting waybar: its dependencies are ready
+H  3697.99 brain: starting hubd: its dependencies are ready
+H  3698.91 CH t=3691.0 EV ev=192 fault=kill target=driftwm rec=7.75 ok=1 fixed=0 
+H  3715.92 CH t=3708.0 STEP 210 fKill
+H  3715.99 brain: hubd failed (signal: killed), failures=2 action=1
+H  3717.83 CH t=3710.0 EV ev=193 fault=kill target=hubd rec=1.71 ok=1 fixed=0 
+H  3736.84 CH t=3729.0 STEP 211 fKill
+H  3736.99 brain: waybar failed (signal: killed), failures=1 action=0
+H  3737.35 CH t=3729.5 EV ev=194 fault=kill target=waybar rec=0.30 ok=1 fixed=0 
+H  3748.28 CH t=3740.4 SOAKMEM t=3728 restarts=469 faults=211
+H  3748.33 CH t=3740.5 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=148744 heap_sys=3440640 heap_released=2801664 goroutines=15 fds=20 num_gc=15
+H  3748.37 CH t=3740.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3748.37 CH t=3740.5 MEM pid=11205 comm=brain rss_kb=4492 pss_kb=4488
+H  3750.35 CH t=3742.5 STEP 212 fClock
+H  3750.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  3750.99 brain: holding hubd: a dependency is down
+H  3753.98 brain: starting waybar: its dependencies are ready
+H  3753.99 brain: starting hubd: its dependencies are ready
+H  3754.82 CH t=3746.9 EV ev=195 fault=clock-3600 target=driftwm rec=4.26 ok=1 fixed=0 
+H  3755.99 brain: hubd failed (signal: killed), failures=2 action=1
+H  3758.98 CH t=3751.1 EV ev=196 fault=after-clock-3600 target=hubd rec=2.95 ok=1 fixed=0 
+H  3765.98 CH t=3758.1 STEP 213 fSupKill
+H  3765.98 CH t=3758.1 skip supkill waybar: no per-service supervisor
+H  3770.98 CH t=3763.1 STEP 214 fHang
+H  3771.26 CH t=3763.4 EV ev=197 fault=hang-spin target=driftwm rec=0.06 ok=1 fixed=0 
+H  3777.26 CH t=3769.4 STEP 215 fOOM
+H  3777.34 CH t=3769.5 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  3783.09 CH t=3775.2 EV ev=198 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  3801.10 CH t=3793.2 STEP 216 fSupKill
+H  3801.10 CH t=3793.2 skip supkill waybar: no per-service supervisor
+H  3808.10 CH t=3800.2 STEP 217 fDep
+H  3808.37 CH t=3800.5 SOAKMEM t=3788 restarts=473 faults=216
+H  3808.42 CH t=3800.5 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=148992 heap_sys=3440640 heap_released=2793472 goroutines=12 fds=14 num_gc=16
+H  3808.46 CH t=3800.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3808.46 CH t=3800.6 MEM pid=11205 comm=brain rss_kb=4496 pss_kb=4492
+H  3808.99 brain: seatd failed (signal: killed), failures=1 action=0
+H  3809.00 brain: holding hubd: a dependency is down
+H  3829.98 brain: starting driftwm: its dependencies are ready
+H  3832.98 brain: starting waybar: its dependencies are ready
+H  3832.99 brain: starting hubd: its dependencies are ready
+H  3833.89 CH t=3826.0 EV ev=199 fault=dep-fail target=seatd rec=5.58 ok=1 fixed=0 
+H  3833.89 CH t=3826.0 DEPSTARTS mode=fail seatd=21 driftwm=1 waybar=1 hubd=1
+H  3843.90 CH t=3836.0 STEP 218 fDep
+H  3843.99 brain: seatd failed (signal: killed), failures=2 action=1
+H  3843.99 brain: holding hubd: a dependency is down
+H  3864.98 brain: starting driftwm: its dependencies are ready
+H  3866.98 brain: starting waybar: its dependencies are ready
+H  3866.99 brain: starting hubd: its dependencies are ready
+H  3867.94 CH t=3860.1 EV ev=200 fault=dep-fail target=seatd rec=3.84 ok=1 fixed=0 
+H  3867.94 CH t=3860.1 DEPSTARTS mode=fail seatd=19 driftwm=1 waybar=1 hubd=1
+H  3868.47 CH t=3860.6 SOAKMEM t=3848 restarts=483 faults=218
+H  3868.55 CH t=3860.7 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=159728 heap_sys=3440640 heap_released=2809856 goroutines=20 fds=20 num_gc=17
+H  3868.60 CH t=3860.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3868.61 CH t=3860.7 MEM pid=11205 comm=brain rss_kb=4492 pss_kb=4488
+H  3877.95 CH t=3870.1 STEP 219 fKill
+H  3877.99 brain: dbus failed (signal: killed), failures=1 action=0
+H  3878.00 brain: holding waybar: a dependency is down
+H  3878.99 brain: starting waybar: its dependencies are ready
+H  3879.37 CH t=3871.5 EV ev=201 fault=kill target=dbus rec=1.22 ok=1 fixed=0 
+H  3897.38 CH t=3889.5 STEP 220 fKill
+H  3897.99 brain: udevd failed (signal: killed), failures=1 action=0
+H  3897.99 brain: holding driftwm: a dependency is down
+H  3898.98 brain: holding hubd: a dependency is down
+H  3899.98 brain: starting driftwm: its dependencies are ready
+H  3901.98 brain: starting waybar: its dependencies are ready
+H  3901.99 brain: starting hubd: its dependencies are ready
+H  3902.88 CH t=3895.0 EV ev=202 fault=kill target=udevd rec=5.30 ok=1 fixed=0 
+H  3919.89 CH t=3912.0 STEP 221 fKill
+H  3919.98 brain: seatd failed (signal: killed), failures=1 action=0
+H  3919.99 brain: holding hubd: a dependency is down
+H  3920.98 brain: starting driftwm: its dependencies are ready
+H  3922.98 brain: starting waybar: its dependencies are ready
+H  3923.00 brain: starting hubd: its dependencies are ready
+H  3923.92 CH t=3916.0 EV ev=203 fault=kill target=seatd rec=3.83 ok=1 fixed=0 
+H  3928.61 CH t=3920.7 SOAKMEM t=3909 restarts=493 faults=221
+H  3928.66 CH t=3920.8 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=150656 heap_sys=3440640 heap_released=2818048 goroutines=15 fds=20 num_gc=18
+H  3928.69 CH t=3920.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3928.69 CH t=3920.8 MEM pid=11205 comm=brain rss_kb=4476 pss_kb=4472
+H  3933.92 CH t=3926.0 STEP 222 fDep
+H  3933.99 brain: seatd failed (signal: killed), failures=2 action=1
+H  3933.99 brain: holding driftwm: a dependency is down
+H  3934.99 brain: holding hubd: a dependency is down
+H  3950.99 brain: starting driftwm: its dependencies are ready
+H  3953.98 brain: starting waybar: its dependencies are ready
+H  3953.99 brain: starting hubd: its dependencies are ready
+H  3954.87 CH t=3947.0 EV ev=204 fault=dep-slow target=seatd rec=20.74 ok=1 fixed=0 
+H  3954.87 CH t=3947.0 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  3959.88 CH t=3952.0 STEP 223 fOOM
+H  3959.93 CH t=3952.1 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  3965.49 CH t=3957.6 EV ev=205 fault=oom target=hog rec=0.07 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  3975.49 CH t=3967.6 STEP 224 fDep
+H  3975.99 brain: seatd failed (signal: killed), failures=3 action=1
+H  3975.99 brain: holding hubd: a dependency is down
+H  3988.69 CH t=3980.8 SOAKMEM t=3969 restarts=498 faults=223
+H  3988.75 CH t=3980.9 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=149368 heap_sys=3440640 heap_released=2826240 goroutines=10 fds=15 num_gc=19
+H  3988.83 CH t=3980.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  3988.84 CH t=3981.0 MEM pid=11205 comm=brain rss_kb=4468 pss_kb=4464
+H  3994.98 brain: starting driftwm: its dependencies are ready
+H  3996.98 brain: starting waybar: its dependencies are ready
+H  3996.99 brain: starting hubd: its dependencies are ready
+H  3997.93 CH t=3990.1 EV ev=206 fault=dep-slow target=seatd rec=22.23 ok=1 fixed=0 
+H  3997.93 CH t=3990.1 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  4014.94 CH t=4007.1 STEP 225 fKill
+H  4014.99 brain: dbus failed (signal: killed), failures=1 action=0
+H  4015.00 brain: holding waybar: a dependency is down
+H  4015.99 brain: starting waybar: its dependencies are ready
+H  4016.40 CH t=4008.5 EV ev=207 fault=kill target=dbus rec=1.26 ok=1 fixed=0 
+H  4028.41 CH t=4020.5 STEP 226 fKill
+H  4028.99 brain: seatd failed (signal: killed), failures=2 action=1
+H  4028.99 brain: holding hubd: a dependency is down
+H  4031.98 brain: starting driftwm: its dependencies are ready
+H  4033.98 brain: starting waybar: its dependencies are ready
+H  4033.99 brain: starting hubd: its dependencies are ready
+H  4035.02 CH t=4027.1 EV ev=208 fault=kill target=seatd rec=6.41 ok=1 fixed=0 
+H  4046.03 CH t=4038.1 STEP 227 fSupKill
+H  4046.03 CH t=4038.1 skip supkill hubd: no per-service supervisor
+H  4048.84 CH t=4041.0 SOAKMEM t=4029 restarts=507 faults=227
+H  4048.88 CH t=4041.0 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=154120 heap_sys=3440640 heap_released=2834432 goroutines=15 fds=20 num_gc=20
+H  4048.91 CH t=4041.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4048.91 CH t=4041.0 MEM pid=11205 comm=brain rss_kb=4476 pss_kb=4472
+H  4055.03 CH t=4047.1 STEP 228 fStorm
+H  4055.99 brain: driftwm failed (signal: killed), failures=1 action=0
+H  4056.00 brain: holding hubd: a dependency is down
+H  4080.14 CH t=4072.3 STATUS dbus state=running up=true pid=15871 restarts=5 last_failure=65s needs=[] cause="signal: killed"
+H  4080.14 CH t=4072.3 STATUS driftwm state=running up=false pid=15937 restarts=18 last_failure=24s needs=[seatd udevd] cause="signal: killed"
+H  4080.15 CH t=4072.3 STATUS hubd state=running up=false pid=15951 restarts=13 last_failure=324s needs=[driftwm] cause="signal: killed"
+H  4080.15 CH t=4072.3 STATUS seatd state=running up=true pid=15933 restarts=9 last_failure=51s needs=[] cause="signal: killed"
+H  4080.16 CH t=4072.3 STATUS udevd state=running up=true pid=15444 restarts=5 last_failure=182s needs=[] cause="signal: killed"
+H  4080.16 CH t=4072.3 STATUS waybar state=running up=false pid=15950 restarts=4 last_failure=343s needs=[driftwm dbus] cause="signal: killed"
+H  4080.17 CH t=4072.3 STORM target=driftwm dur=25 starts=24 starts_last10s=10 cpu_ticks_init_side=44 bar-down
+H  4081.98 brain: starting waybar: its dependencies are ready
+H  4081.99 brain: starting hubd: its dependencies are ready
+H  4083.01 CH t=4075.1 EV ev=209 fault=storm target=driftwm rec=2.64 ok=1 fixed=0 starts=24 last10=10 cpu=44 bar-down
+H  4092.01 CH t=4084.1 STEP 229 fKill
+H  4092.99 brain: driftwm failed (signal: killed), failures=2 action=1
+H  4092.99 brain: holding hubd: a dependency is down
+H  4095.98 brain: starting waybar: its dependencies are ready
+H  4095.99 brain: starting hubd: its dependencies are ready
+H  4096.93 CH t=4089.1 EV ev=210 fault=kill target=driftwm rec=4.71 ok=1 fixed=0 
+H  4108.91 CH t=4101.0 SOAKMEM t=4089 restarts=523 faults=229
+H  4108.98 CH t=4101.1 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=157640 heap_sys=3440640 heap_released=2818048 goroutines=15 fds=20 num_gc=21
+H  4109.05 CH t=4101.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4109.06 CH t=4101.2 MEM pid=11205 comm=brain rss_kb=4512 pss_kb=4508
+H  4111.94 CH t=4104.1 STEP 230 fKill
+H  4112.03 brain: hubd failed (signal: killed), failures=1 action=0
+H  4113.11 CH t=4105.2 EV ev=211 fault=kill target=hubd rec=0.95 ok=1 fixed=0 
+H  4126.11 CH t=4118.2 STEP 231 fScanKill
+H  4137.12 CH t=4129.2 STEP 232 fKill
+H  4137.99 brain: seatd failed (signal: killed), failures=1 action=0
+H  4138.01 brain: holding hubd: a dependency is down
+H  4138.98 brain: starting driftwm: its dependencies are ready
+H  4141.99 brain: starting waybar: its dependencies are ready
+H  4142.00 brain: starting hubd: its dependencies are ready
+H  4143.08 CH t=4135.2 EV ev=212 fault=kill target=seatd rec=5.75 ok=1 fixed=0 
+H  4151.10 CH t=4143.2 STEP 233 fSupKill
+H  4151.10 CH t=4143.2 skip supkill waybar: no per-service supervisor
+H  4157.10 CH t=4149.2 STEP 234 fKill
+H  4157.99 brain: driftwm failed (signal: killed), failures=1 action=0
+H  4158.01 brain: holding hubd: a dependency is down
+H  4160.99 brain: starting waybar: its dependencies are ready
+H  4161.01 brain: starting hubd: its dependencies are ready
+H  4162.18 CH t=4154.3 EV ev=213 fault=kill target=driftwm rec=4.86 ok=1 fixed=0 
+H  4169.06 CH t=4161.2 SOAKMEM t=4149 restarts=531 faults=234
+H  4169.12 CH t=4161.2 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=156776 heap_sys=3407872 heap_released=2768896 goroutines=15 fds=20 num_gc=22
+H  4169.16 CH t=4161.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4169.16 CH t=4161.3 MEM pid=11205 comm=brain rss_kb=4516 pss_kb=4512
+H  4177.18 CH t=4169.3 STEP 235 fDisk
+H  4177.22 CH t=4169.3 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  4183.00 brain: waybar failed (signal: killed), failures=1 action=0
+H  4193.07 CH t=4185.2 STATUS dbus state=running up=true pid=15871 restarts=5 last_failure=178s needs=[] cause="signal: killed"
+H  4193.08 CH t=4185.2 STATUS driftwm state=running up=true pid=16481 restarts=20 last_failure=35s needs=[seatd udevd] cause="signal: killed"
+H  4193.08 CH t=4185.2 STATUS hubd state=running up=true pid=16495 restarts=14 last_failure=81s needs=[driftwm] cause="signal: killed"
+H  4193.08 CH t=4185.2 STATUS seatd state=running up=true pid=16410 restarts=10 last_failure=55s needs=[] cause="signal: killed"
+H  4193.08 CH t=4185.2 STATUS udevd state=running up=true pid=15444 restarts=5 last_failure=295s needs=[] cause="signal: killed"
+H  4193.08 CH t=4185.2 STATUS waybar state=running up=true pid=16572 restarts=5 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H  4193.43 CH t=4185.5 EV ev=214 fault=disk-full target=waybar rec=0.11 ok=1 fixed=0 ok_during=14/15 all_alive_at_end=1
+H  4210.43 CH t=4202.6 STEP 236 fBrainKill
+H  4211.55 brain: started mode=direct pid=16676
+H  4212.80 CH t=4204.9 EV ev=215 fault=brain-killed target=brain rec=0.11 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H  4223.80 CH t=4215.9 STEP 237 fHang
+H  4227.61 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  4228.57 brain: driftwm failed (exit status unknown (adopted)), failures=2 action=1
+H  4228.58 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  4229.16 CH t=4221.3 SOAKMEM t=4209 restarts=532 faults=236
+H  4229.23 CH t=4221.4 BRAINSTAT gcstats heap_inuse=540672 heap_alloc=85088 heap_sys=3866624 heap_released=3325952 goroutines=4 fds=8 num_gc=1
+H  4229.28 CH t=4221.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4229.28 CH t=4221.4 MEM pid=16676 comm=brain rss_kb=3612 pss_kb=3608
+H  4230.58 brain: holding hubd: a dependency is down
+H  4233.56 brain: starting waybar: its dependencies are ready
+H  4233.56 brain: starting hubd: its dependencies are ready
+H  4234.41 CH t=4226.5 EV ev=216 fault=hang-stop target=driftwm rec=10.40 ok=1 fixed=0 
+H  4242.42 CH t=4234.5 STEP 238 fKill
+H  4242.56 brain: waybar failed (signal: killed), failures=2 action=1
+H  4243.92 CH t=4236.0 EV ev=217 fault=kill target=waybar rec=1.29 ok=1 fixed=0 
+H  4262.92 CH t=4255.0 STEP 239 fKill
+H  4263.56 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  4263.57 brain: holding driftwm: a dependency is down
+H  4264.56 brain: holding hubd: a dependency is down
+H  4265.56 brain: starting driftwm: its dependencies are ready
+H  4268.56 brain: starting waybar: its dependencies are ready
+H  4268.56 brain: starting hubd: its dependencies are ready
+H  4269.51 CH t=4261.6 EV ev=218 fault=kill target=udevd rec=6.38 ok=1 fixed=0 
+H  4285.51 CH t=4277.6 STEP 240 fKill
+H  4285.56 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  4285.65 brain: holding waybar: a dependency is down
+H  4286.57 brain: starting waybar: its dependencies are ready
+H  4286.90 CH t=4279.0 EV ev=219 fault=kill target=dbus rec=1.17 ok=1 fixed=0 
+H  4289.28 CH t=4281.4 SOAKMEM t=4269 restarts=542 faults=240
+H  4289.35 CH t=4281.5 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=120736 heap_sys=3637248 heap_released=3031040 goroutines=13 fds=18 num_gc=2
+H  4289.40 CH t=4281.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4289.40 CH t=4281.5 MEM pid=16676 comm=brain rss_kb=4056 pss_kb=4052
+H  4297.90 CH t=4290.0 STEP 241 fSupKill
+H  4297.90 CH t=4290.0 skip supkill waybar: no per-service supervisor
+H  4312.91 CH t=4305.0 STEP 242 fHang
+H  4316.62 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  4317.56 brain: driftwm failed (signal: killed), failures=2 action=1
+H  4317.56 brain: holding hubd: a dependency is down
+H  4322.56 brain: starting waybar: its dependencies are ready
+H  4322.58 brain: starting hubd: its dependencies are ready
+H  4323.86 CH t=4316.0 EV ev=220 fault=hang-spin target=driftwm rec=10.74 ok=1 fixed=0 
+H  4332.86 CH t=4325.0 STEP 243 fDep
+H  4333.57 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  4333.57 brain: holding hubd: a dependency is down
+H  4349.40 CH t=4341.5 SOAKMEM t=4329 restarts=546 faults=242
+H  4349.51 CH t=4341.6 BRAINSTAT gcstats heap_inuse=589824 heap_alloc=126800 heap_sys=3571712 heap_released=2981888 goroutines=9 fds=14 num_gc=3
+H  4349.56 brain: starting driftwm: its dependencies are ready
+H  4349.64 CH t=4341.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4349.65 CH t=4341.8 MEM pid=16676 comm=brain rss_kb=4160 pss_kb=4156
+H  4352.56 brain: starting waybar: its dependencies are ready
+H  4352.57 brain: starting hubd: its dependencies are ready
+H  4353.48 CH t=4345.6 EV ev=221 fault=dep-slow target=seatd rec=20.42 ok=1 fixed=0 
+H  4353.49 CH t=4345.6 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  4369.49 CH t=4361.6 STEP 244 fOOM
+H  4369.60 CH t=4361.7 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  4376.50 CH t=4368.6 EV ev=222 fault=oom target=hog rec=0.13 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  4385.51 CH t=4377.6 STEP 245 fSupKill
+H  4385.51 CH t=4377.6 skip supkill driftwm: no per-service supervisor
+H  4392.51 CH t=4384.6 STEP 246 fSupKill
+H  4392.51 CH t=4384.6 skip supkill hubd: no per-service supervisor
+H  4402.51 CH t=4394.6 STEP 247 fHang
+H  4405.59 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  4406.57 brain: driftwm failed (signal: killed), failures=2 action=1
+H  4406.88 brain: holding hubd: a dependency is down
+H  4409.65 CH t=4401.8 SOAKMEM t=4390 restarts=550 faults=246
+H  4409.72 CH t=4401.8 BRAINSTAT gcstats heap_inuse=589824 heap_alloc=128024 heap_sys=3571712 heap_released=2981888 goroutines=14 fds=17 num_gc=4
+H  4409.76 CH t=4401.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4409.77 CH t=4401.9 MEM pid=16676 comm=brain rss_kb=4228 pss_kb=4224
+H  4411.56 brain: starting waybar: its dependencies are ready
+H  4411.57 brain: starting hubd: its dependencies are ready
+H  4412.67 CH t=4404.8 EV ev=223 fault=hang-stop target=driftwm rec=9.94 ok=1 fixed=0 
+H  4427.67 CH t=4419.8 STEP 248 fKill
+H  4428.56 brain: dbus failed (signal: killed), failures=1 action=0
+H  4428.60 brain: holding waybar: a dependency is down
+H  4429.56 brain: starting waybar: its dependencies are ready
+H  4429.94 CH t=4422.1 EV ev=224 fault=kill target=dbus rec=2.06 ok=1 fixed=0 
+H  4440.95 CH t=4433.1 STEP 249 fClock
+H  4441.57 brain: driftwm failed (signal: killed), failures=3 action=1
+H  4441.57 brain: holding hubd: a dependency is down
+H  4447.56 brain: starting waybar: its dependencies are ready
+H  4447.56 brain: starting hubd: its dependencies are ready
+H  4448.50 CH t=4440.6 EV ev=225 fault=clock+86400 target=driftwm rec=7.34 ok=1 fixed=0 
+H  4449.56 brain: hubd failed (signal: killed), failures=1 action=0
+H  4450.54 CH t=4442.7 EV ev=226 fault=after-clock+86400 target=hubd rec=0.83 ok=1 fixed=0 
+H  4459.54 CH t=4451.7 STEP 250 fKill
+H  4460.56 brain: udevd failed (signal: killed), failures=1 action=0
+H  4460.56 brain: holding driftwm: a dependency is down
+H  4461.56 brain: holding hubd: a dependency is down
+H  4462.56 brain: starting driftwm: its dependencies are ready
+H  4465.56 brain: starting waybar: its dependencies are ready
+H  4465.56 brain: starting hubd: its dependencies are ready
+H  4466.48 CH t=4458.6 EV ev=227 fault=kill target=udevd rec=6.73 ok=1 fixed=0 
+H  4469.77 CH t=4461.9 SOAKMEM t=4450 restarts=562 faults=250
+H  4469.84 CH t=4462.0 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=134496 heap_sys=3473408 heap_released=2867200 goroutines=15 fds=20 num_gc=5
+H  4469.88 CH t=4462.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4469.88 CH t=4462.0 MEM pid=16676 comm=brain rss_kb=4344 pss_kb=4340
+H  4483.48 CH t=4475.6 STEP 251 fKill
+H  4483.57 brain: hubd failed (signal: killed), failures=2 action=1
+H  4486.56 CH t=4478.7 EV ev=228 fault=kill target=hubd rec=2.87 ok=1 fixed=0 
+H  4499.56 CH t=4491.7 STEP 252 fSupKill
+H  4499.57 CH t=4491.7 skip supkill driftwm: no per-service supervisor
+H  4514.57 CH t=4506.7 STEP 253 fOOM
+H  4514.65 CH t=4506.8 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  4521.51 CH t=4513.6 EV ev=229 fault=oom target=hog rec=0.11 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  4529.89 CH t=4522.0 SOAKMEM t=4510 restarts=563 faults=253
+H  4530.03 CH t=4522.1 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=134656 heap_sys=3506176 heap_released=2908160 goroutines=15 fds=20 num_gc=6
+H  4530.08 CH t=4522.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4530.08 CH t=4522.2 MEM pid=16676 comm=brain rss_kb=4324 pss_kb=4320
+H  4536.51 CH t=4528.6 STEP 254 fKill
+H  4536.56 brain: dbus failed (signal: killed), failures=1 action=0
+H  4536.58 brain: holding waybar: a dependency is down
+H  4537.57 brain: starting waybar: its dependencies are ready
+H  4538.08 CH t=4530.2 EV ev=230 fault=kill target=dbus rec=1.35 ok=1 fixed=0 
+H  4550.08 CH t=4542.2 STEP 255 fStorm
+H  4550.57 brain: waybar failed (signal: killed), failures=1 action=0
+H  4575.21 CH t=4567.3 STATUS dbus state=running up=true pid=17826 restarts=3 last_failure=39s needs=[] cause="signal: killed"
+H  4575.21 CH t=4567.3 STATUS driftwm state=running up=true pid=17578 restarts=7 last_failure=134s needs=[seatd udevd] cause="signal: killed"
+H  4575.21 CH t=4567.3 STATUS hubd state=running up=true pid=17657 restarts=2 last_failure=92s needs=[driftwm] cause="signal: killed"
+H  4575.21 CH t=4567.3 STATUS seatd state=running up=true pid=17124 restarts=1 last_failure=242s needs=[] cause="exit status unknown (adopted)"
+H  4575.21 CH t=4567.3 STATUS udevd state=running up=true pid=17563 restarts=2 last_failure=115s needs=[] cause="signal: killed"
+H  4575.21 CH t=4567.3 STATUS waybar state=running up=false pid=17830 restarts=3 last_failure=25s needs=[driftwm dbus] cause="signal: killed"
+H  4575.21 CH t=4567.3 STORM target=waybar dur=25 starts=25 starts_last10s=10 cpu_ticks_init_side=79 bar-up
+H  4576.06 CH t=4568.2 EV ev=231 fault=storm target=waybar rec=0.64 ok=1 fixed=0 starts=25 last10=10 cpu=79 bar-up
+H  4590.07 CH t=4582.2 STEP 256 fDisk
+H  4590.08 CH t=4582.2 SOAKMEM t=4570 restarts=566 faults=255
+H  4590.20 CH t=4582.3 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  4590.30 CH t=4582.4 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=141600 heap_sys=3473408 heap_released=2826240 goroutines=15 fds=20 num_gc=7
+H  4590.42 CH t=4582.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4590.42 CH t=4582.5 MEM pid=16676 comm=brain rss_kb=4408 pss_kb=4404
+H  4596.58 brain: waybar failed (signal: killed), failures=2 action=1
+H  4605.48 CH t=4597.6 STATUS dbus state=running up=true pid=17826 restarts=3 last_failure=69s needs=[] cause="signal: killed"
+H  4605.48 CH t=4597.6 STATUS driftwm state=running up=true pid=17578 restarts=7 last_failure=164s needs=[seatd udevd] cause="signal: killed"
+H  4605.48 CH t=4597.6 STATUS hubd state=running up=true pid=17657 restarts=2 last_failure=122s needs=[driftwm] cause="signal: killed"
+H  4605.48 CH t=4597.6 STATUS seatd state=running up=true pid=17124 restarts=1 last_failure=272s needs=[] cause="exit status unknown (adopted)"
+H  4605.49 CH t=4597.6 STATUS udevd state=running up=true pid=17563 restarts=2 last_failure=145s needs=[] cause="signal: killed"
+H  4605.49 CH t=4597.6 STATUS waybar state=running up=true pid=18136 restarts=4 last_failure=9s needs=[driftwm dbus] cause="signal: killed"
+H  4605.89 CH t=4598.0 EV ev=232 fault=disk-full target=waybar rec=0.14 ok=1 fixed=0 ok_during=11/14 all_alive_at_end=1
+H  4620.89 CH t=4613.0 STEP 257 fStorm
+H  4621.57 brain: waybar failed (signal: killed), failures=2 action=1
+H  4646.03 CH t=4638.2 STATUS dbus state=running up=true pid=17826 restarts=3 last_failure=109s needs=[] cause="signal: killed"
+H  4646.04 CH t=4638.2 STATUS driftwm state=running up=true pid=17578 restarts=7 last_failure=204s needs=[seatd udevd] cause="signal: killed"
+H  4646.04 CH t=4638.2 STATUS hubd state=running up=true pid=17657 restarts=2 last_failure=162s needs=[driftwm] cause="signal: killed"
+H  4646.04 CH t=4638.2 STATUS seatd state=running up=true pid=17124 restarts=1 last_failure=312s needs=[] cause="exit status unknown (adopted)"
+H  4646.04 CH t=4638.2 STATUS udevd state=running up=true pid=17563 restarts=2 last_failure=185s needs=[] cause="signal: killed"
+H  4646.04 CH t=4638.2 STATUS waybar state=running up=false pid=18136 restarts=5 last_failure=24s needs=[driftwm dbus] cause="signal: killed"
+H  4646.05 CH t=4638.2 STORM target=waybar dur=25 starts=23 starts_last10s=10 cpu_ticks_init_side=66 bar-up
+H  4647.30 CH t=4639.4 EV ev=233 fault=storm target=waybar rec=1.05 ok=1 fixed=0 starts=23 last10=10 cpu=66 bar-up
+H  4650.43 CH t=4642.5 SOAKMEM t=4630 restarts=570 faults=257
+H  4650.51 CH t=4642.6 BRAINSTAT gcstats heap_inuse=655360 heap_alloc=157024 heap_sys=3473408 heap_released=2818048 goroutines=21 fds=20 num_gc=8
+H  4650.63 CH t=4642.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4650.63 CH t=4642.7 MEM pid=16676 comm=brain rss_kb=4460 pss_kb=4456
+H  4666.54 CH t=4658.7 STEP 258 fSupKill
+H  4670.09 CH t=4658.7 skip supkill hubd: no per-service supervisor
+H  4675.92 CH t=4667.7 STEP 259 fKill
+H  4676.61 brain: seatd failed (signal: killed), failures=1 action=0
+H  4677.74 brain: holding driftwm: a dependency is down
+H  4677.74 brain: holding driftwm: a dependency is down
+H  4678.60 brain: starting driftwm: its dependencies are ready
+H  4678.70 brain: holding hubd: a dependency is down
+H  4688.56 brain: starting waybar: its dependencies are ready
+H  4688.57 brain: starting hubd: its dependencies are ready
+H  4689.49 CH t=4681.6 EV ev=234 fault=kill target=seatd rec=13.34 ok=1 fixed=0 
+H  4708.50 CH t=4700.6 STEP 260 fOOM
+H  4708.65 CH t=4700.8 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  4710.66 CH t=4702.8 SOAKMEM t=4691 restarts=574 faults=259
+H  4710.83 CH t=4703.0 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=147152 heap_sys=3473408 heap_released=2826240 goroutines=15 fds=20 num_gc=9
+H  4710.92 CH t=4703.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4710.93 CH t=4703.0 MEM pid=16676 comm=brain rss_kb=4436 pss_kb=4432
+H  4770.95 CH t=4763.1 SOAKMEM t=4751 restarts=574 faults=259
+H  4772.12 CH t=4764.2 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=146208 heap_sys=3473408 heap_released=2850816 goroutines=15 fds=20 num_gc=10
+H  4772.45 CH t=4764.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4772.45 CH t=4764.6 MEM pid=16676 comm=brain rss_kb=4444 pss_kb=4440
+H  4791.30 CH t=4783.4 EV ev=235 fault=oom target=hog rec=0.15 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  4806.31 CH t=4798.4 STEP 261 fKill
+H  4806.58 brain: dbus failed (signal: killed), failures=1 action=0
+H  4806.65 brain: holding waybar: a dependency is down
+H  4807.56 brain: starting waybar: its dependencies are ready
+H  4808.00 CH t=4800.1 EV ev=236 fault=kill target=dbus rec=1.48 ok=1 fixed=0 
+H  4815.00 CH t=4807.1 STEP 262 fClock
+H  4815.56 brain: driftwm failed (signal: killed), failures=1 action=0
+H  4815.58 brain: holding hubd: a dependency is down
+H  4819.56 brain: starting waybar: its dependencies are ready
+H  4819.56 brain: starting hubd: its dependencies are ready
+H  4820.50 CH t=4812.6 EV ev=237 fault=clock-3600 target=driftwm rec=5.29 ok=1 fixed=0 
+H  4821.56 brain: hubd failed (signal: killed), failures=1 action=0
+H  4822.61 CH t=4814.7 EV ev=238 fault=after-clock-3600 target=hubd rec=0.89 ok=1 fixed=0 
+H  4832.45 CH t=4824.6 SOAKMEM t=4812 restarts=580 faults=262
+H  4832.58 CH t=4824.7 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=147632 heap_sys=3440640 heap_released=2801664 goroutines=15 fds=20 num_gc=11
+H  4832.67 CH t=4824.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4832.68 CH t=4824.8 MEM pid=16676 comm=brain rss_kb=4472 pss_kb=4468
+H  4841.62 CH t=4833.7 STEP 263 fKill
+H  4842.57 brain: hubd failed (signal: killed), failures=2 action=1
+H  4844.54 CH t=4836.7 EV ev=239 fault=kill target=hubd rec=2.69 ok=1 fixed=0 
+H  4863.54 CH t=4855.7 STEP 264 fKill
+H  4864.56 brain: driftwm failed (signal: killed), failures=2 action=1
+H  4864.56 brain: holding hubd: a dependency is down
+H  4867.55 brain: starting waybar: its dependencies are ready
+H  4867.56 brain: starting hubd: its dependencies are ready
+H  4868.48 CH t=4860.6 EV ev=240 fault=kill target=driftwm rec=4.73 ok=1 fixed=0 
+H  4882.48 CH t=4874.6 STEP 265 fHang
+H  4885.57 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H  4886.56 brain: driftwm failed (signal: killed), failures=3 action=1
+H  4886.56 brain: holding hubd: a dependency is down
+H  4891.55 brain: starting waybar: its dependencies are ready
+H  4891.56 brain: starting hubd: its dependencies are ready
+H  4892.48 CH t=4884.6 EV ev=241 fault=hang-stop target=driftwm rec=9.79 ok=1 fixed=0 
+H  4892.68 CH t=4884.8 SOAKMEM t=4873 restarts=587 faults=265
+H  4892.73 CH t=4884.8 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=149376 heap_sys=3473408 heap_released=2842624 goroutines=16 fds=20 num_gc=12
+H  4892.75 CH t=4884.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4892.75 CH t=4884.9 MEM pid=16676 comm=brain rss_kb=4428 pss_kb=4424
+H  4906.48 CH t=4898.6 STEP 266 fHang
+H  4906.74 CH t=4898.9 EV ev=242 fault=hang-spin target=driftwm rec=0.05 ok=1 fixed=0 
+H  4921.74 CH t=4913.9 STEP 267 fKill
+H  4922.56 brain: waybar failed (signal: killed), failures=1 action=0
+H  4922.96 CH t=4915.1 EV ev=243 fault=kill target=waybar rec=1.01 ok=1 fixed=0 
+H  4933.96 CH t=4926.1 STEP 268 fKill
+H  4934.57 brain: hubd failed (signal: killed), failures=1 action=0
+H  4935.39 CH t=4927.5 EV ev=244 fault=kill target=hubd rec=1.22 ok=1 fixed=0 
+H  4947.40 CH t=4939.5 STEP 269 fSupKill
+H  4947.40 CH t=4939.5 skip supkill waybar: no per-service supervisor
+H  4952.76 CH t=4944.9 SOAKMEM t=4933 restarts=589 faults=269
+H  4952.83 CH t=4944.9 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=147696 heap_sys=3473408 heap_released=2842624 goroutines=15 fds=20 num_gc=13
+H  4952.88 CH t=4945.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  4952.89 CH t=4945.0 MEM pid=16676 comm=brain rss_kb=4436 pss_kb=4432
+H  4953.40 CH t=4945.5 STEP 270 fOOM
+H  4953.46 CH t=4945.6 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  4959.22 CH t=4951.3 EV ev=245 fault=oom target=hog rec=0.06 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  4969.22 CH t=4961.3 STEP 271 fBrainKill
+H  4970.33 brain: started mode=direct pid=19386
+H  4972.58 CH t=4964.7 EV ev=246 fault=brain-killed target=brain rec=0.06 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H  4980.58 CH t=4972.7 STEP 272 fKill
+H  4981.35 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  4981.82 CH t=4973.9 EV ev=247 fault=kill target=waybar rec=1.03 ok=1 fixed=0 
+H  4988.83 CH t=4980.9 STEP 273 fStorm
+H  4989.34 brain: hubd failed (exit status unknown (adopted)), failures=1 action=0
+H  5012.89 CH t=5005.0 SOAKMEM t=4993 restarts=591 faults=272
+H  5012.95 CH t=5005.1 BRAINSTAT gcstats heap_inuse=655360 heap_alloc=122320 heap_sys=3702784 heap_released=3047424 goroutines=15 fds=10 num_gc=1
+H  5012.99 CH t=5005.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5013.00 CH t=5005.1 MEM pid=19386 comm=brain rss_kb=3900 pss_kb=3896
+H  5013.92 CH t=5006.0 STATUS dbus state=running up=true pid=18822 restarts=0 last_failure=never needs=[] cause=""
+H  5013.92 CH t=5006.0 STATUS driftwm state=running up=true pid=19111 restarts=0 last_failure=never needs=[seatd udevd] cause=""
+H  5013.92 CH t=5006.0 STATUS hubd state=running up=false pid=19270 restarts=1 last_failure=25s needs=[driftwm] cause="exit status unknown (adopted)"
+H  5013.92 CH t=5006.0 STATUS seatd state=running up=true pid=18477 restarts=0 last_failure=never needs=[] cause=""
+H  5013.92 CH t=5006.0 STATUS udevd state=running up=true pid=17563 restarts=0 last_failure=never needs=[] cause=""
+H  5013.93 CH t=5006.0 STATUS waybar state=running up=true pid=19428 restarts=1 last_failure=33s needs=[driftwm dbus] cause="exit status unknown (adopted)"
+H  5013.93 CH t=5006.0 STORM target=hubd dur=25 starts=25 starts_last10s=10 cpu_ticks_init_side=64 bar-up
+H  5015.15 CH t=5007.3 EV ev=248 fault=storm target=hubd rec=1.02 ok=1 fixed=0 starts=25 last10=10 cpu=64 bar-up
+H  5028.15 CH t=5020.3 STEP 274 fKill
+H  5028.34 brain: hubd failed (signal: killed), failures=2 action=1
+H  5030.15 CH t=5022.3 EV ev=249 fault=kill target=hubd rec=1.79 ok=1 fixed=0 
+H  5038.15 CH t=5030.3 STEP 275 fHang
+H  5041.36 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  5041.37 brain: driftwm failed (exit status unknown (adopted)), failures=2 action=1
+H  5042.34 brain: waybar failed (exit status 1), failures=1 action=0
+H  5043.35 brain: holding hubd: a dependency is down
+H  5045.33 brain: starting waybar: its dependencies are ready
+H  5045.34 brain: starting hubd: its dependencies are ready
+H  5046.19 CH t=5038.3 EV ev=250 fault=hang-stop target=driftwm rec=7.83 ok=1 fixed=0 
+H  5053.19 CH t=5045.3 STEP 276 fKill
+H  5053.33 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  5053.34 brain: holding driftwm: a dependency is down
+H  5054.33 brain: holding hubd: a dependency is down
+H  5055.33 brain: starting driftwm: its dependencies are ready
+H  5057.33 brain: starting waybar: its dependencies are ready
+H  5057.34 brain: starting hubd: its dependencies are ready
+H  5058.18 CH t=5050.3 EV ev=251 fault=kill target=udevd rec=4.78 ok=1 fixed=0 
+H  5068.18 CH t=5060.3 STEP 277 fBrainKill
+H  5069.27 brain: started mode=direct pid=19857
+H  5070.50 CH t=5062.6 EV ev=252 fault=brain-killed target=brain rec=0.07 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H  5073.00 CH t=5065.1 SOAKMEM t=5053 restarts=600 faults=277
+H  5073.04 CH t=5065.2 BRAINSTAT gcstats heap_inuse=483328 heap_alloc=76520 heap_sys=3899392 heap_released=3416064 goroutines=3 fds=8 num_gc=1
+H  5073.08 CH t=5065.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5073.08 CH t=5065.2 MEM pid=19857 comm=brain rss_kb=3536 pss_kb=3532
+H  5088.51 CH t=5080.6 STEP 278 fDisk
+H  5088.55 CH t=5080.7 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  5094.28 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  5104.18 CH t=5096.3 STATUS dbus state=running up=true pid=18822 restarts=0 last_failure=never needs=[] cause=""
+H  5104.18 CH t=5096.3 STATUS driftwm state=running up=true pid=19797 restarts=0 last_failure=never needs=[seatd udevd] cause=""
+H  5104.19 CH t=5096.3 STATUS hubd state=running up=true pid=19811 restarts=0 last_failure=never needs=[driftwm] cause=""
+H  5104.19 CH t=5096.3 STATUS seatd state=running up=true pid=18477 restarts=0 last_failure=never needs=[] cause=""
+H  5104.19 CH t=5096.3 STATUS udevd state=running up=true pid=19793 restarts=0 last_failure=never needs=[] cause=""
+H  5104.19 CH t=5096.3 STATUS waybar state=running up=true pid=19941 restarts=1 last_failure=10s needs=[driftwm dbus] cause="exit status unknown (adopted)"
+H  5104.49 CH t=5096.6 EV ev=253 fault=disk-full target=waybar rec=0.07 ok=1 fixed=0 ok_during=14/15 all_alive_at_end=1
+H  5123.49 CH t=5115.6 STEP 279 fKill
+H  5124.27 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  5124.29 brain: holding waybar: a dependency is down
+H  5125.28 brain: starting waybar: its dependencies are ready
+H  5125.62 CH t=5117.7 EV ev=254 fault=kill target=dbus rec=1.93 ok=1 fixed=0 
+H  5133.08 CH t=5125.2 SOAKMEM t=5113 restarts=603 faults=279
+H  5133.12 CH t=5125.2 BRAINSTAT gcstats heap_inuse=581632 heap_alloc=95816 heap_sys=3801088 heap_released=3219456 goroutines=8 fds=12 num_gc=2
+H  5133.15 CH t=5125.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5133.15 CH t=5125.3 MEM pid=19857 comm=brain rss_kb=3928 pss_kb=3924
+H  5141.63 CH t=5133.7 STEP 280 fKill
+H  5142.28 brain: waybar failed (signal: killed), failures=2 action=1
+H  5144.68 CH t=5136.8 EV ev=255 fault=kill target=waybar rec=2.85 ok=1 fixed=0 
+H  5152.68 CH t=5144.8 STEP 281 fKill
+H  5153.27 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  5153.29 brain: waybar failed (exit status 1), failures=3 action=1
+H  5154.28 brain: starting driftwm: its dependencies are ready
+H  5154.30 brain: holding hubd: a dependency is down
+H  5156.27 brain: starting hubd: its dependencies are ready
+H  5157.63 CH t=5149.7 EV ev=256 fault=kill target=seatd rec=4.73 ok=1 fixed=0 
+H  5171.63 CH t=5163.8 STEP 282 fKill
+H  5172.27 brain: driftwm failed (signal: killed), failures=1 action=0
+H  5172.28 brain: holding hubd: a dependency is down
+H  5174.27 brain: starting waybar: its dependencies are ready
+H  5174.28 brain: starting hubd: its dependencies are ready
+H  5175.31 CH t=5167.4 EV ev=257 fault=kill target=driftwm rec=3.47 ok=1 fixed=0 
+H  5181.31 CH t=5173.4 STEP 283 fBrainKill
+H  5182.40 brain: started mode=direct pid=20268
+H  5183.64 CH t=5175.8 EV ev=258 fault=brain-killed target=brain rec=0.08 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H  5193.15 CH t=5185.3 SOAKMEM t=5173 restarts=611 faults=283
+H  5193.20 CH t=5185.3 BRAINSTAT gcstats heap_inuse=466944 heap_alloc=76600 heap_sys=3899392 heap_released=3432448 goroutines=3 fds=8 num_gc=1
+H  5193.23 CH t=5185.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5193.23 CH t=5185.4 MEM pid=20268 comm=brain rss_kb=3528 pss_kb=3524
+H  5201.65 CH t=5193.8 STEP 284 fOOM
+H  5201.71 CH t=5193.8 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  5207.50 CH t=5199.6 EV ev=259 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  5216.50 CH t=5208.6 STEP 285 fDep
+H  5217.41 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  5217.42 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  5233.40 brain: starting driftwm: its dependencies are ready
+H  5233.42 brain: holding hubd: a dependency is down
+H  5235.41 brain: starting waybar: its dependencies are ready
+H  5235.43 brain: starting hubd: its dependencies are ready
+H  5236.44 CH t=5228.6 EV ev=260 fault=dep-slow target=seatd rec=19.73 ok=1 fixed=0 
+H  5236.44 CH t=5228.6 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=17 hubd=1
+H  5242.45 CH t=5234.6 STEP 286 fKill
+H  5243.41 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  5243.42 brain: holding waybar: a dependency is down
+H  5244.41 brain: starting waybar: its dependencies are ready
+H  5244.87 CH t=5237.0 EV ev=261 fault=kill target=dbus rec=2.21 ok=1 fixed=0 
+H  5253.24 CH t=5245.4 SOAKMEM t=5233 restarts=617 faults=286
+H  5253.28 CH t=5245.4 BRAINSTAT gcstats heap_inuse=606208 heap_alloc=123864 heap_sys=3604480 heap_released=2998272 goroutines=13 fds=18 num_gc=2
+H  5253.34 CH t=5245.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5253.34 CH t=5245.5 MEM pid=20268 comm=brain rss_kb=4064 pss_kb=4060
+H  5254.87 CH t=5247.0 STEP 287 fKill
+H  5255.41 brain: waybar failed (signal: killed), failures=2 action=1
+H  5257.79 CH t=5249.9 EV ev=262 fault=kill target=waybar rec=2.70 ok=1 fixed=0 
+H  5268.79 CH t=5260.9 STEP 288 fKill
+H  5269.41 brain: hubd failed (signal: killed), failures=1 action=0
+H  5270.27 CH t=5262.4 EV ev=263 fault=kill target=hubd rec=1.27 ok=1 fixed=0 
+H  5285.27 CH t=5277.4 STEP 289 fKill
+H  5285.41 brain: hubd failed (signal: killed), failures=2 action=1
+H  5287.29 CH t=5279.4 EV ev=264 fault=kill target=hubd rec=1.80 ok=1 fixed=0 
+H  5305.29 CH t=5297.4 STEP 290 fKill
+H  5305.41 brain: driftwm failed (signal: killed), failures=1 action=0
+H  5305.42 brain: holding hubd: a dependency is down
+H  5307.40 brain: starting waybar: its dependencies are ready
+H  5307.41 brain: starting hubd: its dependencies are ready
+H  5308.27 CH t=5300.4 EV ev=265 fault=kill target=driftwm rec=2.77 ok=1 fixed=0 
+H  5313.34 CH t=5305.5 SOAKMEM t=5293 restarts=623 faults=290
+H  5313.40 CH t=5305.5 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=133224 heap_sys=3538944 heap_released=2916352 goroutines=14 fds=18 num_gc=3
+H  5313.44 CH t=5305.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5313.44 CH t=5305.6 MEM pid=20268 comm=brain rss_kb=4208 pss_kb=4204
+H  5318.27 CH t=5310.4 STEP 291 fKill
+H  5318.41 brain: waybar failed (signal: killed), failures=1 action=0
+H  5318.83 CH t=5310.9 EV ev=266 fault=kill target=waybar rec=0.35 ok=1 fixed=0 
+H  5337.84 CH t=5330.0 STEP 292 fKill
+H  5338.41 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  5338.41 brain: holding driftwm: a dependency is down
+H  5339.40 brain: holding hubd: a dependency is down
+H  5340.40 brain: starting driftwm: its dependencies are ready
+H  5342.40 brain: starting waybar: its dependencies are ready
+H  5342.41 brain: starting hubd: its dependencies are ready
+H  5343.22 CH t=5335.3 EV ev=267 fault=kill target=udevd rec=5.18 ok=1 fixed=0 
+H  5352.22 CH t=5344.3 STEP 293 fOOM
+H  5352.29 CH t=5344.4 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  5357.88 CH t=5350.0 EV ev=268 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  5373.44 CH t=5365.6 SOAKMEM t=5353 restarts=628 faults=293
+H  5373.50 CH t=5365.6 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=134856 heap_sys=3538944 heap_released=2916352 goroutines=15 fds=20 num_gc=4
+H  5373.54 CH t=5365.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5373.54 CH t=5365.7 MEM pid=20268 comm=brain rss_kb=4288 pss_kb=4284
+H  5375.88 CH t=5368.0 STEP 294 fSupKill
+H  5375.88 CH t=5368.0 skip supkill seatd: no per-service supervisor
+H  5381.88 CH t=5374.0 STEP 295 fKill
+H  5382.42 brain: waybar failed (signal: killed), failures=1 action=0
+H  5382.90 CH t=5375.0 EV ev=269 fault=kill target=waybar rec=0.82 ok=1 fixed=0 
+H  5391.91 CH t=5384.0 STEP 296 fDisk
+H  5391.96 CH t=5384.1 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  5397.41 brain: waybar failed (signal: killed), failures=2 action=1
+H  5407.77 CH t=5399.9 STATUS dbus state=running up=true pid=20550 restarts=1 last_failure=164s needs=[] cause="exit status unknown (adopted)"
+H  5407.77 CH t=5399.9 STATUS driftwm state=running up=true pid=20894 restarts=1 last_failure=102s needs=[seatd udevd] cause="signal: killed"
+H  5407.78 CH t=5399.9 STATUS hubd state=running up=true pid=20908 restarts=2 last_failure=122s needs=[driftwm] cause="signal: killed"
+H  5407.78 CH t=5399.9 STATUS seatd state=running up=true pid=20393 restarts=1 last_failure=190s needs=[] cause="exit status unknown (adopted)"
+H  5407.78 CH t=5399.9 STATUS udevd state=running up=true pid=20881 restarts=1 last_failure=69s needs=[] cause="exit status unknown (adopted)"
+H  5407.78 CH t=5399.9 STATUS waybar state=running up=true pid=21098 restarts=5 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H  5408.11 CH t=5400.2 EV ev=270 fault=disk-full target=waybar rec=0.08 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H  5421.11 CH t=5413.2 STEP 297 fHang
+H  5424.43 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  5425.41 brain: driftwm failed (signal: killed), failures=2 action=1
+H  5425.41 brain: holding hubd: a dependency is down
+H  5429.40 brain: starting waybar: its dependencies are ready
+H  5429.41 brain: starting hubd: its dependencies are ready
+H  5430.48 CH t=5422.6 EV ev=271 fault=hang-spin target=driftwm rec=9.16 ok=1 fixed=0 
+H  5433.55 CH t=5425.7 SOAKMEM t=5413 restarts=633 faults=297
+H  5433.59 CH t=5425.7 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=141104 heap_sys=3473408 heap_released=2850816 goroutines=15 fds=20 num_gc=5
+H  5433.62 CH t=5425.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5433.62 CH t=5425.7 MEM pid=20268 comm=brain rss_kb=4384 pss_kb=4380
+H  5436.48 CH t=5428.6 STEP 298 fDep
+H  5437.41 brain: seatd failed (signal: killed), failures=1 action=0
+H  5437.41 brain: holding hubd: a dependency is down
+H  5453.40 brain: starting driftwm: its dependencies are ready
+H  5455.40 brain: starting waybar: its dependencies are ready
+H  5455.41 brain: starting hubd: its dependencies are ready
+H  5456.30 CH t=5448.4 EV ev=272 fault=dep-slow target=seatd rec=19.61 ok=1 fixed=0 
+H  5456.30 CH t=5448.4 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  5466.31 CH t=5458.4 STEP 299 fKill
+H  5466.40 brain: seatd failed (signal: killed), failures=2 action=1
+H  5466.40 brain: holding hubd: a dependency is down
+H  5468.40 brain: starting driftwm: its dependencies are ready
+H  5471.40 brain: starting waybar: its dependencies are ready
+H  5471.41 brain: starting hubd: its dependencies are ready
+H  5472.42 CH t=5464.5 EV ev=273 fault=kill target=seatd rec=5.89 ok=1 fixed=0 
+H  5483.42 CH t=5475.5 STEP 300 fKill
+H  5484.42 brain: waybar failed (signal: killed), failures=1 action=0
+H  5484.74 CH t=5476.9 EV ev=274 fault=kill target=waybar rec=1.11 ok=1 fixed=0 
+H  5493.62 CH t=5485.7 SOAKMEM t=5474 restarts=642 faults=300
+H  5493.67 CH t=5485.8 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=141768 heap_sys=3506176 heap_released=2883584 goroutines=15 fds=20 num_gc=6
+H  5493.72 CH t=5485.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5493.72 CH t=5485.8 MEM pid=20268 comm=brain rss_kb=4372 pss_kb=4368
+H  5503.74 CH t=5495.9 STEP 301 fKill
+H  5504.41 brain: dbus failed (signal: killed), failures=1 action=0
+H  5504.42 brain: holding waybar: a dependency is down
+H  5505.41 brain: starting waybar: its dependencies are ready
+H  5505.73 CH t=5497.8 EV ev=275 fault=kill target=dbus rec=1.78 ok=1 fixed=0 
+H  5515.73 CH t=5507.9 STEP 302 fHang
+H  5519.42 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  5519.47 brain: holding waybar: a dependency is down
+H  5519.47 brain: holding hubd: a dependency is down
+H  5520.41 brain: driftwm failed (signal: killed), failures=2 action=1
+H  5525.41 brain: starting waybar: its dependencies are ready
+H  5525.41 brain: starting hubd: its dependencies are ready
+H  5526.26 CH t=5518.4 EV ev=276 fault=hang-stop target=driftwm rec=10.32 ok=1 fixed=0 
+H  5540.27 CH t=5532.4 STEP 303 fBrainKill
+H  5541.34 brain: started mode=direct pid=21615
+H  5542.61 CH t=5534.7 EV ev=277 fault=brain-killed target=brain rec=0.10 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H  5553.72 CH t=5545.8 SOAKMEM t=5534 restarts=647 faults=303
+H  5553.79 CH t=5545.9 BRAINSTAT gcstats heap_inuse=475136 heap_alloc=76680 heap_sys=3899392 heap_released=3424256 goroutines=3 fds=8 num_gc=1
+H  5553.83 CH t=5545.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5553.83 CH t=5545.9 MEM pid=21615 comm=brain rss_kb=3560 pss_kb=3556
+H  5557.61 CH t=5549.7 STEP 304 fKill
+H  5558.35 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  5558.37 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  5559.35 brain: starting driftwm: its dependencies are ready
+H  5559.37 brain: holding hubd: a dependency is down
+H  5561.35 brain: starting waybar: its dependencies are ready
+H  5561.36 brain: starting hubd: its dependencies are ready
+H  5562.28 CH t=5554.4 EV ev=278 fault=kill target=seatd rec=4.46 ok=1 fixed=0 
+H  5572.28 CH t=5564.4 STEP 305 fKill
+H  5572.35 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  5572.36 brain: holding waybar: a dependency is down
+H  5573.35 brain: starting waybar: its dependencies are ready
+H  5573.74 CH t=5565.9 EV ev=279 fault=kill target=dbus rec=1.25 ok=1 fixed=0 
+H  5590.74 CH t=5582.9 STEP 306 fDisk
+H  5590.78 CH t=5582.9 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  5596.35 brain: waybar failed (signal: killed), failures=2 action=1
+H  5606.57 CH t=5598.7 STATUS dbus state=running up=true pid=21741 restarts=1 last_failure=34s needs=[] cause="exit status unknown (adopted)"
+H  5606.57 CH t=5598.7 STATUS driftwm state=running up=true pid=21687 restarts=0 last_failure=never needs=[seatd udevd] cause=""
+H  5606.57 CH t=5598.7 STATUS hubd state=running up=true pid=21704 restarts=0 last_failure=never needs=[driftwm] cause=""
+H  5606.58 CH t=5598.7 STATUS seatd state=running up=true pid=21678 restarts=1 last_failure=48s needs=[] cause="exit status unknown (adopted)"
+H  5606.58 CH t=5598.7 STATUS udevd state=running up=true pid=20881 restarts=0 last_failure=never needs=[] cause=""
+H  5606.58 CH t=5598.7 STATUS waybar state=running up=true pid=21825 restarts=2 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H  5606.94 CH t=5599.1 EV ev=280 fault=disk-full target=waybar rec=0.12 ok=1 fixed=0 ok_during=13/15 all_alive_at_end=1
+H  5613.83 CH t=5606.0 SOAKMEM t=5594 restarts=654 faults=306
+H  5613.91 CH t=5606.0 BRAINSTAT gcstats heap_inuse=581632 heap_alloc=118320 heap_sys=3604480 heap_released=3022848 goroutines=13 fds=18 num_gc=2
+H  5613.96 CH t=5606.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5613.96 CH t=5606.1 MEM pid=21615 comm=brain rss_kb=4032 pss_kb=4028
+H  5618.95 CH t=5611.1 STEP 307 fKill
+H  5619.35 brain: driftwm failed (signal: killed), failures=1 action=0
+H  5619.37 brain: holding hubd: a dependency is down
+H  5621.35 brain: starting waybar: its dependencies are ready
+H  5621.36 brain: starting hubd: its dependencies are ready
+H  5622.21 CH t=5614.3 EV ev=281 fault=kill target=driftwm rec=3.05 ok=1 fixed=0 
+H  5627.22 CH t=5619.3 STEP 308 fClock
+H  5627.35 brain: driftwm failed (signal: killed), failures=2 action=1
+H  5627.35 brain: holding hubd: a dependency is down
+H  5630.35 brain: starting waybar: its dependencies are ready
+H  5630.36 brain: starting hubd: its dependencies are ready
+H  5631.18 CH t=5623.3 EV ev=282 fault=clock-3600 target=driftwm rec=3.76 ok=1 fixed=0 
+H  5632.35 brain: hubd failed (signal: killed), failures=1 action=0
+H  5633.23 CH t=5625.4 EV ev=283 fault=after-clock-3600 target=hubd rec=0.83 ok=1 fixed=0 
+H  5646.24 CH t=5638.4 STEP 309 fKill
+H  5646.36 brain: hubd failed (signal: killed), failures=2 action=1
+H  5648.22 CH t=5640.3 EV ev=284 fault=kill target=hubd rec=1.77 ok=1 fixed=0 
+H  5660.22 CH t=5652.3 STEP 310 fKill
+H  5660.35 brain: driftwm failed (signal: killed), failures=3 action=1
+H  5660.35 brain: holding hubd: a dependency is down
+H  5665.35 brain: starting waybar: its dependencies are ready
+H  5665.35 brain: starting hubd: its dependencies are ready
+H  5666.23 CH t=5658.4 EV ev=285 fault=kill target=driftwm rec=5.80 ok=1 fixed=0 
+H  5672.23 CH t=5664.4 STEP 311 fSupKill
+H  5672.23 CH t=5664.4 skip supkill waybar: no per-service supervisor
+H  5673.96 CH t=5666.1 SOAKMEM t=5654 restarts=665 faults=311
+H  5674.00 CH t=5666.1 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=129440 heap_sys=3538944 heap_released=2940928 goroutines=13 fds=18 num_gc=3
+H  5674.04 CH t=5666.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5674.05 CH t=5666.2 MEM pid=21615 comm=brain rss_kb=4184 pss_kb=4180
+H  5677.24 CH t=5669.4 STEP 312 fKill
+H  5677.36 brain: waybar failed (signal: killed), failures=1 action=0
+H  5677.81 CH t=5669.9 EV ev=286 fault=kill target=waybar rec=0.36 ok=1 fixed=0 
+H  5686.81 CH t=5678.9 STEP 313 fKill
+H  5687.35 brain: waybar failed (signal: killed), failures=2 action=1
+H  5688.74 CH t=5680.9 EV ev=287 fault=kill target=waybar rec=1.71 ok=1 fixed=0 
+H  5696.74 CH t=5688.9 STEP 314 fHang
+H  5700.37 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H  5700.43 brain: holding waybar: a dependency is down
+H  5700.44 brain: holding hubd: a dependency is down
+H  5701.35 brain: driftwm failed (restarted unseen), failures=3 action=1
+H  5706.35 brain: starting waybar: its dependencies are ready
+H  5706.35 brain: starting hubd: its dependencies are ready
+H  5707.17 CH t=5699.3 EV ev=288 fault=hang-stop target=driftwm rec=10.23 ok=1 fixed=0 
+H  5713.18 CH t=5705.3 STEP 315 fKill
+H  5713.36 brain: hubd failed (signal: killed), failures=1 action=0
+H  5714.20 CH t=5706.3 EV ev=289 fault=kill target=hubd rec=0.82 ok=1 fixed=0 
+H  5720.20 CH t=5712.3 STEP 316 fOOM
+H  5720.26 CH t=5712.4 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  5726.52 CH t=5718.6 EV ev=290 fault=oom target=hog rec=0.10 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  5734.05 CH t=5726.2 SOAKMEM t=5714 restarts=672 faults=316
+H  5734.10 CH t=5726.2 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=129088 heap_sys=3538944 heap_released=2940928 goroutines=13 fds=18 num_gc=4
+H  5734.13 CH t=5726.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5734.13 CH t=5726.2 MEM pid=21615 comm=brain rss_kb=4292 pss_kb=4288
+H  5743.53 CH t=5735.6 STEP 317 fClock
+H  5744.35 brain: driftwm failed (signal: killed), failures=3 action=1
+H  5744.35 brain: holding hubd: a dependency is down
+H  5749.35 brain: starting waybar: its dependencies are ready
+H  5749.35 brain: starting hubd: its dependencies are ready
+H  5750.32 CH t=5742.4 EV ev=291 fault=clock-3600 target=driftwm rec=6.58 ok=1 fixed=0 
+H  5751.36 brain: hubd failed (signal: killed), failures=2 action=1
+H  5753.38 CH t=5745.5 EV ev=292 fault=after-clock-3600 target=hubd rec=1.85 ok=1 fixed=0 
+H  5767.39 CH t=5759.5 STEP 318 fKill
+H  5768.36 brain: waybar failed (signal: killed), failures=1 action=0
+H  5768.66 CH t=5760.8 EV ev=293 fault=kill target=waybar rec=1.06 ok=1 fixed=0 
+H  5774.66 CH t=5766.8 STEP 319 fStorm
+H  5775.35 brain: driftwm failed (signal: killed), failures=2 action=1
+H  5775.35 brain: holding hubd: a dependency is down
+H  5794.13 CH t=5786.3 SOAKMEM t=5774 restarts=684 faults=318
+H  5794.18 CH t=5786.3 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=146496 heap_sys=3538944 heap_released=2899968 goroutines=17 fds=12 num_gc=5
+H  5794.23 CH t=5786.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5794.23 CH t=5786.4 MEM pid=21615 comm=brain rss_kb=4412 pss_kb=4408
+H  5799.84 CH t=5792.0 STATUS dbus state=running up=true pid=21741 restarts=1 last_failure=227s needs=[] cause="exit status unknown (adopted)"
+H  5799.84 CH t=5792.0 STATUS driftwm state=running up=false pid=22374 restarts=7 last_failure=24s needs=[seatd udevd] cause="signal: killed"
+H  5799.85 CH t=5792.0 STATUS hubd state=running up=false pid=22405 restarts=4 last_failure=48s needs=[driftwm] cause="signal: killed"
+H  5799.85 CH t=5792.0 STATUS seatd state=running up=true pid=21678 restarts=1 last_failure=241s needs=[] cause="exit status unknown (adopted)"
+H  5799.85 CH t=5792.0 STATUS udevd state=running up=true pid=20881 restarts=0 last_failure=never needs=[] cause=""
+H  5799.86 CH t=5792.0 STATUS waybar state=running up=false pid=22464 restarts=5 last_failure=31s needs=[driftwm dbus] cause="signal: killed"
+H  5799.86 CH t=5792.0 STORM target=driftwm dur=25 starts=22 starts_last10s=10 cpu_ticks_init_side=55 bar-down
+H  5802.35 brain: starting waybar: its dependencies are ready
+H  5802.36 brain: starting hubd: its dependencies are ready
+H  5803.27 CH t=5795.4 EV ev=294 fault=storm target=driftwm rec=3.21 ok=1 fixed=0 starts=22 last10=10 cpu=55 bar-down
+H  5817.27 CH t=5809.4 STEP 320 fKill
+H  5818.35 brain: driftwm failed (signal: killed), failures=2 action=1
+H  5818.35 brain: holding hubd: a dependency is down
+H  5821.35 brain: starting waybar: its dependencies are ready
+H  5821.36 brain: starting hubd: its dependencies are ready
+H  5822.42 CH t=5814.5 EV ev=295 fault=kill target=driftwm rec=4.94 ok=1 fixed=0 
+H  5840.43 CH t=5832.5 STEP 321 fSupKill
+H  5840.43 CH t=5832.6 skip supkill driftwm: no per-service supervisor
+H  5854.23 CH t=5846.4 SOAKMEM t=5834 restarts=694 faults=321
+H  5854.29 CH t=5846.4 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=134928 heap_sys=3538944 heap_released=2891776 goroutines=13 fds=18 num_gc=6
+H  5854.32 CH t=5846.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5854.32 CH t=5846.4 MEM pid=21615 comm=brain rss_kb=4424 pss_kb=4420
+H  5855.43 CH t=5847.6 STEP 322 fDep
+H  5856.35 brain: seatd failed (signal: killed), failures=1 action=0
+H  5856.36 brain: holding hubd: a dependency is down
+H  5872.35 brain: starting driftwm: its dependencies are ready
+H  5874.35 brain: starting waybar: its dependencies are ready
+H  5874.36 brain: starting hubd: its dependencies are ready
+H  5875.32 CH t=5867.4 EV ev=296 fault=dep-slow target=seatd rec=19.68 ok=1 fixed=0 
+H  5875.32 CH t=5867.4 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  5887.32 CH t=5879.4 STEP 323 fKill
+H  5887.36 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  5887.36 brain: holding driftwm: a dependency is down
+H  5888.35 brain: holding hubd: a dependency is down
+H  5889.35 brain: starting driftwm: its dependencies are ready
+H  5892.35 brain: starting waybar: its dependencies are ready
+H  5892.37 brain: starting hubd: its dependencies are ready
+H  5893.37 CH t=5885.5 EV ev=297 fault=kill target=udevd rec=5.84 ok=1 fixed=0 
+H  5902.38 CH t=5894.5 STEP 324 fKill
+H  5903.35 brain: seatd failed (signal: killed), failures=2 action=1
+H  5903.35 brain: holding hubd: a dependency is down
+H  5905.35 brain: starting driftwm: its dependencies are ready
+H  5907.34 brain: starting waybar: its dependencies are ready
+H  5907.35 brain: starting hubd: its dependencies are ready
+H  5908.21 CH t=5900.3 EV ev=298 fault=kill target=seatd rec=5.62 ok=1 fixed=0 
+H  5914.33 CH t=5906.4 SOAKMEM t=5894 restarts=706 faults=324
+H  5914.38 CH t=5906.5 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=143048 heap_sys=3506176 heap_released=2875392 goroutines=15 fds=20 num_gc=7
+H  5914.42 CH t=5906.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5914.42 CH t=5906.5 MEM pid=21615 comm=brain rss_kb=4424 pss_kb=4420
+H  5927.21 CH t=5919.3 STEP 325 fDisk
+H  5927.26 CH t=5919.4 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  5933.36 brain: waybar failed (signal: killed), failures=1 action=0
+H  5942.99 CH t=5935.1 STATUS dbus state=running up=true pid=21741 restarts=1 last_failure=371s needs=[] cause="exit status unknown (adopted)"
+H  5943.00 CH t=5935.1 STATUS driftwm state=running up=true pid=23050 restarts=8 last_failure=125s needs=[seatd udevd] cause="signal: killed"
+H  5943.00 CH t=5935.1 STATUS hubd state=running up=true pid=23055 restarts=4 last_failure=192s needs=[driftwm] cause="signal: killed"
+H  5943.00 CH t=5935.1 STATUS seatd state=running up=true pid=23036 restarts=3 last_failure=40s needs=[] cause="signal: killed"
+H  5943.00 CH t=5935.1 STATUS udevd state=running up=true pid=22974 restarts=1 last_failure=56s needs=[] cause="exit status unknown (adopted)"
+H  5943.01 CH t=5935.1 STATUS waybar state=running up=true pid=23151 restarts=6 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H  5943.33 CH t=5935.5 EV ev=299 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=14/15 all_alive_at_end=1
+H  5949.33 CH t=5941.5 STEP 326 fHang
+H  5952.37 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  5952.44 brain: holding waybar: a dependency is down
+H  5952.44 brain: holding hubd: a dependency is down
+H  5953.35 brain: driftwm failed (signal: killed), failures=2 action=1
+H  5957.34 brain: starting waybar: its dependencies are ready
+H  5957.35 brain: starting hubd: its dependencies are ready
+H  5958.15 CH t=5950.3 EV ev=300 fault=hang-stop target=driftwm rec=8.61 ok=1 fixed=0 
+H  5973.16 CH t=5965.3 STEP 327 fKill
+H  5973.35 brain: waybar failed (signal: killed), failures=2 action=1
+H  5974.42 CH t=5966.5 SOAKMEM t=5954 restarts=710 faults=326
+H  5974.46 CH t=5966.6 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=142928 heap_sys=3473408 heap_released=2842624 goroutines=14 fds=18 num_gc=8
+H  5974.49 CH t=5966.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  5974.49 CH t=5966.6 MEM pid=21615 comm=brain rss_kb=4448 pss_kb=4444
+H  5975.90 CH t=5968.0 EV ev=301 fault=kill target=waybar rec=2.53 ok=1 fixed=0 
+H  5994.90 CH t=5987.0 STEP 328 fKill
+H  5995.35 brain: waybar failed (signal: killed), failures=2 action=1
+H  5996.66 CH t=5988.8 EV ev=302 fault=kill target=waybar rec=1.54 ok=1 fixed=0 
+H  6013.66 CH t=6005.8 STEP 329 fHang
+H  6017.37 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  6018.35 brain: driftwm failed (signal: killed), failures=2 action=1
+H  6018.35 brain: holding hubd: a dependency is down
+H  6023.35 brain: starting waybar: its dependencies are ready
+H  6023.35 brain: starting hubd: its dependencies are ready
+H  6024.22 CH t=6016.3 EV ev=303 fault=hang-spin target=driftwm rec=10.35 ok=1 fixed=0 
+H  6032.22 CH t=6024.3 STEP 330 fSupKill
+H  6032.22 CH t=6024.3 skip supkill driftwm: no per-service supervisor
+H  6034.49 CH t=6026.6 SOAKMEM t=6014 restarts=715 faults=330
+H  6034.53 CH t=6026.7 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=142968 heap_sys=3440640 heap_released=2793472 goroutines=15 fds=20 num_gc=9
+H  6034.57 CH t=6026.7 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6034.57 CH t=6026.7 MEM pid=21615 comm=brain rss_kb=4488 pss_kb=4484
+H  6045.23 CH t=6037.3 STEP 331 fBrainKill
+H  6046.33 brain: started mode=direct pid=23540
+H  6048.64 CH t=6040.8 EV ev=304 fault=brain-killed target=brain rec=0.11 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H  6060.64 CH t=6052.8 STEP 332 fSupKill
+H  6060.64 CH t=6052.8 skip supkill seatd: no per-service supervisor
+H  6076.65 CH t=6068.8 STEP 333 fKill
+H  6077.34 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  6077.35 brain: holding driftwm: a dependency is down
+H  6078.34 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  6079.34 brain: starting driftwm: its dependencies are ready
+H  6079.36 brain: holding hubd: a dependency is down
+H  6081.33 brain: starting waybar: its dependencies are ready
+H  6081.34 brain: starting hubd: its dependencies are ready
+H  6082.21 CH t=6074.3 EV ev=305 fault=kill target=udevd rec=5.36 ok=1 fixed=0 
+H  6094.57 CH t=6086.7 SOAKMEM t=6074 restarts=719 faults=333
+H  6094.62 CH t=6086.7 BRAINSTAT gcstats heap_inuse=638976 heap_alloc=109016 heap_sys=3670016 heap_released=3031040 goroutines=11 fds=16 num_gc=1
+H  6094.68 CH t=6086.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6094.68 CH t=6086.8 MEM pid=23540 comm=brain rss_kb=3844 pss_kb=3840
+H  6098.22 CH t=6090.3 STEP 334 fKill
+H  6098.34 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  6098.35 brain: holding waybar: a dependency is down
+H  6099.34 brain: starting waybar: its dependencies are ready
+H  6099.70 CH t=6091.8 EV ev=306 fault=kill target=dbus rec=1.28 ok=1 fixed=0 
+H  6115.71 CH t=6107.8 STEP 335 fKill
+H  6116.34 brain: driftwm failed (signal: killed), failures=1 action=0
+H  6116.35 brain: holding hubd: a dependency is down
+H  6118.34 brain: starting waybar: its dependencies are ready
+H  6118.34 brain: starting hubd: its dependencies are ready
+H  6119.21 CH t=6111.3 EV ev=307 fault=kill target=driftwm rec=3.29 ok=1 fixed=0 
+H  6133.21 CH t=6125.3 STEP 336 fHang
+H  6136.36 brain: driftwm failed (health probe: no answer), failures=2 action=1
+H  6136.48 brain: holding waybar: a dependency is down
+H  6136.49 brain: holding hubd: a dependency is down
+H  6137.34 brain: driftwm failed (restarted unseen), failures=3 action=1
+H  6142.33 brain: starting waybar: its dependencies are ready
+H  6142.34 brain: starting hubd: its dependencies are ready
+H  6143.20 CH t=6135.3 EV ev=308 fault=hang-stop target=driftwm rec=9.78 ok=1 fixed=0 
+H  6154.68 CH t=6146.8 SOAKMEM t=6135 restarts=728 faults=336
+H  6154.73 CH t=6146.9 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=126488 heap_sys=3538944 heap_released=2908160 goroutines=13 fds=18 num_gc=2
+H  6154.79 CH t=6146.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6154.80 CH t=6146.9 MEM pid=23540 comm=brain rss_kb=4124 pss_kb=4120
+H  6158.20 CH t=6150.3 STEP 337 fOOM
+H  6158.27 CH t=6150.4 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  6164.07 CH t=6156.2 EV ev=309 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  6180.08 CH t=6172.2 STEP 338 fHang
+H  6183.35 brain: driftwm failed (health probe: no answer), failures=3 action=1
+H  6184.34 brain: holding hubd: a dependency is down
+H  6188.33 brain: starting waybar: its dependencies are ready
+H  6188.34 brain: starting hubd: its dependencies are ready
+H  6189.25 CH t=6181.4 EV ev=310 fault=hang-stop target=driftwm rec=8.97 ok=1 fixed=0 
+H  6205.26 CH t=6197.4 STEP 339 fBrainKill
+H  6206.36 brain: started mode=direct pid=24107
+H  6207.58 CH t=6199.7 EV ev=311 fault=brain-killed target=brain rec=0.08 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H  6214.80 CH t=6206.9 SOAKMEM t=6195 restarts=731 faults=339
+H  6214.85 CH t=6207.0 BRAINSTAT gcstats heap_inuse=466944 heap_alloc=76840 heap_sys=3899392 heap_released=3432448 goroutines=3 fds=8 num_gc=1
+H  6214.88 CH t=6207.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6214.89 CH t=6207.0 MEM pid=24107 comm=brain rss_kb=3528 pss_kb=3524
+H  6215.59 CH t=6207.7 STEP 340 fKill
+H  6216.37 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  6216.39 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  6217.37 brain: starting driftwm: its dependencies are ready
+H  6217.38 brain: holding hubd: a dependency is down
+H  6220.37 brain: starting waybar: its dependencies are ready
+H  6220.37 brain: starting hubd: its dependencies are ready
+H  6221.25 CH t=6213.4 EV ev=312 fault=kill target=seatd rec=5.45 ok=1 fixed=0 
+H  6228.25 CH t=6220.4 STEP 341 fKill
+H  6228.37 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  6228.39 brain: holding waybar: a dependency is down
+H  6229.38 brain: starting waybar: its dependencies are ready
+H  6229.72 CH t=6221.8 EV ev=313 fault=kill target=dbus rec=1.26 ok=1 fixed=0 
+H  6240.72 CH t=6232.8 STEP 342 fOOM
+H  6240.80 CH t=6232.9 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  6246.19 CH t=6238.3 EV ev=314 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  6260.19 CH t=6252.3 STEP 343 fKill
+H  6260.37 brain: seatd failed (signal: killed), failures=2 action=1
+H  6260.37 brain: holding hubd: a dependency is down
+H  6263.37 brain: starting driftwm: its dependencies are ready
+H  6266.37 brain: starting waybar: its dependencies are ready
+H  6266.38 brain: starting hubd: its dependencies are ready
+H  6267.43 CH t=6259.5 EV ev=315 fault=kill target=seatd rec=7.02 ok=1 fixed=0 
+H  6274.89 CH t=6267.0 SOAKMEM t=6255 restarts=741 faults=343
+H  6274.95 CH t=6267.1 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=125200 heap_sys=3571712 heap_released=2973696 goroutines=13 fds=18 num_gc=2
+H  6274.99 CH t=6267.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6274.99 CH t=6267.1 MEM pid=24107 comm=brain rss_kb=4044 pss_kb=4040
+H  6277.43 CH t=6269.5 STEP 344 fSupKill
+H  6277.43 CH t=6269.5 skip supkill hubd: no per-service supervisor
+H  6283.43 CH t=6275.6 STEP 345 fHang
+H  6287.41 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  6288.40 brain: driftwm failed (signal: killed), failures=2 action=1
+H  6288.40 brain: holding hubd: a dependency is down
+H  6293.37 brain: starting waybar: its dependencies are ready
+H  6293.37 brain: starting hubd: its dependencies are ready
+H  6294.27 CH t=6286.4 EV ev=316 fault=hang-spin target=driftwm rec=10.63 ok=1 fixed=0 
+H  6301.27 CH t=6293.4 STEP 346 fDep
+H  6301.37 brain: seatd failed (signal: killed), failures=2 action=1
+H  6301.37 brain: holding hubd: a dependency is down
+H  6318.37 brain: starting driftwm: its dependencies are ready
+H  6320.37 brain: starting waybar: its dependencies are ready
+H  6320.37 brain: starting hubd: its dependencies are ready
+H  6321.18 CH t=6313.3 EV ev=317 fault=dep-slow target=seatd rec=19.70 ok=1 fixed=0 
+H  6321.18 CH t=6313.3 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  6327.18 CH t=6319.3 STEP 347 fKill
+H  6327.37 brain: driftwm failed (signal: killed), failures=3 action=1
+H  6327.37 brain: holding hubd: a dependency is down
+H  6331.37 brain: starting waybar: its dependencies are ready
+H  6331.37 brain: starting hubd: its dependencies are ready
+H  6332.29 CH t=6324.4 EV ev=318 fault=kill target=driftwm rec=4.90 ok=1 fixed=0 
+H  6334.99 CH t=6327.1 SOAKMEM t=6315 restarts=751 faults=347
+H  6335.04 CH t=6327.2 BRAINSTAT gcstats heap_inuse=589824 heap_alloc=128120 heap_sys=3538944 heap_released=2949120 goroutines=13 fds=18 num_gc=3
+H  6335.07 CH t=6327.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6335.08 CH t=6327.2 MEM pid=24107 comm=brain rss_kb=4168 pss_kb=4164
+H  6351.30 CH t=6343.4 STEP 348 fStorm
+H  6351.38 brain: holding waybar: a dependency is down
+H  6351.38 brain: holding hubd: a dependency is down
+H  6352.37 brain: driftwm failed (signal: killed), failures=2 action=1
+H  6376.42 CH t=6368.5 STATUS dbus state=running up=true pid=24212 restarts=1 last_failure=148s needs=[] cause="exit status unknown (adopted)"
+H  6376.42 CH t=6368.5 STATUS driftwm state=running up=false pid=24580 restarts=4 last_failure=24s needs=[seatd udevd] cause="signal: killed"
+H  6376.42 CH t=6368.5 STATUS hubd state=running up=false pid=24594 restarts=0 last_failure=never needs=[driftwm] cause=""
+H  6376.42 CH t=6368.5 STATUS seatd state=running up=true pid=24481 restarts=3 last_failure=75s needs=[] cause="signal: killed"
+H  6376.43 CH t=6368.5 STATUS udevd state=running up=true pid=23636 restarts=0 last_failure=never needs=[] cause=""
+H  6376.43 CH t=6368.5 STATUS waybar state=running up=false pid=24593 restarts=1 last_failure=160s needs=[driftwm dbus] cause="exit status unknown (adopted)"
+H  6376.43 CH t=6368.6 STORM target=driftwm dur=25 starts=23 starts_last10s=10 cpu_ticks_init_side=53 bar-down
+H  6378.37 brain: starting waybar: its dependencies are ready
+H  6378.37 brain: starting hubd: its dependencies are ready
+H  6379.20 CH t=6371.3 EV ev=319 fault=storm target=driftwm rec=2.57 ok=1 fixed=0 starts=23 last10=10 cpu=53 bar-down
+H  6395.08 CH t=6387.2 SOAKMEM t=6375 restarts=767 faults=348
+H  6395.13 CH t=6387.3 BRAINSTAT gcstats heap_inuse=630784 heap_alloc=134176 heap_sys=3538944 heap_released=2908160 goroutines=13 fds=18 num_gc=4
+H  6395.18 CH t=6387.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6395.19 CH t=6387.3 MEM pid=24107 comm=brain rss_kb=4288 pss_kb=4284
+H  6397.20 CH t=6389.3 STEP 349 fDep
+H  6397.37 brain: seatd failed (signal: killed), failures=1 action=0
+H  6397.38 brain: holding hubd: a dependency is down
+H  6413.37 brain: starting driftwm: its dependencies are ready
+H  6416.37 brain: starting waybar: its dependencies are ready
+H  6416.37 brain: starting hubd: its dependencies are ready
+H  6417.21 CH t=6409.3 EV ev=320 fault=dep-slow target=seatd rec=19.79 ok=1 fixed=0 
+H  6417.21 CH t=6409.3 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  6422.21 CH t=6414.3 STEP 350 fKill
+H  6422.46 brain: seatd failed (signal: killed), failures=2 action=1
+H  6424.68 brain: holding hubd: a dependency is down
+H  6425.37 brain: starting driftwm: its dependencies are ready
+H  6428.37 brain: starting waybar: its dependencies are ready
+H  6428.37 brain: starting hubd: its dependencies are ready
+H  6429.42 CH t=6421.5 EV ev=321 fault=kill target=seatd rec=7.01 ok=1 fixed=0 
+H  6446.43 CH t=6438.5 STEP 351 fSupKill
+H  6446.43 CH t=6438.5 skip supkill driftwm: no per-service supervisor
+H  6455.19 CH t=6447.3 SOAKMEM t=6435 restarts=775 faults=351
+H  6455.23 CH t=6447.4 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=132848 heap_sys=3538944 heap_released=2916352 goroutines=13 fds=18 num_gc=5
+H  6455.27 CH t=6447.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6455.27 CH t=6447.4 MEM pid=24107 comm=brain rss_kb=4348 pss_kb=4344
+H  6465.43 CH t=6457.5 STEP 352 fKill
+H  6466.37 brain: seatd failed (signal: killed), failures=2 action=1
+H  6466.37 brain: holding hubd: a dependency is down
+H  6469.37 brain: starting driftwm: its dependencies are ready
+H  6471.37 brain: starting waybar: its dependencies are ready
+H  6471.37 brain: starting hubd: its dependencies are ready
+H  6472.35 CH t=6464.5 EV ev=322 fault=kill target=seatd rec=6.71 ok=1 fixed=0 
+H  6487.35 CH t=6479.5 STEP 353 fKill
+H  6487.37 brain: seatd failed (signal: killed), failures=2 action=1
+H  6487.37 brain: holding driftwm: a dependency is down
+H  6488.38 brain: holding hubd: a dependency is down
+H  6489.37 brain: starting driftwm: its dependencies are ready
+H  6491.36 brain: starting waybar: its dependencies are ready
+H  6491.37 brain: starting hubd: its dependencies are ready
+H  6492.36 CH t=6484.5 EV ev=323 fault=kill target=seatd rec=4.80 ok=1 fixed=0 
+H  6499.36 CH t=6491.5 STEP 354 fKill
+H  6499.38 brain: holding waybar: a dependency is down
+H  6500.37 brain: dbus failed (signal: killed), failures=1 action=0
+H  6501.37 brain: starting waybar: its dependencies are ready
+H  6501.76 CH t=6493.9 EV ev=324 fault=kill target=dbus rec=2.19 ok=1 fixed=0 
+H  6506.76 CH t=6498.9 STEP 355 fStorm
+H  6507.37 brain: hubd failed (signal: killed), failures=1 action=0
+H  6515.27 CH t=6507.4 SOAKMEM t=6495 restarts=786 faults=354
+H  6515.36 CH t=6507.5 BRAINSTAT gcstats heap_inuse=647168 heap_alloc=147592 heap_sys=3506176 heap_released=2859008 goroutines=19 fds=16 num_gc=6
+H  6515.45 CH t=6507.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6515.45 CH t=6507.6 MEM pid=24107 comm=brain rss_kb=4460 pss_kb=4456
+H  6531.86 CH t=6524.0 STATUS dbus state=running up=true pid=25291 restarts=2 last_failure=31s needs=[] cause="signal: killed"
+H  6531.86 CH t=6524.0 STATUS driftwm state=running up=true pid=25242 restarts=4 last_failure=179s needs=[seatd udevd] cause="signal: killed"
+H  6531.87 CH t=6524.0 STATUS hubd state=running up=false pid=25256 restarts=1 last_failure=24s needs=[driftwm] cause="signal: killed"
+H  6531.87 CH t=6524.0 STATUS seatd state=running up=true pid=25238 restarts=7 last_failure=44s needs=[] cause="signal: killed"
+H  6531.87 CH t=6524.0 STATUS udevd state=running up=true pid=23636 restarts=0 last_failure=never needs=[] cause=""
+H  6531.88 CH t=6524.0 STATUS waybar state=running up=true pid=25295 restarts=1 last_failure=315s needs=[driftwm dbus] cause="exit status unknown (adopted)"
+H  6531.88 CH t=6524.0 STORM target=hubd dur=25 starts=25 starts_last10s=10 cpu_ticks_init_side=66 bar-up
+H  6533.21 CH t=6525.3 EV ev=325 fault=storm target=hubd rec=1.13 ok=1 fixed=0 starts=25 last10=10 cpu=66 bar-up
+H  6545.21 CH t=6537.3 STEP 356 fKill
+H  6545.37 brain: dbus failed (signal: killed), failures=2 action=1
+H  6545.38 brain: holding waybar: a dependency is down
+H  6548.37 brain: starting waybar: its dependencies are ready
+H  6548.78 CH t=6540.9 EV ev=326 fault=kill target=dbus rec=3.36 ok=1 fixed=0 
+H  6554.78 CH t=6546.9 STEP 357 fStorm
+H  6555.38 brain: waybar failed (signal: killed), failures=1 action=0
+H  6575.45 CH t=6567.6 SOAKMEM t=6555 restarts=791 faults=356
+H  6575.50 CH t=6567.6 BRAINSTAT gcstats heap_inuse=688128 heap_alloc=157464 heap_sys=3473408 heap_released=2785280 goroutines=21 fds=16 num_gc=7
+H  6575.53 CH t=6567.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6575.53 CH t=6567.6 MEM pid=24107 comm=brain rss_kb=4552 pss_kb=4548
+H  6579.88 CH t=6572.0 STATUS dbus state=running up=true pid=25557 restarts=3 last_failure=35s needs=[] cause="signal: killed"
+H  6579.88 CH t=6572.0 STATUS driftwm state=running up=true pid=25242 restarts=4 last_failure=228s needs=[seatd udevd] cause="signal: killed"
+H  6579.89 CH t=6572.0 STATUS hubd state=running up=true pid=25506 restarts=1 last_failure=73s needs=[driftwm] cause="signal: killed"
+H  6579.89 CH t=6572.0 STATUS seatd state=running up=true pid=25238 restarts=7 last_failure=93s needs=[] cause="signal: killed"
+H  6579.89 CH t=6572.0 STATUS udevd state=running up=true pid=23636 restarts=0 last_failure=never needs=[] cause=""
+H  6579.89 CH t=6572.0 STATUS waybar state=running up=false pid=25571 restarts=2 last_failure=25s needs=[driftwm dbus] cause="signal: killed"
+H  6579.89 CH t=6572.0 STORM target=waybar dur=25 starts=25 starts_last10s=10 cpu_ticks_init_side=61 bar-up
+H  6580.71 CH t=6572.8 EV ev=327 fault=storm target=waybar rec=0.61 ok=1 fixed=0 starts=25 last10=10 cpu=61 bar-up
+H  6587.71 CH t=6579.8 STEP 358 fStorm
+H  6588.38 brain: waybar failed (signal: killed), failures=2 action=1
+H  6612.82 CH t=6604.9 STATUS dbus state=running up=true pid=25557 restarts=3 last_failure=67s needs=[] cause="signal: killed"
+H  6612.82 CH t=6604.9 STATUS driftwm state=running up=true pid=25242 restarts=4 last_failure=260s needs=[seatd udevd] cause="signal: killed"
+H  6612.82 CH t=6604.9 STATUS hubd state=running up=true pid=25506 restarts=1 last_failure=105s needs=[driftwm] cause="signal: killed"
+H  6612.83 CH t=6604.9 STATUS seatd state=running up=true pid=25238 restarts=7 last_failure=125s needs=[] cause="signal: killed"
+H  6612.83 CH t=6604.9 STATUS udevd state=running up=true pid=23636 restarts=0 last_failure=never needs=[] cause=""
+H  6612.83 CH t=6604.9 STATUS waybar state=running up=false pid=25779 restarts=3 last_failure=24s needs=[driftwm dbus] cause="signal: killed"
+H  6612.83 CH t=6605.0 STORM target=waybar dur=25 starts=23 starts_last10s=10 cpu_ticks_init_side=48 bar-up
+H  6613.81 CH t=6605.9 EV ev=328 fault=storm target=waybar rec=0.77 ok=1 fixed=0 starts=23 last10=10 cpu=48 bar-up
+H  6632.81 CH t=6624.9 STEP 359 fKill
+H  6633.38 brain: hubd failed (signal: killed), failures=1 action=0
+H  6634.38 CH t=6626.5 EV ev=329 fault=kill target=hubd rec=1.35 ok=1 fixed=0 
+H  6635.53 CH t=6627.7 SOAKMEM t=6615 restarts=795 faults=359
+H  6635.60 CH t=6627.7 BRAINSTAT gcstats heap_inuse=671744 heap_alloc=145976 heap_sys=3473408 heap_released=2801664 goroutines=14 fds=18 num_gc=8
+H  6635.65 CH t=6627.8 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6635.66 CH t=6627.8 MEM pid=24107 comm=brain rss_kb=4528 pss_kb=4524
+H  6644.38 CH t=6636.5 STEP 360 fSupKill
+H  6644.38 CH t=6636.5 skip supkill seatd: no per-service supervisor
+H  6657.38 CH t=6649.5 STEP 361 fBrainKill
+H  6658.47 brain: started mode=direct pid=26132
+H  6659.72 CH t=6651.8 EV ev=330 fault=brain-killed target=brain rec=0.08 ok=1 fixed=0 services_kept_running=1 brain_back_after=0.0
+H  6665.72 CH t=6657.8 STEP 362 fDep
+H  6666.48 brain: seatd failed (exit status unknown (adopted)), failures=1 action=0
+H  6666.50 brain: waybar failed (exit status unknown (adopted)), failures=1 action=0
+H  6682.48 brain: starting driftwm: its dependencies are ready
+H  6682.49 brain: holding hubd: a dependency is down
+H  6684.48 brain: starting waybar: its dependencies are ready
+H  6684.49 brain: starting hubd: its dependencies are ready
+H  6685.54 CH t=6677.7 EV ev=331 fault=dep-slow target=seatd rec=19.61 ok=1 fixed=0 
+H  6685.54 CH t=6677.7 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=17 hubd=1
+H  6695.66 CH t=6687.8 SOAKMEM t=6676 restarts=800 faults=362
+H  6695.71 CH t=6687.8 BRAINSTAT gcstats heap_inuse=565248 heap_alloc=116008 heap_sys=3670016 heap_released=3104768 goroutines=11 fds=16 num_gc=1
+H  6695.74 CH t=6687.9 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6695.74 CH t=6687.9 MEM pid=26132 comm=brain rss_kb=3768 pss_kb=3764
+H  6697.55 CH t=6689.7 STEP 363 fHang
+H  6697.85 CH t=6690.0 EV ev=332 fault=hang-spin target=driftwm rec=0.09 ok=1 fixed=0 
+H  6716.85 CH t=6709.0 STEP 364 fSupKill
+H  6716.85 CH t=6709.0 skip supkill seatd: no per-service supervisor
+H  6722.86 CH t=6715.0 STEP 365 fHang
+H  6726.49 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  6727.49 brain: driftwm failed (signal: killed), failures=2 action=1
+H  6727.49 brain: holding hubd: a dependency is down
+H  6731.48 brain: starting waybar: its dependencies are ready
+H  6731.48 brain: starting hubd: its dependencies are ready
+H  6732.33 CH t=6724.5 EV ev=333 fault=hang-stop target=driftwm rec=9.27 ok=1 fixed=0 
+H  6742.34 CH t=6734.5 STEP 366 fSupKill
+H  6742.34 CH t=6734.5 skip supkill hubd: no per-service supervisor
+H  6755.34 CH t=6747.5 STEP 367 fClock
+H  6755.48 brain: driftwm failed (signal: killed), failures=3 action=1
+H  6755.49 brain: holding hubd: a dependency is down
+H  6755.74 CH t=6747.9 SOAKMEM t=6736 restarts=803 faults=366
+H  6755.81 CH t=6747.9 BRAINSTAT gcstats heap_inuse=589824 heap_alloc=120736 heap_sys=3637248 heap_released=3047424 goroutines=8 fds=10 num_gc=2
+H  6755.86 CH t=6748.0 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6755.86 CH t=6748.0 MEM pid=26132 comm=brain rss_kb=4024 pss_kb=4020
+H  6760.48 brain: starting waybar: its dependencies are ready
+H  6760.49 brain: starting hubd: its dependencies are ready
+H  6761.43 CH t=6753.6 EV ev=334 fault=clock+86400 target=driftwm rec=5.87 ok=1 fixed=0 
+H  6762.48 brain: hubd failed (signal: killed), failures=1 action=0
+H  6763.52 CH t=6755.6 EV ev=335 fault=after-clock+86400 target=hubd rec=0.88 ok=1 fixed=0 
+H  6778.52 CH t=6770.6 STEP 368 fSupKill
+H  6778.52 CH t=6770.6 skip supkill driftwm: no per-service supervisor
+H  6792.53 CH t=6784.6 STEP 369 fKill
+H  6793.48 brain: waybar failed (signal: killed), failures=1 action=0
+H  6793.81 CH t=6785.9 EV ev=336 fault=kill target=waybar rec=1.07 ok=1 fixed=0 
+H  6805.81 CH t=6797.9 STEP 370 fKill
+H  6806.48 brain: dbus failed (exit status unknown (adopted)), failures=1 action=0
+H  6806.49 brain: holding waybar: a dependency is down
+H  6807.48 brain: starting waybar: its dependencies are ready
+H  6807.98 CH t=6800.1 EV ev=337 fault=kill target=dbus rec=1.95 ok=1 fixed=0 
+H  6812.98 CH t=6805.1 STEP 371 fKill
+H  6813.49 brain: hubd failed (signal: killed), failures=2 action=1
+H  6815.86 CH t=6808.0 SOAKMEM t=6796 restarts=810 faults=370
+H  6815.91 CH t=6808.0 BRAINSTAT gcstats heap_inuse=598016 heap_alloc=124480 heap_sys=3571712 heap_released=2973696 goroutines=15 fds=19 num_gc=3
+H  6815.94 CH t=6808.1 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6815.94 CH t=6808.1 MEM pid=26132 comm=brain rss_kb=4192 pss_kb=4188
+H  6816.52 CH t=6808.6 EV ev=338 fault=kill target=hubd rec=3.33 ok=1 fixed=0 
+H  6824.52 CH t=6816.6 STEP 372 fHang
+H  6824.86 CH t=6817.0 EV ev=339 fault=hang-spin target=driftwm rec=0.12 ok=1 fixed=0 
+H  6838.87 CH t=6831.0 STEP 373 fSupKill
+H  6838.87 CH t=6831.0 skip supkill seatd: no per-service supervisor
+H  6844.87 CH t=6837.0 STEP 374 fKill
+H  6845.48 brain: udevd failed (exit status unknown (adopted)), failures=1 action=0
+H  6845.49 brain: holding driftwm: a dependency is down
+H  6846.48 brain: holding hubd: a dependency is down
+H  6847.48 brain: starting driftwm: its dependencies are ready
+H  6850.48 brain: starting waybar: its dependencies are ready
+H  6850.48 brain: starting hubd: its dependencies are ready
+H  6851.37 CH t=6843.5 EV ev=340 fault=kill target=udevd rec=6.29 ok=1 fixed=0 
+H  6868.38 CH t=6860.5 STEP 375 fOOM
+H  6868.43 CH t=6860.6 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  6874.07 CH t=6866.2 EV ev=341 fault=oom target=hog rec=0.11 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  6875.94 CH t=6868.1 SOAKMEM t=6856 restarts=815 faults=375
+H  6875.99 CH t=6868.1 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=132008 heap_sys=3538944 heap_released=2916352 goroutines=15 fds=20 num_gc=4
+H  6876.05 CH t=6868.2 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6876.05 CH t=6868.2 MEM pid=26132 comm=brain rss_kb=4276 pss_kb=4272
+H  6893.08 CH t=6885.2 STEP 376 fKill
+H  6893.49 brain: hubd failed (signal: killed), failures=1 action=0
+H  6894.38 CH t=6886.5 EV ev=342 fault=kill target=hubd rec=1.09 ok=1 fixed=0 
+H  6913.39 CH t=6905.5 STEP 377 fKill
+H  6913.49 brain: waybar failed (signal: killed), failures=1 action=0
+H  6913.93 CH t=6906.1 EV ev=343 fault=kill target=waybar rec=0.33 ok=1 fixed=0 
+H  6919.93 CH t=6912.1 STEP 378 fKill
+H  6920.48 brain: waybar failed (signal: killed), failures=2 action=1
+H  6922.84 CH t=6915.0 EV ev=344 fault=kill target=waybar rec=2.70 ok=1 fixed=0 
+H  6936.05 CH t=6928.2 SOAKMEM t=6916 restarts=818 faults=378
+H  6936.11 CH t=6928.2 BRAINSTAT gcstats heap_inuse=614400 heap_alloc=137856 heap_sys=3506176 heap_released=2891776 goroutines=15 fds=20 num_gc=5
+H  6936.17 CH t=6928.3 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6936.17 CH t=6928.3 MEM pid=26132 comm=brain rss_kb=4364 pss_kb=4360
+H  6939.84 CH t=6932.0 STEP 379 fKill
+H  6940.48 brain: seatd failed (signal: killed), failures=1 action=0
+H  6940.49 brain: holding hubd: a dependency is down
+H  6941.48 brain: starting driftwm: its dependencies are ready
+H  6943.48 brain: starting waybar: its dependencies are ready
+H  6943.49 brain: starting hubd: its dependencies are ready
+H  6944.39 CH t=6936.5 EV ev=345 fault=kill target=seatd rec=4.34 ok=1 fixed=0 
+H  6960.40 CH t=6952.5 STEP 380 fDisk
+H  6960.43 CH t=6952.6 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H  6966.48 brain: waybar failed (signal: killed), failures=3 action=1
+H  6976.21 CH t=6968.3 STATUS dbus state=running up=true pid=26713 restarts=1 last_failure=170s needs=[] cause="exit status unknown (adopted)"
+H  6976.21 CH t=6968.3 STATUS driftwm state=running up=true pid=27179 restarts=3 last_failure=221s needs=[seatd udevd] cause="signal: killed"
+H  6976.21 CH t=6968.3 STATUS hubd state=running up=true pid=27193 restarts=3 last_failure=83s needs=[driftwm] cause="signal: killed"
+H  6976.22 CH t=6968.3 STATUS seatd state=running up=true pid=27175 restarts=2 last_failure=36s needs=[] cause="signal: killed"
+H  6976.22 CH t=6968.3 STATUS udevd state=running up=true pid=26840 restarts=1 last_failure=131s needs=[] cause="exit status unknown (adopted)"
+H  6976.23 CH t=6968.3 STATUS waybar state=running up=true pid=27277 restarts=5 last_failure=10s needs=[driftwm dbus] cause="signal: killed"
+H  6976.57 CH t=6968.7 EV ev=346 fault=disk-full target=waybar rec=0.09 ok=1 fixed=0 ok_during=11/15 all_alive_at_end=1
+H  6993.57 CH t=6985.7 STEP 381 fDep
+H  6994.48 brain: seatd failed (signal: killed), failures=2 action=1
+H  6994.48 brain: holding hubd: a dependency is down
+H  6996.17 CH t=6988.3 SOAKMEM t=6976 restarts=824 faults=380
+H  6996.21 CH t=6988.3 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=139880 heap_sys=3473408 heap_released=2850816 goroutines=14 fds=15 num_gc=6
+H  6996.24 CH t=6988.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  6996.24 CH t=6988.4 MEM pid=26132 comm=brain rss_kb=4392 pss_kb=4388
+H  7011.48 brain: starting driftwm: its dependencies are ready
+H  7013.48 brain: starting waybar: its dependencies are ready
+H  7013.48 brain: starting hubd: its dependencies are ready
+H  7014.37 CH t=7006.5 EV ev=347 fault=dep-slow target=seatd rec=20.60 ok=1 fixed=0 
+H  7014.38 CH t=7006.5 DEPSTARTS mode=slow seatd=1 driftwm=1 waybar=1 hubd=1
+H  7022.38 CH t=7014.5 STEP 382 fSupKill
+H  7022.38 CH t=7014.5 skip supkill seatd: no per-service supervisor
+H  7034.38 CH t=7026.5 STEP 383 fSupKill
+H  7034.38 CH t=7026.5 skip supkill seatd: no per-service supervisor
+H  7040.38 CH t=7032.5 STEP 384 fDep
+H  7040.48 brain: seatd failed (signal: killed), failures=2 action=1
+H  7040.48 brain: holding hubd: a dependency is down
+H  7056.25 CH t=7048.4 SOAKMEM t=7036 restarts=829 faults=383
+H  7056.29 CH t=7048.4 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=152576 heap_sys=3473408 heap_released=2850816 goroutines=17 fds=12 num_gc=7
+H  7056.32 CH t=7048.4 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  7056.32 CH t=7048.4 MEM pid=26132 comm=brain rss_kb=4404 pss_kb=4400
+H  7061.48 brain: starting driftwm: its dependencies are ready
+H  7064.48 brain: starting waybar: its dependencies are ready
+H  7064.48 brain: starting hubd: its dependencies are ready
+H  7065.53 CH t=7057.7 EV ev=348 fault=dep-fail target=seatd rec=4.94 ok=1 fixed=0 
+H  7065.54 CH t=7057.7 DEPSTARTS mode=fail seatd=20 driftwm=1 waybar=1 hubd=1
+H  7076.54 CH t=7068.7 STEP 385 fKill
+H  7077.48 brain: driftwm failed (signal: killed), failures=1 action=0
+H  7077.50 brain: holding hubd: a dependency is down
+H  7080.48 brain: starting waybar: its dependencies are ready
+H  7080.48 brain: starting hubd: its dependencies are ready
+H  7081.44 CH t=7073.6 EV ev=349 fault=kill target=driftwm rec=4.69 ok=1 fixed=0 
+H  7096.44 CH t=7088.6 STEP 386 fKill
+H  7096.49 brain: hubd failed (signal: killed), failures=1 action=0
+H  7097.54 CH t=7089.7 EV ev=350 fault=kill target=hubd rec=0.89 ok=1 fixed=0 
+H  7102.54 CH t=7094.7 STEP 387 fOOM
+H  7102.59 CH t=7094.7 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H  7108.41 CH t=7100.5 EV ev=351 fault=oom target=hog rec=0.09 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H  7116.32 CH t=7108.4 SOAKMEM t=7096 restarts=837 faults=387
+H  7116.37 CH t=7108.5 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=140120 heap_sys=3473408 heap_released=2850816 goroutines=15 fds=20 num_gc=8
+H  7116.39 CH t=7108.5 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  7116.40 CH t=7108.5 MEM pid=26132 comm=brain rss_kb=4408 pss_kb=4404
+H  7122.41 CH t=7114.5 STEP 388 fKill
+H  7122.49 brain: waybar failed (signal: killed), failures=1 action=0
+H  7122.93 CH t=7115.1 EV ev=352 fault=kill target=waybar rec=0.31 ok=1 fixed=0 
+H  7138.94 CH t=7131.1 STEP 389 fSupKill
+H  7138.94 CH t=7131.1 skip supkill waybar: no per-service supervisor
+H  7147.94 CH t=7140.1 STEP 390 fKill
+H  7148.48 brain: seatd failed (signal: killed), failures=1 action=0
+H  7148.49 brain: holding hubd: a dependency is down
+H  7149.48 brain: starting driftwm: its dependencies are ready
+H  7152.48 brain: starting waybar: its dependencies are ready
+H  7152.49 brain: starting hubd: its dependencies are ready
+H  7153.49 CH t=7145.6 EV ev=353 fault=kill target=seatd rec=5.33 ok=1 fixed=0 
+H  7166.49 CH t=7158.6 STEP 391 fDep
+H  7167.48 brain: seatd failed (signal: killed), failures=2 action=1
+H  7167.48 brain: holding hubd: a dependency is down
+H  7176.40 CH t=7168.5 SOAKMEM t=7156 restarts=843 faults=390
+H  7176.44 CH t=7168.6 BRAINSTAT gcstats heap_inuse=622592 heap_alloc=148880 heap_sys=3506176 heap_released=2883584 goroutines=15 fds=12 num_gc=9
+H  7176.47 CH t=7168.6 MEM pid=1 comm=s6-svscan rss_kb=1104 pss_kb=1096
+H  7176.47 CH t=7168.6 MEM pid=26132 comm=brain rss_kb=4376 pss_kb=4372
+H  7187.48 brain: starting driftwm: its dependencies are ready
+H  7189.48 brain: starting waybar: its dependencies are ready
+H  7189.52 brain: starting hubd: its dependencies are ready
+H  7190.47 CH t=7182.6 EV ev=354 fault=dep-fail target=seatd rec=3.77 ok=1 fixed=0 
+H  7190.47 CH t=7182.6 DEPSTARTS mode=fail seatd=19 driftwm=1 waybar=1 hubd=1
+H  7209.48 CH t=7201.6 STEP 392 fHang
+H  7213.49 brain: driftwm failed (health probe: no answer), failures=1 action=0
+H  7214.48 brain: driftwm failed (signal: killed), failures=2 action=1
+H  7214.48 brain: holding hubd: a dependency is down
+H  7218.48 brain: starting waybar: its dependencies are ready
+H  7218.48 brain: starting hubd: its dependencies are ready
+H  7219.34 CH t=7211.5 EV ev=355 fault=hang-stop target=driftwm rec=9.65 ok=1 fixed=0 
+H  7234.34 CH t=7226.5 SOAK-END restarts=850 faults=392
+H  7234.34 CH t=7226.5 SUITE-DONE
+H  7236.36 [ 7233.584199] reboot: Power down
+H# vm exit code 0 after 7236s, loadavg ['0.27', '0.24', '0.27']
+H# end wall=7236.4s launches=1 suite_done=True

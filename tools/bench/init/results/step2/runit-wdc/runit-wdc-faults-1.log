@@ -1,0 +1,1205 @@
+H# start 2026-10-12 17:41:44 cand=runit-wdc suite=faults cpus_seen=4 loadavg_at_start=['0.87', '0.71', '0.61']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/runit-wdc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=600 hub.seed=200 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir hub.watcher=watcher hub.wmode=compositor
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     4.80 c[?7l[2JCH STAGE1 up=3.03
+H     4.87 CH CAND runit pid1=runit stage2=runsvdir
+H     4.97 CH SUP-START up=3.20
+H     5.03 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     5.04 CH t=0.1 CHAOS start cand=runit suite=faults seed=200 cpus=2
+H     5.04 - runit: enter stage: /etc/runit/1
+H     5.05 - runit: leave stage: /etc/runit/1
+H     5.05 - runit: enter stage: /etc/runit/2
+H     6.23 watcher: started pid=128 mode=compositor (TEST STAND-IN, not the product watcher)
+H     7.28 watcher: round 1 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H     8.23 watcher: round 2 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H     9.25 watcher: round 3 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    10.24 watcher: round 4 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    10.92 CH t=5.9 BOOT-OK up=9.15 ok=1 (seconds since kernel start; waited 5.7)
+H    11.24 watcher: round 5 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    12.24 watcher: round 6 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    13.24 watcher: round 7 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    14.27 watcher: round 8 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    15.24 watcher: round 9 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    15.93 CH t=11.0 STEP 1 fKill
+H    16.24 watcher: round 10 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    17.23 watcher: round 11 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    18.25 watcher: round 12 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    19.24 watcher: round 13 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    19.69 CH t=14.7 EV ev=1 fault=kill target=seatd rec=3.54 ok=1 fixed=0 
+H    20.24 watcher: round 14 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    21.25 watcher: round 15 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    22.24 watcher: round 16 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    22.69 CH t=17.7 STEP 2 fKill
+H    23.25 watcher: round 17 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    24.24 watcher: round 18 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    24.65 CH t=19.7 EV ev=2 fault=kill target=udevd rec=1.74 ok=1 fixed=0 
+H    25.24 watcher: round 19 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    26.26 watcher: round 20 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    27.24 watcher: round 21 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    27.65 CH t=22.7 STEP 3 fKill
+H    27.99 CH t=23.0 EV ev=3 fault=kill target=dbus rec=0.13 ok=1 fixed=0 
+H    28.24 watcher: round 22 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    29.24 watcher: round 23 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    30.24 watcher: round 24 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    30.99 CH t=26.0 STEP 4 fKill
+H    31.24 watcher: round 25 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    32.24 watcher: round 26 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    33.24 watcher: round 27 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H    34.24 watcher: round 28 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    35.25 watcher: round 29 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    35.35 CH t=30.4 EV ev=4 fault=kill target=driftwm rec=4.13 ok=1 fixed=0 
+H    36.24 watcher: round 30 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    37.24 watcher: round 31 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    38.24 watcher: round 32 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    38.35 CH t=33.4 STEP 5 fKill
+H    39.24 watcher: round 33 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    40.01 CH t=35.0 EV ev=5 fault=kill target=waybar rec=1.44 ok=1 fixed=0 
+H    40.24 watcher: round 34 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    41.25 watcher: round 35 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    42.24 watcher: round 36 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    43.02 CH t=38.0 STEP 6 fKill
+H    43.24 watcher: round 37 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    44.25 watcher: round 38 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    45.25 watcher: round 39 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    45.31 CH t=40.3 EV ev=6 fault=kill target=hubd rec=2.07 ok=1 fixed=0 
+H    46.24 watcher: round 40 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    47.24 watcher: round 41 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    48.25 watcher: round 42 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    48.31 CH t=43.3 STEP 7 fKill
+H    49.23 watcher: round 43 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    50.23 watcher: round 44 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    51.23 watcher: round 45 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    52.24 watcher: round 46 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    52.69 CH t=47.7 EV ev=7 fault=kill target=seatd rec=4.17 ok=1 fixed=0 
+H    53.24 watcher: round 47 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    54.24 watcher: round 48 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    55.24 watcher: round 49 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    55.69 CH t=50.7 STEP 8 fKill
+H    56.24 watcher: round 50 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    57.24 watcher: round 51 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    57.63 CH t=52.7 EV ev=8 fault=kill target=udevd rec=1.72 ok=1 fixed=0 
+H    58.24 watcher: round 52 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    59.24 watcher: round 53 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    60.24 watcher: round 54 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    60.63 CH t=55.7 STEP 9 fKill
+H    61.02 CH t=56.0 EV ev=9 fault=kill target=dbus rec=0.17 ok=1 fixed=0 
+H    61.24 watcher: round 55 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    62.24 watcher: round 56 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    63.24 watcher: round 57 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    64.02 CH t=59.0 STEP 10 fKill
+H    64.24 watcher: round 58 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    65.25 watcher: round 59 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    66.24 watcher: round 60 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    67.24 watcher: round 61 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    67.98 CH t=63.0 EV ev=10 fault=kill target=driftwm rec=3.74 ok=1 fixed=0 
+H    68.24 watcher: round 62 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    69.24 watcher: round 63 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    70.24 watcher: round 64 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    70.98 CH t=66.0 STEP 11 fKill
+H    71.24 watcher: round 65 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    72.24 watcher: round 66 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    72.49 CH t=67.5 EV ev=11 fault=kill target=waybar rec=1.30 ok=1 fixed=0 
+H    73.26 watcher: round 67 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    74.24 watcher: round 68 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    75.25 watcher: round 69 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    75.49 CH t=70.5 STEP 12 fKill
+H    76.24 watcher: round 70 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    77.25 watcher: round 71 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    77.55 CH t=72.6 EV ev=12 fault=kill target=hubd rec=1.85 ok=1 fixed=0 
+H    78.25 watcher: round 72 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    79.24 watcher: round 73 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    80.25 watcher: round 74 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    80.56 CH t=75.6 STEP 13 fKill
+H    81.23 watcher: round 75 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    82.23 watcher: round 76 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    83.25 watcher: round 77 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    84.24 watcher: round 78 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    85.13 CH t=80.2 EV ev=13 fault=kill target=seatd rec=4.35 ok=1 fixed=0 
+H    85.24 watcher: round 79 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    86.25 watcher: round 80 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    87.24 watcher: round 81 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    88.14 CH t=83.2 STEP 14 fKill
+H    88.26 watcher: round 82 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    89.24 watcher: round 83 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    90.23 CH t=85.3 EV ev=14 fault=kill target=udevd rec=1.86 ok=1 fixed=0 
+H    90.24 watcher: round 84 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    91.24 watcher: round 85 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    92.24 watcher: round 86 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H    93.23 CH t=88.3 STEP 15 fKill
+H    93.24 watcher: round 87 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    93.56 CH t=88.6 EV ev=15 fault=kill target=dbus rec=0.10 ok=1 fixed=0 
+H    94.25 watcher: round 88 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    95.25 watcher: round 89 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    96.25 watcher: round 90 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H    96.57 CH t=91.6 STEP 16 fKill
+H    97.23 watcher: round 91 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H    98.23 watcher: round 92 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H    99.24 watcher: round 93 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   100.24 watcher: round 94 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   101.04 CH t=96.1 EV ev=16 fault=kill target=driftwm rec=4.26 ok=1 fixed=0 
+H   101.25 watcher: round 95 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   102.24 watcher: round 96 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   103.24 watcher: round 97 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   104.05 CH t=99.1 STEP 17 fKill
+H   104.24 watcher: round 98 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   105.24 watcher: round 99 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   105.54 CH t=100.6 EV ev=17 fault=kill target=waybar rec=1.28 ok=1 fixed=0 
+H   106.24 watcher: round 100 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   107.24 watcher: round 101 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   108.24 watcher: round 102 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   108.54 CH t=103.6 STEP 18 fKill
+H   109.24 watcher: round 103 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   110.24 watcher: round 104 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   110.64 CH t=105.7 EV ev=18 fault=kill target=hubd rec=1.88 ok=1 fixed=0 
+H   111.24 watcher: round 105 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   112.24 watcher: round 106 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   113.24 watcher: round 107 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   113.64 CH t=108.7 STEP 19 fHang
+H   115.24 watcher: round 108 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   116.26 watcher: round 109 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   117.27 watcher: round 110 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   118.28 watcher: round 111 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   119.29 watcher: round 112 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   120.30 watcher: round 113 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   121.31 watcher: round 114 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   122.32 watcher: round 115 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.1s
+H   123.33 watcher: round 116 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   124.35 watcher: round 117 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.1s
+H   125.36 watcher: round 118 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   126.38 watcher: round 119 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.1s
+H   127.39 watcher: round 120 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.2s
+H   128.40 watcher: round 121 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   129.41 watcher: round 122 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.2s
+H   130.42 watcher: round 123 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   131.43 watcher: round 124 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H   132.45 watcher: round 125 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.2s
+H   133.46 watcher: round 126 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.2s
+H   134.47 watcher: round 127 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   135.49 watcher: round 128 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.2s
+H   136.50 watcher: round 129 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   137.51 watcher: round 130 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   138.52 watcher: round 131 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.3s
+H   139.53 watcher: round 132 comp=FAIL hubd=FAIL failed_round=true streak=25 since_first=24.3s
+H   140.54 watcher: round 133 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H   141.55 watcher: round 134 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.3s
+H   142.57 watcher: round 135 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   143.60 watcher: round 136 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H   144.62 watcher: round 137 comp=FAIL hubd=FAIL failed_round=true streak=30 since_first=29.4s
+H   145.63 watcher: round 138 comp=FAIL hubd=ok failed_round=true streak=0 since_first=0.0s
+H   145.67 watcher: KILL driftwm pid=1452 err=<nil>
+H   145.73 watcher: round 139 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   146.24 watcher: round 140 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.6s
+H   147.23 watcher: round 141 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.6s
+H   148.24 watcher: round 142 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   149.25 watcher: round 143 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   150.24 watcher: round 144 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   150.66 CH t=145.7 EV ev=19 fault=hang-stop target=driftwm rec=36.81 ok=1 fixed=0 
+H   151.26 watcher: round 145 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   152.24 watcher: round 146 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   153.24 watcher: round 147 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   153.67 CH t=148.7 STEP 20 fHang
+H   155.25 watcher: round 148 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   156.28 watcher: round 149 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   157.29 watcher: round 150 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   158.30 watcher: round 151 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.1s
+H   159.32 watcher: round 152 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   160.35 watcher: round 153 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   161.38 watcher: round 154 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   162.39 watcher: round 155 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.2s
+H   163.41 watcher: round 156 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.2s
+H   164.42 watcher: round 157 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.2s
+H   165.45 watcher: round 158 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.2s
+H   166.46 watcher: round 159 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.2s
+H   167.47 watcher: round 160 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.2s
+H   168.49 watcher: round 161 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   169.50 watcher: round 162 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.3s
+H   170.51 watcher: round 163 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.3s
+H   171.52 watcher: round 164 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.3s
+H   172.53 watcher: round 165 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.3s
+H   173.54 watcher: round 166 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.3s
+H   174.57 watcher: round 167 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.3s
+H   175.59 watcher: round 168 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.3s
+H   176.62 watcher: round 169 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.4s
+H   177.64 watcher: round 170 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.4s
+H   178.67 watcher: round 171 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.4s
+H   179.70 watcher: round 172 comp=FAIL hubd=FAIL failed_round=true streak=25 since_first=24.4s
+H   180.73 watcher: round 173 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.5s
+H   181.75 watcher: round 174 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.5s
+H   182.77 watcher: round 175 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.5s
+H   183.79 watcher: round 176 comp=FAIL hubd=FAIL failed_round=true streak=29 since_first=28.5s
+H   184.81 watcher: round 177 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.6s
+H   185.83 watcher: round 178 comp=FAIL hubd=ok failed_round=true streak=0 since_first=0.0s
+H   185.90 watcher: KILL driftwm pid=2031 err=<nil>
+H   185.95 watcher: round 179 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   186.24 watcher: round 180 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.3s
+H   187.23 watcher: round 181 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.3s
+H   188.24 watcher: round 182 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   189.26 watcher: round 183 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   189.65 CH t=184.7 EV ev=20 fault=hang-spin target=driftwm rec=35.77 ok=1 fixed=0 
+H   190.24 watcher: round 184 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   191.24 watcher: round 185 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   192.24 watcher: round 186 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   192.65 CH t=187.7 STEP 21 fHang
+H   194.24 watcher: round 187 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   195.25 watcher: round 188 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   196.26 watcher: round 189 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   197.28 watcher: round 190 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.0s
+H   198.28 watcher: round 191 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.0s
+H   199.29 watcher: round 192 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   200.30 watcher: round 193 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   201.31 watcher: round 194 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   202.33 watcher: round 195 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   203.34 watcher: round 196 comp=FAIL hubd=ok failed_round=true streak=10 since_first=9.1s
+H   204.35 watcher: round 197 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.1s
+H   205.35 watcher: round 198 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.1s
+H   206.37 watcher: round 199 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.1s
+H   207.38 watcher: round 200 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.1s
+H   208.39 watcher: round 201 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.2s
+H   209.42 watcher: round 202 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.2s
+H   210.43 watcher: round 203 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H   211.44 watcher: round 204 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   212.46 watcher: round 205 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.2s
+H   213.47 watcher: round 206 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   214.48 watcher: round 207 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.2s
+H   215.49 watcher: round 208 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.3s
+H   216.50 watcher: round 209 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.3s
+H   217.51 watcher: round 210 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   218.52 watcher: round 211 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   219.53 watcher: round 212 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H   220.54 watcher: round 213 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.3s
+H   221.55 watcher: round 214 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   222.56 watcher: round 215 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H   223.57 watcher: round 216 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.3s
+H   224.58 watcher: round 217 comp=FAIL hubd=ok failed_round=true streak=0 since_first=0.0s
+H   224.60 watcher: KILL driftwm pid=2499 err=<nil>
+H   224.68 watcher: round 218 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   225.25 watcher: round 219 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=0.6s
+H   226.23 watcher: round 220 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=1.6s
+H   227.24 watcher: round 221 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   228.24 watcher: round 222 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   229.24 watcher: round 223 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   229.74 CH t=224.8 EV ev=21 fault=hang-stop target=driftwm rec=36.87 ok=1 fixed=0 
+H   230.25 watcher: round 224 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   231.24 watcher: round 225 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   232.24 watcher: round 226 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   232.74 CH t=227.8 STEP 22 fHang
+H   234.25 watcher: round 227 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   235.28 watcher: round 228 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   236.30 watcher: round 229 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.1s
+H   237.31 watcher: round 230 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.1s
+H   238.35 watcher: round 231 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   239.39 watcher: round 232 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.1s
+H   240.41 watcher: round 233 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.2s
+H   241.42 watcher: round 234 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.2s
+H   242.44 watcher: round 235 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.2s
+H   243.45 watcher: round 236 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.2s
+H   244.47 watcher: round 237 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.2s
+H   245.51 watcher: round 238 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.2s
+H   246.54 watcher: round 239 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.3s
+H   247.56 watcher: round 240 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.3s
+H   248.58 watcher: round 241 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.3s
+H   249.59 watcher: round 242 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.3s
+H   250.61 watcher: round 243 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.4s
+H   251.63 watcher: round 244 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.4s
+H   252.65 watcher: round 245 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.4s
+H   253.67 watcher: round 246 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.4s
+H   254.70 watcher: round 247 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.4s
+H   255.72 watcher: round 248 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.5s
+H   256.74 watcher: round 249 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.5s
+H   257.75 watcher: round 250 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.5s
+H   258.76 watcher: round 251 comp=FAIL hubd=FAIL failed_round=true streak=25 since_first=24.5s
+H   259.77 watcher: round 252 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.5s
+H   260.79 watcher: round 253 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.5s
+H   261.81 watcher: round 254 comp=FAIL hubd=FAIL failed_round=true streak=28 since_first=27.6s
+H   262.83 watcher: round 255 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.6s
+H   263.84 watcher: round 256 comp=FAIL hubd=FAIL failed_round=true streak=30 since_first=29.6s
+H   264.85 watcher: round 257 comp=FAIL hubd=ok failed_round=true streak=31 since_first=30.6s
+H   264.86 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   265.88 watcher: round 258 comp=FAIL hubd=ok failed_round=true streak=32 since_first=31.6s
+H   265.88 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   266.90 watcher: round 259 comp=FAIL hubd=FAIL failed_round=true streak=33 since_first=32.7s
+H   266.90 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   267.93 watcher: round 260 comp=FAIL hubd=FAIL failed_round=true streak=34 since_first=33.7s
+H   267.94 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   268.95 watcher: round 261 comp=FAIL hubd=FAIL failed_round=true streak=35 since_first=34.7s
+H   268.95 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   269.97 watcher: round 262 comp=FAIL hubd=FAIL failed_round=true streak=36 since_first=35.7s
+H   269.97 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   271.01 watcher: round 263 comp=FAIL hubd=ok failed_round=true streak=37 since_first=36.7s
+H   271.02 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   272.03 watcher: round 264 comp=FAIL hubd=FAIL failed_round=true streak=38 since_first=37.8s
+H   272.04 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   273.06 watcher: round 265 comp=FAIL hubd=ok failed_round=true streak=39 since_first=38.8s
+H   273.06 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   274.08 watcher: round 266 comp=FAIL hubd=ok failed_round=true streak=40 since_first=39.8s
+H   274.09 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   275.10 watcher: round 267 comp=FAIL hubd=FAIL failed_round=true streak=41 since_first=40.9s
+H   275.10 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   276.12 watcher: round 268 comp=FAIL hubd=ok failed_round=true streak=42 since_first=41.9s
+H   276.13 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   277.14 watcher: round 269 comp=FAIL hubd=ok failed_round=true streak=43 since_first=42.9s
+H   277.14 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   278.16 watcher: round 270 comp=FAIL hubd=FAIL failed_round=true streak=44 since_first=43.9s
+H   278.16 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   279.17 watcher: round 271 comp=FAIL hubd=ok failed_round=true streak=45 since_first=44.9s
+H   279.18 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   280.20 watcher: round 272 comp=FAIL hubd=ok failed_round=true streak=46 since_first=46.0s
+H   280.20 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   281.21 watcher: round 273 comp=FAIL hubd=FAIL failed_round=true streak=47 since_first=47.0s
+H   281.22 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   282.23 watcher: round 274 comp=FAIL hubd=ok failed_round=true streak=48 since_first=48.0s
+H   282.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   283.26 watcher: round 275 comp=FAIL hubd=FAIL failed_round=true streak=49 since_first=49.0s
+H   283.27 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   284.29 watcher: round 276 comp=FAIL hubd=ok failed_round=true streak=50 since_first=50.0s
+H   284.30 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   285.31 watcher: round 277 comp=FAIL hubd=FAIL failed_round=true streak=51 since_first=51.1s
+H   285.32 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   286.33 watcher: round 278 comp=FAIL hubd=ok failed_round=true streak=52 since_first=52.1s
+H   286.34 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   287.36 watcher: round 279 comp=FAIL hubd=FAIL failed_round=true streak=53 since_first=53.1s
+H   287.37 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   288.39 watcher: round 280 comp=FAIL hubd=ok failed_round=true streak=54 since_first=54.1s
+H   288.39 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   289.42 watcher: round 281 comp=FAIL hubd=FAIL failed_round=true streak=55 since_first=55.2s
+H   289.44 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   290.46 watcher: round 282 comp=FAIL hubd=FAIL failed_round=true streak=56 since_first=56.2s
+H   290.46 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   291.49 watcher: round 283 comp=FAIL hubd=FAIL failed_round=true streak=57 since_first=57.2s
+H   291.49 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   292.53 watcher: round 284 comp=FAIL hubd=FAIL failed_round=true streak=58 since_first=58.3s
+H   292.54 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   293.58 watcher: round 285 comp=FAIL hubd=ok failed_round=true streak=59 since_first=59.3s
+H   293.58 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   294.02 CH t=289.0 UNRECOVERED ev=22 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   294.51 CH t=289.5 STATUS run: /run/service/dbus/: (pid 1415) 201s; run: log: (pid 122) 288s
+H   294.51 CH t=289.5 STATUS run: /run/service/driftwm/: (pid 2949) 69s; run: log: (pid 135) 288s
+H   294.51 CH t=289.5 STATUS run: /run/service/guard/: (pid 119) 289s
+H   294.51 CH t=289.5 STATUS run: /run/service/hubd/: (pid 3006) 66s; run: log: (pid 120) 288s
+H   294.52 CH t=289.5 STATUS run: /run/service/seatd/: (pid 1232) 214s; run: log: (pid 131) 289s
+H   294.52 CH t=289.5 STATUS run: /run/service/udevd/: (pid 1353) 207s; run: log: (pid 118) 290s
+H   294.52 CH t=289.6 STATUS run: /run/service/watcher/: (pid 128) 289s; run: log: (pid 123) 289s
+H   294.53 CH t=289.6 STATUS run: /run/service/waybar/: (pid 3001) 68s; run: log: (pid 121) 289s
+H   294.60 watcher: round 286 comp=FAIL hubd=FAIL failed_round=true streak=60 since_first=60.4s
+H   294.60 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   295.59 CH t=290.6 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   295.66 watcher: round 287 comp=FAIL hubd=ok failed_round=true streak=61 since_first=61.4s
+H   295.66 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   295.79 watcher: round 288 comp=FAIL hubd=FAIL failed_round=true streak=62 since_first=62.4s
+H   295.79 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   296.19 ok: run: /run/service/driftwm: (pid 3757) 0s
+H   296.24 watcher: round 289 comp=FAIL hubd=FAIL failed_round=true streak=63 since_first=63.0s
+H   296.25 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   297.23 watcher: round 290 comp=FAIL hubd=FAIL failed_round=true streak=64 since_first=64.0s
+H   297.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   298.24 watcher: round 291 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   299.24 watcher: round 292 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   300.27 watcher: round 293 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   300.55 CH t=295.6 EV ev=22 fault=hang-spin target=driftwm rec=64.05 ok=0 fixed=1 
+H   301.24 watcher: round 294 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   302.24 watcher: round 295 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   303.24 watcher: round 296 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   303.56 CH t=298.6 STEP 23 fHang
+H   305.24 watcher: round 297 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   306.25 watcher: round 298 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   307.26 watcher: round 299 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   308.27 watcher: round 300 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   309.28 watcher: round 301 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   310.29 watcher: round 302 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.1s
+H   311.30 watcher: round 303 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.1s
+H   312.31 watcher: round 304 comp=FAIL hubd=ok failed_round=true streak=8 since_first=7.1s
+H   313.33 watcher: round 305 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.1s
+H   314.34 watcher: round 306 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.1s
+H   315.34 watcher: round 307 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.1s
+H   316.36 watcher: round 308 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.1s
+H   317.37 watcher: round 309 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.1s
+H   318.38 watcher: round 310 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.1s
+H   319.39 watcher: round 311 comp=FAIL hubd=ok failed_round=true streak=15 since_first=14.1s
+H   320.40 watcher: round 312 comp=FAIL hubd=ok failed_round=true streak=16 since_first=15.2s
+H   321.41 watcher: round 313 comp=FAIL hubd=ok failed_round=true streak=17 since_first=16.2s
+H   322.42 watcher: round 314 comp=FAIL hubd=ok failed_round=true streak=18 since_first=17.2s
+H   323.43 watcher: round 315 comp=FAIL hubd=ok failed_round=true streak=19 since_first=18.2s
+H   324.45 watcher: round 316 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.2s
+H   325.47 watcher: round 317 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.2s
+H   326.49 watcher: round 318 comp=FAIL hubd=ok failed_round=true streak=22 since_first=21.2s
+H   327.50 watcher: round 319 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.3s
+H   328.51 watcher: round 320 comp=FAIL hubd=ok failed_round=true streak=24 since_first=23.3s
+H   329.53 watcher: round 321 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.3s
+H   330.54 watcher: round 322 comp=FAIL hubd=ok failed_round=true streak=26 since_first=25.3s
+H   331.55 watcher: round 323 comp=FAIL hubd=ok failed_round=true streak=27 since_first=26.3s
+H   332.56 watcher: round 324 comp=FAIL hubd=ok failed_round=true streak=28 since_first=27.3s
+H   333.57 watcher: round 325 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.3s
+H   334.58 watcher: round 326 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.3s
+H   335.59 watcher: round 327 comp=FAIL hubd=ok failed_round=true streak=31 since_first=30.4s
+H   335.59 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   336.61 watcher: round 328 comp=FAIL hubd=FAIL failed_round=true streak=32 since_first=31.4s
+H   336.61 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   337.62 watcher: round 329 comp=FAIL hubd=FAIL failed_round=true streak=33 since_first=32.4s
+H   337.63 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   338.64 watcher: round 330 comp=FAIL hubd=ok failed_round=true streak=34 since_first=33.4s
+H   338.64 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   339.65 watcher: round 331 comp=FAIL hubd=ok failed_round=true streak=35 since_first=34.4s
+H   339.65 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   340.67 watcher: round 332 comp=FAIL hubd=ok failed_round=true streak=36 since_first=35.4s
+H   340.67 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   341.69 watcher: round 333 comp=FAIL hubd=FAIL failed_round=true streak=37 since_first=36.4s
+H   341.69 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   342.70 watcher: round 334 comp=FAIL hubd=FAIL failed_round=true streak=38 since_first=37.5s
+H   342.71 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   343.72 watcher: round 335 comp=FAIL hubd=ok failed_round=true streak=39 since_first=38.5s
+H   343.73 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   344.74 watcher: round 336 comp=FAIL hubd=FAIL failed_round=true streak=40 since_first=39.5s
+H   344.74 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   345.75 watcher: round 337 comp=FAIL hubd=ok failed_round=true streak=41 since_first=40.5s
+H   345.76 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   346.77 watcher: round 338 comp=FAIL hubd=ok failed_round=true streak=42 since_first=41.5s
+H   346.78 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   347.78 watcher: round 339 comp=FAIL hubd=ok failed_round=true streak=43 since_first=42.5s
+H   347.79 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   348.80 watcher: round 340 comp=FAIL hubd=FAIL failed_round=true streak=44 since_first=43.6s
+H   348.80 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   349.81 watcher: round 341 comp=FAIL hubd=ok failed_round=true streak=45 since_first=44.6s
+H   349.81 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   350.82 watcher: round 342 comp=FAIL hubd=ok failed_round=true streak=46 since_first=45.6s
+H   350.83 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   351.84 watcher: round 343 comp=FAIL hubd=ok failed_round=true streak=47 since_first=46.6s
+H   351.84 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   352.86 watcher: round 344 comp=FAIL hubd=ok failed_round=true streak=48 since_first=47.6s
+H   352.86 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   353.87 watcher: round 345 comp=FAIL hubd=ok failed_round=true streak=49 since_first=48.6s
+H   353.87 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   354.89 watcher: round 346 comp=FAIL hubd=ok failed_round=true streak=50 since_first=49.6s
+H   354.89 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   355.90 watcher: round 347 comp=FAIL hubd=ok failed_round=true streak=51 since_first=50.7s
+H   355.90 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   356.93 watcher: round 348 comp=FAIL hubd=ok failed_round=true streak=52 since_first=51.7s
+H   356.93 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   357.94 watcher: round 349 comp=FAIL hubd=ok failed_round=true streak=53 since_first=52.7s
+H   357.94 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   358.96 watcher: round 350 comp=FAIL hubd=FAIL failed_round=true streak=54 since_first=53.7s
+H   358.96 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   359.97 watcher: round 351 comp=FAIL hubd=ok failed_round=true streak=55 since_first=54.7s
+H   359.97 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   360.98 watcher: round 352 comp=FAIL hubd=ok failed_round=true streak=56 since_first=55.7s
+H   360.98 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   362.00 watcher: round 353 comp=FAIL hubd=ok failed_round=true streak=57 since_first=56.8s
+H   362.00 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   363.02 watcher: round 354 comp=FAIL hubd=ok failed_round=true streak=58 since_first=57.8s
+H   363.02 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   363.64 CH t=358.7 UNRECOVERED ev=23 fault=hang-stop target=driftwm alert=0 why="driftwm stopped"
+H   364.04 watcher: round 355 comp=FAIL hubd=ok failed_round=true streak=59 since_first=58.8s
+H   364.05 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   364.11 CH t=359.1 STATUS run: /run/service/dbus/: (pid 1415) 271s; run: log: (pid 122) 358s
+H   364.12 CH t=359.1 STATUS run: /run/service/driftwm/: (pid 3757) 68s; run: log: (pid 135) 358s
+H   364.12 CH t=359.1 STATUS run: /run/service/guard/: (pid 119) 359s
+H   364.12 CH t=359.1 STATUS run: /run/service/hubd/: (pid 3813) 65s; run: log: (pid 120) 358s
+H   364.12 CH t=359.2 STATUS run: /run/service/seatd/: (pid 1232) 283s; run: log: (pid 131) 358s
+H   364.12 CH t=359.2 STATUS run: /run/service/udevd/: (pid 1353) 276s; run: log: (pid 118) 359s
+H   364.13 CH t=359.2 STATUS run: /run/service/watcher/: (pid 128) 358s; run: log: (pid 123) 358s
+H   364.13 CH t=359.2 STATUS run: /run/service/waybar/: (pid 3788) 67s; run: log: (pid 121) 358s
+H   364.17 CH t=359.2 operator-action target=driftwm why="driftwm stopped"
+H   364.26 watcher: round 356 comp=FAIL hubd=FAIL failed_round=true streak=60 since_first=59.8s
+H   364.26 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   364.29 watcher: round 357 comp=FAIL hubd=FAIL failed_round=true streak=61 since_first=60.0s
+H   364.30 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   364.30 ok: run: /run/service/driftwm: (pid 4537) 0s
+H   365.23 watcher: round 358 comp=FAIL hubd=FAIL failed_round=true streak=62 since_first=61.0s
+H   365.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   366.23 watcher: round 359 comp=FAIL hubd=FAIL failed_round=true streak=63 since_first=62.0s
+H   366.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   367.23 watcher: round 360 comp=FAIL hubd=FAIL failed_round=true streak=64 since_first=63.0s
+H   367.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   368.24 watcher: round 361 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   369.05 CH t=364.1 EV ev=23 fault=hang-stop target=driftwm rec=64.50 ok=0 fixed=1 
+H   369.24 watcher: round 362 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   370.24 watcher: round 363 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   371.24 watcher: round 364 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   372.05 CH t=367.1 STEP 24 fHang
+H   372.24 watcher: round 365 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   374.24 watcher: round 366 comp=FAIL hubd=ok failed_round=true streak=1 since_first=0.0s
+H   375.26 watcher: round 367 comp=FAIL hubd=ok failed_round=true streak=2 since_first=1.0s
+H   376.29 watcher: round 368 comp=FAIL hubd=ok failed_round=true streak=3 since_first=2.0s
+H   377.31 watcher: round 369 comp=FAIL hubd=ok failed_round=true streak=4 since_first=3.1s
+H   378.33 watcher: round 370 comp=FAIL hubd=ok failed_round=true streak=5 since_first=4.1s
+H   379.34 watcher: round 371 comp=FAIL hubd=ok failed_round=true streak=6 since_first=5.1s
+H   380.35 watcher: round 372 comp=FAIL hubd=ok failed_round=true streak=7 since_first=6.1s
+H   381.37 watcher: round 373 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.1s
+H   382.39 watcher: round 374 comp=FAIL hubd=ok failed_round=true streak=9 since_first=8.1s
+H   383.41 watcher: round 375 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.2s
+H   384.42 watcher: round 376 comp=FAIL hubd=ok failed_round=true streak=11 since_first=10.2s
+H   385.43 watcher: round 377 comp=FAIL hubd=ok failed_round=true streak=12 since_first=11.2s
+H   386.47 watcher: round 378 comp=FAIL hubd=ok failed_round=true streak=13 since_first=12.2s
+H   387.50 watcher: round 379 comp=FAIL hubd=ok failed_round=true streak=14 since_first=13.2s
+H   388.53 watcher: round 380 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.3s
+H   389.54 watcher: round 381 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.3s
+H   390.55 watcher: round 382 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.3s
+H   391.58 watcher: round 383 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.3s
+H   392.59 watcher: round 384 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.4s
+H   393.61 watcher: round 385 comp=FAIL hubd=ok failed_round=true streak=20 since_first=19.4s
+H   394.62 watcher: round 386 comp=FAIL hubd=ok failed_round=true streak=21 since_first=20.4s
+H   395.64 watcher: round 387 comp=FAIL hubd=FAIL failed_round=true streak=22 since_first=21.4s
+H   396.65 watcher: round 388 comp=FAIL hubd=ok failed_round=true streak=23 since_first=22.4s
+H   397.67 watcher: round 389 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.4s
+H   398.68 watcher: round 390 comp=FAIL hubd=ok failed_round=true streak=25 since_first=24.4s
+H   399.69 watcher: round 391 comp=FAIL hubd=FAIL failed_round=true streak=26 since_first=25.5s
+H   400.70 watcher: round 392 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.5s
+H   401.72 watcher: round 393 comp=FAIL hubd=FAIL failed_round=true streak=28 since_first=27.5s
+H   402.73 watcher: round 394 comp=FAIL hubd=ok failed_round=true streak=29 since_first=28.5s
+H   403.76 watcher: round 395 comp=FAIL hubd=ok failed_round=true streak=30 since_first=29.5s
+H   404.78 watcher: round 396 comp=FAIL hubd=ok failed_round=true streak=31 since_first=30.5s
+H   404.78 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   405.82 watcher: round 397 comp=FAIL hubd=ok failed_round=true streak=32 since_first=31.6s
+H   405.83 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   406.86 watcher: round 398 comp=FAIL hubd=ok failed_round=true streak=33 since_first=32.6s
+H   406.86 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   407.89 watcher: round 399 comp=FAIL hubd=FAIL failed_round=true streak=34 since_first=33.6s
+H   407.89 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   408.90 watcher: round 400 comp=FAIL hubd=ok failed_round=true streak=35 since_first=34.7s
+H   408.91 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   409.93 watcher: round 401 comp=FAIL hubd=ok failed_round=true streak=36 since_first=35.7s
+H   409.94 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   410.96 watcher: round 402 comp=FAIL hubd=ok failed_round=true streak=37 since_first=36.7s
+H   410.97 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   411.99 watcher: round 403 comp=FAIL hubd=FAIL failed_round=true streak=38 since_first=37.7s
+H   411.99 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   413.01 watcher: round 404 comp=FAIL hubd=FAIL failed_round=true streak=39 since_first=38.8s
+H   413.01 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   414.03 watcher: round 405 comp=FAIL hubd=ok failed_round=true streak=40 since_first=39.8s
+H   414.03 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   415.05 watcher: round 406 comp=FAIL hubd=ok failed_round=true streak=41 since_first=40.8s
+H   415.06 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   416.08 watcher: round 407 comp=FAIL hubd=ok failed_round=true streak=42 since_first=41.8s
+H   416.08 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   417.10 watcher: round 408 comp=FAIL hubd=ok failed_round=true streak=43 since_first=42.9s
+H   417.10 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   418.12 watcher: round 409 comp=FAIL hubd=FAIL failed_round=true streak=44 since_first=43.9s
+H   418.12 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   419.14 watcher: round 410 comp=FAIL hubd=ok failed_round=true streak=45 since_first=44.9s
+H   419.14 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   420.15 watcher: round 411 comp=FAIL hubd=ok failed_round=true streak=46 since_first=45.9s
+H   420.16 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   421.19 watcher: round 412 comp=FAIL hubd=ok failed_round=true streak=47 since_first=46.9s
+H   421.20 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   422.21 watcher: round 413 comp=FAIL hubd=ok failed_round=true streak=48 since_first=48.0s
+H   422.22 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   423.23 watcher: round 414 comp=FAIL hubd=ok failed_round=true streak=49 since_first=49.0s
+H   423.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   424.25 watcher: round 415 comp=FAIL hubd=ok failed_round=true streak=50 since_first=50.0s
+H   424.25 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   425.28 watcher: round 416 comp=FAIL hubd=ok failed_round=true streak=51 since_first=51.0s
+H   425.28 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   426.31 watcher: round 417 comp=FAIL hubd=FAIL failed_round=true streak=52 since_first=52.1s
+H   426.31 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   427.34 watcher: round 418 comp=FAIL hubd=ok failed_round=true streak=53 since_first=53.1s
+H   427.35 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   428.36 watcher: round 419 comp=FAIL hubd=ok failed_round=true streak=54 since_first=54.1s
+H   428.36 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   429.38 watcher: round 420 comp=FAIL hubd=ok failed_round=true streak=55 since_first=55.1s
+H   429.38 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   430.39 watcher: round 421 comp=FAIL hubd=ok failed_round=true streak=56 since_first=56.2s
+H   430.40 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   431.42 watcher: round 422 comp=FAIL hubd=ok failed_round=true streak=57 since_first=57.2s
+H   431.42 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   432.44 watcher: round 423 comp=FAIL hubd=ok failed_round=true streak=58 since_first=58.2s
+H   432.45 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   433.47 watcher: round 424 comp=FAIL hubd=ok failed_round=true streak=59 since_first=59.2s
+H   433.48 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   433.81 CH t=428.8 UNRECOVERED ev=24 fault=hang-spin target=driftwm alert=0 why="driftwm does not answer (no answer)"
+H   434.22 CH t=429.2 STATUS run: /run/service/dbus/: (pid 1415) 341s; run: log: (pid 122) 428s
+H   434.22 CH t=429.2 STATUS run: /run/service/driftwm/: (pid 4549) 69s; run: log: (pid 135) 428s
+H   434.23 CH t=429.3 STATUS run: /run/service/guard/: (pid 119) 429s
+H   434.23 CH t=429.3 STATUS run: /run/service/hubd/: (pid 4594) 67s; run: log: (pid 120) 428s
+H   434.23 CH t=429.3 STATUS run: /run/service/seatd/: (pid 1232) 353s; run: log: (pid 131) 428s
+H   434.24 CH t=429.3 STATUS run: /run/service/udevd/: (pid 1353) 346s; run: log: (pid 118) 429s
+H   434.24 CH t=429.3 STATUS run: /run/service/watcher/: (pid 128) 428s; run: log: (pid 123) 428s
+H   434.25 CH t=429.3 STATUS run: /run/service/waybar/: (pid 4599) 66s; run: log: (pid 121) 428s
+H   434.49 watcher: round 425 comp=FAIL hubd=ok failed_round=true streak=60 since_first=60.3s
+H   434.50 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   435.35 CH t=430.4 operator-action target=driftwm why="driftwm does not answer (no answer)"
+H   435.45 watcher: round 426 comp=FAIL hubd=ok failed_round=true streak=61 since_first=61.3s
+H   435.46 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   435.47 watcher: round 427 comp=FAIL hubd=FAIL failed_round=true streak=62 since_first=62.2s
+H   435.47 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   435.84 ok: run: /run/service/driftwm: (pid 5338) 0s
+H   436.23 watcher: round 428 comp=FAIL hubd=FAIL failed_round=true streak=63 since_first=63.0s
+H   436.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   437.24 watcher: round 429 comp=FAIL hubd=FAIL failed_round=true streak=64 since_first=64.0s
+H   437.25 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   438.24 watcher: round 430 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   439.23 watcher: round 431 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   440.24 watcher: round 432 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   440.36 CH t=435.4 EV ev=24 fault=hang-spin target=driftwm rec=64.26 ok=0 fixed=1 
+H   441.24 watcher: round 433 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   442.24 watcher: round 434 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   443.24 watcher: round 435 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   443.37 CH t=438.4 STEP 25 fStorm
+H   444.24 watcher: round 436 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   445.24 watcher: round 437 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   446.24 watcher: round 438 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   447.24 watcher: round 439 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   448.24 watcher: round 440 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   449.24 watcher: round 441 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   450.24 watcher: round 442 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   451.24 watcher: round 443 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   452.24 watcher: round 444 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   453.24 watcher: round 445 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   454.24 watcher: round 446 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   455.24 watcher: round 447 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   456.24 watcher: round 448 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   457.24 watcher: round 449 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   458.24 watcher: round 450 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   459.24 watcher: round 451 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   460.25 watcher: round 452 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   461.24 watcher: round 453 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   462.24 watcher: round 454 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   463.24 watcher: round 455 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   464.24 watcher: round 456 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   465.23 watcher: round 457 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   466.24 watcher: round 458 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   467.24 watcher: round 459 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   468.24 watcher: round 460 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   469.24 watcher: round 461 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   470.24 watcher: round 462 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   471.24 watcher: round 463 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   472.23 watcher: round 464 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   473.24 watcher: round 465 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   474.24 watcher: round 466 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   475.24 watcher: round 467 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   476.24 watcher: round 468 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   477.24 watcher: round 469 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   478.24 watcher: round 470 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   479.26 watcher: round 471 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   480.24 watcher: round 472 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   481.24 watcher: round 473 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   482.24 watcher: round 474 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   483.24 watcher: round 475 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   483.93 CH t=479.0 STATUS run: /run/service/dbus/: (pid 1415) 391s; run: log: (pid 122) 478s
+H   483.93 CH t=479.0 STATUS run: /run/service/driftwm/: (pid 5338) 48s; run: log: (pid 135) 478s
+H   483.93 CH t=479.0 STATUS run: /run/service/guard/: (pid 119) 479s
+H   483.93 CH t=479.0 STATUS run: /run/service/hubd/: (pid 6298) 1s; run: log: (pid 120) 478s
+H   483.93 CH t=479.0 STATUS run: /run/service/seatd/: (pid 1232) 403s; run: log: (pid 131) 478s
+H   483.93 CH t=479.0 STATUS run: /run/service/udevd/: (pid 1353) 396s; run: log: (pid 118) 479s
+H   483.94 CH t=479.0 STATUS run: /run/service/watcher/: (pid 128) 478s; run: log: (pid 123) 478s
+H   483.94 CH t=479.0 STATUS run: /run/service/waybar/: (pid 5392) 46s; run: log: (pid 121) 478s
+H   483.94 CH t=479.0 STORM target=hubd dur=40 starts=33 starts_last10s=8 cpu_ticks_init_side=20 bar-up
+H   484.24 watcher: round 476 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   485.06 CH t=480.1 EV ev=25 fault=storm target=hubd rec=0.91 ok=1 fixed=0 starts=33 last10=8 cpu=20 bar-up
+H   485.24 watcher: round 477 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   486.24 watcher: round 478 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   487.24 watcher: round 479 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   488.06 CH t=483.1 STEP 26 fStorm
+H   488.25 watcher: round 480 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   489.23 watcher: round 481 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   490.23 watcher: round 482 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   491.23 watcher: round 483 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   492.23 watcher: round 484 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   493.24 watcher: round 485 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   494.24 watcher: round 486 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   495.23 watcher: round 487 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   496.23 watcher: round 488 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   497.23 watcher: round 489 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   498.23 watcher: round 490 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   499.23 watcher: round 491 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   500.23 watcher: round 492 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   501.23 watcher: round 493 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   502.24 watcher: round 494 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   503.24 watcher: round 495 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   504.24 watcher: round 496 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   505.23 watcher: round 497 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   506.23 watcher: round 498 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.0s
+H   507.23 watcher: round 499 comp=FAIL hubd=FAIL failed_round=true streak=20 since_first=19.0s
+H   508.24 watcher: round 500 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.0s
+H   509.23 watcher: round 501 comp=FAIL hubd=FAIL failed_round=true streak=22 since_first=21.0s
+H   510.23 watcher: round 502 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.0s
+H   511.23 watcher: round 503 comp=FAIL hubd=FAIL failed_round=true streak=24 since_first=23.0s
+H   512.24 watcher: round 504 comp=FAIL hubd=FAIL failed_round=true streak=25 since_first=24.0s
+H   513.24 watcher: round 505 comp=FAIL hubd=FAIL failed_round=true streak=26 since_first=25.0s
+H   514.23 watcher: round 506 comp=FAIL hubd=FAIL failed_round=true streak=27 since_first=26.0s
+H   515.23 watcher: round 507 comp=FAIL hubd=FAIL failed_round=true streak=28 since_first=27.0s
+H   516.23 watcher: round 508 comp=FAIL hubd=FAIL failed_round=true streak=29 since_first=28.0s
+H   517.23 watcher: round 509 comp=FAIL hubd=FAIL failed_round=true streak=30 since_first=29.0s
+H   518.23 watcher: round 510 comp=FAIL hubd=FAIL failed_round=true streak=31 since_first=30.0s
+H   519.24 watcher: round 511 comp=FAIL hubd=FAIL failed_round=true streak=32 since_first=31.0s
+H   519.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   520.23 watcher: round 512 comp=FAIL hubd=FAIL failed_round=true streak=33 since_first=32.0s
+H   520.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   521.23 watcher: round 513 comp=FAIL hubd=FAIL failed_round=true streak=34 since_first=33.0s
+H   521.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   522.23 watcher: round 514 comp=FAIL hubd=FAIL failed_round=true streak=35 since_first=34.0s
+H   522.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   523.23 watcher: round 515 comp=FAIL hubd=FAIL failed_round=true streak=36 since_first=35.0s
+H   523.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   524.23 watcher: round 516 comp=FAIL hubd=FAIL failed_round=true streak=37 since_first=36.0s
+H   524.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   525.23 watcher: round 517 comp=FAIL hubd=FAIL failed_round=true streak=38 since_first=37.0s
+H   525.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   526.24 watcher: round 518 comp=FAIL hubd=FAIL failed_round=true streak=39 since_first=38.0s
+H   526.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   527.23 watcher: round 519 comp=FAIL hubd=FAIL failed_round=true streak=40 since_first=39.0s
+H   527.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   528.23 watcher: round 520 comp=FAIL hubd=FAIL failed_round=true streak=41 since_first=40.0s
+H   528.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   528.56 CH t=523.6 STATUS run: /run/service/dbus/: (pid 1415) 435s; run: log: (pid 122) 522s
+H   528.57 CH t=523.6 STATUS run: /run/service/driftwm/: (pid 7315) 0s; run: log: (pid 135) 522s
+H   528.57 CH t=523.6 STATUS run: /run/service/guard/: (pid 119) 523s
+H   528.57 CH t=523.6 STATUS run: /run/service/hubd/: (pid 7312) 1s; run: log: (pid 120) 523s
+H   528.57 CH t=523.6 STATUS run: /run/service/seatd/: (pid 1232) 448s; run: log: (pid 131) 523s
+H   528.57 CH t=523.6 STATUS run: /run/service/udevd/: (pid 1353) 441s; run: log: (pid 118) 524s
+H   528.57 CH t=523.6 STATUS run: /run/service/watcher/: (pid 128) 523s; run: log: (pid 123) 523s
+H   528.58 CH t=523.6 STATUS run: /run/service/waybar/: (pid 7275) 3s; run: log: (pid 121) 523s
+H   528.58 CH t=523.6 STORM target=driftwm dur=40 starts=26 starts_last10s=6 cpu_ticks_init_side=42 bar-down
+H   529.23 watcher: round 521 comp=FAIL hubd=FAIL failed_round=true streak=42 since_first=41.0s
+H   529.23 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   530.23 watcher: round 522 comp=FAIL hubd=FAIL failed_round=true streak=43 since_first=42.0s
+H   530.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   531.23 watcher: round 523 comp=FAIL hubd=FAIL failed_round=true streak=44 since_first=43.0s
+H   531.24 watcher: CAP: would kill driftwm, but 3 kills in the last 10 minutes were already made; not killing
+H   532.24 watcher: round 524 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   533.14 CH t=528.2 EV ev=26 fault=storm target=driftwm rec=4.36 ok=1 fixed=0 starts=26 last10=6 cpu=42 bar-down
+H   533.24 watcher: round 525 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   534.24 watcher: round 526 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   535.24 watcher: round 527 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   536.14 CH t=531.2 STEP 27 fDep
+H   536.37 watcher: round 528 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   537.23 watcher: round 529 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   538.23 watcher: round 530 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   539.23 watcher: round 531 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   540.23 watcher: round 532 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   541.23 watcher: round 533 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   542.24 watcher: round 534 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   543.23 watcher: round 535 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   544.23 watcher: round 536 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   545.23 watcher: round 537 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   546.23 watcher: round 538 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   547.23 watcher: round 539 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   548.23 watcher: round 540 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   549.23 watcher: round 541 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   550.23 watcher: round 542 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   551.23 watcher: round 543 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   552.23 watcher: round 544 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   553.23 watcher: round 545 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   554.24 watcher: round 546 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   555.02 CH t=550.0 EV ev=27 fault=dep-slow target=seatd rec=18.66 ok=1 fixed=0 
+H   555.02 CH t=550.1 DEPSTARTS mode=slow seatd=1 driftwm=11 waybar=8 hubd=3
+H   555.24 watcher: round 547 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   556.24 watcher: round 548 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   557.24 watcher: round 549 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   558.03 CH t=553.1 STEP 28 fDep
+H   558.24 watcher: round 550 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   559.23 watcher: round 551 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   560.23 watcher: round 552 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   561.24 watcher: round 553 comp=FAIL hubd=FAIL failed_round=true streak=4 since_first=3.0s
+H   562.23 watcher: round 554 comp=FAIL hubd=FAIL failed_round=true streak=5 since_first=4.0s
+H   563.23 watcher: round 555 comp=FAIL hubd=FAIL failed_round=true streak=6 since_first=5.0s
+H   564.24 watcher: round 556 comp=FAIL hubd=FAIL failed_round=true streak=7 since_first=6.0s
+H   565.23 watcher: round 557 comp=FAIL hubd=FAIL failed_round=true streak=8 since_first=7.0s
+H   566.23 watcher: round 558 comp=FAIL hubd=FAIL failed_round=true streak=9 since_first=8.0s
+H   567.23 watcher: round 559 comp=FAIL hubd=FAIL failed_round=true streak=10 since_first=9.0s
+H   568.23 watcher: round 560 comp=FAIL hubd=FAIL failed_round=true streak=11 since_first=10.0s
+H   569.23 watcher: round 561 comp=FAIL hubd=FAIL failed_round=true streak=12 since_first=11.0s
+H   570.23 watcher: round 562 comp=FAIL hubd=FAIL failed_round=true streak=13 since_first=12.0s
+H   571.23 watcher: round 563 comp=FAIL hubd=FAIL failed_round=true streak=14 since_first=13.0s
+H   572.23 watcher: round 564 comp=FAIL hubd=FAIL failed_round=true streak=15 since_first=14.0s
+H   573.24 watcher: round 565 comp=FAIL hubd=FAIL failed_round=true streak=16 since_first=15.0s
+H   574.23 watcher: round 566 comp=FAIL hubd=FAIL failed_round=true streak=17 since_first=16.0s
+H   575.23 watcher: round 567 comp=FAIL hubd=FAIL failed_round=true streak=18 since_first=17.0s
+H   576.23 watcher: round 568 comp=FAIL hubd=FAIL failed_round=true streak=19 since_first=18.0s
+H   577.23 watcher: round 569 comp=FAIL hubd=FAIL failed_round=true streak=20 since_first=19.0s
+H   578.23 watcher: round 570 comp=FAIL hubd=FAIL failed_round=true streak=21 since_first=20.0s
+H   579.23 watcher: round 571 comp=FAIL hubd=FAIL failed_round=true streak=22 since_first=21.0s
+H   580.23 watcher: round 572 comp=FAIL hubd=FAIL failed_round=true streak=23 since_first=22.0s
+H   581.24 watcher: round 573 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   582.24 watcher: round 574 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   582.85 CH t=577.9 EV ev=28 fault=dep-fail target=seatd rec=4.60 ok=1 fixed=0 
+H   582.86 CH t=577.9 DEPSTARTS mode=fail seatd=20 driftwm=15 waybar=10 hubd=2
+H   583.24 watcher: round 575 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   584.24 watcher: round 576 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   585.24 watcher: round 577 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   585.86 CH t=580.9 STEP 29 fDisk
+H   585.92 CH t=580.9 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   586.24 watcher: round 578 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   586.81 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   587.24 watcher: round 579 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   588.24 watcher: round 580 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   589.26 watcher: round 581 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   589.81 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   589.82 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   590.24 watcher: round 582 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   591.24 watcher: round 583 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   592.24 watcher: round 584 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   592.27 svlogd: pausing: unable to write to current: /var/log/watcher: out of disk space
+H   592.81 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   592.82 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   593.24 watcher: round 585 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   594.24 watcher: round 586 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   595.25 watcher: round 587 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   595.27 svlogd: pausing: unable to write to current: /var/log/watcher: out of disk space
+H   595.82 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   595.83 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   596.24 watcher: round 588 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   597.24 watcher: round 589 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   598.24 watcher: round 590 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   598.27 svlogd: pausing: unable to write to current: /var/log/watcher: out of disk space
+H   598.82 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   598.83 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   599.24 watcher: round 591 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   600.24 watcher: round 592 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   601.24 watcher: round 593 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   601.28 svlogd: pausing: unable to write to current: /var/log/watcher: out of disk space
+H   601.82 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   601.84 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   602.25 watcher: round 594 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   603.25 watcher: round 595 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   604.24 watcher: round 596 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   604.28 svlogd: pausing: unable to write to current: /var/log/watcher: out of disk space
+H   604.83 svlogd: pausing: unable to write to current: /var/log/seatd: out of disk space
+H   604.84 svlogd: pausing: unable to write to current: /var/log/dbus: out of disk space
+H   605.24 watcher: round 597 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   606.25 watcher: round 598 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   606.79 CH t=601.8 STATUS run: /run/service/dbus/: (pid 1415) 514s; run: log: (pid 122) 601s
+H   606.80 CH t=601.8 STATUS run: /run/service/driftwm/: (pid 8506) 28s; run: log: (pid 135) 601s
+H   606.80 CH t=601.8 STATUS run: /run/service/guard/: (pid 119) 602s
+H   606.81 CH t=601.8 STATUS run: /run/service/hubd/: (pid 8556) 26s; run: log: (pid 120) 601s
+H   606.81 CH t=601.8 STATUS run: /run/service/seatd/: (pid 8508) 28s; run: log: (pid 131) 601s
+H   606.81 CH t=601.8 STATUS run: /run/service/udevd/: (pid 1353) 519s; run: log: (pid 118) 602s
+H   606.82 CH t=601.8 STATUS run: /run/service/watcher/: (pid 128) 601s; run: log: (pid 123) 601s
+H   606.82 CH t=601.8 STATUS run: /run/service/waybar/: (pid 8693) 15s; run: log: (pid 121) 601s
+H   607.21 CH t=602.2 EV ev=29 fault=disk-full target=waybar rec=0.13 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H   607.24 watcher: round 599 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   608.24 watcher: round 600 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   609.24 watcher: round 601 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   610.21 CH t=605.2 STEP 30 fDisk
+H   610.24 watcher: round 602 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   610.25 CH t=605.3 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   611.24 watcher: round 603 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   612.24 watcher: round 604 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   613.24 watcher: round 605 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   614.24 watcher: round 606 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   615.24 watcher: round 607 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   616.24 watcher: round 608 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   617.24 watcher: round 609 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   618.25 watcher: round 610 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   619.24 watcher: round 611 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   620.24 watcher: round 612 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   621.24 watcher: round 613 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   621.27 svlogd: pausing: unable to write to current: /var/log/udevd: out of disk space
+H   622.24 watcher: round 614 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   623.25 watcher: round 615 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   624.24 watcher: round 616 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   624.27 svlogd: pausing: unable to write to current: /var/log/udevd: out of disk space
+H   625.24 watcher: round 617 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   626.25 watcher: round 618 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   626.26 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H   627.24 watcher: round 619 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   627.28 svlogd: pausing: unable to write to current: /var/log/udevd: out of disk space
+H   627.41 svlogd: pausing: unable to write to current: /var/log/driftwm: out of disk space
+H   628.24 watcher: round 620 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   629.24 watcher: round 621 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   629.26 svlogd: pausing: unable to write to current: /var/log/waybar: out of disk space
+H   630.24 watcher: round 622 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   630.28 svlogd: pausing: unable to write to current: /var/log/udevd: out of disk space
+H   630.41 svlogd: pausing: unable to write to current: /var/log/driftwm: out of disk space
+H   631.16 CH t=626.2 STATUS run: /run/service/dbus/: (pid 1415) 538s; run: log: (pid 122) 625s
+H   631.16 CH t=626.2 STATUS run: /run/service/driftwm/: (pid 8506) 52s; run: log: (pid 135) 625s
+H   631.17 CH t=626.2 STATUS run: /run/service/guard/: (pid 119) 626s
+H   631.17 CH t=626.2 STATUS run: /run/service/hubd/: (pid 8556) 50s; run: log: (pid 120) 625s
+H   631.18 CH t=626.2 STATUS run: /run/service/seatd/: (pid 8508) 52s; run: log: (pid 131) 625s
+H   631.18 CH t=626.2 STATUS run: /run/service/udevd/: (pid 1353) 543s; run: log: (pid 118) 626s
+H   631.18 CH t=626.2 STATUS run: /run/service/watcher/: (pid 128) 625s; run: log: (pid 123) 625s
+H   631.18 CH t=626.2 STATUS run: /run/service/waybar/: (pid 8969) 15s; run: log: (pid 121) 625s
+H   631.25 watcher: round 623 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   631.25 svlogd: pausing: unable to write to current: /var/log/watcher: out of disk space
+H   631.66 CH t=626.7 EV ev=30 fault=disk-full target=waybar rec=0.19 ok=1 fixed=0 ok_during=18/19 all_alive_at_end=1
+H   632.25 watcher: round 624 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   633.24 watcher: round 625 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   634.24 watcher: round 626 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   634.67 CH t=629.7 STEP 31 fSupKill
+H   635.25 watcher: round 627 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   636.25 watcher: round 628 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   636.57 CH t=631.6 EV ev=31 fault=supervisor-killed target=driftwm rec=0.15 ok=1 fixed=0 child_kept_running=1
+H   637.24 watcher: round 629 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   638.24 watcher: round 630 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   639.24 watcher: round 631 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   640.25 watcher: round 632 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   641.23 watcher: round 633 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   642.24 watcher: round 634 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   643.27 watcher: round 635 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   643.63 CH t=638.7 EV ev=32 fault=after-supervisor-killed target=driftwm rec=4.79 ok=1 fixed=0 supervisor_back=0
+H   644.24 watcher: round 636 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   645.24 watcher: round 637 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   646.24 watcher: round 638 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   646.64 CH t=641.7 STEP 32 fSupKill
+H   647.24 watcher: round 639 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   648.25 watcher: round 640 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   648.60 CH t=643.6 EV ev=33 fault=supervisor-killed target=waybar rec=0.21 ok=1 fixed=0 child_kept_running=1
+H   649.24 watcher: round 641 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   649.59 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   649.59 svlogd: fatal: no functional log directories.
+H   650.24 watcher: round 642 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   650.72 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   650.73 svlogd: fatal: no functional log directories.
+H   651.11 CH t=646.1 EV ev=34 fault=after-supervisor-killed target=waybar rec=0.20 ok=1 fixed=0 supervisor_back=1
+H   651.24 watcher: round 643 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   652.24 watcher: round 644 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   653.24 watcher: round 645 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   654.12 CH t=649.1 STEP 33 fSupKill
+H   654.24 watcher: round 646 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   654.62 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   654.62 svlogd: fatal: no functional log directories.
+H   655.28 watcher: round 647 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   655.69 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   655.69 svlogd: fatal: no functional log directories.
+H   656.25 watcher: round 648 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   656.77 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   656.77 svlogd: fatal: no functional log directories.
+H   657.24 watcher: round 649 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   657.91 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   657.92 svlogd: fatal: no functional log directories.
+H   658.25 watcher: round 650 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   658.76 CH t=653.8 EV ev=35 fault=supervisor-killed target=driftwm rec=2.84 ok=1 fixed=0 child_kept_running=1
+H   658.99 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   658.99 svlogd: fatal: no functional log directories.
+H   659.25 watcher: round 651 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   660.07 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   660.07 svlogd: fatal: no functional log directories.
+H   660.25 watcher: round 652 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   661.24 watcher: round 653 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   662.24 watcher: round 654 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   663.24 watcher: round 655 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   664.24 watcher: round 656 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   665.16 CH t=660.2 EV ev=36 fault=after-supervisor-killed target=driftwm rec=4.13 ok=1 fixed=0 supervisor_back=1
+H   665.24 watcher: round 657 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   666.24 watcher: round 658 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   667.24 watcher: round 659 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   668.16 CH t=663.2 STEP 34 fSupKill
+H   668.24 watcher: round 660 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   669.24 watcher: round 661 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   669.71 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   669.72 svlogd: fatal: no functional log directories.
+H   670.18 CH t=665.2 EV ev=37 fault=supervisor-killed target=waybar rec=0.22 ok=1 fixed=0 child_kept_running=1
+H   670.25 watcher: round 662 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   670.79 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   670.79 svlogd: fatal: no functional log directories.
+H   671.24 watcher: round 663 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   671.87 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   671.87 svlogd: fatal: no functional log directories.
+H   672.27 watcher: round 664 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   673.25 watcher: round 665 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   673.43 CH t=668.5 EV ev=38 fault=after-supervisor-killed target=waybar rec=0.99 ok=1 fixed=0 supervisor_back=1
+H   674.24 watcher: round 666 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   675.24 watcher: round 667 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   676.24 watcher: round 668 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   676.44 CH t=671.5 STEP 35 fSupKill
+H   677.24 watcher: round 669 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   678.25 watcher: round 670 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   678.39 CH t=673.4 EV ev=39 fault=supervisor-killed target=driftwm rec=0.19 ok=1 fixed=0 child_kept_running=1
+H   679.24 watcher: round 671 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   679.74 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H   679.75 svlogd: fatal: no functional log directories.
+H   680.24 watcher: round 672 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   681.24 watcher: round 673 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   682.23 watcher: round 674 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   683.24 watcher: round 675 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   684.24 watcher: round 676 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   684.58 CH t=679.6 EV ev=40 fault=after-supervisor-killed target=driftwm rec=3.93 ok=1 fixed=0 supervisor_back=1
+H   685.24 watcher: round 677 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   686.24 watcher: round 678 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   687.24 watcher: round 679 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   687.58 CH t=682.6 STEP 36 fSupKill
+H   688.24 watcher: round 680 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   689.24 watcher: round 681 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   689.40 CH t=684.4 EV ev=41 fault=supervisor-killed target=waybar rec=0.08 ok=1 fixed=0 child_kept_running=1
+H   689.80 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   689.81 svlogd: fatal: no functional log directories.
+H   690.24 watcher: round 682 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   690.92 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H   690.92 svlogd: fatal: no functional log directories.
+H   691.24 watcher: round 683 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   692.24 watcher: round 684 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   693.24 watcher: round 685 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   693.47 CH t=688.5 EV ev=42 fault=after-supervisor-killed target=waybar rec=1.86 ok=1 fixed=0 supervisor_back=1
+H   694.25 watcher: round 686 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   695.24 watcher: round 687 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   696.24 watcher: round 688 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   696.47 CH t=691.5 STEP 37 fScanKill
+H   696.51 Killed
+H   696.51 - runit: warning: child failed: /etc/runit/2
+H   696.51 - runit: warning: killing all processes in stage 2...
+H   697.24 watcher: round 689 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   698.24 watcher: round 690 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   698.35 CH t=693.4 EV ev=43 fault=scanner-killed target=runsvdir rec=0.11 ok=1 fixed=0 child_kept_running=1 scanner_back=0
+H   699.25 watcher: round 691 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   700.24 watcher: round 692 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   700.76 CH t=695.8 EV ev=44 fault=after-scanner-killed target=hubd rec=2.19 ok=1 fixed=0 
+H   701.24 watcher: round 693 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   701.51 - runit: warning: restarting.
+H   701.52 - runit: enter stage: /etc/runit/2
+H   701.69 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   701.76 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   701.78 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   701.80 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   701.82 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   701.84 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   701.85 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   701.86 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   702.24 watcher: round 694 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   702.81 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   702.82 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   702.83 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   702.85 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   702.87 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   702.88 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   702.89 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   703.24 watcher: round 695 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   703.76 CH t=698.8 STEP 38 fBrainKill
+H   704.24 watcher: round 696 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   705.24 watcher: round 697 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   706.24 watcher: round 698 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   706.77 CH t=701.8 STEP 39 fBrainKill
+H   707.24 watcher: round 699 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   707.92 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   707.95 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   707.95 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   707.96 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   707.96 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   707.97 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   708.25 watcher: round 700 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   709.24 watcher: round 701 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   709.77 CH t=704.8 STEP 40 fClock
+H   710.23 watcher: round 702 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   711.24 watcher: round 703 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   712.23 watcher: round 704 comp=FAIL hubd=FAIL failed_round=true streak=3 since_first=2.0s
+H   712.87 runsvdir /run/service: warning: time warp: resetting time stamp.
+H   713.01 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   713.04 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   713.08 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   713.09 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   713.11 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   713.11 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   713.12 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   713.14 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   713.24 watcher: round 705 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   714.24 watcher: round 706 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   714.64 CH t=709.7 EV ev=45 fault=clock-3600 target=driftwm rec=4.64 ok=1 fixed=0 
+H   715.24 watcher: round 707 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   716.25 watcher: round 708 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   717.24 watcher: round 709 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   717.58 CH t=712.6 EV ev=46 fault=after-clock-3600 target=hubd rec=1.73 ok=1 fixed=0 
+H   718.10 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   718.11 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   718.12 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   718.13 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   718.13 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   718.14 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   718.18 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   718.18 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   718.24 watcher: round 710 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   719.24 watcher: round 711 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   720.24 watcher: round 712 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   720.59 CH t=715.6 STEP 41 fClock
+H   721.24 watcher: round 713 comp=FAIL hubd=FAIL failed_round=true streak=1 since_first=0.0s
+H   722.24 watcher: round 714 comp=FAIL hubd=FAIL failed_round=true streak=2 since_first=1.0s
+H   723.17 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   723.18 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   723.20 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   723.22 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   723.23 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   723.24 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   723.26 watcher: round 715 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   723.27 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   723.28 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   724.24 watcher: round 716 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   724.86 CH t=719.9 EV ev=47 fault=clock+86400 target=driftwm rec=4.06 ok=1 fixed=0 
+H   725.24 watcher: round 717 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   726.24 watcher: round 718 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   727.24 watcher: round 719 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   728.12 runsvdir /run/service: warning: time warp: resetting time stamp.
+H   728.23 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   728.26 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   728.27 watcher: round 720 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   728.28 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   728.29 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   728.31 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   728.31 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   728.32 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   728.85 CH t=723.9 EV ev=48 fault=after-clock+86400 target=hubd rec=2.78 ok=1 fixed=0 
+H   729.24 watcher: round 721 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   730.24 watcher: round 722 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   731.24 watcher: round 723 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   731.85 CH t=726.9 STEP 42 fOOM
+H   731.90 CH t=726.9 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   732.24 watcher: round 724 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   733.29 watcher: round 725 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   733.37 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   733.38 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   733.41 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   733.43 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   733.44 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   733.46 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   733.48 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   734.24 watcher: round 726 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   735.24 watcher: round 727 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   736.24 watcher: round 728 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   737.25 watcher: round 729 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   738.25 watcher: round 730 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   738.54 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   738.55 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   738.57 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   738.59 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   738.59 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   738.61 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   739.24 watcher: round 731 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   740.25 watcher: round 732 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   740.62 CH t=735.6 EV ev=49 fault=oom target=hog rec=0.12 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   741.24 watcher: round 733 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   742.24 watcher: round 734 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   743.24 watcher: round 735 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   743.50 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   743.52 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   743.52 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   743.55 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   743.55 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   743.59 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   743.59 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   743.60 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   743.63 CH t=738.7 STEP 43 fOOM
+H   743.71 CH t=738.7 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   744.24 watcher: round 736 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   745.25 watcher: round 737 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   746.26 watcher: round 738 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   747.25 watcher: round 739 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   748.25 watcher: round 740 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   748.64 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   748.66 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   748.68 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   748.69 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   748.71 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   749.25 watcher: round 741 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   749.62 CH t=744.6 EV ev=50 fault=oom target=hog rec=0.10 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   750.24 watcher: round 742 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   751.24 watcher: round 743 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   752.24 watcher: round 744 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   752.62 CH t=747.7 STEP 44 fWatcherKill
+H   752.68 watcher: started pid=10984 mode=compositor (TEST STAND-IN, not the product watcher)
+H   752.84 CH t=747.9 EV ev=51 fault=watcher-killed target=watcher rec=0.21 ok=1 fixed=0 old_pid=128 new_pid=10984
+H   753.69 runsv udevd: fatal: unable to lock supervise/lock: temporary failure
+H   753.70 runsv hubd: fatal: unable to lock supervise/lock: temporary failure
+H   753.72 runsv watcher: fatal: unable to lock supervise/lock: temporary failure
+H   753.77 runsv seatd: fatal: unable to lock supervise/lock: temporary failure
+H   753.78 watcher: round 1 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   753.80 runsv driftwm: fatal: unable to lock supervise/lock: temporary failure
+H   753.81 runsv dbus: fatal: unable to lock supervise/lock: temporary failure
+H   753.83 runsv guard: fatal: unable to lock supervise/lock: temporary failure
+H   753.84 runsv waybar: fatal: unable to lock supervise/lock: temporary failure
+H   754.70 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   755.69 watcher: round 3 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   755.85 CH t=750.9 STEP 45 fWatcherKill
+H   755.91 watcher: started pid=11038 mode=compositor (TEST STAND-IN, not the product watcher)
+H   756.07 CH t=751.1 EV ev=52 fault=watcher-killed target=watcher rec=0.21 ok=1 fixed=0 old_pid=10984 new_pid=11038
+H   756.07 CH t=751.1 SUITE-DONE
+H   756.92 watcher: round 1 comp=ok hubd=FAIL failed_round=false streak=0 since_first=0.0s
+H   757.93 watcher: round 2 comp=ok hubd=ok failed_round=false streak=0 since_first=0.0s
+H   758.09 [  756.354949] reboot: Power down
+H# vm exit code 0 after 758s, loadavg ['1.06', '0.86', '0.75']
+H# end wall=758.1s launches=1 suite_done=True

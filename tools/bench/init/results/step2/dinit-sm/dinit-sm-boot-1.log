@@ -1,0 +1,27 @@
+H# start 2026-10-11 01:31:10 cand=dinit-sm suite=boot cpus_seen=4 loadavg_at_start=['0.28', '0.77', '1.00']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=boot hub.dur=600 hub.seed=101 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=dinit
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.22 Booting from ROM...
+H     4.98 c[?7l[2JCH STAGE1 up=2.76
+H     5.04 CH CAND dinit pid1=dinit
+H     5.04 CH SUP-START up=2.83
+H     5.15 [  OK  ] guard
+H     5.27 [  OK  ] seatd
+H     5.27 CH t=0.1 CHAOS start cand=dinit suite=boot seed=101 cpus=2
+H     5.27 [  OK  ] dbus
+H     6.74 [  OK  ] udevd
+H     8.94 [  OK  ] driftwm
+H    10.59 [  OK  ] waybar
+H    10.65 [  OK  ] hubd
+H    10.65 [  OK  ] boot
+H    10.92 CH t=5.8 BOOT-OK up=8.70 ok=1 (seconds since kernel start; waited 5.4)
+H    55.95 CH t=50.8 IDLE-CPU window=30s whole_vm_busy_ticks=452 whole_vm_idle_ticks=5439 init_side_ticks=11 (1 tick = 10 ms, 2 vCPUs)
+H    55.95 CH t=50.8 MEM pid=1 comm=dinit rss_kb=2096 pss_kb=2092
+H    55.99 CH t=50.9 POLICY driftwm oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    56.02 CH t=50.9 POLICY hubd oom_score_adj=-900 nice=-5 cgroup=0::/hub
+H    56.05 CH t=50.9 POLICY waybar oom_score_adj=0 nice=0 cgroup=0::/
+H    56.06 CH t=50.9 LISTEN tcp_listening_sockets=0 epmd_running=false
+H    56.06 CH t=50.9 SUITE-DONE
+H    58.07 [   55.900508] reboot: Power down
+H# vm exit code 0 after 58s, loadavg ['0.18', '0.65', '0.95']
+H# end wall=58.1s launches=1 suite_done=True

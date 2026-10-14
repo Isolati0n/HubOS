@@ -1,0 +1,54 @@
+H# start 2026-10-11 23:37:40 cand=openrc-doc suite=trial cpus_seen=4 loadavg_at_start=['0.58', '0.53', '0.42']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/openrc-doc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=130 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=openrc hub.sup=supervise-daemon
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     5.56 c[?7l[2JCH STAGE1 up=3.87
+H     5.61 CH CAND openrc pid1=openrc-init
+H     5.65 CH SUP-START up=3.95
+H     5.78 OpenRC init version 0.63.3 starting
+H     5.79 Starting sysinit runlevel
+H     5.81 CH t=0.1 CHAOS start cand=openrc suite=trial seed=130 cpus=2
+H     5.95 
+H     5.96    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.96 
+H     6.09  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     6.14  [1m[32m*[m Mounting /proc[K ...
+H     6.22  [1m[31m*[m /etc/fstab does not exist[K
+H     6.30  [ ok ]
+H     6.51  [1m[32m*[m /run/openrc: creating directory[K
+H     6.57  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     6.59  [1m[32m*[m Caching service dependencies[K ...
+H     6.89  [ ok ]
+H     6.90 Starting boot runlevel
+H     7.01 Starting default runlevel
+H     7.76  [1m[32m*[m Starting dbus[K ...
+H     7.96  [1m[32m*[m Starting seatd[K ...
+H     7.96  [1m[32m*[m Starting udevd[K ...
+H     8.24  [ ok ]
+H     8.25  [ ok ]
+H     9.76  [ ok ]
+H    10.00  [1m[32m*[m Starting driftwm[K ...
+H    12.57  [ ok ]
+H    12.84  [1m[32m*[m Starting hubd[K ...
+H    13.16  [1m[32m*[m Starting waybar[K ...
+H    14.88  [ ok ]
+H    14.99  [ ok ]
+H    65.91 CH t=60.2 TRIAL ROLLBACK scenario=healthy after=60s true_state="" guard_still_feeding=true health_checks_run=15 slowest_check=4.3s consecutive_good=11 (15 needed)
+H    66.02 CH t=60.3 STATUS Runlevel: sysinit
+H    66.02 CH t=60.3 STATUS Runlevel: default
+H    66.03 CH t=60.3 STATUS  dbus                                                  [  started 00:00:58 (0) ]
+H    66.03 CH t=60.3 STATUS  seatd                                                 [  started 00:00:58 (0) ]
+H    66.03 CH t=60.3 STATUS  udevd                                                 [  started 00:00:58 (0) ]
+H    66.03 CH t=60.3 STATUS  driftwm                                               [  started 00:00:56 (0) ]
+H    66.03 CH t=60.3 STATUS  waybar                                                [  started 00:00:53 (0) ]
+H    66.03 CH t=60.3 STATUS  hubd                                                  [  started 00:00:53 (0) ]
+H    66.03 CH t=60.3 STATUS Runlevel: boot
+H    66.04 CH t=60.3 STATUS Dynamic Runlevel: hotplugged
+H    66.04 CH t=60.3 STATUS Dynamic Runlevel: needed/wanted
+H    66.04 CH t=60.3 STATUS Dynamic Runlevel: manual
+H    67.05 [   65.430632] reboot: Restarting system
+H    67.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    81.44 Booting from ROM..c[?7l[2JCH STAGE1 up=4.35
+H# trial finished
+H# vm exit code -9 after 81s, loadavg ['1.01', '0.69', '0.49']
+H# end wall=81.5s launches=1 suite_done=True

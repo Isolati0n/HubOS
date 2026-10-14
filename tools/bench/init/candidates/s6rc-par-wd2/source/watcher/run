@@ -1,0 +1,4 @@
+#!/bin/sh
+# TEST STAND-IN watcher (prototypes/watcher), follow-up 4. Not the product watcher.
+exec 2>&1
+exec watcher

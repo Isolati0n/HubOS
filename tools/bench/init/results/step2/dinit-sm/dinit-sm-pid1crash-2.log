@@ -1,0 +1,66 @@
+H# start 2026-10-11 01:34:34 cand=dinit-sm suite=pid1crash cpus_seen=4 loadavg_at_start=['0.27', '0.49', '0.84']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/dinit-sm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=pid1crash hub.dur=600 hub.seed=112 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=dinit
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.47 Booting from ROM..c[?7l[2JCH STAGE1 up=2.81
+H     4.51 CH CAND dinit pid1=dinit
+H     4.52 CH SUP-START up=2.86
+H     4.65 [  OK  ] guard
+H     4.77 [  OK  ] dbus
+H     4.77 [  OK  ] seatd
+H     4.78 CH t=0.1 CHAOS start cand=dinit suite=pid1crash seed=112 cpus=2
+H     6.22 [  OK  ] udevd
+H     8.49 [  OK  ] driftwm
+H    10.15 [  OK  ] waybar
+H    10.23 [  OK  ] hubd
+H    10.24 [  OK  ] boot
+H    10.47 CH t=5.8 BOOT-OK up=8.81 ok=1 (seconds since kernel start; waited 5.5)
+H    15.48 CH t=10.8 INJECT pid1-segv
+H    15.51 [   13.887622] dinit[1]: segfault at 0 ip 0000000000000000 sp 00007ffc018c3a78 error 14 in dinit[400000+1000] likely on CPU 0 (core 0, socket 0)
+H    15.51 [   13.891673] Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+H    15.52 [   13.894216] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    15.52 [   13.894392] CPU: 0 PID: 1 Comm: dinit Not tainted 6.8.0-146-generic #146-Ubuntu
+H    15.52 [   13.894392] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    15.52 [   13.894392] Call Trace:
+H    15.52 [   13.894392]  <TASK>
+H    15.52 [   13.894392]  dump_stack_lvl+0x27/0xa0
+H    15.52 [   13.894392]  dump_stack+0x10/0x20
+H    15.52 [   13.894392]  panic+0x366/0x3c0
+H    15.52 [   13.894392]  do_exit+0x513/0x530
+H    15.52 [   13.894392]  do_group_exit+0x35/0x90
+H    15.52 [   13.894392]  get_signal+0x96e/0x9b0
+H    15.52 [   13.894392]  ? pick_next_task+0x5b/0xbd0
+H    15.52 [   13.894392]  ? sched_clock_cpu+0x81/0x1e0
+H    15.52 [   13.894392]  arch_do_signal_or_restart+0x42/0x210
+H    15.52 [   13.894392]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    15.52 [   13.894392]  irqentry_exit+0x43/0x50
+H    15.52 [   13.894392]  exc_page_fault+0x94/0x1b0
+H    15.52 [   13.894392]  asm_exc_page_fault+0x27/0x30
+H    15.52 [   13.894392] RIP: 0033:0x0
+H    15.52 [   13.894392] Code: Unable to access opcode bytes at 0xffffffffffffffd6.
+H    15.52 [   13.894392] RSP: 002b:00007ffc018c3a78 EFLAGS: 00000202
+H    15.52 [   13.894392] RAX: fffffffffffffffc RBX: 0000000000000000 RCX: 000000000054c647
+H    15.52 [   13.894392] RDX: 0000000000000010 RSI: 00007ffc018c3ba8 RDI: 0000000000000003
+H    15.52 [   13.894392] RBP: 000000000062a2c0 R08: 0000000036539f98 R09: 000000003653a918
+H    15.52 [   13.894392] R10: 00000000ffffffff R11: 0000000000000202 R12: 0000000000000000
+H    15.52 [   13.894392] R13: 00007ffc018c3cb8 R14: 000000000062a420 R15: 00007ffc018c3dc8
+H    15.52 [   13.894392]  </TASK>
+H    15.53 [   13.894392] Kernel Offset: 0x6600000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    15.53 [   13.894392] Rebooting in 5 seconds..
+H    20.68 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    20.68 Booting from ROM...
+H    25.22 c[?7l[2JCH STAGE1 up=3.12
+H    25.27 CH CAND dinit pid1=dinit
+H    25.28 CH SUP-START up=3.18
+H    25.40 [  OK  ] guard
+H    25.52 CH t=0.1 CHAOS start cand=dinit suite=pid1crash seed=112 cpus=2
+H    25.60 [  OK  ] seatd
+H    25.60 [  OK  ] dbus
+H    27.04 [  OK  ] udevd
+H    29.14 [  OK  ] driftwm
+H    30.80 [  OK  ] waybar
+H    30.89 [  OK  ] hubd
+H    30.89 [  OK  ] boot
+H    31.27 CH t=5.9 BOOT-OK up=9.17 ok=1 (seconds since kernel start; waited 5.5)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 31s, loadavg ['0.41', '0.51', '0.84']
+H# end wall=31.3s launches=1 suite_done=True

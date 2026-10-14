@@ -1,0 +1,53 @@
+H# start 2026-10-10 17:03:54 cand=s6plain suite=faults cpus_seen=4 loadavg_at_start=['0.73', '0.57', '0.55']
+H# launch 1 skip=34 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/s6plain.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=600 hub.seed=234 hub.reps=3 hub.skip=34 hub.trial=healthy hub.preflag= hub.cand=s6plain hub.sup=s6-supervise
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.14 Booting from ROM...
+H     5.51 c[?7l[2JCH STAGE1 up=3.54
+H     5.57 CH CAND s6plain pid1=s6-svscan
+H     5.62 CH SUP-START up=3.66
+H     5.96 CH t=0.2 CHAOS start cand=s6plain suite=faults seed=234 cpus=2
+H    11.67 CH t=6.0 BOOT-OK up=9.71 ok=1 (seconds since kernel start; waited 5.5)
+H    11.73 CH t=6.1 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=720632 init_side_cpu_ticks=217
+H    21.78 CH t=16.1 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719932 init_side_cpu_ticks=217
+H    31.84 CH t=26.2 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719932 init_side_cpu_ticks=217
+H    41.89 CH t=36.2 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719680 init_side_cpu_ticks=217
+H    51.94 CH t=46.3 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719428 init_side_cpu_ticks=217
+H    62.01 CH t=56.3 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719428 init_side_cpu_ticks=218
+H    72.06 CH t=66.4 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719428 init_side_cpu_ticks=219
+H    82.12 CH t=76.5 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719428 init_side_cpu_ticks=219
+H    92.18 CH t=86.5 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719428 init_side_cpu_ticks=219
+H   102.23 CH t=96.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719428 init_side_cpu_ticks=219
+H   112.27 CH t=106.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10452 memavail_kb=719176 init_side_cpu_ticks=219
+H   118.75 CH t=113.1 STEP 35 fSupKill
+H   122.31 CH t=116.6 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=709504 init_side_cpu_ticks=223
+H   122.43 CH t=116.8 EV ev=1 fault=supervisor-killed target=driftwm rec=1.92 ok=1 fixed=0 child_kept_running=1
+H   130.71 CH t=125.0 EV ev=2 fault=after-supervisor-killed target=driftwm rec=6.05 ok=1 fixed=0 supervisor_back=1
+H   132.46 CH t=126.8 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10456 memavail_kb=713624 init_side_cpu_ticks=230
+H   133.72 CH t=128.1 STEP 36 fSupKill
+H   135.56 CH t=129.9 EV ev=3 fault=supervisor-killed target=waybar rec=0.10 ok=1 fixed=0 child_kept_running=1
+H   138.35 CH t=132.7 EV ev=4 fault=after-supervisor-killed target=waybar rec=0.56 ok=1 fixed=0 supervisor_back=1
+H   141.35 CH t=135.7 STEP 37 fScanKill
+H   142.51 CH t=136.8 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=714148 init_side_cpu_ticks=228
+H   144.36 CH t=138.7 STEP 38 fBrainKill
+H   147.36 CH t=141.7 STEP 39 fBrainKill
+H   150.36 CH t=144.7 STEP 40 fClock
+H   152.57 CH t=146.9 SAMPLE zombies=0 nproc=88 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=715440 init_side_cpu_ticks=231
+H   156.67 CH t=151.0 EV ev=5 fault=clock-3600 target=driftwm rec=6.09 ok=1 fixed=0 
+H   160.71 CH t=155.0 EV ev=6 fault=after-clock-3600 target=hubd rec=2.83 ok=1 fixed=0 
+H   162.62 CH t=157.0 SAMPLE zombies=0 nproc=90 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=715440 init_side_cpu_ticks=234
+H   163.71 CH t=158.1 STEP 41 fClock
+H   170.01 CH t=164.3 EV ev=7 fault=clock+86400 target=driftwm rec=6.08 ok=1 fixed=0 
+H   172.66 CH t=167.0 SAMPLE zombies=0 nproc=89 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=726384 init_side_cpu_ticks=240
+H   174.05 CH t=168.4 EV ev=8 fault=after-clock+86400 target=hubd rec=2.83 ok=1 fixed=0 
+H   177.06 CH t=171.4 STEP 42 fOOM
+H   177.14 CH t=171.5 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   182.78 CH t=177.1 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=201468 init_side_cpu_ticks=240
+H   185.81 CH t=180.1 EV ev=9 fault=oom target=hog rec=0.10 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   188.82 CH t=183.2 STEP 43 fOOM
+H   188.91 CH t=183.2 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   192.88 CH t=187.2 SAMPLE zombies=0 nproc=91 init_side_fds=110 init_side_rss_kb=10460 memavail_kb=127604 init_side_cpu_ticks=240
+H   194.74 CH t=189.1 EV ev=10 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   194.74 CH t=189.1 SUITE-DONE
+H   196.75 [  194.820274] reboot: Power down
+H# vm exit code 0 after 197s, loadavg ['0.51', '0.51', '0.53']
+H# end wall=196.8s launches=1 suite_done=True

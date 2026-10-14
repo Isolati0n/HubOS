@@ -1,0 +1,224 @@
+H# start 2026-10-13 20:25:05 cand=runit-111-wd3 suite=latchc cpus_seen=4 loadavg_at_start=['0.35', '0.27', '0.37']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/6f1c9174-8599-516b-bf33-ad32ebbcf3bd/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/6f1c9174-8599-516b-bf33-ad32ebbcf3bd/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/6f1c9174-8599-516b-bf33-ad32ebbcf3bd/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/6f1c9174-8599-516b-bf33-ad32ebbcf3bd/scratchpad/ib/rf/runit-111-wd3.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=latchc hub.dur=600 hub.seed=113 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir hub.watcher=watcher
+H     0.15 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.15 Booting from ROM...
+H     4.77 c[?7l[2JCH STAGE1 up=3.08
+H     4.83 CH CAND runit pid1=runit stage2=runsvdir
+H     4.88 CH SUP-START up=3.19
+H     4.94 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.95 - runit: enter stage: /etc/runit/1
+H     4.96 - runit: leave stage: /etc/runit/1
+H     4.97 - runit: enter stage: /etc/runit/2
+H     5.01 CH t=0.1 CHAOS start cand=runit suite=latchc seed=113 cpus=2
+H     5.95 watcher: started pid=125 probes=state(5s)+wl_display.sync(2s), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version)
+H     5.96 watcher: budget file missing: starting with an empty budget (/run/hubos/watcher.budget)
+H     7.01 watcher: STREAK starts; failing process: pid=133 start=361
+H     7.02 watcher: round 1 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H     7.97 watcher: round 2 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s result=idle
+H     8.99 watcher: round 3 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H     9.97 watcher: round 4 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    10.97 watcher: round 5 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    11.36 CH t=6.4 BOOT-OK up=9.66 ok=1 (seconds since kernel start; waited 6.1)
+H    11.98 watcher: round 6 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    12.98 watcher: round 7 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    13.98 watcher: round 8 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    14.98 watcher: round 9 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    15.98 watcher: round 10 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    16.36 CH t=11.4 STEP 1 fHang
+H    21.99 watcher: STREAK starts; failing process: pid=133 start=361
+H    21.99 watcher: round 11 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H    27.00 watcher: round 12 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=2 since_first=5.0s result=idle
+H    32.01 watcher: round 13 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=10.0s result=idle
+H    37.02 watcher: round 14 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=15.0s result=idle
+H    42.02 watcher: round 15 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=20.1s result=idle
+H    47.04 watcher: round 16 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=25.1s result=idle
+H    52.07 watcher: EVIDENCE pid=133 state=T wchan=do_signal_stop cpu_ticks=116 age=46.78s
+H    52.08 watcher: BUDGET kill 1 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H    52.08 watcher: KILL driftwm pid=133 start=361
+H    52.08 watcher: round 17 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=0 since_first=0.0s result=killed
+H    52.24 watcher: STREAK starts; failing process: none
+H    52.24 watcher: round 18 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H    52.97 watcher: round 19 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.9s result=idle
+H    53.97 watcher: round 20 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.9s result=idle
+H    54.97 watcher: round 21 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    55.89 CH t=51.0 EV ev=1 fault=hang-stop target=driftwm rec=39.32 ok=1 fixed=0 
+H    55.90 CH t=51.0 HANG n=1 mode=stop arm_delay=0.00 old_pid=133 new_pid=699 fault_to_pidchange=35.81 fault_to_desktop=39.32 windows_back=1 needed_person=0 watcher_state="" budget_entries=1 latch=0 
+H    55.91 CH t=51.0 LATCH-TEST after hang 1: watcher_state="" budget_entries=1 latch=0
+H    55.97 watcher: round 22 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    56.97 watcher: round 23 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    57.97 watcher: round 24 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    58.91 CH t=54.0 STEP 2 fHang
+H    58.97 watcher: round 25 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    65.00 watcher: STREAK starts; failing process: pid=699 start=5045
+H    65.01 watcher: round 26 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H    70.03 watcher: round 27 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=2 since_first=5.1s result=idle
+H    75.05 watcher: round 28 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=3 since_first=10.1s result=idle
+H    80.06 watcher: round 29 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=4 since_first=15.1s result=idle
+H    85.07 watcher: round 30 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=20.1s result=idle
+H    90.09 watcher: round 31 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=25.1s result=idle
+H    95.13 watcher: EVIDENCE pid=699 state=R wchan=0 cpu_ticks=3515 age=43.00s
+H    95.13 watcher: BUDGET kill 2 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H    95.13 watcher: KILL driftwm pid=699 start=5045
+H    95.13 watcher: round 32 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=0 since_first=0.0s result=killed
+H    95.22 watcher: STREAK starts; failing process: none
+H    95.22 watcher: round 33 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H    95.97 watcher: round 34 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.8s result=idle
+H    96.97 watcher: round 35 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.8s result=idle
+H    97.98 watcher: round 36 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    98.98 CH t=94.0 EV ev=2 fault=hang-spin target=driftwm rec=39.69 ok=1 fixed=0 
+H    99.00 CH t=94.1 HANG n=2 mode=spin arm_delay=0.17 old_pid=699 new_pid=1178 fault_to_pidchange=36.15 fault_to_desktop=39.69 windows_back=1 needed_person=0 watcher_state="" budget_entries=2 latch=0 
+H    99.00 CH t=94.1 LATCH-TEST after hang 2: watcher_state="" budget_entries=2 latch=0
+H    99.00 watcher: round 37 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    99.97 watcher: round 38 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   100.97 watcher: round 39 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   101.97 watcher: round 40 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   102.00 CH t=97.1 STEP 3 fHang
+H   107.98 watcher: STREAK starts; failing process: pid=1178 start=9350
+H   107.99 watcher: round 41 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H   112.99 watcher: round 42 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=5.0s result=idle
+H   118.01 watcher: round 43 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=10.0s result=idle
+H   123.01 watcher: round 44 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=4 since_first=15.0s result=idle
+H   128.04 watcher: round 45 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=20.1s result=idle
+H   133.05 watcher: round 46 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=25.1s result=idle
+H   138.08 watcher: EVIDENCE pid=1178 state=S wchan=ep_poll cpu_ticks=76 age=42.90s
+H   138.08 watcher: BUDGET kill 3 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H   138.08 watcher: KILL driftwm pid=1178 start=9350
+H   138.09 watcher: round 47 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=0 since_first=0.0s result=killed
+H   138.24 watcher: STREAK starts; failing process: none
+H   138.25 watcher: round 48 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H   138.97 watcher: round 49 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.9s result=idle
+H   139.97 watcher: round 50 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.9s result=idle
+H   140.97 watcher: round 51 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   141.97 watcher: round 52 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   142.09 CH t=137.2 EV ev=3 fault=hang-deadlock target=driftwm rec=39.78 ok=1 fixed=0 
+H   142.10 CH t=137.2 HANG n=3 mode=deadlock arm_delay=0.10 old_pid=1178 new_pid=1665 fault_to_pidchange=36.09 fault_to_desktop=39.78 windows_back=1 needed_person=0 watcher_state="" budget_entries=3 latch=0 
+H   142.11 CH t=137.2 LATCH-TEST after hang 3: watcher_state="" budget_entries=3 latch=0
+H   142.98 watcher: round 53 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   143.98 watcher: round 54 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   144.98 watcher: round 55 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   145.11 CH t=140.2 STEP 4 fHangLatchedC
+H   145.12 CH t=140.2 LATCH-TEST(c) hang 4 injected (SIGSTOP of driftwm pid=1665); no help from the harness; watcher_state="" budget_entries=3 latch=0
+H   150.98 watcher: STREAK starts; failing process: pid=1665 start=13647
+H   150.99 watcher: round 56 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H   156.00 watcher: round 57 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=5.0s result=idle
+H   161.00 watcher: round 58 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=10.0s result=idle
+H   166.01 watcher: round 59 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=15.0s result=idle
+H   171.02 watcher: round 60 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=20.1s result=idle
+H   176.03 watcher: round 61 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=25.1s result=idle
+H   181.08 watcher: LATCH set: the rule wants a kill but 3 kills were made in the last 10 minutes; stopped until a person clears it
+H   181.08 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   181.08 watcher: STATE wrote /run/hubos/watcher.state (capped)
+H   181.09 watcher: round 62 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=7 since_first=30.1s result=capped
+H   181.18 CH t=176.2 LATCH-TEST(c) state file after 36.0s: "capped 2026-10-13T20:28:05Z"; latch file=true; driftwm pid=1665 State: T (stopped); budget="hubos-watcher-budget v1 clock=boottime unit=ns | kill 45359478609 | kill 88409584359 | kill 131378905829 | end 3"
+H   186.13 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   186.13 watcher: round 63 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=35.1s result=capped
+H   191.15 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   191.16 watcher: round 64 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=40.2s result=capped
+H   191.20 CH t=186.3 LATCH-TEST(c) still frozen=true, latch=true, state="capped 2026-10-13T20:28:05Z"
+H   191.23 watcher: STATE both probes answer again: removed /run/hubos/watcher.state (latch still set)
+H   191.23 watcher: round 65 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   191.26 CH t=186.3 LATCH-TEST(c) SIGCONT sent; state file removed after 0.05s (present now=false); latch still set=true; compositor State: S (sleeping) pid same=true
+H   191.55 CH t=186.6 LATCH-TEST(c) desktop ok=true with the latch still set=true
+H   191.98 watcher: round 66 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   192.98 watcher: round 67 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   193.98 watcher: round 68 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   194.98 watcher: round 69 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   195.98 watcher: round 70 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   196.56 CH t=191.6 LATCH-TEST(c) hung AGAIN (SIGSTOP of the same process pid=1665); no help
+H   201.99 watcher: STREAK starts; failing process: pid=1665 start=13647
+H   202.00 watcher: round 71 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H   207.01 watcher: round 72 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=2 since_first=5.0s result=idle
+H   212.02 watcher: round 73 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=3 since_first=10.0s result=idle
+H   217.03 watcher: round 74 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=15.1s result=idle
+H   222.03 watcher: round 75 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=5 since_first=20.1s result=idle
+H   227.04 watcher: round 76 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=25.1s result=idle
+H   232.10 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   232.10 watcher: STATE wrote /run/hubos/watcher.state (capped)
+H   232.10 watcher: round 77 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=7 since_first=30.1s result=capped
+H   232.19 CH t=227.3 LATCH-TEST(c) state file came back after 35.6s: "capped 2026-10-13T20:28:56Z"; latch=true
+H   237.13 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   237.14 watcher: round 78 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=8 since_first=35.1s result=capped
+H   242.16 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   242.16 watcher: round 79 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=9 since_first=40.2s result=capped
+H   247.18 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   247.19 watcher: round 80 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=10 since_first=45.2s result=capped
+H   252.22 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   252.23 watcher: round 81 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=11 since_first=50.2s result=capped
+H   257.27 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   257.27 watcher: round 82 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=12 since_first=55.3s result=capped
+H   262.32 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   262.32 watcher: round 83 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=13 since_first=60.3s result=capped
+H   267.34 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   267.35 watcher: round 84 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=14 since_first=65.4s result=capped
+H   272.37 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   272.37 watcher: round 85 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=15 since_first=70.4s result=capped
+H   277.40 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   277.40 watcher: round 86 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=16 since_first=75.4s result=capped
+H   282.43 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   282.44 watcher: round 87 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=17 since_first=80.4s result=capped
+H   287.47 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   287.47 watcher: round 88 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=18 since_first=85.5s result=capped
+H   292.49 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   292.49 watcher: round 89 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=19 since_first=90.5s result=capped
+H   297.51 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   297.52 watcher: round 90 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=20 since_first=95.5s result=capped
+H   302.55 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   302.55 watcher: round 91 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=21 since_first=100.6s result=capped
+H   307.59 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   307.59 watcher: round 92 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=22 since_first=105.6s result=capped
+H   312.61 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   312.61 watcher: round 93 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=23 since_first=110.6s result=capped
+H   317.63 watcher: CAP: would kill driftwm pid=1665 start=13647, but the watcher is latched; not killing
+H   317.64 watcher: round 94 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=24 since_first=115.7s result=capped
+H   318.31 CH t=313.4 LATCH-TEST(c) 120 s after the second hang: frozen=true (pid same=true, State T (stopped)) state="capped 2026-10-13T20:28:56Z" latch=true; NOT killed=true
+H   318.31 CH t=313.4 PERSON-COMMAND *** the harness plays the person: running `watcher reset` (after the second hang) ***
+H   318.35 CH t=313.4 PERSON-COMMAND output: "watcher reset: budget emptied, latch and state file removed"; now watcher_state="" budget_entries=0 latch=0
+H   322.65 watcher: budget file changed by someone else: budget file read: 0 kills in the last 10m0s kept, 0 older dropped
+H   322.67 watcher: EVIDENCE pid=1665 state=T wchan=do_signal_stop cpu_ticks=59 age=184.52s
+H   322.68 watcher: BUDGET kill 1 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H   322.68 watcher: KILL driftwm pid=1665 start=13647
+H   322.68 watcher: round 95 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s result=killed
+H   322.81 watcher: STREAK starts; failing process: none
+H   322.82 watcher: round 96 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H   322.97 watcher: round 97 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.3s result=idle
+H   323.98 watcher: round 98 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.3s result=idle
+H   324.98 watcher: round 99 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   325.98 watcher: round 100 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   326.50 CH t=321.6 LATCH-TEST after the person-command: reset to kill 4.44s, reset to desktop back 8.19s (desktop ok=true); state file present=false; watcher_state="" budget_entries=1 latch=0
+H   326.50 CH t=321.6 EV ev=4 fault=hang-latched-c target=driftwm rec=8.19 ok=1 fixed=0
+H   326.98 watcher: round 101 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   327.97 watcher: round 102 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   328.97 watcher: round 103 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   329.50 CH t=324.6 STEP 5 fHangRestartStreak
+H   329.52 CH t=324.6 LATCH-TEST(d) hang injected (SIGSTOP pid=3676); the watcher will be killed 15 s into the streak; watcher_state="" budget_entries=1 latch=0
+H   334.98 watcher: STREAK starts; failing process: pid=3676 start=32106
+H   334.98 watcher: round 104 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H   339.99 watcher: round 105 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=5.0s result=idle
+H   344.57 watcher: started pid=3953 probes=state(5s)+wl_display.sync(2s), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version)
+H   344.58 watcher: budget file read: 1 kills in the last 10m0s kept, 0 older dropped (/run/hubos/watcher.budget)
+H   344.60 CH t=339.7 LATCH-TEST(d) watcher killed at 15.0s after the fault; init restarted it in 0.07s
+H   350.61 watcher: STREAK starts; failing process: pid=3676 start=32106
+H   350.61 watcher: round 1 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=1 since_first=0.0s result=idle
+H   355.62 watcher: round 2 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=2 since_first=5.0s result=idle
+H   360.64 watcher: round 3 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=10.0s result=idle
+H   365.66 watcher: round 4 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=4 since_first=15.1s result=idle
+H   370.66 watcher: round 5 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=20.1s result=idle
+H   375.67 watcher: round 6 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=6 since_first=25.1s result=idle
+H   380.72 watcher: EVIDENCE pid=3676 state=T wchan=do_signal_stop cpu_ticks=46 age=57.98s
+H   380.72 watcher: BUDGET kill 2 of 3 in the last 10 minutes recorded in /run/hubos/watcher.budget
+H   380.72 watcher: KILL driftwm pid=3676 start=32106
+H   380.72 watcher: round 7 state=FAIL sync=FAIL hubd(info only)=ok failed_round=true streak=0 since_first=0.0s result=killed
+H   380.84 watcher: STREAK starts; failing process: none
+H   380.85 watcher: round 8 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H   381.58 watcher: round 9 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=0.9s result=idle
+H   382.59 watcher: round 10 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=1.9s result=idle
+H   383.59 watcher: round 11 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H   384.59 watcher: round 12 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   384.69 CH t=379.7 LATCH-TEST(d) from the watcher's restart to the kill: 36.26s (expect about 30 s); fault to kill 51.34s; fault to desktop back 55.17s (ok=true); watcher_state="" budget_entries=2 latch=0
+H   384.69 CH t=379.8 EV ev=5 fault=hang-restart-streak target=driftwm rec=55.17 ok=1 fixed=0
+H   384.69 CH t=379.8 SUITE-DONE
+H   385.59 watcher: round 13 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   386.59 watcher: round 14 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H   386.71 [  385.052428] reboot: Power down
+H# vm exit code 0 after 387s, loadavg ['0.55', '0.45', '0.43']
+H# end wall=386.7s launches=1 suite_done=True

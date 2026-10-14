@@ -1,0 +1,70 @@
+H# start 2026-10-14 03:14:08 cand=s6rc-par-wd4e suite=alert cpus_seen=4 loadavg_at_start=['0.25', '0.40', '0.45']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/rf/s6rc-par-wd4e.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=alert hub.dur=600 hub.seed=918 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag= hub.case=c6 hub.cand=s6rc hub.sup=s6-supervise hub.watcher=watcher
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.17 Booting from ROM...
+H     6.96 c[?7l[2JCH STAGE1 up=5.28
+H     7.01 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     7.04 CH SUP-START up=5.36
+H     7.21 CH t=0.1 CHAOS start cand=s6rc suite=alert seed=918 cpus=2
+H    13.60 CH S6RC-UP up=11.91
+H    13.70 watcher: started pid=268 probes=state(5s)+wl_display.sync(2s), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version + auto-clear after 1h0m0s)
+H    13.70 watcher: started pid=268 probes=state(5s)+wl_display.sync(2s), hubd ping is information only (TEST STAND-IN, not the product watcher; latch version + auto-clear after 1h0m0s)
+H    13.70 watcher: budget file missing: starting with an empty budget (/run/hubos/watcher.budget)
+H    13.70 watcher: budget file missing: starting with an empty budget (/run/hubos/watcher.budget)
+H    13.91 CH t=6.8 BOOT-OK up=12.23 ok=1 (seconds since kernel start; waited 6.5)
+H    14.74 watcher: round 1 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    14.74 watcher: round 1 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    15.71 watcher: round 2 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    15.71 watcher: round 2 state=ok sync=ok hubd(info only)=FAIL failed_round=false streak=0 since_first=0.0s result=idle
+H    16.71 watcher: round 3 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    16.71 watcher: round 3 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    17.71 watcher: round 4 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    17.72 watcher: round 4 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    18.71 watcher: round 5 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    18.71 watcher: round 5 state=ok sync=ok hubd(info only)=ok failed_round=false streak=0 since_first=0.0s result=idle
+H    18.91 CH t=11.8 STEP 1 c6-driftwm
+H    19.47 CH t=12.3 C6 start 1 seen at uptime 17.79; history file: "1736"
+H    19.73 watcher: STREAK starts; failing process: none
+H    19.73 watcher: STREAK starts; failing process: none
+H    19.73 watcher: round 6 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H    19.73 watcher: round 6 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=1 since_first=0.0s result=idle
+H    20.72 watcher: round 7 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s result=idle
+H    20.73 watcher: round 7 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=2 since_first=1.0s result=idle
+H    21.25 CH t=14.1 C6 start 2 seen at uptime 19.57; history file: "1736,1790"
+H    21.25 CH t=14.1 C6 history file DELETED after start 2 (deaths so far in it: 2); exists now=false
+H    21.71 watcher: round 8 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s result=idle
+H    21.71 watcher: round 8 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=3 since_first=2.0s result=idle
+H    22.71 watcher: round 9 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s result=idle
+H    22.71 watcher: round 9 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=4 since_first=3.0s result=idle
+H    22.87 CH t=15.8 C6 start 3 seen at uptime 21.19; history file: "1971"
+H    23.71 watcher: round 10 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s result=idle
+H    23.71 watcher: round 10 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=5 since_first=4.0s result=idle
+H    24.62 CH t=17.5 C6 start 4 seen at uptime 22.94; history file: "1971,2132"
+H    24.72 watcher: round 11 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.0s result=idle
+H    24.72 watcher: round 11 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=6 since_first=5.0s result=idle
+H    25.71 watcher: round 12 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.0s result=idle
+H    25.71 watcher: round 12 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=7 since_first=6.0s result=idle
+H    26.27 CH t=19.1 C6 start 5 seen at uptime 24.58; history file: "1971,2132,2311"
+H    26.71 watcher: round 13 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.0s result=idle
+H    26.71 watcher: round 13 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=8 since_first=7.0s result=idle
+H    27.72 watcher: round 14 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=9 since_first=8.0s result=idle
+H    27.72 watcher: round 14 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=9 since_first=8.0s result=idle
+H    27.82 CH t=20.7 C6 start 6 seen at uptime 26.14; history file: "1971,2132,2311,2471"
+H    27.99 HUB OS: the desktop (driftwm) crashed 5 times within one minute and was stopped.
+H    27.99 It will not start again by itself, and the machine will NOT reboot.
+H    27.99 hubd and the recovery terminal are still running.
+H    27.99 To try the desktop again by hand: s6-svc -u /run/service/driftwm
+H    27.99 CH t=20.9 C6 ALERT after 9.08s: starts since the kill=6; text="driftwm stopped: tried 5 times in 60 s"
+H    28.71 watcher: round 15 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.0s result=idle
+H    28.71 watcher: round 15 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=10 since_first=9.0s result=idle
+H    29.71 watcher: round 16 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.0s result=idle
+H    29.71 watcher: round 16 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=11 since_first=10.0s result=idle
+H    30.04 CH t=22.9 C6 RESULT stopped=true starts_since_first_kill=6 stop_after=9.08s history file: "1971,2132,2311,2471,2626"; helper lines: restart-limit: driftwm death 1 in the history; the last 1 span 0 hundredths of a second on the boot clock | restart-limit: driftwm death 2 in the history; the last 2 span 54 hundredths of a second on the boot clock | restart-limit: driftwm death 1 in the history; the last 1 span 0 hundredths of a second on the boot clock | restart-limit: driftwm death 2 in the history; the last 2 span 161 hundredths of a second on the boot clock | restart-limit: driftwm death 3 in the history; the last 3 span 340 hundredths of a second on the boot clock | restart-limit: driftwm death 4 in the history; the last 4 span 500 hundredths of a second on the boot clock | restart-limit: driftwm death 5 in the history; the last 5 span 655 hundredths of a second on the boot clock | restart-limit: driftwm stopped for good (alert written, marker written, screen message written)
+H    30.04 CH t=22.9 SUITE-DONE
+H    30.71 watcher: round 17 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.0s result=idle
+H    30.71 watcher: round 17 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=12 since_first=11.0s result=idle
+H    31.71 watcher: round 18 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=13 since_first=12.0s result=idle
+H    31.71 watcher: round 18 state=FAIL sync=FAIL hubd(info only)=FAIL failed_round=true streak=13 since_first=12.0s result=idle
+H    32.05 [   30.401262] reboot: Power down
+H# vm exit code 0 after 32s, loadavg ['0.39', '0.42', '0.45']
+H# end wall=32.1s launches=1 suite_done=True

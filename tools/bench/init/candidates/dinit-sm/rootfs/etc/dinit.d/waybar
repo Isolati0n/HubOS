@@ -1,0 +1,7 @@
+type = process
+command = /bin/follow-driftwm waybar -wait /run/dw/wayland-1,/run/dw/bus -notify 3
+restart = true
+log-type = buffer
+ready-notification = pipefd:3
+depends-on = driftwm
+depends-on = dbus

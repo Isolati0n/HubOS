@@ -1,0 +1,5 @@
+#!/bin/sh
+# TEST STAND-IN watcher (prototypes/watcher), follow-up 3 item 3. Not the product watcher.
+exec 2>&1
+MODE=$(sed -n 's/.*hub\.wmode=\([^ ]*\).*/\1/p' /proc/cmdline)
+exec watcher -mode "${MODE:-both}"

@@ -1,0 +1,11 @@
+16:32:13 boot --timeout 150 --seed 101 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-boot-1.log
+16:33:17 boot --timeout 150 --seed 102 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-boot-2.log
+16:34:21 boot --timeout 150 --seed 103 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-boot-3.log
+16:35:24 pid1crash --timeout 300 --seed 111 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-pid1crash-1.log
+16:36:07 pid1crash --timeout 300 --seed 112 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-pid1crash-2.log
+16:36:52 pid1wedge --timeout 400 --seed 120 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-pid1wedge-1.log
+16:38:03 trial --trial healthy --timeout 250 --seed 130 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-trial-healthy.log
+16:38:56 trial --trial crash --preflag driftwm.crash --timeout 250 --seed 131 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-trial-crash.log
+16:40:15 trial --trial hang --timeout 250 --seed 132 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-trial-hang.log
+16:41:06 faults --reps 3 --timeout 4500 --seed 200 --out /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/c2/s6rc-par-wd/s6rc-par-wd-faults-1.log
+finished 16:54:31

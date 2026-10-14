@@ -1,0 +1,319 @@
+H# start 2026-10-11 23:42:02 cand=openrc-doc suite=faults cpus_seen=4 loadavg_at_start=['0.93', '0.84', '0.59']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/rf/openrc-doc.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=faults hub.dur=600 hub.seed=200 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=openrc hub.sup=supervise-daemon
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.13 Booting from ROM...
+H     5.05 c[?7l[2JCH STAGE1 up=3.35
+H     5.11 CH CAND openrc pid1=openrc-init
+H     5.14 CH SUP-START up=3.43
+H     5.27 OpenRC init version 0.63.3 starting
+H     5.27 Starting sysinit runlevel
+H     5.34 CH t=0.0 CHAOS start cand=openrc suite=faults seed=200 cpus=2
+H     5.44 
+H     5.44    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.44 
+H     5.57  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     5.62  [1m[32m*[m Mounting /proc[K ...
+H     5.67  [1m[31m*[m /etc/fstab does not exist[K
+H     5.73  [ ok ]
+H     5.96  [1m[32m*[m /run/openrc: creating directory[K
+H     6.04  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     6.09  [1m[32m*[m Caching service dependencies[K ...
+H     6.49  [ ok ]
+H     6.51 Starting boot runlevel
+H     6.60 Starting default runlevel
+H     7.23  [1m[32m*[m Starting udevd[K ...
+H     7.28  [1m[32m*[m Starting seatd[K ...
+H     7.30  [1m[32m*[m Starting dbus[K ...
+H     7.55  [ ok ]
+H     7.58  [ ok ]
+H     9.03  [ ok ]
+H     9.28  [1m[32m*[m Starting driftwm[K ...
+H    11.76  [ ok ]
+H    12.13  [1m[32m*[m Starting waybar[K ...
+H    12.14  [1m[32m*[m Starting hubd[K ...
+H    14.01  [ ok ]
+H    14.13  [ ok ]
+H    14.55 CH t=9.3 BOOT-OK up=12.85 ok=1 (seconds since kernel start; waited 9.0)
+H    19.56 CH t=14.3 STEP 1 fKill
+H    36.98 CH t=31.7 EV ev=1 fault=kill target=seatd rec=17.21 ok=1 fixed=0 
+H    39.99 CH t=34.7 STEP 2 fKill
+H    43.15 CH t=37.9 EV ev=2 fault=kill target=udevd rec=2.95 ok=1 fixed=0 
+H    46.15 CH t=40.9 STEP 3 fKill
+H    47.68 CH t=42.4 EV ev=3 fault=kill target=dbus rec=1.33 ok=1 fixed=0 
+H    50.69 CH t=45.4 STEP 4 fKill
+H    58.34 CH t=53.1 EV ev=4 fault=kill target=driftwm rec=7.43 ok=1 fixed=0 
+H    61.34 CH t=56.1 STEP 5 fKill
+H    64.15 CH t=58.9 EV ev=5 fault=kill target=waybar rec=2.61 ok=1 fixed=0 
+H    67.15 CH t=61.9 STEP 6 fKill
+H    70.23 CH t=65.0 EV ev=6 fault=kill target=hubd rec=2.87 ok=1 fixed=0 
+H    73.24 CH t=68.0 STEP 7 fKill
+H    91.15 CH t=85.9 EV ev=7 fault=kill target=seatd rec=17.66 ok=1 fixed=0 
+H    94.16 CH t=88.9 STEP 8 fKill
+H    97.02 CH t=91.7 EV ev=8 fault=kill target=udevd rec=2.64 ok=1 fixed=0 
+H   100.03 CH t=94.7 STEP 9 fKill
+H   101.43 CH t=96.2 EV ev=9 fault=kill target=dbus rec=1.18 ok=1 fixed=0 
+H   104.43 CH t=99.2 STEP 10 fKill
+H   110.91 CH t=105.6 EV ev=10 fault=kill target=driftwm rec=6.27 ok=1 fixed=0 
+H   113.91 CH t=108.6 STEP 11 fKill
+H   116.71 CH t=111.4 EV ev=11 fault=kill target=waybar rec=2.59 ok=1 fixed=0 
+H   119.71 CH t=114.4 STEP 12 fKill
+H   122.67 CH t=117.4 EV ev=12 fault=kill target=hubd rec=2.75 ok=1 fixed=0 
+H   125.68 CH t=120.4 STEP 13 fKill
+H   132.03 CH t=126.7 EV ev=13 fault=kill target=seatd rec=6.15 ok=1 fixed=0 
+H   135.03 CH t=129.8 STEP 14 fKill
+H   138.14 CH t=132.9 EV ev=14 fault=kill target=udevd rec=2.90 ok=1 fixed=0 
+H   141.15 CH t=135.9 STEP 15 fKill
+H   142.63 CH t=137.3 EV ev=15 fault=kill target=dbus rec=1.28 ok=1 fixed=0 
+H   145.63 CH t=140.4 STEP 16 fKill
+H   151.54 CH t=146.3 EV ev=16 fault=kill target=driftwm rec=5.69 ok=1 fixed=0 
+H   154.54 CH t=149.3 STEP 17 fKill
+H   157.47 CH t=152.2 EV ev=17 fault=kill target=waybar rec=2.72 ok=1 fixed=0 
+H   160.47 CH t=155.2 STEP 18 fKill
+H   163.43 CH t=158.1 EV ev=18 fault=kill target=hubd rec=2.74 ok=1 fixed=0 
+H   166.43 CH t=161.2 STEP 19 fHang
+H   186.86 CH t=181.6 EV ev=19 fault=hang-stop target=driftwm rec=20.22 ok=1 fixed=0 
+H   189.86 CH t=184.6 STEP 20 fHang
+H   190.15 CH t=184.9 EV ev=20 fault=hang-spin target=driftwm rec=0.08 ok=1 fixed=0 
+H   193.15 CH t=187.9 STEP 21 fHang
+H   212.76 CH t=207.5 EV ev=21 fault=hang-stop target=driftwm rec=19.40 ok=1 fixed=0 
+H   215.77 CH t=210.5 STEP 22 fHang
+H   236.29 CH t=231.0 EV ev=22 fault=hang-spin target=driftwm rec=20.31 ok=1 fixed=0 
+H   239.29 CH t=234.0 STEP 23 fHang
+H   259.61 CH t=254.3 EV ev=23 fault=hang-stop target=driftwm rec=20.11 ok=1 fixed=0 
+H   262.61 CH t=257.3 STEP 24 fHang
+H   262.93 CH t=257.6 EV ev=24 fault=hang-spin target=driftwm rec=0.10 ok=1 fixed=0 
+H   265.93 CH t=260.6 STEP 25 fStorm
+H   306.07 CH t=300.8 STATUS Runlevel: sysinit
+H   306.07 CH t=300.8 STATUS Runlevel: default
+H   306.07 CH t=300.8 STATUS  dbus                                                  [  started 00:02:43 (1) ]
+H   306.08 CH t=300.8 STATUS  seatd                                                 [  started 00:02:59 (1) ]
+H   306.08 CH t=300.8 STATUS  udevd                                                 [  started 00:02:49 (1) ]
+H   306.08 CH t=300.8 STATUS  driftwm                                               [  started 00:00:51 (0) ]
+H   306.08 CH t=300.8 STATUS  waybar                                                [  started 00:00:47 (2) ]
+H   306.08 CH t=300.8 STATUS  hubd                                                  [  started 00:00:01 (3) ]
+H   306.09 CH t=300.8 STATUS Runlevel: boot
+H   306.09 CH t=300.8 STATUS Dynamic Runlevel: hotplugged
+H   306.09 CH t=300.8 STATUS Dynamic Runlevel: needed/wanted
+H   306.09 CH t=300.8 STATUS Dynamic Runlevel: manual
+H   306.09 CH t=300.8 STORM target=hubd dur=40 starts=16 starts_last10s=5 cpu_ticks_init_side=1 bar-up
+H   309.38 CH t=304.1 EV ev=25 fault=storm target=hubd rec=3.08 ok=1 fixed=0 starts=16 last10=5 cpu=1 bar-up
+H   312.38 CH t=307.1 STEP 26 fStorm
+H   352.52 CH t=347.2 STATUS Runlevel: sysinit
+H   352.52 CH t=347.2 STATUS Runlevel: default
+H   352.53 CH t=347.2 STATUS  dbus                                                  [  started 00:03:30 (1) ]
+H   352.53 CH t=347.2 STATUS  seatd                                                 [  started 00:03:46 (1) ]
+H   352.53 CH t=347.3 STATUS  udevd                                                 [  started 00:03:36 (1) ]
+H   352.54 CH t=347.3 STATUS  driftwm                                               [  started 00:00:02 (4) ]
+H   352.54 CH t=347.3 STATUS  waybar                                                [  started 00:00:02 (1) ]
+H   352.54 CH t=347.3 STATUS  hubd                                                  [  started 00:00:02 (2) ]
+H   352.54 CH t=347.3 STATUS Runlevel: boot
+H   352.55 CH t=347.3 STATUS Dynamic Runlevel: hotplugged
+H   352.55 CH t=347.3 STATUS Dynamic Runlevel: needed/wanted
+H   352.55 CH t=347.3 STATUS Dynamic Runlevel: manual
+H   352.55 CH t=347.3 STORM target=driftwm dur=40 starts=20 starts_last10s=5 cpu_ticks_init_side=4 bar-down
+H   357.97 CH t=352.7 EV ev=26 fault=storm target=driftwm rec=5.21 ok=1 fixed=0 starts=20 last10=5 cpu=4 bar-down
+H   360.97 CH t=355.7 STEP 27 fDep
+H   382.64 CH t=377.4 EV ev=27 fault=dep-slow target=seatd rec=21.46 ok=1 fixed=0 
+H   382.65 CH t=377.4 DEPSTARTS mode=slow seatd=1 driftwm=9 waybar=6 hubd=1
+H   385.65 CH t=380.4 STEP 28 fDep
+H   412.00 CH t=406.7 EV ev=28 fault=dep-fail target=seatd rec=6.13 ok=1 fixed=0 
+H   412.00 CH t=406.7 DEPSTARTS mode=fail seatd=13 driftwm=11 waybar=7 hubd=2
+H   415.01 CH t=409.7 STEP 29 fDisk
+H   415.04 CH t=409.8 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   435.45 CH t=430.2 STATUS Runlevel: sysinit
+H   435.45 CH t=430.2 STATUS Runlevel: default
+H   435.45 CH t=430.2 STATUS  dbus                                                  [  started 00:04:53 (1) ]
+H   435.45 CH t=430.2 STATUS  seatd                                                 [  started 00:00:30 (4) ]
+H   435.45 CH t=430.2 STATUS  udevd                                                 [  started 00:04:59 (1) ]
+H   435.46 CH t=430.2 STATUS  driftwm                                               [  started 00:00:29 (3) ]
+H   435.46 CH t=430.2 STATUS  waybar                                                [  started 00:00:14 (0) ]
+H   435.46 CH t=430.2 STATUS  hubd                                                  [  started 00:00:27 (1) ]
+H   435.46 CH t=430.2 STATUS Runlevel: boot
+H   435.46 CH t=430.2 STATUS Dynamic Runlevel: hotplugged
+H   435.46 CH t=430.2 STATUS Dynamic Runlevel: needed/wanted
+H   435.46 CH t=430.2 STATUS Dynamic Runlevel: manual
+H   435.82 CH t=430.5 EV ev=29 fault=disk-full target=waybar rec=0.11 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H   438.82 CH t=433.5 STEP 30 fDisk
+H   438.86 CH t=433.6 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   459.18 CH t=453.9 STATUS Runlevel: sysinit
+H   459.18 CH t=453.9 STATUS Runlevel: default
+H   459.18 CH t=453.9 STATUS  dbus                                                  [  started 00:05:17 (1) ]
+H   459.18 CH t=453.9 STATUS  seatd                                                 [  started 00:00:54 (4) ]
+H   459.19 CH t=453.9 STATUS  udevd                                                 [  started 00:05:23 (1) ]
+H   459.19 CH t=453.9 STATUS  driftwm                                               [  started 00:00:53 (3) ]
+H   459.19 CH t=453.9 STATUS  waybar                                                [  started 00:00:14 (1) ]
+H   459.19 CH t=453.9 STATUS  hubd                                                  [  started 00:00:51 (1) ]
+H   459.19 CH t=453.9 STATUS Runlevel: boot
+H   459.19 CH t=453.9 STATUS Dynamic Runlevel: hotplugged
+H   459.19 CH t=453.9 STATUS Dynamic Runlevel: needed/wanted
+H   459.19 CH t=453.9 STATUS Dynamic Runlevel: manual
+H   459.56 CH t=454.3 EV ev=30 fault=disk-full target=waybar rec=0.11 ok=1 fixed=0 ok_during=16/19 all_alive_at_end=1
+H   462.56 CH t=457.3 STEP 31 fSupKill
+H   464.41 CH t=459.1 EV ev=31 fault=supervisor-killed target=driftwm rec=0.11 ok=1 fixed=0 child_kept_running=1
+H   526.69 CH t=521.4 UNRECOVERED ev=32 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H   526.81 CH t=521.5 STATUS Runlevel: sysinit
+H   526.81 CH t=521.5 STATUS Runlevel: default
+H   526.81 CH t=521.5 STATUS  dbus                                                  [  started 00:06:24 (1) ]
+H   526.81 CH t=521.5 STATUS  seatd                                                 [  started 00:02:01 (4) ]
+H   526.81 CH t=521.5 STATUS  udevd                                                 [  started 00:06:30 (1) ]
+H   526.81 CH t=521.5 STATUS  driftwm                                                      [  unsupervised  ]
+H   526.82 CH t=521.5 STATUS  waybar                                                [  started 00:00:59 (0) ]
+H   526.82 CH t=521.5 STATUS  hubd                                                  [  started 00:00:59 (0) ]
+H   526.82 CH t=521.5 STATUS Runlevel: boot
+H   526.82 CH t=521.5 STATUS Dynamic Runlevel: hotplugged
+H   526.82 CH t=521.5 STATUS Dynamic Runlevel: needed/wanted
+H   526.82 CH t=521.5 STATUS Dynamic Runlevel: manual
+H   526.87 CH t=521.6 operator-action target=driftwm why="driftwm not running"
+H   527.50  [1m[32m*[m Stopping waybar[K ...
+H   527.52  [1m[32m*[m Stopping hubd[K ...
+H   527.70  [ ok ]
+H   527.72  [ ok ]
+H   528.07  [1m[32m*[m Stopping driftwm[K ...
+H   528.20  [ ok ]
+H   528.43  [1m[32m*[m Starting driftwm[K ...
+H   530.48  [ ok ]
+H   530.88  [1m[32m*[m Starting waybar[K ...
+H   531.12  [1m[32m*[m Starting hubd[K ...
+H   532.70  [ ok ]
+H   532.94  [ ok ]
+H   533.31 CH t=528.0 EV ev=32 fault=after-supervisor-killed target=driftwm rec=62.36 ok=0 fixed=1 supervisor_back=1
+H   536.31 CH t=531.0 STEP 32 fSupKill
+H   538.22 CH t=532.9 EV ev=33 fault=supervisor-killed target=waybar rec=0.13 ok=1 fixed=0 child_kept_running=1
+H   600.35 CH t=595.1 UNRECOVERED ev=34 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H   600.46 CH t=595.2 STATUS Runlevel: sysinit
+H   600.46 CH t=595.2 STATUS Runlevel: default
+H   600.47 CH t=595.2 STATUS  dbus                                                  [  started 00:07:38 (1) ]
+H   600.47 CH t=595.2 STATUS  seatd                                                 [  started 00:03:15 (4) ]
+H   600.47 CH t=595.2 STATUS  udevd                                                 [  started 00:07:44 (1) ]
+H   600.47 CH t=595.2 STATUS  driftwm                                               [  started 00:01:12 (0) ]
+H   600.47 CH t=595.2 STATUS  waybar                                                       [  unsupervised  ]
+H   600.48 CH t=595.2 STATUS  hubd                                                  [  started 00:01:09 (0) ]
+H   600.48 CH t=595.2 STATUS Runlevel: boot
+H   600.48 CH t=595.2 STATUS Dynamic Runlevel: hotplugged
+H   600.48 CH t=595.2 STATUS Dynamic Runlevel: needed/wanted
+H   600.48 CH t=595.2 STATUS Dynamic Runlevel: manual
+H   600.53 CH t=595.2 operator-action target=waybar why="waybar not running"
+H   600.96  [1m[32m*[m Stopping waybar[K ...
+H   601.10  [ ok ]
+H   601.34  [1m[32m*[m Starting waybar[K ...
+H   603.05  [ ok ]
+H   603.47 CH t=598.2 EV ev=34 fault=after-supervisor-killed target=waybar rec=60.09 ok=0 fixed=1 supervisor_back=0
+H   606.48 CH t=601.2 STEP 33 fSupKill
+H   608.32 CH t=603.0 EV ev=35 fault=supervisor-killed target=driftwm rec=0.11 ok=1 fixed=0 child_kept_running=1
+H   670.43 CH t=665.2 UNRECOVERED ev=36 fault=after-supervisor-killed target=driftwm alert=0 why="waybar not running"
+H   670.54 CH t=665.3 STATUS Runlevel: sysinit
+H   670.54 CH t=665.3 STATUS Runlevel: default
+H   670.54 CH t=665.3 STATUS  dbus                                                  [  started 00:08:48 (1) ]
+H   670.54 CH t=665.3 STATUS  seatd                                                 [  started 00:04:25 (4) ]
+H   670.54 CH t=665.3 STATUS  udevd                                                 [  started 00:08:54 (1) ]
+H   670.55 CH t=665.3 STATUS  driftwm                                               [  started 00:00:59 (1) ]
+H   670.55 CH t=665.3 STATUS  waybar                                                       [  unsupervised  ]
+H   670.55 CH t=665.3 STATUS  hubd                                                  [  started 00:00:56 (2) ]
+H   670.55 CH t=665.3 STATUS Runlevel: boot
+H   670.55 CH t=665.3 STATUS Dynamic Runlevel: hotplugged
+H   670.55 CH t=665.3 STATUS Dynamic Runlevel: needed/wanted
+H   670.55 CH t=665.3 STATUS Dynamic Runlevel: manual
+H   670.60 CH t=665.3 operator-action target=driftwm why="waybar not running"
+H   671.55  [1m[32m*[m Stopping hubd[K ...
+H   671.57  [1m[32m*[m Stopping waybar[K ...
+H   671.74  [ ok ]
+H   671.78  [ ok ]
+H   672.12  [1m[32m*[m Stopping driftwm[K ...
+H   672.36  [ ok ]
+H   672.65  [1m[32m*[m Starting driftwm[K ...
+H   674.65  [ ok ]
+H   675.00  [1m[32m*[m Starting waybar[K ...
+H   675.16  [1m[32m*[m Starting hubd[K ...
+H   676.82  [ ok ]
+H   676.95  [ ok ]
+H   677.22 CH t=671.9 EV ev=36 fault=after-supervisor-killed target=driftwm rec=62.05 ok=0 fixed=1 supervisor_back=1
+H   680.22 CH t=674.9 STEP 34 fSupKill
+H   682.06 CH t=676.8 EV ev=37 fault=supervisor-killed target=waybar rec=0.13 ok=1 fixed=0 child_kept_running=1
+H   744.20 CH t=738.9 UNRECOVERED ev=38 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H   744.30 CH t=739.0 STATUS Runlevel: sysinit
+H   744.30 CH t=739.0 STATUS Runlevel: default
+H   744.30 CH t=739.0 STATUS  dbus                                                  [  started 00:10:02 (1) ]
+H   744.31 CH t=739.0 STATUS  seatd                                                 [  started 00:05:39 (4) ]
+H   744.31 CH t=739.0 STATUS  udevd                                                 [  started 00:10:08 (1) ]
+H   744.31 CH t=739.0 STATUS  driftwm                                               [  started 00:01:12 (0) ]
+H   744.31 CH t=739.0 STATUS  waybar                                                       [  unsupervised  ]
+H   744.31 CH t=739.0 STATUS  hubd                                                  [  started 00:01:09 (0) ]
+H   744.31 CH t=739.0 STATUS Runlevel: boot
+H   744.32 CH t=739.0 STATUS Dynamic Runlevel: hotplugged
+H   744.32 CH t=739.0 STATUS Dynamic Runlevel: needed/wanted
+H   744.32 CH t=739.0 STATUS Dynamic Runlevel: manual
+H   744.36 CH t=739.1 operator-action target=waybar why="waybar not running"
+H   744.77  [1m[32m*[m Stopping waybar[K ...
+H   744.91  [ ok ]
+H   745.15  [1m[32m*[m Starting waybar[K ...
+H   746.87  [ ok ]
+H   747.56 CH t=742.3 EV ev=38 fault=after-supervisor-killed target=waybar rec=60.07 ok=0 fixed=1 supervisor_back=0
+H   750.57 CH t=745.3 STEP 35 fSupKill
+H   752.36 CH t=747.1 EV ev=39 fault=supervisor-killed target=driftwm rec=0.08 ok=1 fixed=0 child_kept_running=1
+H   814.62 CH t=809.3 UNRECOVERED ev=40 fault=after-supervisor-killed target=driftwm alert=0 why="driftwm not running"
+H   814.76 CH t=809.5 STATUS Runlevel: sysinit
+H   814.76 CH t=809.5 STATUS Runlevel: default
+H   814.77 CH t=809.5 STATUS  dbus                                                  [  started 00:11:12 (1) ]
+H   814.77 CH t=809.5 STATUS  seatd                                                 [  started 00:06:49 (4) ]
+H   814.77 CH t=809.5 STATUS  udevd                                                 [  started 00:11:18 (1) ]
+H   814.77 CH t=809.5 STATUS  driftwm                                                      [  unsupervised  ]
+H   814.78 CH t=809.5 STATUS  waybar                                                [  started 00:00:59 (1) ]
+H   814.78 CH t=809.5 STATUS  hubd                                                  [  started 00:00:58 (1) ]
+H   814.78 CH t=809.5 STATUS Runlevel: boot
+H   814.78 CH t=809.5 STATUS Dynamic Runlevel: hotplugged
+H   814.79 CH t=809.5 STATUS Dynamic Runlevel: needed/wanted
+H   814.79 CH t=809.5 STATUS Dynamic Runlevel: manual
+H   814.84 CH t=809.6 operator-action target=driftwm why="driftwm not running"
+H   815.43  [1m[32m*[m Stopping hubd[K ...
+H   815.46  [1m[32m*[m Stopping waybar[K ...
+H   815.68  [ ok ]
+H   815.68  [ ok ]
+H   815.99  [1m[32m*[m Stopping driftwm[K ...
+H   816.12  [ ok ]
+H   816.34  [1m[32m*[m Starting driftwm[K ...
+H   818.34  [ ok ]
+H   818.75  [1m[32m*[m Starting waybar[K ...
+H   818.84  [1m[32m*[m Starting hubd[K ...
+H   820.55  [ ok ]
+H   820.77  [ ok ]
+H   821.01 CH t=815.7 EV ev=40 fault=after-supervisor-killed target=driftwm rec=62.22 ok=0 fixed=1 supervisor_back=1
+H   824.01 CH t=818.7 STEP 36 fSupKill
+H   825.81 CH t=820.5 EV ev=41 fault=supervisor-killed target=waybar rec=0.08 ok=1 fixed=0 child_kept_running=1
+H   887.96 CH t=882.7 UNRECOVERED ev=42 fault=after-supervisor-killed target=waybar alert=0 why="waybar not running"
+H   888.07 CH t=882.8 STATUS Runlevel: sysinit
+H   888.08 CH t=882.8 STATUS Runlevel: default
+H   888.08 CH t=882.8 STATUS  dbus                                                  [  started 00:12:25 (1) ]
+H   888.08 CH t=882.8 STATUS  seatd                                                 [  started 00:08:02 (4) ]
+H   888.08 CH t=882.8 STATUS  udevd                                                 [  started 00:12:31 (1) ]
+H   888.08 CH t=882.8 STATUS  driftwm                                               [  started 00:01:11 (0) ]
+H   888.08 CH t=882.8 STATUS  waybar                                                       [  unsupervised  ]
+H   888.08 CH t=882.8 STATUS  hubd                                                  [  started 00:01:09 (0) ]
+H   888.08 CH t=882.8 STATUS Runlevel: boot
+H   888.08 CH t=882.8 STATUS Dynamic Runlevel: hotplugged
+H   888.08 CH t=882.8 STATUS Dynamic Runlevel: needed/wanted
+H   888.08 CH t=882.8 STATUS Dynamic Runlevel: manual
+H   888.13 CH t=882.8 operator-action target=waybar why="waybar not running"
+H   888.57  [1m[32m*[m Stopping waybar[K ...
+H   888.71  [ ok ]
+H   888.95  [1m[32m*[m Starting waybar[K ...
+H   890.67  [ ok ]
+H   891.17 CH t=885.9 EV ev=42 fault=after-supervisor-killed target=waybar rec=60.13 ok=0 fixed=1 supervisor_back=0
+H   894.17 CH t=888.9 STEP 37 fScanKill
+H   897.17 CH t=891.9 STEP 38 fBrainKill
+H   900.17 CH t=894.9 STEP 39 fBrainKill
+H   903.18 CH t=897.9 STEP 40 fClock
+H   909.17 CH t=903.9 EV ev=43 fault=clock-3600 target=driftwm rec=5.78 ok=1 fixed=0 
+H   913.41 CH t=908.1 EV ev=44 fault=after-clock-3600 target=hubd rec=3.04 ok=1 fixed=0 
+H   916.42 CH t=911.1 STEP 41 fClock
+H   922.67 CH t=917.4 EV ev=45 fault=clock+86400 target=driftwm rec=6.05 ok=1 fixed=0 
+H   926.87 CH t=921.6 EV ev=46 fault=after-clock+86400 target=hubd rec=2.99 ok=1 fixed=0 
+H   929.87 CH t=924.6 STEP 42 fOOM
+H   929.97 CH t=924.7 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H   938.44 CH t=933.2 EV ev=47 fault=oom target=hog rec=0.10 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   941.44 CH t=936.2 STEP 43 fOOM
+H   941.49 CH t=936.2 OOMSCORE driftwm=-900 hubd=-900 waybar=-1000
+H   946.48 CH t=941.2 EV ev=48 fault=oom target=hog rec=0.08 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   946.48 CH t=941.2 SUITE-DONE
+H   948.49 [  946.832780] reboot: Power down
+H# vm exit code 0 after 949s, loadavg ['0.65', '0.56', '0.55']
+H# end wall=948.5s launches=1 suite_done=True

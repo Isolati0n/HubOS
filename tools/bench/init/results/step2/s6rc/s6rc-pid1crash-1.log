@@ -1,0 +1,54 @@
+H# start 2026-10-10 17:10:39 cand=s6rc suite=pid1crash cpus_seen=4 loadavg_at_start=['0.17', '0.38', '0.47']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     9.01 c[?7l[2JCH STAGE1 up=7.01
+H     9.08 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     9.12 CH SUP-START up=7.12
+H     9.26 CH t=0.1 CHAOS start cand=s6rc suite=pid1crash seed=111 cpus=2
+H    15.01 CH S6RC-UP up=13.01
+H    15.39 CH t=6.2 BOOT-OK up=13.39 ok=1 (seconds since kernel start; waited 5.9)
+H    15.46 CH t=6.3 SAMPLE zombies=0 nproc=97 init_side_fds=126 init_side_rss_kb=13332 memavail_kb=634792 init_side_cpu_ticks=241
+H    20.39 CH t=11.2 INJECT pid1-segv
+H    20.44 [   18.485141] s6-svscan[1]: segfault at fffffffffffffffe ip fffffffffffffffe sp 00007ffc6b1c9cf0 error 15 likely on CPU 1 (core 1, socket 0)
+H    20.44 [   18.487889] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    20.45 [   18.491010] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
+H    20.45 [   18.491070] CPU: 1 PID: 1 Comm: s6-svscan Not tainted 6.8.0-146-generic #146-Ubuntu
+H    20.45 [   18.491070] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+H    20.45 [   18.491070] Call Trace:
+H    20.45 [   18.491070]  <TASK>
+H    20.45 [   18.491070]  dump_stack_lvl+0x27/0xa0
+H    20.45 [   18.491070]  dump_stack+0x10/0x20
+H    20.45 [   18.491070]  panic+0x366/0x3c0
+H    20.45 [   18.491070]  do_exit+0x513/0x530
+H    20.45 [   18.491070]  do_group_exit+0x35/0x90
+H    20.45 [   18.491070]  get_signal+0x96e/0x9b0
+H    20.45 [   18.491070]  ? pick_next_task+0x5b/0xbd0
+H    20.45 [   18.491070]  ? force_sig_info_to_task+0x128/0x1c0
+H    20.45 [   18.491070]  arch_do_signal_or_restart+0x42/0x210
+H    20.45 [   18.491070]  irqentry_exit_to_user_mode+0x154/0x1e0
+H    20.45 [   18.491070]  irqentry_exit+0x43/0x50
+H    20.45 [   18.491070]  exc_page_fault+0x94/0x1b0
+H    20.45 [   18.491070]  asm_exc_page_fault+0x27/0x30
+H    20.46 [   18.491070] RIP: 0033:0xfffffffffffffffe
+H    20.46 [   18.491070] Code: Unable to access opcode bytes at 0xffffffffffffffd4.
+H    20.46 [   18.491070] RSP: 002b:00007ffc6b1c9cf0 EFLAGS: 00000202
+H    20.46 [   18.491070] RAX: 000000000000010f RBX: 00007ffc6b21ef10 RCX: 00000000004267ed
+H    20.46 [   18.491070] RDX: 00007ffc6b1c9d10 RSI: 0000000000000002 RDI: 00007ffc6b21ef10
+H    20.46 [   18.491070] RBP: 00007ffc6b1c9d40 R08: 0000000000000008 R09: 000000000040d440
+H    20.46 [   18.491070] R10: 0000000000000000 R11: 0000000000000202 R12: 0000000000000002
+H    20.46 [   18.491070] R13: 00007ffc6b1c9d10 R14: 00007ffc6b1c9d50 R15: 00007ffc6b1c9d60
+H    20.46 [   18.491070]  </TASK>
+H    20.46 [   18.491070] Kernel Offset: 0xa000000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+H    20.46 [   18.491070] Rebooting in 5 seconds..
+H    25.51 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    25.53 Booting from ROM...
+H    33.64 c[?7l[2JCH STAGE1 up=5.90
+H    33.69 CH CAND s6rc pid1=s6-svscan + s6-rc
+H    33.73 CH SUP-START up=6.00
+H    33.88 CH t=0.1 CHAOS start cand=s6rc suite=pid1crash seed=111 cpus=2
+H    39.63 CH S6RC-UP up=11.90
+H    40.05 CH t=6.2 BOOT-OK up=12.31 ok=1 (seconds since kernel start; waited 6.0)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 40s, loadavg ['0.47', '0.42', '0.48']
+H# end wall=40.1s launches=1 suite_done=True

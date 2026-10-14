@@ -1,0 +1,6 @@
+== tools/bench/init/results/step2/soak/runit-chunk1.log: 2 launch(es), first 600 s of each left out
+TOTAL          slope   -44.11 kB per 1000 restarts (std.err  65.66)  noise sd   23.7 kB  range 1720..1932 kB  samples 115  restarts covered 646
+runit          slope    +3.54 kB per 1000 restarts (std.err   2.45)  noise sd    1.2 kB  range 183..203 kB  samples 115  restarts covered 646
+runsv          slope   -34.71 kB per 1000 restarts (std.err  67.54)  noise sd   24.5 kB  range 1299..1524 kB  samples 115  restarts covered 646
+runsvdir       slope   -12.95 kB per 1000 restarts (std.err   3.42)  noise sd    2.1 kB  range 212..237 kB  samples 115  restarts covered 646
+STUCK states in chunk: 0; SOAK-END lines: 0; launches: 1

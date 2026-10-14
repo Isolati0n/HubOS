@@ -1,0 +1,465 @@
+H# start 2026-10-12 19:54:05 cand=runit-111np suite=lockprobe cpus_seen=4 loadavg_at_start=['0.61', '0.28', '0.31']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/2e3b9c9b-b0b5-530f-bfa6-7d159f7b6d14/scratchpad/ib/rf/runit-111np.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=lockprobe hub.dur=600 hub.seed=41 hub.reps=3 hub.skip=0 hub.trial=healthy hub.preflag= hub.cand=runit hub.sup=runsv hub.scan=runsvdir
+H     0.29 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.39 Booting from ROM...
+H     6.28 c[?7l[2JCH STAGE1 up=3.45
+H     6.34 CH CAND runit pid1=runit stage2=runsvdir
+H     6.40 CH SUP-START up=3.57
+H     6.47 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     6.48 - runit: enter stage: /etc/runit/1
+H     6.49 - runit: leave stage: /etc/runit/1
+H     6.50 - runit: enter stage: /etc/runit/2
+H     6.56 CH t=0.1 CHAOS start cand=runit suite=lockprobe seed=41 cpus=2
+H    13.02 CH t=6.5 BOOT-OK up=10.18 ok=1 (seconds since kernel start; waited 6.2)
+H    18.03 CH t=11.6 LOCKPROBE-STEP rep=1 svc=driftwm begin
+H    18.03 CH t=11.6 STEP 1 fSupKill
+H    18.08 CH t=11.6 LOCKPROBE svc=driftwm t=0.06 runsv=[113] svlogd=[132(S)] lock_holder=132 service=[133(S)]
+H    18.24 CH t=11.8 LOCKPROBE svc=driftwm t=0.22 runsv=[] svlogd=[132(S)] lock_holder=132 service=[133(S)]
+H    19.87 CH t=13.4 EV ev=1 fault=supervisor-killed target=driftwm rec=0.10 ok=1 fixed=0 child_kept_running=1
+H    22.13 CH t=15.7 LOCKPROBE svc=driftwm t=4.10 runsv=[] svlogd=[] lock_holder=- service=[]
+H    23.00 CH t=16.5 LOCKPROBE svc=driftwm t=4.98 runsv=[365] svlogd=[368(R)] lock_holder=368 service=[]
+H    23.21 CH t=16.7 LOCKPROBE svc=driftwm t=5.18 runsv=[365] svlogd=[368(S)] lock_holder=368 service=[369(S)]
+H    23.44 CH t=17.0 LOCKPROBE svc=driftwm t=5.41 runsv=[365] svlogd=[368(S)] lock_holder=368 service=[369(R)]
+H    23.96 CH t=17.5 LOCKPROBE svc=driftwm t=5.93 runsv=[365] svlogd=[368(S)] lock_holder=368 service=[369(S)]
+H    26.86 CH t=20.4 EV ev=2 fault=after-supervisor-killed target=driftwm rec=4.71 ok=1 fixed=0 supervisor_back=0
+H    29.87 CH t=23.4 LOCKPROBE-STEP rep=1 svc=driftwm end
+H    32.88 CH t=26.4 LOCKPROBE-STEP rep=1 svc=waybar begin
+H    32.88 CH t=26.4 STEP 2 fSupKill
+H    32.93 CH t=26.5 LOCKPROBE svc=waybar t=0.06 runsv=[112] svlogd=[116(S)] lock_holder=116 service=[420(S)]
+H    33.10 CH t=26.6 LOCKPROBE svc=waybar t=0.22 runsv=[] svlogd=[116(S)] lock_holder=116 service=[420(S)]
+H    34.86 CH t=28.4 EV ev=3 fault=supervisor-killed target=waybar rec=0.21 ok=1 fixed=0 child_kept_running=1
+H    37.13 CH t=30.7 LOCKPROBE svc=waybar t=4.25 runsv=[] svlogd=[] lock_holder=- service=[]
+H    38.03 CH t=31.6 LOCKPROBE svc=waybar t=5.15 runsv=[569] svlogd=[570(S)] lock_holder=570 service=[]
+H    39.17 CH t=32.7 LOCKPROBE svc=waybar t=6.29 runsv=[569] svlogd=[570(S)] lock_holder=570 service=[581(S)]
+H    39.48 CH t=33.0 EV ev=4 fault=after-supervisor-killed target=waybar rec=2.26 ok=1 fixed=0 supervisor_back=0
+H    42.60 CH t=36.1 LOCKPROBE-STEP rep=1 svc=waybar end
+H    45.61 CH t=39.1 LOCKPROBE-STEP rep=2 svc=driftwm begin
+H    45.61 CH t=39.1 STEP 3 fSupKill
+H    45.66 CH t=39.2 LOCKPROBE svc=driftwm t=0.05 runsv=[365] svlogd=[368(S)] lock_holder=368 service=[369(S)]
+H    45.80 CH t=39.3 LOCKPROBE svc=driftwm t=0.19 runsv=[] svlogd=[368(S)] lock_holder=368 service=[369(S)]
+H    47.53 CH t=41.1 EV ev=5 fault=supervisor-killed target=driftwm rec=0.15 ok=1 fixed=0 child_kept_running=1
+H    48.02 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H    48.02 svlogd: fatal: no functional log directories.
+H    48.08 CH t=41.6 LOCKPROBE svc=driftwm t=2.47 runsv=[682] svlogd=[368(S)] lock_holder=368 service=[369(S) 684(R)]
+H    48.44 CH t=42.0 LOCKPROBE svc=driftwm t=2.82 runsv=[682] svlogd=[368(S)] lock_holder=368 service=[369(S) 684(S)]
+H    49.22 svlogd: warning: unable to lock directory: /var/log/driftwm: temporary failure
+H    49.22 svlogd: fatal: no functional log directories.
+H    49.22 CH t=42.7 LOCKPROBE svc=driftwm t=3.61 runsv=[682] svlogd=[368(S) 711(R)] lock_holder=368 service=[369(S) 684(R)]
+H    49.37 CH t=42.9 LOCKPROBE svc=driftwm t=3.76 runsv=[682] svlogd=[368(S)] lock_holder=368 service=[369(S) 684(R)]
+H    49.51 CH t=43.0 LOCKPROBE svc=driftwm t=3.90 runsv=[682] svlogd=[368(S)] lock_holder=368 service=[369(S) 684(Z)]
+H    49.73 CH t=43.3 LOCKPROBE svc=driftwm t=4.12 runsv=[682] svlogd=[368(S)] lock_holder=368 service=[369(Z) 684(Z)]
+H    49.87 CH t=43.4 LOCKPROBE svc=driftwm t=4.26 runsv=[682] svlogd=[] lock_holder=- service=[684(Z)]
+H    50.39 CH t=43.9 LOCKPROBE svc=driftwm t=4.78 runsv=[682] svlogd=[754(S)] lock_holder=754 service=[755(R)]
+H    50.56 CH t=44.1 LOCKPROBE svc=driftwm t=4.95 runsv=[682] svlogd=[754(S)] lock_holder=754 service=[755(S)]
+H    50.73 CH t=44.3 LOCKPROBE svc=driftwm t=5.12 runsv=[682] svlogd=[754(S)] lock_holder=754 service=[755(R)]
+H    51.06 CH t=44.6 LOCKPROBE svc=driftwm t=5.45 runsv=[682] svlogd=[754(S)] lock_holder=754 service=[755(S)]
+H    54.69 CH t=48.2 EV ev=6 fault=after-supervisor-killed target=driftwm rec=4.87 ok=1 fixed=0 supervisor_back=1
+H    57.70 CH t=51.2 LOCKPROBE-STEP rep=2 svc=driftwm end
+H    60.70 CH t=54.2 LOCKPROBE-STEP rep=2 svc=waybar begin
+H    60.70 CH t=54.2 STEP 4 fSupKill
+H    60.79 CH t=54.3 LOCKPROBE svc=waybar t=0.08 runsv=[569] svlogd=[570(S)] lock_holder=570 service=[826(S)]
+H    60.93 CH t=54.5 LOCKPROBE svc=waybar t=0.23 runsv=[] svlogd=[570(S)] lock_holder=570 service=[826(S)]
+H    62.78 CH t=56.3 EV ev=7 fault=supervisor-killed target=waybar rec=0.25 ok=1 fixed=0 child_kept_running=1
+H    63.07 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H    63.07 svlogd: fatal: no functional log directories.
+H    63.13 CH t=56.7 LOCKPROBE svc=waybar t=2.42 runsv=[926] svlogd=[570(S)] lock_holder=570 service=[826(S)]
+H    64.15 svlogd: warning: unable to lock directory: /var/log/waybar: temporary failure
+H    64.16 svlogd: fatal: no functional log directories.
+H    64.99 CH t=58.5 LOCKPROBE svc=waybar t=4.29 runsv=[926] svlogd=[] lock_holder=- service=[]
+H    65.31 CH t=58.8 LOCKPROBE svc=waybar t=4.61 runsv=[926] svlogd=[956(S)] lock_holder=956 service=[]
+H    66.47 CH t=60.0 LOCKPROBE svc=waybar t=5.76 runsv=[926] svlogd=[956(S)] lock_holder=956 service=[976(S)]
+H    66.87 CH t=60.4 EV ev=8 fault=after-supervisor-killed target=waybar rec=1.79 ok=1 fixed=0 supervisor_back=1
+H    70.01 CH t=63.5 LOCKPROBE-STEP rep=2 svc=waybar end
+H    73.01 CH t=66.5 LOCKPROBE-STEP rep=3 svc=driftwm begin
+H    73.02 CH t=66.5 STEP 5 fSupKill
+H    73.13 CH t=66.7 LOCKPROBE svc=driftwm t=0.12 runsv=[682] svlogd=[754(S)] lock_holder=754 service=[755(S)]
+H    73.27 CH t=66.8 LOCKPROBE svc=driftwm t=0.26 runsv=[] svlogd=[754(S)] lock_holder=754 service=[755(S)]
+H    75.24 CH t=68.8 EV ev=9 fault=supervisor-killed target=driftwm rec=0.30 ok=1 fixed=0 child_kept_running=1
+H    77.53 CH t=71.1 LOCKPROBE svc=driftwm t=4.51 runsv=[] svlogd=[] lock_holder=- service=[]
+H    78.15 CH t=71.7 LOCKPROBE svc=driftwm t=5.13 runsv=[1110] svlogd=[] lock_holder=- service=[]
+H    78.29 CH t=71.8 LOCKPROBE svc=driftwm t=5.28 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(R)]
+H    78.44 CH t=72.0 LOCKPROBE svc=driftwm t=5.43 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(S)]
+H    78.78 CH t=72.3 LOCKPROBE svc=driftwm t=5.76 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(R)]
+H    78.94 CH t=72.5 LOCKPROBE svc=driftwm t=5.93 runsv=[1110] svlogd=[1113(R)] lock_holder=1113 service=[1114(S)]
+H    79.08 CH t=72.6 LOCKPROBE svc=driftwm t=6.07 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(S)]
+H    80.44 CH t=74.0 LOCKPROBE svc=driftwm t=7.42 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(R)]
+H    80.60 CH t=74.1 LOCKPROBE svc=driftwm t=7.59 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(S)]
+H    82.04 CH t=75.6 LOCKPROBE svc=driftwm t=9.02 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(R)]
+H    82.18 CH t=75.7 LOCKPROBE svc=driftwm t=9.16 runsv=[1110] svlogd=[1113(S)] lock_holder=1113 service=[1114(S)]
+H    82.24 CH t=75.8 EV ev=10 fault=after-supervisor-killed target=driftwm rec=4.72 ok=1 fixed=0 supervisor_back=0
+H    85.27 CH t=78.8 LOCKPROBE-STEP rep=3 svc=driftwm end
+H    88.28 CH t=81.8 LOCKPROBE-STEP rep=3 svc=waybar begin
+H    88.28 CH t=81.8 STEP 6 fSupKill
+H    88.38 CH t=81.9 LOCKPROBE svc=waybar t=0.10 runsv=[] svlogd=[956(S)] lock_holder=956 service=[1182(S)]
+H    90.17 CH t=83.7 EV ev=11 fault=supervisor-killed target=waybar rec=0.09 ok=1 fixed=0 child_kept_running=1
+H    92.33 CH t=85.9 LOCKPROBE svc=waybar t=4.05 runsv=[] svlogd=[] lock_holder=- service=[]
+H    93.27 CH t=86.8 LOCKPROBE svc=waybar t=5.00 runsv=[1308] svlogd=[1309(R)] lock_holder=- service=[]
+H    93.44 CH t=87.0 LOCKPROBE svc=waybar t=5.16 runsv=[1308] svlogd=[1309(S)] lock_holder=1309 service=[]
+H    94.41 CH t=87.9 LOCKPROBE svc=waybar t=6.13 runsv=[1308] svlogd=[1309(S)] lock_holder=1309 service=[1320(R)]
+H    94.55 CH t=88.1 LOCKPROBE svc=waybar t=6.27 runsv=[1308] svlogd=[1309(S)] lock_holder=1309 service=[1320(S)]
+H    94.86 CH t=88.4 EV ev=12 fault=after-supervisor-killed target=waybar rec=2.43 ok=1 fixed=0 supervisor_back=0
+H    97.96 CH t=91.5 LOCKPROBE-STEP rep=3 svc=waybar end
+H   101.00 LOGDUMP driftwm config
+H   101.01 LOGDUMP driftwm current
+H   101.01 LOGDUMP driftwm lock
+H   101.01 LOGDUMP driftwm 2026-10-12_19:54:12.88577 driftwm: starting pid 133
+H   101.01 LOGDUMP driftwm 2026-10-12_19:54:13.99717 driftwm: heartbeat pid=133 seq=1
+H   101.02 LOGDUMP driftwm 2026-10-12_19:54:14.49681 driftwm: heartbeat pid=133 seq=2
+H   101.02 LOGDUMP driftwm 2026-10-12_19:54:14.99772 driftwm: heartbeat pid=133 seq=3
+H   101.02 LOGDUMP driftwm 2026-10-12_19:54:15.01503 driftwm: ready
+H   101.02 LOGDUMP driftwm 2026-10-12_19:54:15.49698 driftwm: heartbeat pid=133 seq=4
+H   101.03 LOGDUMP driftwm 2026-10-12_19:54:15.99719 driftwm: heartbeat pid=133 seq=5
+H   101.03 LOGDUMP driftwm 2026-10-12_19:54:16.50297 driftwm: heartbeat pid=133 seq=6
+H   101.03 LOGDUMP driftwm 2026-10-12_19:54:16.99663 driftwm: heartbeat pid=133 seq=7
+H   101.04 LOGDUMP driftwm 2026-10-12_19:54:17.49924 driftwm: heartbeat pid=133 seq=8
+H   101.04 LOGDUMP driftwm 2026-10-12_19:54:17.99674 driftwm: heartbeat pid=133 seq=9
+H   101.05 LOGDUMP driftwm 2026-10-12_19:54:18.51215 driftwm: heartbeat pid=133 seq=10
+H   101.05 LOGDUMP driftwm 2026-10-12_19:54:18.99670 driftwm: heartbeat pid=133 seq=11
+H   101.05 LOGDUMP driftwm 2026-10-12_19:54:19.49694 driftwm: heartbeat pid=133 seq=12
+H   101.06 LOGDUMP driftwm 2026-10-12_19:54:19.99731 driftwm: heartbeat pid=133 seq=13
+H   101.06 LOGDUMP driftwm 2026-10-12_19:54:20.49633 driftwm: heartbeat pid=133 seq=14
+H   101.06 LOGDUMP driftwm 2026-10-12_19:54:20.99682 driftwm: heartbeat pid=133 seq=15
+H   101.07 LOGDUMP driftwm 2026-10-12_19:54:21.49670 driftwm: heartbeat pid=133 seq=16
+H   101.07 LOGDUMP driftwm 2026-10-12_19:54:21.99717 driftwm: heartbeat pid=133 seq=17
+H   101.07 LOGDUMP driftwm 2026-10-12_19:54:22.49685 driftwm: heartbeat pid=133 seq=18
+H   101.08 LOGDUMP driftwm 2026-10-12_19:54:22.99687 driftwm: heartbeat pid=133 seq=19
+H   101.08 LOGDUMP driftwm 2026-10-12_19:54:23.49679 driftwm: heartbeat pid=133 seq=20
+H   101.08 LOGDUMP driftwm 2026-10-12_19:54:23.99684 driftwm: heartbeat pid=133 seq=21
+H   101.09 LOGDUMP driftwm 2026-10-12_19:54:24.49780 driftwm: heartbeat pid=133 seq=22
+H   101.09 LOGDUMP driftwm 2026-10-12_19:54:24.99676 driftwm: heartbeat pid=133 seq=23
+H   101.09 LOGDUMP driftwm 2026-10-12_19:54:25.49717 driftwm: heartbeat pid=133 seq=24
+H   101.10 LOGDUMP driftwm 2026-10-12_19:54:25.99616 driftwm: heartbeat pid=133 seq=25
+H   101.10 LOGDUMP driftwm 2026-10-12_19:54:28.16511 driftwm: starting pid 369
+H   101.10 LOGDUMP driftwm 2026-10-12_19:54:28.66702 driftwm: heartbeat pid=369 seq=1
+H   101.10 LOGDUMP driftwm 2026-10-12_19:54:29.16586 driftwm: heartbeat pid=369 seq=2
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:29.66797 driftwm: heartbeat pid=369 seq=3
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:29.68357 driftwm: ready
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:30.16611 driftwm: heartbeat pid=369 seq=4
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:30.66768 driftwm: heartbeat pid=369 seq=5
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:31.16891 driftwm: heartbeat pid=369 seq=6
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:31.66678 driftwm: heartbeat pid=369 seq=7
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:32.16696 driftwm: heartbeat pid=369 seq=8
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:32.66725 driftwm: heartbeat pid=369 seq=9
+H   101.11 LOGDUMP driftwm 2026-10-12_19:54:33.16688 driftwm: heartbeat pid=369 seq=10
+H   101.12 LOGDUMP driftwm 2026-10-12_19:54:33.66569 driftwm: heartbeat pid=369 seq=11
+H   101.12 LOGDUMP driftwm 2026-10-12_19:54:34.16673 driftwm: heartbeat pid=369 seq=12
+H   101.12 LOGDUMP driftwm 2026-10-12_19:54:34.66606 driftwm: heartbeat pid=369 seq=13
+H   101.12 LOGDUMP driftwm 2026-10-12_19:54:35.16715 driftwm: heartbeat pid=369 seq=14
+H   101.12 LOGDUMP driftwm 2026-10-12_19:54:35.66674 driftwm: heartbeat pid=369 seq=15
+H   101.13 LOGDUMP driftwm 2026-10-12_19:54:36.16711 driftwm: heartbeat pid=369 seq=16
+H   101.13 LOGDUMP driftwm 2026-10-12_19:54:36.66619 driftwm: heartbeat pid=369 seq=17
+H   101.13 LOGDUMP driftwm 2026-10-12_19:54:37.16633 driftwm: heartbeat pid=369 seq=18
+H   101.13 LOGDUMP driftwm 2026-10-12_19:54:37.66579 driftwm: heartbeat pid=369 seq=19
+H   101.14 LOGDUMP driftwm 2026-10-12_19:54:38.16557 driftwm: heartbeat pid=369 seq=20
+H   101.14 LOGDUMP driftwm 2026-10-12_19:54:38.66678 driftwm: heartbeat pid=369 seq=21
+H   101.14 LOGDUMP driftwm 2026-10-12_19:54:39.16725 driftwm: heartbeat pid=369 seq=22
+H   101.14 LOGDUMP driftwm 2026-10-12_19:54:39.66803 driftwm: heartbeat pid=369 seq=23
+H   101.15 LOGDUMP driftwm 2026-10-12_19:54:40.16673 driftwm: heartbeat pid=369 seq=24
+H   101.15 LOGDUMP driftwm 2026-10-12_19:54:40.66711 driftwm: heartbeat pid=369 seq=25
+H   101.15 LOGDUMP driftwm 2026-10-12_19:54:41.16671 driftwm: heartbeat pid=369 seq=26
+H   101.15 LOGDUMP driftwm 2026-10-12_19:54:41.66605 driftwm: heartbeat pid=369 seq=27
+H   101.15 LOGDUMP driftwm 2026-10-12_19:54:42.16867 driftwm: heartbeat pid=369 seq=28
+H   101.16 LOGDUMP driftwm 2026-10-12_19:54:42.66703 driftwm: heartbeat pid=369 seq=29
+H   101.16 LOGDUMP driftwm 2026-10-12_19:54:43.16712 driftwm: heartbeat pid=369 seq=30
+H   101.17 LOGDUMP driftwm 2026-10-12_19:54:43.66551 driftwm: heartbeat pid=369 seq=31
+H   101.17 LOGDUMP driftwm 2026-10-12_19:54:44.16631 driftwm: heartbeat pid=369 seq=32
+H   101.17 LOGDUMP driftwm 2026-10-12_19:54:44.66666 driftwm: heartbeat pid=369 seq=33
+H   101.17 LOGDUMP driftwm 2026-10-12_19:54:45.16783 driftwm: heartbeat pid=369 seq=34
+H   101.18 LOGDUMP driftwm 2026-10-12_19:54:45.66893 driftwm: heartbeat pid=369 seq=35
+H   101.18 LOGDUMP driftwm 2026-10-12_19:54:46.16864 driftwm: heartbeat pid=369 seq=36
+H   101.19 LOGDUMP driftwm 2026-10-12_19:54:46.66724 driftwm: heartbeat pid=369 seq=37
+H   101.19 LOGDUMP driftwm 2026-10-12_19:54:47.16622 driftwm: heartbeat pid=369 seq=38
+H   101.19 LOGDUMP driftwm 2026-10-12_19:54:47.66707 driftwm: heartbeat pid=369 seq=39
+H   101.19 LOGDUMP driftwm 2026-10-12_19:54:48.16779 driftwm: heartbeat pid=369 seq=40
+H   101.19 LOGDUMP driftwm 2026-10-12_19:54:48.66600 driftwm: heartbeat pid=369 seq=41
+H   101.19 LOGDUMP driftwm 2026-10-12_19:54:49.16679 driftwm: heartbeat pid=369 seq=42
+H   101.20 LOGDUMP driftwm 2026-10-12_19:54:49.66772 driftwm: heartbeat pid=369 seq=43
+H   101.20 LOGDUMP driftwm 2026-10-12_19:54:50.16675 driftwm: heartbeat pid=369 seq=44
+H   101.20 LOGDUMP driftwm 2026-10-12_19:54:50.66662 driftwm: heartbeat pid=369 seq=45
+H   101.20 LOGDUMP driftwm 2026-10-12_19:54:51.16683 driftwm: heartbeat pid=369 seq=46
+H   101.21 LOGDUMP driftwm 2026-10-12_19:54:51.67299 driftwm: heartbeat pid=369 seq=47
+H   101.21 LOGDUMP driftwm 2026-10-12_19:54:52.16676 driftwm: heartbeat pid=369 seq=48
+H   101.21 LOGDUMP driftwm 2026-10-12_19:54:52.67074 driftwm: heartbeat pid=369 seq=49
+H   101.21 LOGDUMP driftwm 2026-10-12_19:54:53.16803 driftwm: heartbeat pid=369 seq=50
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:53.67932 driftwm: heartbeat pid=369 seq=51
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:54.71468 driftwm: already running, exiting
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:55.31125 driftwm: starting pid 755
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:55.81509 driftwm: heartbeat pid=755 seq=1
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:56.32592 driftwm: heartbeat pid=755 seq=2
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:56.81489 driftwm: heartbeat pid=755 seq=3
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:56.81784 driftwm: ready
+H   101.22 LOGDUMP driftwm 2026-10-12_19:54:57.31582 driftwm: heartbeat pid=755 seq=4
+H   101.23 LOGDUMP driftwm 2026-10-12_19:54:57.81680 driftwm: heartbeat pid=755 seq=5
+H   101.23 LOGDUMP driftwm 2026-10-12_19:54:58.31574 driftwm: heartbeat pid=755 seq=6
+H   101.23 LOGDUMP driftwm 2026-10-12_19:54:58.81504 driftwm: heartbeat pid=755 seq=7
+H   101.23 LOGDUMP driftwm 2026-10-12_19:54:59.31607 driftwm: heartbeat pid=755 seq=8
+H   101.23 LOGDUMP driftwm 2026-10-12_19:54:59.81787 driftwm: heartbeat pid=755 seq=9
+H   101.24 LOGDUMP driftwm 2026-10-12_19:55:00.31597 driftwm: heartbeat pid=755 seq=10
+H   101.24 LOGDUMP driftwm 2026-10-12_19:55:00.81607 driftwm: heartbeat pid=755 seq=11
+H   101.24 LOGDUMP driftwm 2026-10-12_19:55:01.31624 driftwm: heartbeat pid=755 seq=12
+H   101.24 LOGDUMP driftwm 2026-10-12_19:55:01.81702 driftwm: heartbeat pid=755 seq=13
+H   101.24 LOGDUMP driftwm 2026-10-12_19:55:02.31576 driftwm: heartbeat pid=755 seq=14
+H   101.25 LOGDUMP driftwm 2026-10-12_19:55:02.81490 driftwm: heartbeat pid=755 seq=15
+H   101.25 LOGDUMP driftwm 2026-10-12_19:55:03.31606 driftwm: heartbeat pid=755 seq=16
+H   101.25 LOGDUMP driftwm 2026-10-12_19:55:03.81575 driftwm: heartbeat pid=755 seq=17
+H   101.25 LOGDUMP driftwm 2026-10-12_19:55:04.31625 driftwm: heartbeat pid=755 seq=18
+H   101.25 LOGDUMP driftwm 2026-10-12_19:55:04.81485 driftwm: heartbeat pid=755 seq=19
+H   101.26 LOGDUMP driftwm 2026-10-12_19:55:05.31528 driftwm: heartbeat pid=755 seq=20
+H   101.26 LOGDUMP driftwm 2026-10-12_19:55:05.81621 driftwm: heartbeat pid=755 seq=21
+H   101.26 LOGDUMP driftwm 2026-10-12_19:55:06.31428 driftwm: heartbeat pid=755 seq=22
+H   101.26 LOGDUMP driftwm 2026-10-12_19:55:06.81928 driftwm: heartbeat pid=755 seq=23
+H   101.26 LOGDUMP driftwm 2026-10-12_19:55:07.31520 driftwm: heartbeat pid=755 seq=24
+H   101.26 LOGDUMP driftwm 2026-10-12_19:55:07.81486 driftwm: heartbeat pid=755 seq=25
+H   101.26 LOGDUMP driftwm 2026-10-12_19:55:08.31489 driftwm: heartbeat pid=755 seq=26
+H   101.27 LOGDUMP driftwm 2026-10-12_19:55:08.81507 driftwm: heartbeat pid=755 seq=27
+H   101.27 LOGDUMP driftwm 2026-10-12_19:55:09.31778 driftwm: heartbeat pid=755 seq=28
+H   101.27 LOGDUMP driftwm 2026-10-12_19:55:09.81777 driftwm: heartbeat pid=755 seq=29
+H   101.27 LOGDUMP driftwm 2026-10-12_19:55:10.31584 driftwm: heartbeat pid=755 seq=30
+H   101.27 LOGDUMP driftwm 2026-10-12_19:55:10.81710 driftwm: heartbeat pid=755 seq=31
+H   101.27 LOGDUMP driftwm 2026-10-12_19:55:11.31492 driftwm: heartbeat pid=755 seq=32
+H   101.28 LOGDUMP driftwm 2026-10-12_19:55:11.81598 driftwm: heartbeat pid=755 seq=33
+H   101.28 LOGDUMP driftwm 2026-10-12_19:55:12.31525 driftwm: heartbeat pid=755 seq=34
+H   101.28 LOGDUMP driftwm 2026-10-12_19:55:12.81563 driftwm: heartbeat pid=755 seq=35
+H   101.29 LOGDUMP driftwm 2026-10-12_19:55:13.31493 driftwm: heartbeat pid=755 seq=36
+H   101.29 LOGDUMP driftwm 2026-10-12_19:55:13.81773 driftwm: heartbeat pid=755 seq=37
+H   101.29 LOGDUMP driftwm 2026-10-12_19:55:14.31598 driftwm: heartbeat pid=755 seq=38
+H   101.29 LOGDUMP driftwm 2026-10-12_19:55:14.81563 driftwm: heartbeat pid=755 seq=39
+H   101.29 LOGDUMP driftwm 2026-10-12_19:55:15.31548 driftwm: heartbeat pid=755 seq=40
+H   101.30 LOGDUMP driftwm 2026-10-12_19:55:15.81495 driftwm: heartbeat pid=755 seq=41
+H   101.30 LOGDUMP driftwm 2026-10-12_19:55:16.31491 driftwm: heartbeat pid=755 seq=42
+H   101.30 LOGDUMP driftwm 2026-10-12_19:55:16.81483 driftwm: heartbeat pid=755 seq=43
+H   101.30 LOGDUMP driftwm 2026-10-12_19:55:17.31562 driftwm: heartbeat pid=755 seq=44
+H   101.30 LOGDUMP driftwm 2026-10-12_19:55:17.81538 driftwm: heartbeat pid=755 seq=45
+H   101.30 LOGDUMP driftwm 2026-10-12_19:55:18.31661 driftwm: heartbeat pid=755 seq=46
+H   101.31 LOGDUMP driftwm 2026-10-12_19:55:18.81536 driftwm: heartbeat pid=755 seq=47
+H   101.31 LOGDUMP driftwm 2026-10-12_19:55:19.31476 driftwm: heartbeat pid=755 seq=48
+H   101.31 LOGDUMP driftwm 2026-10-12_19:55:19.81490 driftwm: heartbeat pid=755 seq=49
+H   101.31 LOGDUMP driftwm 2026-10-12_19:55:20.31336 driftwm: heartbeat pid=755 seq=50
+H   101.32 LOGDUMP driftwm 2026-10-12_19:55:20.81492 driftwm: heartbeat pid=755 seq=51
+H   101.32 LOGDUMP driftwm 2026-10-12_19:55:21.31683 driftwm: heartbeat pid=755 seq=52
+H   101.32 LOGDUMP driftwm 2026-10-12_19:55:23.23722 driftwm: starting pid 1114
+H   101.32 LOGDUMP driftwm 2026-10-12_19:55:23.74074 driftwm: heartbeat pid=1114 seq=1
+H   101.33 LOGDUMP driftwm 2026-10-12_19:55:24.24035 driftwm: heartbeat pid=1114 seq=2
+H   101.33 LOGDUMP driftwm 2026-10-12_19:55:24.74163 driftwm: heartbeat pid=1114 seq=3
+H   101.33 LOGDUMP driftwm 2026-10-12_19:55:24.76126 driftwm: ready
+H   101.33 LOGDUMP driftwm 2026-10-12_19:55:25.24183 driftwm: heartbeat pid=1114 seq=4
+H   101.34 LOGDUMP driftwm 2026-10-12_19:55:25.74069 driftwm: heartbeat pid=1114 seq=5
+H   101.34 LOGDUMP driftwm 2026-10-12_19:55:26.24490 driftwm: heartbeat pid=1114 seq=6
+H   101.34 LOGDUMP driftwm 2026-10-12_19:55:26.74071 driftwm: heartbeat pid=1114 seq=7
+H   101.34 LOGDUMP driftwm 2026-10-12_19:55:27.24182 driftwm: heartbeat pid=1114 seq=8
+H   101.35 LOGDUMP driftwm 2026-10-12_19:55:27.74089 driftwm: heartbeat pid=1114 seq=9
+H   101.35 LOGDUMP driftwm 2026-10-12_19:55:28.24372 driftwm: heartbeat pid=1114 seq=10
+H   101.35 LOGDUMP driftwm 2026-10-12_19:55:28.74169 driftwm: heartbeat pid=1114 seq=11
+H   101.36 LOGDUMP driftwm 2026-10-12_19:55:29.24109 driftwm: heartbeat pid=1114 seq=12
+H   101.36 LOGDUMP driftwm 2026-10-12_19:55:29.74120 driftwm: heartbeat pid=1114 seq=13
+H   101.36 LOGDUMP driftwm 2026-10-12_19:55:30.24166 driftwm: heartbeat pid=1114 seq=14
+H   101.36 LOGDUMP driftwm 2026-10-12_19:55:30.74183 driftwm: heartbeat pid=1114 seq=15
+H   101.37 LOGDUMP driftwm 2026-10-12_19:55:31.24275 driftwm: heartbeat pid=1114 seq=16
+H   101.37 LOGDUMP driftwm 2026-10-12_19:55:31.74270 driftwm: heartbeat pid=1114 seq=17
+H   101.37 LOGDUMP driftwm 2026-10-12_19:55:32.24181 driftwm: heartbeat pid=1114 seq=18
+H   101.37 LOGDUMP driftwm 2026-10-12_19:55:32.74087 driftwm: heartbeat pid=1114 seq=19
+H   101.37 LOGDUMP driftwm 2026-10-12_19:55:33.24169 driftwm: heartbeat pid=1114 seq=20
+H   101.38 LOGDUMP driftwm 2026-10-12_19:55:33.74518 driftwm: heartbeat pid=1114 seq=21
+H   101.38 LOGDUMP driftwm 2026-10-12_19:55:34.24506 driftwm: heartbeat pid=1114 seq=22
+H   101.38 LOGDUMP driftwm 2026-10-12_19:55:34.74288 driftwm: heartbeat pid=1114 seq=23
+H   101.38 LOGDUMP driftwm 2026-10-12_19:55:35.24215 driftwm: heartbeat pid=1114 seq=24
+H   101.39 LOGDUMP driftwm 2026-10-12_19:55:35.74282 driftwm: heartbeat pid=1114 seq=25
+H   101.39 LOGDUMP driftwm 2026-10-12_19:55:36.24374 driftwm: heartbeat pid=1114 seq=26
+H   101.39 LOGDUMP driftwm 2026-10-12_19:55:36.74079 driftwm: heartbeat pid=1114 seq=27
+H   101.39 LOGDUMP driftwm 2026-10-12_19:55:37.24136 driftwm: heartbeat pid=1114 seq=28
+H   101.39 LOGDUMP driftwm 2026-10-12_19:55:37.74273 driftwm: heartbeat pid=1114 seq=29
+H   101.40 LOGDUMP driftwm 2026-10-12_19:55:38.24607 driftwm: heartbeat pid=1114 seq=30
+H   101.40 LOGDUMP driftwm 2026-10-12_19:55:38.75011 driftwm: heartbeat pid=1114 seq=31
+H   101.40 LOGDUMP driftwm 2026-10-12_19:55:39.24314 driftwm: heartbeat pid=1114 seq=32
+H   101.40 LOGDUMP driftwm 2026-10-12_19:55:39.74171 driftwm: heartbeat pid=1114 seq=33
+H   101.40 LOGDUMP driftwm 2026-10-12_19:55:40.24169 driftwm: heartbeat pid=1114 seq=34
+H   101.40 LOGDUMP driftwm 2026-10-12_19:55:40.74133 driftwm: heartbeat pid=1114 seq=35
+H   101.41 LOGDUMP driftwm 2026-10-12_19:55:41.24207 driftwm: heartbeat pid=1114 seq=36
+H   101.41 LOGDUMP driftwm 2026-10-12_19:55:41.74093 driftwm: heartbeat pid=1114 seq=37
+H   101.41 LOGDUMP driftwm 2026-10-12_19:55:42.24280 driftwm: heartbeat pid=1114 seq=38
+H   101.41 LOGDUMP driftwm 2026-10-12_19:55:42.74334 driftwm: heartbeat pid=1114 seq=39
+H   101.42 LOGDUMP driftwm 2026-10-12_19:55:43.24394 driftwm: heartbeat pid=1114 seq=40
+H   101.42 LOGDUMP driftwm 2026-10-12_19:55:43.74179 driftwm: heartbeat pid=1114 seq=41
+H   101.42 LOGDUMP driftwm 2026-10-12_19:55:44.24181 driftwm: heartbeat pid=1114 seq=42
+H   101.42 LOGDUMP driftwm 2026-10-12_19:55:44.74093 driftwm: heartbeat pid=1114 seq=43
+H   101.43 LOGDUMP driftwm 2026-10-12_19:55:45.24205 driftwm: heartbeat pid=1114 seq=44
+H   101.47 LOGDUMP waybar config
+H   101.47 LOGDUMP waybar current
+H   101.47 LOGDUMP waybar lock
+H   101.48 LOGDUMP waybar 2026-10-12_19:54:16.48820 waybar: starting pid 236
+H   101.48 LOGDUMP waybar 2026-10-12_19:54:17.02049 waybar: heartbeat pid=236 seq=1
+H   101.48 LOGDUMP waybar 2026-10-12_19:54:17.04117 waybar: ready
+H   101.48 LOGDUMP waybar 2026-10-12_19:54:17.51663 waybar: heartbeat pid=236 seq=2
+H   101.49 LOGDUMP waybar 2026-10-12_19:54:18.02200 waybar: heartbeat pid=236 seq=3
+H   101.49 LOGDUMP waybar 2026-10-12_19:54:18.51663 waybar: heartbeat pid=236 seq=4
+H   101.50 LOGDUMP waybar 2026-10-12_19:54:19.01684 waybar: heartbeat pid=236 seq=5
+H   101.50 LOGDUMP waybar 2026-10-12_19:54:19.51735 waybar: heartbeat pid=236 seq=6
+H   101.51 LOGDUMP waybar 2026-10-12_19:54:20.01794 waybar: heartbeat pid=236 seq=7
+H   101.51 LOGDUMP waybar 2026-10-12_19:54:20.51716 waybar: heartbeat pid=236 seq=8
+H   101.52 LOGDUMP waybar 2026-10-12_19:54:21.01551 waybar: heartbeat pid=236 seq=9
+H   101.52 LOGDUMP waybar 2026-10-12_19:54:21.51678 waybar: heartbeat pid=236 seq=10
+H   101.52 LOGDUMP waybar 2026-10-12_19:54:22.01414 waybar: heartbeat pid=236 seq=11
+H   101.53 LOGDUMP waybar 2026-10-12_19:54:22.51594 waybar: heartbeat pid=236 seq=12
+H   101.53 LOGDUMP waybar 2026-10-12_19:54:23.02202 waybar: heartbeat pid=236 seq=13
+H   101.53 LOGDUMP waybar 2026-10-12_19:54:23.51502 waybar: heartbeat pid=236 seq=14
+H   101.54 LOGDUMP waybar 2026-10-12_19:54:24.01582 waybar: heartbeat pid=236 seq=15
+H   101.54 LOGDUMP waybar 2026-10-12_19:54:24.51612 waybar: heartbeat pid=236 seq=16
+H   101.54 LOGDUMP waybar 2026-10-12_19:54:25.01485 waybar: heartbeat pid=236 seq=17
+H   101.55 LOGDUMP waybar 2026-10-12_19:54:25.51691 waybar: heartbeat pid=236 seq=18
+H   101.55 LOGDUMP waybar 2026-10-12_19:54:26.01789 waybar: heartbeat pid=236 seq=19
+H   101.55 LOGDUMP waybar 2026-10-12_19:54:26.37389 waybar: compositor connection lost, exiting
+H   101.55 LOGDUMP waybar 2026-10-12_19:54:26.38323 follow-driftwm: waybar ended
+H   101.56 LOGDUMP waybar 2026-10-12_19:54:28.77579 waybar: starting pid 388
+H   101.56 LOGDUMP waybar 2026-10-12_19:54:28.78562 waybar: no compositor: dial unix /run/dw/wayland-1: connect: connection refused
+H   101.56 LOGDUMP waybar 2026-10-12_19:54:28.79301 follow-driftwm: waybar ended
+H   101.57 LOGDUMP waybar 2026-10-12_19:54:30.01177 waybar: starting pid 420
+H   101.57 LOGDUMP waybar 2026-10-12_19:54:30.51259 waybar: heartbeat pid=420 seq=1
+H   101.57 LOGDUMP waybar 2026-10-12_19:54:30.53281 waybar: ready
+H   101.57 LOGDUMP waybar 2026-10-12_19:54:31.01307 waybar: heartbeat pid=420 seq=2
+H   101.58 LOGDUMP waybar 2026-10-12_19:54:31.50966 waybar: heartbeat pid=420 seq=3
+H   101.58 LOGDUMP waybar 2026-10-12_19:54:32.01083 waybar: heartbeat pid=420 seq=4
+H   101.58 LOGDUMP waybar 2026-10-12_19:54:32.51078 waybar: heartbeat pid=420 seq=5
+H   101.59 LOGDUMP waybar 2026-10-12_19:54:33.00974 waybar: heartbeat pid=420 seq=6
+H   101.59 LOGDUMP waybar 2026-10-12_19:54:33.51580 waybar: heartbeat pid=420 seq=7
+H   101.59 LOGDUMP waybar 2026-10-12_19:54:34.01128 waybar: heartbeat pid=420 seq=8
+H   101.60 LOGDUMP waybar 2026-10-12_19:54:34.51272 waybar: heartbeat pid=420 seq=9
+H   101.60 LOGDUMP waybar 2026-10-12_19:54:35.01161 waybar: heartbeat pid=420 seq=10
+H   101.60 LOGDUMP waybar 2026-10-12_19:54:35.50987 waybar: heartbeat pid=420 seq=11
+H   101.61 LOGDUMP waybar 2026-10-12_19:54:36.01023 waybar: heartbeat pid=420 seq=12
+H   101.61 LOGDUMP waybar 2026-10-12_19:54:36.51057 waybar: heartbeat pid=420 seq=13
+H   101.61 LOGDUMP waybar 2026-10-12_19:54:37.01041 waybar: heartbeat pid=420 seq=14
+H   101.62 LOGDUMP waybar 2026-10-12_19:54:37.51119 waybar: heartbeat pid=420 seq=15
+H   101.62 LOGDUMP waybar 2026-10-12_19:54:38.01009 waybar: heartbeat pid=420 seq=16
+H   101.62 LOGDUMP waybar 2026-10-12_19:54:38.50985 waybar: heartbeat pid=420 seq=17
+H   101.62 LOGDUMP waybar 2026-10-12_19:54:39.01019 waybar: heartbeat pid=420 seq=18
+H   101.63 LOGDUMP waybar 2026-10-12_19:54:39.51032 waybar: heartbeat pid=420 seq=19
+H   101.63 LOGDUMP waybar 2026-10-12_19:54:40.01014 waybar: heartbeat pid=420 seq=20
+H   101.63 LOGDUMP waybar 2026-10-12_19:54:40.51121 waybar: heartbeat pid=420 seq=21
+H   101.63 LOGDUMP waybar 2026-10-12_19:54:41.00959 waybar: heartbeat pid=420 seq=22
+H   101.64 LOGDUMP waybar 2026-10-12_19:54:41.39120 follow-driftwm: waybar ended
+H   101.64 LOGDUMP waybar 2026-10-12_19:54:43.41005 waybar: starting pid 581
+H   101.64 LOGDUMP waybar 2026-10-12_19:54:43.91600 waybar: heartbeat pid=581 seq=1
+H   101.64 LOGDUMP waybar 2026-10-12_19:54:43.92463 waybar: ready
+H   101.65 LOGDUMP waybar 2026-10-12_19:54:44.41577 waybar: heartbeat pid=581 seq=2
+H   101.65 LOGDUMP waybar 2026-10-12_19:54:44.91505 waybar: heartbeat pid=581 seq=3
+H   101.65 LOGDUMP waybar 2026-10-12_19:54:45.41573 waybar: heartbeat pid=581 seq=4
+H   101.65 LOGDUMP waybar 2026-10-12_19:54:45.91629 waybar: heartbeat pid=581 seq=5
+H   101.65 LOGDUMP waybar 2026-10-12_19:54:46.41701 waybar: heartbeat pid=581 seq=6
+H   101.66 LOGDUMP waybar 2026-10-12_19:54:46.91728 waybar: heartbeat pid=581 seq=7
+H   101.66 LOGDUMP waybar 2026-10-12_19:54:47.41670 waybar: heartbeat pid=581 seq=8
+H   101.66 LOGDUMP waybar 2026-10-12_19:54:47.91631 waybar: heartbeat pid=581 seq=9
+H   101.66 LOGDUMP waybar 2026-10-12_19:54:48.41993 waybar: heartbeat pid=581 seq=10
+H   101.66 LOGDUMP waybar 2026-10-12_19:54:48.91583 waybar: heartbeat pid=581 seq=11
+H   101.66 LOGDUMP waybar 2026-10-12_19:54:49.41689 waybar: heartbeat pid=581 seq=12
+H   101.67 LOGDUMP waybar 2026-10-12_19:54:49.91693 waybar: heartbeat pid=581 seq=13
+H   101.67 LOGDUMP waybar 2026-10-12_19:54:50.41481 waybar: heartbeat pid=581 seq=14
+H   101.67 LOGDUMP waybar 2026-10-12_19:54:50.91614 waybar: heartbeat pid=581 seq=15
+H   101.67 LOGDUMP waybar 2026-10-12_19:54:51.41704 waybar: heartbeat pid=581 seq=16
+H   101.67 LOGDUMP waybar 2026-10-12_19:54:51.92287 waybar: heartbeat pid=581 seq=17
+H   101.68 LOGDUMP waybar 2026-10-12_19:54:52.41799 waybar: heartbeat pid=581 seq=18
+H   101.68 LOGDUMP waybar 2026-10-12_19:54:52.92126 waybar: heartbeat pid=581 seq=19
+H   101.69 LOGDUMP waybar 2026-10-12_19:54:53.18106 follow-driftwm: driftwm went away or was replaced; stopping waybar
+H   101.69 LOGDUMP waybar 2026-10-12_19:54:54.45797 waybar: starting pid 733
+H   101.69 LOGDUMP waybar 2026-10-12_19:54:54.46421 waybar: no compositor: dial unix /run/dw/wayland-1: connect: connection refused
+H   101.69 LOGDUMP waybar 2026-10-12_19:54:54.51000 follow-driftwm: driftwm went away or was replaced; stopping waybar
+H   101.70 LOGDUMP waybar 2026-10-12_19:54:54.60916 /bin/follow-driftwm: line 23: can't open /proc/684/cmdline: no such file
+H   101.70 LOGDUMP waybar 2026-10-12_19:54:56.39478 waybar: starting pid 789
+H   101.70 LOGDUMP waybar 2026-10-12_19:54:56.39726 waybar: no compositor: dial unix /run/dw/wayland-1: connect: connection refused
+H   101.70 LOGDUMP waybar 2026-10-12_19:54:57.41486 follow-driftwm: waybar ended
+H   101.71 LOGDUMP waybar 2026-10-12_19:54:58.61913 waybar: starting pid 826
+H   101.71 LOGDUMP waybar 2026-10-12_19:54:59.11822 waybar: heartbeat pid=826 seq=1
+H   101.71 LOGDUMP waybar 2026-10-12_19:54:59.12267 waybar: ready
+H   101.71 LOGDUMP waybar 2026-10-12_19:54:59.61769 waybar: heartbeat pid=826 seq=2
+H   101.72 LOGDUMP waybar 2026-10-12_19:55:00.11789 waybar: heartbeat pid=826 seq=3
+H   101.72 LOGDUMP waybar 2026-10-12_19:55:00.61678 waybar: heartbeat pid=826 seq=4
+H   101.72 LOGDUMP waybar 2026-10-12_19:55:01.11832 waybar: heartbeat pid=826 seq=5
+H   101.72 LOGDUMP waybar 2026-10-12_19:55:01.61853 waybar: heartbeat pid=826 seq=6
+H   101.72 LOGDUMP waybar 2026-10-12_19:55:02.11867 waybar: heartbeat pid=826 seq=7
+H   101.72 LOGDUMP waybar 2026-10-12_19:55:02.61828 waybar: heartbeat pid=826 seq=8
+H   101.73 LOGDUMP waybar 2026-10-12_19:55:03.11867 waybar: heartbeat pid=826 seq=9
+H   101.73 LOGDUMP waybar 2026-10-12_19:55:03.61699 waybar: heartbeat pid=826 seq=10
+H   101.73 LOGDUMP waybar 2026-10-12_19:55:04.11764 waybar: heartbeat pid=826 seq=11
+H   101.73 LOGDUMP waybar 2026-10-12_19:55:04.61958 waybar: heartbeat pid=826 seq=12
+H   101.73 LOGDUMP waybar 2026-10-12_19:55:05.12114 waybar: heartbeat pid=826 seq=13
+H   101.73 LOGDUMP waybar 2026-10-12_19:55:05.61783 waybar: heartbeat pid=826 seq=14
+H   101.74 LOGDUMP waybar 2026-10-12_19:55:06.11811 waybar: heartbeat pid=826 seq=15
+H   101.74 LOGDUMP waybar 2026-10-12_19:55:06.61975 waybar: heartbeat pid=826 seq=16
+H   101.74 LOGDUMP waybar 2026-10-12_19:55:07.12175 waybar: heartbeat pid=826 seq=17
+H   101.74 LOGDUMP waybar 2026-10-12_19:55:07.61657 waybar: heartbeat pid=826 seq=18
+H   101.74 LOGDUMP waybar 2026-10-12_19:55:08.12026 waybar: heartbeat pid=826 seq=19
+H   101.75 LOGDUMP waybar 2026-10-12_19:55:08.61794 waybar: heartbeat pid=826 seq=20
+H   101.75 LOGDUMP waybar 2026-10-12_19:55:09.11883 waybar: heartbeat pid=826 seq=21
+H   101.75 LOGDUMP waybar 2026-10-12_19:55:09.24809 follow-driftwm: waybar ended
+H   101.75 LOGDUMP waybar 2026-10-12_19:55:09.65597 waybar: already running, exiting
+H   101.75 LOGDUMP waybar 2026-10-12_19:55:09.65997 follow-driftwm: waybar ended
+H   101.76 LOGDUMP waybar 2026-10-12_19:55:10.81098 waybar: starting pid 976
+H   101.76 LOGDUMP waybar 2026-10-12_19:55:11.30419 waybar: heartbeat pid=976 seq=1
+H   101.76 LOGDUMP waybar 2026-10-12_19:55:11.30603 waybar: ready
+H   101.76 LOGDUMP waybar 2026-10-12_19:55:11.80134 waybar: heartbeat pid=976 seq=2
+H   101.76 LOGDUMP waybar 2026-10-12_19:55:12.30172 waybar: heartbeat pid=976 seq=3
+H   101.76 LOGDUMP waybar 2026-10-12_19:55:12.80188 waybar: heartbeat pid=976 seq=4
+H   101.77 LOGDUMP waybar 2026-10-12_19:55:13.30614 waybar: heartbeat pid=976 seq=5
+H   101.77 LOGDUMP waybar 2026-10-12_19:55:13.80098 waybar: heartbeat pid=976 seq=6
+H   101.77 LOGDUMP waybar 2026-10-12_19:55:14.30372 waybar: heartbeat pid=976 seq=7
+H   101.77 LOGDUMP waybar 2026-10-12_19:55:14.80186 waybar: heartbeat pid=976 seq=8
+H   101.78 LOGDUMP waybar 2026-10-12_19:55:15.30201 waybar: heartbeat pid=976 seq=9
+H   101.78 LOGDUMP waybar 2026-10-12_19:55:15.80199 waybar: heartbeat pid=976 seq=10
+H   101.78 LOGDUMP waybar 2026-10-12_19:55:16.30407 waybar: heartbeat pid=976 seq=11
+H   101.78 LOGDUMP waybar 2026-10-12_19:55:16.80186 waybar: heartbeat pid=976 seq=12
+H   101.78 LOGDUMP waybar 2026-10-12_19:55:17.30272 waybar: heartbeat pid=976 seq=13
+H   101.79 LOGDUMP waybar 2026-10-12_19:55:17.80100 waybar: heartbeat pid=976 seq=14
+H   101.79 LOGDUMP waybar 2026-10-12_19:55:18.30216 waybar: heartbeat pid=976 seq=15
+H   101.79 LOGDUMP waybar 2026-10-12_19:55:18.81020 waybar: heartbeat pid=976 seq=16
+H   101.79 LOGDUMP waybar 2026-10-12_19:55:19.30233 waybar: heartbeat pid=976 seq=17
+H   101.80 LOGDUMP waybar 2026-10-12_19:55:19.80206 waybar: heartbeat pid=976 seq=18
+H   101.80 LOGDUMP waybar 2026-10-12_19:55:20.30380 waybar: heartbeat pid=976 seq=19
+H   101.80 LOGDUMP waybar 2026-10-12_19:55:20.80175 waybar: heartbeat pid=976 seq=20
+H   101.80 LOGDUMP waybar 2026-10-12_19:55:21.30195 waybar: heartbeat pid=976 seq=21
+H   101.80 LOGDUMP waybar 2026-10-12_19:55:21.77422 waybar: compositor connection lost, exiting
+H   101.80 LOGDUMP waybar 2026-10-12_19:55:21.78266 follow-driftwm: waybar ended
+H   101.81 LOGDUMP waybar 2026-10-12_19:55:24.12469 waybar: starting pid 1131
+H   101.81 LOGDUMP waybar 2026-10-12_19:55:24.13355 waybar: no compositor: dial unix /run/dw/wayland-1: connect: connection refused
+H   101.81 LOGDUMP waybar 2026-10-12_19:55:25.15869 follow-driftwm: waybar ended
+H   101.81 LOGDUMP waybar 2026-10-12_19:55:26.29913 waybar: starting pid 1182
+H   101.81 LOGDUMP waybar 2026-10-12_19:55:26.80898 waybar: heartbeat pid=1182 seq=1
+H   101.82 LOGDUMP waybar 2026-10-12_19:55:26.81624 waybar: ready
+H   101.82 LOGDUMP waybar 2026-10-12_19:55:27.30716 waybar: heartbeat pid=1182 seq=2
+H   101.82 LOGDUMP waybar 2026-10-12_19:55:27.80831 waybar: heartbeat pid=1182 seq=3
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:28.31133 waybar: heartbeat pid=1182 seq=4
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:28.80777 waybar: heartbeat pid=1182 seq=5
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:29.30757 waybar: heartbeat pid=1182 seq=6
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:29.80903 waybar: heartbeat pid=1182 seq=7
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:30.30795 waybar: heartbeat pid=1182 seq=8
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:30.80768 waybar: heartbeat pid=1182 seq=9
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:31.30794 waybar: heartbeat pid=1182 seq=10
+H   101.83 LOGDUMP waybar 2026-10-12_19:55:31.80711 waybar: heartbeat pid=1182 seq=11
+H   101.84 LOGDUMP waybar 2026-10-12_19:55:32.30802 waybar: heartbeat pid=1182 seq=12
+H   101.84 LOGDUMP waybar 2026-10-12_19:55:32.80791 waybar: heartbeat pid=1182 seq=13
+H   101.84 LOGDUMP waybar 2026-10-12_19:55:33.31326 waybar: heartbeat pid=1182 seq=14
+H   101.84 LOGDUMP waybar 2026-10-12_19:55:33.80799 waybar: heartbeat pid=1182 seq=15
+H   101.84 LOGDUMP waybar 2026-10-12_19:55:34.30803 waybar: heartbeat pid=1182 seq=16
+H   101.84 LOGDUMP waybar 2026-10-12_19:55:34.81378 waybar: heartbeat pid=1182 seq=17
+H   101.85 LOGDUMP waybar 2026-10-12_19:55:35.30692 waybar: heartbeat pid=1182 seq=18
+H   101.85 LOGDUMP waybar 2026-10-12_19:55:35.80884 waybar: heartbeat pid=1182 seq=19
+H   101.85 LOGDUMP waybar 2026-10-12_19:55:36.31113 waybar: heartbeat pid=1182 seq=20
+H   101.85 LOGDUMP waybar 2026-10-12_19:55:36.60774 follow-driftwm: waybar ended
+H   101.85 LOGDUMP waybar 2026-10-12_19:55:38.78629 waybar: starting pid 1320
+H   101.85 LOGDUMP waybar 2026-10-12_19:55:39.28692 waybar: heartbeat pid=1320 seq=1
+H   101.86 LOGDUMP waybar 2026-10-12_19:55:39.29904 waybar: ready
+H   101.86 LOGDUMP waybar 2026-10-12_19:55:39.78715 waybar: heartbeat pid=1320 seq=2
+H   101.86 LOGDUMP waybar 2026-10-12_19:55:40.28858 waybar: heartbeat pid=1320 seq=3
+H   101.86 LOGDUMP waybar 2026-10-12_19:55:40.78711 waybar: heartbeat pid=1320 seq=4
+H   101.86 LOGDUMP waybar 2026-10-12_19:55:41.28773 waybar: heartbeat pid=1320 seq=5
+H   101.87 LOGDUMP waybar 2026-10-12_19:55:41.78912 waybar: heartbeat pid=1320 seq=6
+H   101.87 LOGDUMP waybar 2026-10-12_19:55:42.28574 waybar: heartbeat pid=1320 seq=7
+H   101.87 LOGDUMP waybar 2026-10-12_19:55:42.78673 waybar: heartbeat pid=1320 seq=8
+H   101.87 LOGDUMP waybar 2026-10-12_19:55:43.28886 waybar: heartbeat pid=1320 seq=9
+H   101.87 LOGDUMP waybar 2026-10-12_19:55:43.78683 waybar: heartbeat pid=1320 seq=10
+H   101.88 LOGDUMP waybar 2026-10-12_19:55:44.28729 waybar: heartbeat pid=1320 seq=11
+H   101.88 LOGDUMP waybar 2026-10-12_19:55:44.78781 waybar: heartbeat pid=1320 seq=12
+H   101.88 LOGDUMP waybar 2026-10-12_19:55:45.28764 waybar: heartbeat pid=1320 seq=13
+H   101.89 LOGDUMP waybar 2026-10-12_19:55:45.80822 waybar: heartbeat pid=1320 seq=14
+H   101.89 CH t=95.4 SUITE-DONE
+H   103.91 [  101.133525] reboot: Power down
+H# vm exit code 0 after 104s, loadavg ['0.66', '0.39', '0.35']
+H# end wall=103.9s launches=1 suite_done=True

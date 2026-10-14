@@ -1,0 +1,32 @@
+H# start 2026-10-10 17:14:01 cand=s6rc suite=trial cpus_seen=4 loadavg_at_start=['0.48', '0.48', '0.50']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.17 Booting from ROM...
+H     7.86 c[?7l[2JCH STAGE1 up=6.07
+H     7.92 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     7.95 CH SUP-START up=6.17
+H     8.08 CH t=0.1 CHAOS start cand=s6rc suite=trial seed=131 cpus=2
+H    68.21 CH t=60.2 TRIAL ROLLBACK scenario=crash after=60s true_state="waybar not running" guard_still_feeding=true
+H    68.49 CH t=60.5 STATUS dbus-log: up (pid 174 pgid 174) 59 seconds
+H    68.49 CH t=60.5 STATUS dbus: up (pid 190 pgid 190) 59 seconds, ready 58 seconds
+H    68.49 CH t=60.5 STATUS driftwm-log: up (pid 175 pgid 175) 59 seconds
+H    68.50 CH t=60.5 STATUS driftwm: up (pid 1171 pgid 1171) 0 seconds, normally down
+H    68.50 CH t=60.5 STATUS guard-log: up (pid 164 pgid 164) 59 seconds
+H    68.50 CH t=60.5 STATUS guard: up (pid 191 pgid 191) 59 seconds
+H    68.50 CH t=60.5 STATUS hubd-log: up (pid 161 pgid 161) 59 seconds
+H    68.50 CH t=60.5 STATUS hubd: down (not started yet) 
+H    68.51 CH t=60.5 STATUS s6rc-fdholder: up (pid 135 pgid 135) 59 seconds, ready 59 seconds
+H    68.51 CH t=60.5 STATUS s6rc-oneshot-runner: down (not started yet) 
+H    68.51 CH t=60.5 STATUS seatd-log: up (pid 160 pgid 160) 59 seconds
+H    68.51 CH t=60.5 STATUS seatd: up (pid 186 pgid 186) 59 seconds, ready 59 seconds
+H    68.51 CH t=60.5 STATUS stage2: up (pid 107 pgid 107) 60 seconds
+H    68.51 CH t=60.5 STATUS udevd-log: up (pid 163 pgid 163) 59 seconds
+H    68.52 CH t=60.5 STATUS udevd: up (pid 189 pgid 189) 59 seconds, ready 57 seconds
+H    68.52 CH t=60.5 STATUS waybar-log: up (pid 156 pgid 156) 59 seconds
+H    68.52 CH t=60.5 STATUS waybar: down (not started yet)
+H    69.54 [   67.787956] reboot: Restarting system
+H    69.70 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    78.60 Booting from ROM..c[?7l[2JCH STAGE1 up=5.86
+H# trial finished
+H# vm exit code -9 after 79s, loadavg ['0.57', '0.51', '0.51']
+H# end wall=78.6s launches=1 suite_done=True

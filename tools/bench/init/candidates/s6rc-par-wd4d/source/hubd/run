@@ -1,0 +1,6 @@
+#!/bin/sh
+# follow-up 7, Part B: hubd started the way the image starts it (image/machines/hub/rootfs/etc/s6/sv/hubd/run): follow-driftwm --once
+# with FOLLOW_GAVEUP=run. Everything else is s6rc-par-wd4a.
+exec 2>&1
+export FOLLOW_GAVEUP=run
+exec follow-driftwm --once policy hubd -wait /run/dw/wayland-1 -notify 3

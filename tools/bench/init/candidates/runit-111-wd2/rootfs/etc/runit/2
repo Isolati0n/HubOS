@@ -1,0 +1,5 @@
+#!/bin/sh
+# Stage 2 as runit(8) describes: it is not exec'ed into runsvdir; when runsvdir dies, this script exits 111, and runit
+# "will restart" stage 2 (runit(8): "if it crashes, or exits 111, it will be restarted"). Nothing else differs from candidates/runit.
+runsvdir -P /run/service
+exit 111

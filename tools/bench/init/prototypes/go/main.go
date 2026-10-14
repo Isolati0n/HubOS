@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"runtime"
+	"runtime/debug"
 	"sort"
 	"strings"
 	"sync"
@@ -206,6 +208,17 @@ func serve(path string) {
 					}
 					fmt.Fprintf(c, "%s state=%s up=%v pid=%d restarts=%d last_failure=%s needs=%v cause=%q\n", n, s.L.Step, s.lastUp, s.pid, s.L.Restarts, ago, s.Needs, s.L.LastCause)
 				}
+			case len(f) == 1 && f[0] == "gcstats":
+				// MEASUREMENT HOOK (follow-up 2, item 8): counters only, nothing the brain decides depends on it. It forces a garbage
+				// collection and returns freed memory to the OS (debug.FreeOSMemory), then reports the Go runtime's own numbers.
+				debug.FreeOSMemory()
+				var ms runtime.MemStats
+				runtime.ReadMemStats(&ms)
+				fds := 0
+				if d, err := os.ReadDir("/proc/self/fd"); err == nil {
+					fds = len(d) // includes the one descriptor ReadDir itself holds open
+				}
+				fmt.Fprintf(c, "gcstats heap_inuse=%d heap_alloc=%d heap_sys=%d heap_released=%d goroutines=%d fds=%d num_gc=%d\n", ms.HeapInuse, ms.HeapAlloc, ms.HeapSys, ms.HeapReleased, runtime.NumGoroutine(), fds, ms.NumGC)
 			case len(f) == 2 && f[0] == "crashtest": // TEST HOOK: a bug in the policy code. In Go an unrecovered panic in any goroutine ends the whole program.
 				go func() { panic("test hook: bug in the policy code") }()
 				fmt.Fprintln(c, "ok (panicking)")

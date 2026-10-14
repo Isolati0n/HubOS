@@ -5,7 +5,7 @@ RUNDIR holds <candidate>-boot-N.log, -pid1crash-N.log, -pid1wedge-1.log, -trial-
 run-qemu.py. Prints tables for the document; every number comes from a log line, nothing is typed in by hand."""
 import glob, os, re, statistics as st, sys, collections
 
-CANDS = ["s6plain", "s6rc", "runit", "dinit", "openrc", "c-go", "c-elixir", "b-go"]
+CANDS = os.environ.get("HUB_CANDS", "s6plain,s6rc,runit,dinit,openrc,c-go,c-elixir,b-go").split(",")   # HUB_CANDS=a,b,c picks the columns
 
 def kv(line):
     return {m.group(1): m.group(2).strip('"') for m in re.finditer(r'(\w+)=("[^"]*"|\S+)', line)}
@@ -98,13 +98,32 @@ def trial(d):
         rows.append(r)
     return table(["candidate", "trial: healthy", "trial: driftwm cannot start", "trial: driftwm wedged 2 s after it first worked"], rows)
 
+def fault_lines(d, c):
+    """The lines of the fault-suite logs of candidate c: <c>-faults-1.log, then <c>-faults-rerun*.log if any. When the machine
+    reboots itself inside a run (runit after a scanner kill) the driver starts again and a step can appear in several cycles
+    (a cycle starts at each 'CHAOS start' line). A step is counted in the FIRST cycle in which it appears; later repeats are dropped."""
+    files = [f"{d}/{c}-faults-1.log"] + sorted(glob.glob(f"{d}/{c}-faults-rerun*.log"))
+    out = []; cycle = 0; first = {}; cur = None
+    for f in files:
+        cur = None
+        for l in lines(f):
+            if " CHAOS start " in l:
+                cycle += 1; cur = None
+            m = re.search(r" STEP (\d+) ", l)
+            if m:
+                cur = int(m.group(1)); first.setdefault(cur, cycle)
+            if cur is not None and first.get(cur) != cycle:
+                continue
+            out.append(l)
+    return out
+
 def faults(d):
     rows = []
     allk = collections.OrderedDict()
     data = {}
     for c in CANDS:
         ev = collections.defaultdict(list); unrec = collections.Counter(); extra = collections.defaultdict(list)
-        for l in lines(f"{d}/{c}-faults-1.log"):
+        for l in fault_lines(d, c):
             if " EV ev=" in l:
                 k = kv(l.split(" EV ", 1)[1]); f = k["fault"]
                 key = "kill (any of 6)" if f == "kill" else f

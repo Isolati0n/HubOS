@@ -1,0 +1,96 @@
+H# start 2026-10-10 23:33:37 cand=openrc-par suite=pid1wedge cpus_seen=4 loadavg_at_start=['1.07', '0.61', '0.46']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.14 Booting from ROM...
+H     4.98 c[?7l[2JCH STAGE1 up=3.34
+H     5.03 CH CAND openrc pid1=openrc-init
+H     5.05 CH SUP-START up=3.42
+H     5.17 OpenRC init version 0.63.3 starting
+H     5.18 Starting sysinit runlevel
+H     5.19 CH t=0.0 CHAOS start cand=openrc suite=pid1wedge seed=120 cpus=2
+H     5.36 
+H     5.37    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.37 
+H     5.57  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     5.62  [1m[32m*[m Mounting /proc[K ...
+H     5.71  [1m[31m*[m /etc/fstab does not exist[K
+H     5.78  [ ok ]
+H     6.00  [1m[32m*[m /run/openrc: creating directory[K
+H     6.09  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     6.12  [1m[32m*[m Caching service dependencies[K ...
+H     6.53  [ ok ]
+H     6.56 Starting boot runlevel
+H     6.66 Starting default runlevel
+H     7.47  [1m[32m*[m Starting dbus[K ...
+H     7.54  [1m[32m*[m Starting udevd[K ...
+H     7.70  [1m[32m*[m Starting seatd[K ...
+H     7.85  [ ok ]
+H     7.93  [ ok ]
+H     9.39  [ ok ]
+H     9.64  [1m[32m*[m Starting driftwm[K ...
+H    12.17  [ ok ]
+H    12.43  [1m[32m*[m Starting waybar[K ...
+H    12.48  [1m[32m*[m Starting hubd[K ...
+H    14.26  [ ok ]
+H    14.42  [ ok ]
+H    14.62 CH t=9.5 BOOT-OK up=12.99 ok=1 (seconds since kernel start; waited 9.2)
+H    14.65 CH t=9.5 SAMPLE zombies=0 nproc=83 init_side_fds=8 init_side_rss_kb=1988 memavail_kb=723256 init_side_cpu_ticks=181
+H    19.62 CH t=14.5 INJECT pid1-wedge (held stopped by ptrace)
+H    19.65 PID 1 held stopped
+H    20.45 guard: PID 1 check failed (1)
+H    23.46 guard: PID 1 check failed (2)
+H    24.65 CH t=19.5 PID1-STATE t guard=S watchdog_dev=true
+H    24.70 CH t=19.6 SAMPLE zombies=0 nproc=84 init_side_fds=8 init_side_rss_kb=1988 memavail_kb=723012 init_side_cpu_ticks=181
+H    26.47 guard: PID 1 check failed (3)
+H    29.47 guard: PID 1 check failed (4)
+H    29.66 CH t=24.5 PID1-STATE t guard=S watchdog_dev=true
+H    32.48 guard: PID 1 check failed (5)
+H    34.68 CH t=29.5 PID1-STATE t guard=S watchdog_dev=true
+H    34.74 CH t=29.6 SAMPLE zombies=0 nproc=84 init_side_fds=8 init_side_rss_kb=1988 memavail_kb=723020 init_side_cpu_ticks=181
+H    35.48 guard: PID 1 check failed (6)
+H    38.49 guard: PID 1 check failed (7)
+H    39.70 CH t=34.6 PID1-STATE t guard=S watchdog_dev=true
+H    41.49 guard: PID 1 check failed (8)
+H    44.50 guard: PID 1 check failed (9)
+H    44.72 CH t=39.6 PID1-STATE t guard=S watchdog_dev=true
+H    44.77 CH t=39.6 SAMPLE zombies=0 nproc=84 init_side_fds=8 init_side_rss_kb=1988 memavail_kb=722268 init_side_cpu_ticks=181
+H    47.50 guard: PID 1 check failed (10)
+H    49.74 CH t=44.6 PID1-STATE t guard=S watchdog_dev=true
+H    50.51 guard: PID 1 check failed (11)
+H    53.51 guard: PID 1 check failed (12)
+H    53.77 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    60.53 Booting from ROM..c[?7l[2JCH STAGE1 up=3.04
+H    60.58 CH CAND openrc pid1=openrc-init
+H    60.61 CH SUP-START up=3.12
+H    60.77 OpenRC init version 0.63.3 starting
+H    60.77 CH t=0.1 CHAOS start cand=openrc suite=pid1wedge seed=120 cpus=2
+H    60.77 Starting sysinit runlevel
+H    60.93 
+H    60.93    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H    60.93 
+H    61.06  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H    61.14  [1m[32m*[m Mounting /proc[K ...
+H    61.19  [1m[31m*[m /etc/fstab does not exist[K
+H    61.25  [ ok ]
+H    61.45  [1m[32m*[m /run/openrc: creating directory[K
+H    61.52  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H    61.55  [1m[32m*[m Caching service dependencies[K ...
+H    61.92  [ ok ]
+H    61.94 Starting boot runlevel
+H    62.05 Starting default runlevel
+H    62.68  [1m[32m*[m Starting udevd[K ...
+H    63.00  [1m[32m*[m Starting seatd[K ...
+H    63.08  [1m[32m*[m Starting dbus[K ...
+H    63.28  [ ok ]
+H    63.36  [ ok ]
+H    64.58  [ ok ]
+H    64.88  [1m[32m*[m Starting driftwm[K ...
+H    67.46  [ ok ]
+H    67.73  [1m[32m*[m Starting waybar[K ...
+H    67.85  [1m[32m*[m Starting hubd[K ...
+H    69.57  [ ok ]
+H    69.71  [ ok ]
+H    70.13 CH t=9.4 BOOT-OK up=12.64 ok=1 (seconds since kernel start; waited 9.2)
+H# second BOOT-OK seen: the machine recovered by itself
+H# vm exit code -9 after 70s, loadavg ['1.11', '0.72', '0.51']
+H# end wall=70.1s launches=1 suite_done=True

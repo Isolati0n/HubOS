@@ -1,0 +1,5 @@
+== /home/user/HubOS/tools/bench/init/results/step2/soak/b-go-chunk1.log: 1 launch(es), first 600 s of each left out
+TOTAL          slope  +298.25 kB per 1000 restarts (std.err 382.29)  noise sd  971.3 kB  range 4304..8696 kB  samples 111  restarts covered 831
+brain          slope  +298.25 kB per 1000 restarts (std.err 382.29)  noise sd  971.3 kB  range 3212..7604 kB  samples 111  restarts covered 831
+s6-svscan      slope    +0.00 kB per 1000 restarts (std.err   0.00)  noise sd    0.0 kB  range 1092..1092 kB  samples 111  restarts covered 831
+STUCK states in chunk: 0; SOAK-END lines: 1; launches: 1

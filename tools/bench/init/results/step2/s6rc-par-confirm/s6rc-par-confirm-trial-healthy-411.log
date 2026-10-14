@@ -1,0 +1,35 @@
+H# start 2026-10-14 00:26:19 cand=s6rc-par-confirm suite=trial cpus_seen=4 loadavg_at_start=['0.41', '0.51', '0.46']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial stdio -device i6300esb -watchdog-action reset -nic none -kernel /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/root/boot/vmlinuz-6.8.0-146-generic -initrd /tmp/claude-0/-home-user-HubOS/2ec5e07c-334e-5a6e-a4df-36e859582d65/scratchpad/ib/rf/s6rc-par-confirm.cpio.gz -append console=ttyS0 panic=5 loglevel=4 quiet rdinit=/init hub.suite=trial hub.dur=600 hub.seed=411 hub.reps=5 hub.skip=0 hub.trial=healthy hub.preflag=  hub.cand=s6rc hub.sup=s6-supervise hub.strict=1
+H     0.10 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.13 Booting from ROM...
+H     6.21 c[?7l[2JCH STAGE1 up=4.82
+H     6.26 CH CAND s6rc pid1=s6-svscan + s6-rc
+H     6.29 CH SUP-START up=4.91
+H     6.41 CH t=0.0 CHAOS start cand=s6rc suite=trial seed=411 cpus=2
+H    12.67 CH S6RC-UP up=11.28
+H    28.59 CH t=22.2 TRIAL-PROBE round 1: state=true sync=true consecutive=1 (5 needed)
+H    29.70 CH t=23.3 TRIAL-PROBE round 2: state=true sync=true consecutive=2 (5 needed)
+H    30.81 CH t=24.4 TRIAL-PROBE round 3: state=true sync=true consecutive=3 (5 needed)
+H    31.94 CH t=25.6 TRIAL-PROBE round 4: state=true sync=true consecutive=4 (5 needed)
+H    33.06 CH t=26.7 TRIAL-PROBE round 5: state=true sync=true consecutive=5 (5 needed)
+H    33.10 CH t=26.7 TRIAL CONFIRMED scenario=healthy after=26.6s plain_condition_met_at=22.2s strict_added=4.5s strict=true true_state=""
+H    33.37 CH t=27.0 STATUS dbus-log: up (pid 175 pgid 175) 26 seconds
+H    33.37 CH t=27.0 STATUS dbus: up (pid 190 pgid 190) 25 seconds, ready 25 seconds
+H    33.37 CH t=27.0 STATUS driftwm-log: up (pid 171 pgid 171) 26 seconds
+H    33.37 CH t=27.0 STATUS driftwm: up (pid 226 pgid 226) 24 seconds, ready 22 seconds
+H    33.38 CH t=27.0 STATUS guard-log: up (pid 172 pgid 172) 26 seconds
+H    33.38 CH t=27.0 STATUS guard: up (pid 188 pgid 188) 26 seconds
+H    33.38 CH t=27.0 STATUS hubd-log: up (pid 162 pgid 162) 26 seconds
+H    33.38 CH t=27.0 STATUS hubd: up (pid 269 pgid 269) 22 seconds, ready 20 seconds
+H    33.38 CH t=27.0 STATUS s6rc-fdholder: up (pid 134 pgid 134) 26 seconds, ready 26 seconds
+H    33.38 CH t=27.0 STATUS s6rc-oneshot-runner: down (not started yet) 
+H    33.38 CH t=27.0 STATUS seatd-log: up (pid 160 pgid 160) 26 seconds
+H    33.38 CH t=27.0 STATUS seatd: up (pid 184 pgid 184) 26 seconds, ready 26 seconds
+H    33.38 CH t=27.0 STATUS stage2: up (pid 106 pgid 106) 26 seconds
+H    33.38 CH t=27.0 STATUS udevd-log: up (pid 159 pgid 159) 26 seconds
+H    33.38 CH t=27.0 STATUS udevd: up (pid 181 pgid 181) 26 seconds, ready 24 seconds
+H    33.39 CH t=27.0 STATUS waybar-log: up (pid 154 pgid 154) 26 seconds
+H    33.39 CH t=27.0 STATUS waybar: up (pid 268 pgid 268) 22 seconds, ready 20 seconds
+H# trial finished
+H# vm exit code -9 after 53s, loadavg ['0.35', '0.48', '0.45']
+H# end wall=53.4s launches=1 suite_done=True

@@ -1,0 +1,301 @@
+H# start 2026-10-10 21:00:02 cand=c-go suite=faults cpus_seen=4 loadavg_at_start=['0.52', '0.69', '0.57']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.13 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.16 Booting from ROM...
+H     7.31 c[?7l[2JCH STAGE1 up=5.63
+H     7.37 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H     7.42 CH SUP-START up=5.73
+H     7.61 CH t=0.1 CHAOS start cand=c-go suite=faults seed=200 cpus=2
+H    13.56 CH S6RC-UP up=11.87
+H    14.06 CH t=6.6 BOOT-OK up=12.37 ok=1 (seconds since kernel start; waited 6.2)
+H    14.19 CH t=6.7 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=17984 memavail_kb=643972 init_side_cpu_ticks=216
+H    19.06 CH t=11.6 STEP 1 fKill
+H    22.98 CH t=15.5 EV ev=1 fault=kill target=seatd rec=3.70 ok=1 fixed=0 
+H    24.33 CH t=16.8 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=20908 memavail_kb=632448 init_side_cpu_ticks=316
+H    25.98 CH t=18.5 STEP 2 fKill
+H    31.14 CH t=23.7 EV ev=2 fault=kill target=udevd rec=4.95 ok=1 fixed=0 
+H    34.14 CH t=26.7 STEP 3 fKill
+H    34.40 CH t=26.9 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=22532 memavail_kb=638748 init_side_cpu_ticks=417
+H    34.56 CH t=27.1 EV ev=3 fault=kill target=dbus rec=0.20 ok=1 fixed=0 
+H    37.56 CH t=30.1 STEP 4 fKill
+H    42.86 CH t=35.4 EV ev=4 fault=kill target=driftwm rec=5.08 ok=1 fixed=0 
+H    44.47 CH t=37.0 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=22736 memavail_kb=638244 init_side_cpu_ticks=504
+H    45.86 CH t=38.4 STEP 5 fKill
+H    46.28 CH t=38.8 EV ev=5 fault=kill target=waybar rec=0.20 ok=1 fixed=0 
+H    49.28 CH t=41.8 STEP 6 fKill
+H    50.25 CH t=42.8 EV ev=6 fault=kill target=hubd rec=0.75 ok=1 fixed=0 
+H    53.25 CH t=45.8 STEP 7 fKill
+H    54.56 CH t=47.1 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23152 memavail_kb=677144 init_side_cpu_ticks=596
+H    61.83 CH t=54.3 EV ev=7 fault=kill target=seatd rec=8.36 ok=1 fixed=0 
+H    64.66 CH t=57.2 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23080 memavail_kb=610308 init_side_cpu_ticks=675
+H    64.84 CH t=57.4 STEP 8 fKill
+H    73.96 CH t=66.5 EV ev=8 fault=kill target=udevd rec=8.90 ok=1 fixed=0 
+H    74.74 CH t=67.3 SAMPLE zombies=0 nproc=100 init_side_fds=149 init_side_rss_kb=23096 memavail_kb=619328 init_side_cpu_ticks=773
+H    76.96 CH t=69.5 STEP 9 fKill
+H    77.47 CH t=70.0 EV ev=9 fault=kill target=dbus rec=0.29 ok=1 fixed=0 
+H    80.48 CH t=73.0 STEP 10 fKill
+H    84.89 CH t=77.4 SAMPLE zombies=0 nproc=98 init_side_fds=150 init_side_rss_kb=23104 memavail_kb=634288 init_side_cpu_ticks=878
+H    86.85 CH t=79.4 EV ev=10 fault=kill target=driftwm rec=6.17 ok=1 fixed=0 
+H    89.85 CH t=82.4 STEP 11 fKill
+H    90.19 CH t=82.7 EV ev=11 fault=kill target=waybar rec=0.13 ok=1 fixed=0 
+H    93.19 CH t=85.7 STEP 12 fKill
+H    95.00 CH t=87.5 SAMPLE zombies=0 nproc=100 init_side_fds=149 init_side_rss_kb=23104 memavail_kb=633292 init_side_cpu_ticks=966
+H    95.83 CH t=88.3 EV ev=12 fault=kill target=hubd rec=2.42 ok=1 fixed=0 
+H    98.84 CH t=91.4 STEP 13 fKill
+H   105.08 CH t=97.6 SAMPLE zombies=0 nproc=100 init_side_fds=150 init_side_rss_kb=23232 memavail_kb=618888 init_side_cpu_ticks=1057
+H   105.89 CH t=98.4 EV ev=13 fault=kill target=seatd rec=6.84 ok=1 fixed=0 
+H   108.89 CH t=101.4 STEP 14 fKill
+H   115.16 CH t=107.7 SAMPLE zombies=0 nproc=98 init_side_fds=148 init_side_rss_kb=23172 memavail_kb=625376 init_side_cpu_ticks=1146
+H   116.95 CH t=109.5 EV ev=14 fault=kill target=udevd rec=7.85 ok=1 fixed=0 
+H   119.96 CH t=112.5 STEP 15 fKill
+H   120.51 CH t=113.0 EV ev=15 fault=kill target=dbus rec=0.34 ok=1 fixed=0 
+H   123.51 CH t=116.0 STEP 16 fKill
+H   125.26 CH t=117.8 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23272 memavail_kb=706016 init_side_cpu_ticks=1249
+H   128.96 CH t=121.5 EV ev=16 fault=kill target=driftwm rec=5.23 ok=1 fixed=0 
+H   131.96 CH t=124.5 STEP 17 fKill
+H   132.34 CH t=124.9 EV ev=17 fault=kill target=waybar rec=0.16 ok=1 fixed=0 
+H   135.32 CH t=127.8 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23276 memavail_kb=625880 init_side_cpu_ticks=1337
+H   135.34 CH t=127.9 STEP 18 fKill
+H   137.87 CH t=130.4 EV ev=18 fault=kill target=hubd rec=2.31 ok=1 fixed=0 
+H   140.87 CH t=133.4 STEP 19 fHang
+H   145.41 CH t=137.9 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23288 memavail_kb=711756 init_side_cpu_ticks=1431
+H   150.81 CH t=143.3 EV ev=19 fault=hang-stop target=driftwm rec=9.73 ok=1 fixed=0 
+H   153.81 CH t=146.3 STEP 20 fHang
+H   154.16 CH t=146.7 EV ev=20 fault=hang-spin target=driftwm rec=0.13 ok=1 fixed=0 
+H   155.47 CH t=148.0 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23288 memavail_kb=623304 init_side_cpu_ticks=1503
+H   157.16 CH t=149.7 STEP 21 fHang
+H   165.53 CH t=158.0 SAMPLE zombies=0 nproc=99 init_side_fds=149 init_side_rss_kb=23288 memavail_kb=624756 init_side_cpu_ticks=1591
+H   166.65 CH t=159.2 EV ev=21 fault=hang-stop target=driftwm rec=9.27 ok=1 fixed=0 
+H   169.65 CH t=162.2 STEP 22 fHang
+H   175.60 CH t=168.1 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23288 memavail_kb=714040 init_side_cpu_ticks=1671
+H   183.88 CH t=176.4 EV ev=22 fault=hang-spin target=driftwm rec=14.01 ok=1 fixed=0 
+H   185.68 CH t=178.2 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23288 memavail_kb=633940 init_side_cpu_ticks=1765
+H   186.88 CH t=179.4 STEP 23 fHang
+H   195.80 CH t=188.3 SAMPLE zombies=0 nproc=97 init_side_fds=152 init_side_rss_kb=23292 memavail_kb=719304 init_side_cpu_ticks=1855
+H   200.82 CH t=193.3 EV ev=23 fault=hang-stop target=driftwm rec=13.72 ok=1 fixed=0 
+H   203.82 CH t=196.3 STEP 24 fHang
+H   205.91 CH t=198.4 SAMPLE zombies=0 nproc=100 init_side_fds=149 init_side_rss_kb=23292 memavail_kb=630852 init_side_cpu_ticks=1936
+H   215.99 CH t=208.5 SAMPLE zombies=0 nproc=100 init_side_fds=150 init_side_rss_kb=23292 memavail_kb=634444 init_side_cpu_ticks=2027
+H   216.82 CH t=209.3 EV ev=24 fault=hang-spin target=driftwm rec=12.79 ok=1 fixed=0 
+H   219.82 CH t=212.3 STEP 25 fStorm
+H   226.13 CH t=218.6 SAMPLE zombies=0 nproc=100 init_side_fds=149 init_side_rss_kb=23292 memavail_kb=632960 init_side_cpu_ticks=2113
+H   236.19 CH t=228.7 SAMPLE zombies=0 nproc=99 init_side_fds=148 init_side_rss_kb=23292 memavail_kb=632960 init_side_cpu_ticks=2200
+H   246.27 CH t=238.8 SAMPLE zombies=0 nproc=99 init_side_fds=148 init_side_rss_kb=23292 memavail_kb=632456 init_side_cpu_ticks=2279
+H   256.34 CH t=248.9 SAMPLE zombies=0 nproc=99 init_side_fds=148 init_side_rss_kb=23292 memavail_kb=632456 init_side_cpu_ticks=2349
+H   259.95 CH t=252.5 STATUS dbus state=running up=true pid=2323 restarts=3 last_failure=139s needs=[] cause="restarted unseen"
+H   259.95 CH t=252.5 STATUS driftwm state=running up=true pid=3863 restarts=11 last_failure=52s needs=[seatd udevd] cause="health probe: no answer"
+H   259.95 CH t=252.5 STATUS hubd state=running up=false pid=4504 restarts=9 last_failure=11s needs=[driftwm] cause="exitcode 1"
+H   259.95 CH t=252.5 STATUS seatd state=running up=true pid=1902 restarts=3 last_failure=160s needs=[] cause="restarted unseen"
+H   259.95 CH t=252.5 STATUS udevd state=running up=true pid=2098 restarts=3 last_failure=150s needs=[] cause="restarted unseen"
+H   259.96 CH t=252.5 STATUS waybar state=running up=true pid=3915 restarts=6 last_failure=52s needs=[driftwm dbus] cause="restarted unseen"
+H   259.96 CH t=252.5 STORM target=hubd dur=40 starts=17 starts_last10s=2 cpu_ticks_init_side=320 bar-up
+H   261.10 CH t=253.6 EV ev=25 fault=storm target=hubd rec=0.94 ok=1 fixed=0 starts=17 last10=2 cpu=320 bar-up
+H   264.10 CH t=256.6 STEP 26 fStorm
+H   266.41 CH t=258.9 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23296 memavail_kb=674232 init_side_cpu_ticks=2432
+H   276.50 CH t=269.0 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23296 memavail_kb=662508 init_side_cpu_ticks=2514
+H   286.58 CH t=279.1 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23296 memavail_kb=671572 init_side_cpu_ticks=2605
+H   296.64 CH t=289.2 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23232 memavail_kb=694516 init_side_cpu_ticks=2681
+H   304.24 CH t=296.8 STATUS dbus state=running up=true pid=2323 restarts=3 last_failure=184s needs=[] cause="restarted unseen"
+H   304.24 CH t=296.8 STATUS driftwm state=degraded up=false pid=5331 restarts=17 last_failure=8s needs=[seatd udevd] cause="exitcode 1"
+H   304.24 CH t=296.8 STATUS hubd state=running up=false pid=4718 restarts=9 last_failure=56s needs=[driftwm] cause="exitcode 1"
+H   304.25 CH t=296.8 STATUS seatd state=running up=true pid=1902 restarts=3 last_failure=205s needs=[] cause="restarted unseen"
+H   304.25 CH t=296.8 STATUS udevd state=running up=true pid=2098 restarts=3 last_failure=195s needs=[] cause="restarted unseen"
+H   304.25 CH t=296.8 STATUS waybar state=running up=false pid=4960 restarts=6 last_failure=96s needs=[driftwm dbus] cause="restarted unseen"
+H   304.25 CH t=296.8 ALERT-FILE "driftwm degraded: exitcode 1 (retrying stopped; the owner must act)"
+H   304.25 CH t=296.8 STORM target=driftwm dur=40 starts=11 starts_last10s=2 cpu_ticks_init_side=318 bar-down
+H   306.74 CH t=299.2 SAMPLE zombies=0 nproc=97 init_side_fds=151 init_side_rss_kb=23236 memavail_kb=709804 init_side_cpu_ticks=2749
+H   316.94 CH t=309.5 SAMPLE zombies=0 nproc=99 init_side_fds=151 init_side_rss_kb=23236 memavail_kb=710396 init_side_cpu_ticks=2830
+H   327.02 CH t=319.5 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23240 memavail_kb=710000 init_side_cpu_ticks=2903
+H   337.08 CH t=329.6 SAMPLE zombies=0 nproc=96 init_side_fds=148 init_side_rss_kb=23312 memavail_kb=710108 init_side_cpu_ticks=2986
+H   347.17 CH t=339.7 SAMPLE zombies=0 nproc=96 init_side_fds=148 init_side_rss_kb=23248 memavail_kb=710108 init_side_cpu_ticks=3061
+H   357.24 CH t=349.8 SAMPLE zombies=0 nproc=96 init_side_fds=148 init_side_rss_kb=23248 memavail_kb=709804 init_side_cpu_ticks=3148
+H   364.40 CH t=356.9 UNRECOVERED ev=26 fault=storm target=driftwm alert=1 why="driftwm not running"
+H   364.48 CH t=357.0 STATUS dbus state=running up=true pid=2323 restarts=3 last_failure=244s needs=[] cause="restarted unseen"
+H   364.48 CH t=357.0 STATUS driftwm state=degraded up=false pid=5331 restarts=17 last_failure=68s needs=[seatd udevd] cause="exitcode 1"
+H   364.49 CH t=357.0 STATUS hubd state=running up=false pid=4718 restarts=9 last_failure=116s needs=[driftwm] cause="exitcode 1"
+H   364.49 CH t=357.0 STATUS seatd state=running up=true pid=1902 restarts=3 last_failure=265s needs=[] cause="restarted unseen"
+H   364.49 CH t=357.0 STATUS udevd state=running up=true pid=2098 restarts=3 last_failure=255s needs=[] cause="restarted unseen"
+H   364.49 CH t=357.0 STATUS waybar state=running up=false pid=4960 restarts=6 last_failure=156s needs=[driftwm dbus] cause="restarted unseen"
+H   364.50 CH t=357.0 ALERT-FILE "driftwm degraded: exitcode 1 (retrying stopped; the owner must act)"
+H   364.52 CH t=357.0 BRAIN-LOG brain: hubd failed (exitcode 1), failures=4 action=2
+H   364.52 CH t=357.0 BRAIN-LOG brain: hubd failed (exitcode 1), failures=5 action=2
+H   364.52 CH t=357.0 BRAIN-LOG brain: hubd failed (exitcode 1), failures=5 action=2
+H   364.52 CH t=357.0 BRAIN-LOG brain: driftwm failed (restarted unseen), failures=2 action=1
+H   364.53 CH t=357.0 BRAIN-LOG brain: holding hubd: a dependency is down
+H   364.53 CH t=357.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=2 action=1
+H   364.53 CH t=357.0 BRAIN-LOG brain: holding waybar: a dependency is down
+H   364.53 CH t=357.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=3 action=1
+H   364.53 CH t=357.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=4 action=2
+H   364.54 CH t=357.0 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=5 action=2
+H   364.54 CH t=357.1 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=6 action=3
+H   364.54 CH t=357.1 BRAIN-LOG brain: driftwm is DEGRADED: alert raised, everything else keeps running
+H   364.59 CH t=357.1 operator-action target=driftwm why="driftwm not running"
+H   364.66 ok
+H   367.31 CH t=359.8 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23252 memavail_kb=605784 init_side_cpu_ticks=3247
+H   368.88 CH t=361.4 EV ev=26 fault=storm target=driftwm rec=63.98 ok=0 fixed=1 starts=11 last10=2 cpu=318 bar-down
+H   371.88 CH t=364.4 STEP 27 fDep
+H   377.38 CH t=369.9 SAMPLE zombies=0 nproc=96 init_side_fds=149 init_side_rss_kb=23256 memavail_kb=696260 init_side_cpu_ticks=3332
+H   387.44 CH t=379.9 SAMPLE zombies=0 nproc=96 init_side_fds=148 init_side_rss_kb=23256 memavail_kb=698664 init_side_cpu_ticks=3396
+H   390.98 CH t=383.5 EV ev=27 fault=dep-slow target=seatd rec=18.88 ok=1 fixed=0 
+H   390.98 CH t=383.5 DEPSTARTS mode=slow seatd=1 driftwm=2 waybar=10 hubd=1
+H   393.99 CH t=386.5 STEP 28 fDep
+H   397.49 CH t=390.0 SAMPLE zombies=0 nproc=95 init_side_fds=148 init_side_rss_kb=23288 memavail_kb=705296 init_side_cpu_ticks=3478
+H   407.56 CH t=400.1 SAMPLE zombies=0 nproc=95 init_side_fds=148 init_side_rss_kb=23224 memavail_kb=705296 init_side_cpu_ticks=3559
+H   417.65 CH t=410.2 SAMPLE zombies=0 nproc=98 init_side_fds=150 init_side_rss_kb=23264 memavail_kb=632720 init_side_cpu_ticks=3641
+H   418.14 CH t=410.7 EV ev=28 fault=dep-fail target=seatd rec=3.93 ok=1 fixed=0 
+H   418.15 CH t=410.7 DEPSTARTS mode=fail seatd=16 driftwm=2 waybar=23 hubd=1
+H   421.15 CH t=413.7 STEP 29 fDisk
+H   421.22 CH t=413.7 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   427.71 CH t=420.2 SAMPLE zombies=0 nproc=99 init_side_fds=151 init_side_rss_kb=23256 memavail_kb=629952 init_side_cpu_ticks=3731
+H   437.92 CH t=430.4 SAMPLE zombies=0 nproc=100 init_side_fds=151 init_side_rss_kb=23256 memavail_kb=629952 init_side_cpu_ticks=3817
+H   442.26 CH t=434.8 STATUS dbus state=running up=true pid=2323 restarts=3 last_failure=322s needs=[] cause="restarted unseen"
+H   442.26 CH t=434.8 STATUS driftwm state=running up=true pid=7239 restarts=17 last_failure=146s needs=[seatd udevd] cause="exitcode 1"
+H   442.26 CH t=434.8 STATUS hubd state=running up=true pid=7284 restarts=9 last_failure=194s needs=[driftwm] cause="exitcode 1"
+H   442.27 CH t=434.8 STATUS seatd state=running up=true pid=7223 restarts=6 last_failure=37s needs=[] cause="exitcode 1"
+H   442.27 CH t=434.8 STATUS udevd state=running up=true pid=2098 restarts=3 last_failure=333s needs=[] cause="restarted unseen"
+H   442.27 CH t=434.8 STATUS waybar state=running up=true pid=7444 restarts=7 last_failure=16s needs=[driftwm dbus] cause="restarted unseen"
+H   442.79 CH t=435.3 EV ev=29 fault=disk-full target=waybar rec=0.25 ok=1 fixed=0 ok_during=19/19 all_alive_at_end=1
+H   445.79 CH t=438.3 STEP 30 fDisk
+H   445.83 CH t=438.3 DISK-FULL df=tmpfs                     4096      4096         0 100% /var
+H   447.99 CH t=440.5 SAMPLE zombies=0 nproc=99 init_side_fds=148 init_side_rss_kb=23256 memavail_kb=629700 init_side_cpu_ticks=3902
+H   458.07 CH t=450.6 SAMPLE zombies=0 nproc=99 init_side_fds=148 init_side_rss_kb=23256 memavail_kb=629700 init_side_cpu_ticks=3993
+H   466.81 CH t=459.3 STATUS dbus state=running up=true pid=2323 restarts=3 last_failure=346s needs=[] cause="restarted unseen"
+H   466.81 CH t=459.3 STATUS driftwm state=running up=true pid=7239 restarts=17 last_failure=170s needs=[seatd udevd] cause="exitcode 1"
+H   466.82 CH t=459.3 STATUS hubd state=running up=true pid=7284 restarts=9 last_failure=218s needs=[driftwm] cause="exitcode 1"
+H   466.82 CH t=459.3 STATUS seatd state=running up=true pid=7223 restarts=6 last_failure=61s needs=[] cause="exitcode 1"
+H   466.82 CH t=459.3 STATUS udevd state=running up=true pid=2098 restarts=3 last_failure=357s needs=[] cause="restarted unseen"
+H   466.82 CH t=459.3 STATUS waybar state=running up=true pid=7846 restarts=8 last_failure=15s needs=[driftwm dbus] cause="restarted unseen"
+H   467.25 CH t=459.8 EV ev=30 fault=disk-full target=waybar rec=0.15 ok=1 fixed=0 ok_during=17/19 all_alive_at_end=1
+H   468.13 CH t=460.6 SAMPLE zombies=0 nproc=99 init_side_fds=148 init_side_rss_kb=23260 memavail_kb=629700 init_side_cpu_ticks=4078
+H   470.25 CH t=462.8 STEP 31 fSupKill
+H   478.24 CH t=470.8 SAMPLE zombies=0 nproc=98 init_side_fds=148 init_side_rss_kb=23264 memavail_kb=575968 init_side_cpu_ticks=4132
+H   488.30 CH t=480.8 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23264 memavail_kb=575160 init_side_cpu_ticks=4220
+H   498.36 CH t=490.9 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23264 memavail_kb=599260 init_side_cpu_ticks=4302
+H   508.47 CH t=501.0 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23264 memavail_kb=613640 init_side_cpu_ticks=4392
+H   518.53 CH t=511.0 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23264 memavail_kb=613800 init_side_cpu_ticks=4463
+H   528.59 CH t=521.1 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23264 memavail_kb=613548 init_side_cpu_ticks=4537
+H   532.07 CH t=524.6 UNRECOVERED ev=31 fault=supervisor-killed target=driftwm alert=1 why="waybar not running"
+H   532.12 CH t=524.6 STATUS dbus state=running up=true pid=2323 restarts=3 last_failure=411s needs=[] cause="restarted unseen"
+H   532.12 CH t=524.6 STATUS driftwm state=degraded up=false pid=8628 restarts=23 last_failure=27s needs=[seatd udevd] cause="exitcode 1"
+H   532.12 CH t=524.6 STATUS hubd state=running up=false pid=7284 restarts=9 last_failure=283s needs=[driftwm] cause="exitcode 1"
+H   532.13 CH t=524.6 STATUS seatd state=running up=true pid=7223 restarts=6 last_failure=126s needs=[] cause="exitcode 1"
+H   532.13 CH t=524.6 STATUS udevd state=running up=true pid=2098 restarts=3 last_failure=422s needs=[] cause="restarted unseen"
+H   532.13 CH t=524.6 STATUS waybar state=running up=false pid=7846 restarts=8 last_failure=80s needs=[driftwm dbus] cause="restarted unseen"
+H   532.14 CH t=524.6 ALERT-FILE "driftwm degraded: exitcode 1 (retrying stopped; the owner must act)"
+H   532.15 CH t=524.7 BRAIN-LOG brain: starting waybar: its dependencies are ready
+H   532.15 CH t=524.7 BRAIN-LOG brain: waybar failed (restarted unseen), failures=1 action=0
+H   532.15 CH t=524.7 BRAIN-LOG brain: waybar failed (restarted unseen), failures=2 action=1
+H   532.15 CH t=524.7 BRAIN-LOG brain: driftwm failed (restarted unseen), failures=1 action=0
+H   532.15 CH t=524.7 BRAIN-LOG brain: holding waybar: a dependency is down
+H   532.15 CH t=524.7 BRAIN-LOG brain: holding hubd: a dependency is down
+H   532.15 CH t=524.7 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=2 action=1
+H   532.16 CH t=524.7 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=3 action=1
+H   532.16 CH t=524.7 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=4 action=2
+H   532.16 CH t=524.7 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=5 action=2
+H   532.16 CH t=524.7 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=6 action=3
+H   532.16 CH t=524.7 BRAIN-LOG brain: driftwm is DEGRADED: alert raised, everything else keeps running
+H   532.23 CH t=524.7 operator-action target=driftwm why="waybar not running"
+H   532.28 ok
+H   538.66 CH t=531.2 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23268 memavail_kb=526376 init_side_cpu_ticks=4622
+H   538.86 CH t=531.4 EV ev=31 fault=supervisor-killed target=driftwm rec=66.35 ok=0 fixed=1 child_kept_running=1
+H   541.34 CH t=533.9 EV ev=32 fault=after-supervisor-killed target=driftwm rec=0.22 ok=1 fixed=0 supervisor_back=1
+H   544.34 CH t=536.9 STEP 32 fSupKill
+H   546.23 CH t=538.7 EV ev=33 fault=supervisor-killed target=waybar rec=0.15 ok=1 fixed=0 child_kept_running=1
+H   548.80 CH t=541.3 SAMPLE zombies=0 nproc=99 init_side_fds=150 init_side_rss_kb=23264 memavail_kb=605844 init_side_cpu_ticks=4604
+H   549.18 CH t=541.7 EV ev=34 fault=after-supervisor-killed target=waybar rec=0.69 ok=1 fixed=0 supervisor_back=1
+H   552.18 CH t=544.7 STEP 33 fSupKill
+H   558.86 CH t=551.4 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23272 memavail_kb=594104 init_side_cpu_ticks=4681
+H   568.95 CH t=561.5 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23272 memavail_kb=592808 init_side_cpu_ticks=4770
+H   579.01 CH t=571.5 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23272 memavail_kb=605040 init_side_cpu_ticks=4859
+H   589.09 CH t=581.6 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23312 memavail_kb=586876 init_side_cpu_ticks=4943
+H   599.16 CH t=591.7 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23336 memavail_kb=589000 init_side_cpu_ticks=5022
+H   609.23 CH t=601.7 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23336 memavail_kb=588496 init_side_cpu_ticks=5095
+H   613.91 CH t=606.4 UNRECOVERED ev=35 fault=supervisor-killed target=driftwm alert=1 why="waybar not running"
+H   613.98 CH t=606.5 STATUS dbus state=running up=true pid=2323 restarts=3 last_failure=493s needs=[] cause="restarted unseen"
+H   613.99 CH t=606.5 STATUS driftwm state=degraded up=false pid=9905 restarts=29 last_failure=28s needs=[seatd udevd] cause="exitcode 1"
+H   613.99 CH t=606.5 STATUS hubd state=running up=false pid=9138 restarts=9 last_failure=365s needs=[driftwm] cause="exitcode 1"
+H   613.99 CH t=606.5 STATUS seatd state=running up=true pid=7223 restarts=6 last_failure=208s needs=[] cause="exitcode 1"
+H   614.00 CH t=606.5 STATUS udevd state=running up=true pid=2098 restarts=3 last_failure=504s needs=[] cause="restarted unseen"
+H   614.00 CH t=606.5 STATUS waybar state=running up=false pid=9318 restarts=9 last_failure=69s needs=[driftwm dbus] cause="exitcode 1"
+H   614.00 CH t=606.5 ALERT-FILE "driftwm degraded: exitcode 1 (retrying stopped; the owner must act)"
+H   614.03 CH t=606.5 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=1 action=0
+H   614.03 CH t=606.5 BRAIN-LOG brain: starting waybar: its dependencies are ready
+H   614.03 CH t=606.5 BRAIN-LOG brain: starting hubd: its dependencies are ready
+H   614.03 CH t=606.5 BRAIN-LOG brain: waybar failed (exitcode 1), failures=1 action=0
+H   614.04 CH t=606.5 BRAIN-LOG brain: driftwm failed (restarted unseen), failures=2 action=1
+H   614.04 CH t=606.6 BRAIN-LOG brain: holding waybar: a dependency is down
+H   614.04 CH t=606.6 BRAIN-LOG brain: holding hubd: a dependency is down
+H   614.04 CH t=606.6 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=3 action=1
+H   614.04 CH t=606.6 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=4 action=2
+H   614.05 CH t=606.6 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=5 action=2
+H   614.05 CH t=606.6 BRAIN-LOG brain: driftwm failed (exitcode 1), failures=6 action=3
+H   614.05 CH t=606.6 BRAIN-LOG brain: driftwm is DEGRADED: alert raised, everything else keeps running
+H   614.15 CH t=606.7 operator-action target=driftwm why="waybar not running"
+H   614.21 ok
+H   619.33 CH t=611.8 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23340 memavail_kb=559320 init_side_cpu_ticks=5188
+H   629.42 CH t=621.9 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23148 memavail_kb=574132 init_side_cpu_ticks=5277
+H   639.48 CH t=632.0 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23340 memavail_kb=577328 init_side_cpu_ticks=5361
+H   649.58 CH t=642.1 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23084 memavail_kb=555872 init_side_cpu_ticks=5444
+H   659.65 CH t=652.2 SAMPLE zombies=0 nproc=97 init_side_fds=148 init_side_rss_kb=23096 memavail_kb=587748 init_side_cpu_ticks=5515
+H   669.78 CH t=662.3 SAMPLE zombies=0 nproc=97 init_side_fds=155 init_side_rss_kb=23328 memavail_kb=589312 init_side_cpu_ticks=5603
+H   674.52 CH t=667.0 STUCK ev=35 step=33 fault=supervisor-killed target=driftwm why="waybar not running" (a reboot is the only way out; the host restarts the machine)
+H   675.53 [  673.890824] reboot: Power down
+H# vm exit code 0 after 676s, loadavg ['0.71', '0.58', '0.61']
+H# launch 2 skip=33 dur=60 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H   675.67 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H   675.71 Booting from ROM...
+H   683.97 c[?7l[2JCH STAGE1 up=6.34
+H   684.04 CH CAND c-go pid1=s6-svscan + s6-rc + brain(go)
+H   684.10 CH SUP-START up=6.47
+H   684.30 CH t=0.1 CHAOS start cand=c-go suite=faults seed=201 cpus=2
+H   690.02 CH S6RC-UP up=12.39
+H   690.46 CH t=6.3 BOOT-OK up=12.83 ok=1 (seconds since kernel start; waited 6.0)
+H   690.54 CH t=6.4 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=17960 memavail_kb=637128 init_side_cpu_ticks=254
+H   700.60 CH t=16.4 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=20576 memavail_kb=636128 init_side_cpu_ticks=341
+H   710.67 CH t=26.5 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=22572 memavail_kb=633356 init_side_cpu_ticks=425
+H   720.74 CH t=36.6 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23088 memavail_kb=633104 init_side_cpu_ticks=499
+H   730.81 CH t=46.6 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23028 memavail_kb=632096 init_side_cpu_ticks=581
+H   740.90 CH t=56.7 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23096 memavail_kb=631116 init_side_cpu_ticks=665
+H   750.98 CH t=66.8 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23120 memavail_kb=631116 init_side_cpu_ticks=748
+H   761.06 CH t=76.9 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23120 memavail_kb=630108 init_side_cpu_ticks=835
+H   771.13 CH t=87.0 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23248 memavail_kb=629604 init_side_cpu_ticks=916
+H   781.24 CH t=97.1 SAMPLE zombies=0 nproc=100 init_side_fds=151 init_side_rss_kb=23128 memavail_kb=628344 init_side_cpu_ticks=1003
+H   791.33 CH t=107.1 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=23148 memavail_kb=628348 init_side_cpu_ticks=1092
+H   794.53 CH t=110.4 STEP 34 fSupKill
+H   796.37 CH t=112.2 EV ev=1 fault=supervisor-killed target=waybar rec=0.10 ok=1 fixed=0 child_kept_running=1
+H   799.26 CH t=115.1 EV ev=2 fault=after-supervisor-killed target=waybar rec=0.67 ok=1 fixed=0 supervisor_back=1
+H   801.41 CH t=117.2 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=23236 memavail_kb=634924 init_side_cpu_ticks=1168
+H   802.26 CH t=118.1 STEP 35 fSupKill
+H   811.47 CH t=127.3 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=23124 memavail_kb=511432 init_side_cpu_ticks=1262
+H   811.53 CH t=127.3 EV ev=3 fault=supervisor-killed target=driftwm rec=7.54 ok=1 fixed=0 child_kept_running=1
+H   820.43 CH t=136.2 EV ev=4 fault=after-supervisor-killed target=driftwm rec=6.67 ok=1 fixed=0 supervisor_back=1
+H   821.55 CH t=137.4 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=23248 memavail_kb=528044 init_side_cpu_ticks=1340
+H   823.43 CH t=139.2 STEP 36 fSupKill
+H   825.32 CH t=141.1 EV ev=5 fault=supervisor-killed target=waybar rec=0.16 ok=1 fixed=0 child_kept_running=1
+H   827.72 CH t=143.5 EV ev=6 fault=after-supervisor-killed target=waybar rec=0.16 ok=1 fixed=0 supervisor_back=1
+H   830.72 CH t=146.5 STEP 37 fScanKill
+H   831.61 CH t=147.4 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=23192 memavail_kb=527572 init_side_cpu_ticks=1405
+H   833.73 CH t=149.5 STEP 38 fBrainKill
+H   837.34 CH t=153.2 EV ev=7 fault=brain-killed target=brain rec=0.17 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H   840.34 CH t=156.2 STEP 39 fBrainKill
+H   841.69 CH t=157.5 SAMPLE zombies=0 nproc=101 init_side_fds=148 init_side_rss_kb=17884 memavail_kb=527320 init_side_cpu_ticks=254
+H   843.90 CH t=159.7 EV ev=8 fault=brain-killed target=brain rec=0.15 ok=1 fixed=0 services_kept_running=1 brain_back_after=1.1
+H   846.90 CH t=162.7 STEP 40 fClock
+H   850.52 CH t=166.3 EV ev=9 fault=clock-3600 target=driftwm rec=3.39 ok=1 fixed=0 
+H   851.76 CH t=167.6 SAMPLE zombies=0 nproc=101 init_side_fds=149 init_side_rss_kb=20476 memavail_kb=532592 init_side_cpu_ticks=349
+H   852.46 CH t=168.3 EV ev=10 fault=after-clock-3600 target=hubd rec=0.72 ok=1 fixed=0 
+H   855.47 CH t=171.3 STEP 41 fClock
+H   855.91 CH t=171.7 EV ev=11 fault=clock+86400 target=driftwm rec=0.21 ok=1 fixed=0 
+H   859.55 CH t=175.4 EV ev=12 fault=after-clock+86400 target=hubd rec=2.43 ok=1 fixed=0 
+H   861.85 CH t=177.7 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=22452 memavail_kb=610848 init_side_cpu_ticks=445
+H   862.55 CH t=178.4 STEP 42 fOOM
+H   862.69 CH t=178.5 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   870.53 CH t=186.3 EV ev=13 fault=oom target=hog rec=0.18 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   871.95 CH t=187.8 SAMPLE zombies=0 nproc=100 init_side_fds=148 init_side_rss_kb=22696 memavail_kb=616576 init_side_cpu_ticks=536
+H   873.53 CH t=189.3 STEP 43 fOOM
+H   873.62 CH t=189.4 OOMSCORE driftwm=-900 hubd=-900 waybar=0
+H   878.70 CH t=194.5 EV ev=14 fault=oom target=hog rec=0.14 ok=1 fixed=0 hog_killed=1 services_lost=[] pid1_state=S
+H   878.70 CH t=194.5 SUITE-DONE
+H   880.71 [  203.118888] reboot: Power down
+H# vm exit code 0 after 205s, loadavg ['0.65', '0.73', '0.68']
+H# end wall=880.7s launches=2 suite_done=True

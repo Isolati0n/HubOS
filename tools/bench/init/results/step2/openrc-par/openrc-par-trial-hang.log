@@ -1,0 +1,55 @@
+H# start 2026-10-10 23:37:39 cand=openrc-par suite=trial cpus_seen=4 loadavg_at_start=['0.88', '0.82', '0.59']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.14 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     5.27 Booting from ROM..c[?7l[2JCH STAGE1 up=3.65
+H     5.32 CH CAND openrc pid1=openrc-init
+H     5.34 CH SUP-START up=3.72
+H     5.45 OpenRC init version 0.63.3 starting
+H     5.45 Starting sysinit runlevel
+H     5.55 CH t=0.1 CHAOS start cand=openrc suite=trial seed=132 cpus=2
+H     5.68 
+H     5.69    [1m[32mOpenRC [1m[36m0.63.3[m is starting up [1m[34mLinux 6.8.0-146-generic (x86_64)[m
+H     5.69 
+H     5.80  [1m[31m*[m You have cruft in /proc that should be deleted[K
+H     5.85  [1m[32m*[m Mounting /proc[K ...
+H     5.90  [1m[31m*[m /etc/fstab does not exist[K
+H     5.97  [ ok ]
+H     6.17  [1m[32m*[m /run/openrc: creating directory[K
+H     6.25  [1m[31m*[m checkpath: owner 'root:uucp' not found[K
+H     6.28  [1m[32m*[m Caching service dependencies[K ...
+H     6.61  [ ok ]
+H     6.64 Starting boot runlevel
+H     6.76 Starting default runlevel
+H     7.49  [1m[32m*[m Starting seatd[K ...
+H     7.57  [1m[32m*[m Starting udevd[K ...
+H     7.67  [1m[32m*[m Starting dbus[K ...
+H     7.87  [ ok ]
+H     7.96  [ ok ]
+H     9.40  [ ok ]
+H     9.64  [1m[32m*[m Starting driftwm[K ...
+H    11.80  [ ok ]
+H    12.18  [1m[32m*[m Starting hubd[K ...
+H    12.32  [1m[32m*[m Starting waybar[K ...
+H    14.31  [ ok ]
+H    14.34  [ ok ]
+H    21.22 CH t=15.8 TRIAL-INJECT driftwm stopped (wedged)
+H    66.54 CH t=61.1 TRIAL ROLLBACK scenario=hang after=60s true_state="driftwm stopped" guard_still_feeding=true
+H    66.67 CH t=61.2 STATUS Runlevel: sysinit
+H    66.67 CH t=61.2 STATUS Runlevel: default
+H    66.67 CH t=61.2 STATUS  dbus                                                  [  started 00:00:59 (0) ]
+H    66.67 CH t=61.2 STATUS  seatd                                                 [  started 00:00:59 (0) ]
+H    66.68 CH t=61.2 STATUS  udevd                                                 [  started 00:00:59 (0) ]
+H    66.68 CH t=61.2 STATUS  driftwm                                               [  started 00:00:57 (0) ]
+H    66.68 CH t=61.2 STATUS  waybar                                                [  started 00:00:54 (0) ]
+H    66.68 CH t=61.2 STATUS  hubd                                                  [  started 00:00:54 (0) ]
+H    66.68 CH t=61.2 STATUS Runlevel: boot
+H    66.68 CH t=61.2 STATUS Dynamic Runlevel: hotplugged
+H    66.68 CH t=61.2 STATUS Dynamic Runlevel: needed/wanted
+H    66.68 CH t=61.2 STATUS Dynamic Runlevel: manual
+H    67.71 [   66.127357] reboot: Restarting system
+H    67.78 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H    67.81 Booting from ROM...
+H    87.81 c[?7l[2JCH STAGE1 up=3.38
+H# trial finished
+H# vm exit code -9 after 88s, loadavg ['0.92', '0.86', '0.62']
+H# end wall=87.8s launches=1 suite_done=True

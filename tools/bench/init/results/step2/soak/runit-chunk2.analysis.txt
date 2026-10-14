@@ -1,0 +1,2 @@
+== /home/user/HubOS/tools/bench/init/results/step2/soak/runit-chunk2.log: 30 launch(es), first 600 s of each left out
+STUCK states in chunk: 0; SOAK-END lines: 0; launches: 1

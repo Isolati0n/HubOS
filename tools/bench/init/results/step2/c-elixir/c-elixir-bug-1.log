@@ -1,0 +1,30 @@
+H# start 2026-10-10 21:43:26 cand=c-elixir suite=bug cpus_seen=4 loadavg_at_start=['0.72', '0.67', '0.66']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.12 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     0.17 Booting from ROM...
+H     7.69 c[?7l[2JCH STAGE1 up=6.03
+H     7.74 CH CAND c-elixir pid1=s6-svscan + s6-rc + brain(elixir)
+H     7.78 CH SUP-START up=6.12
+H     7.92 CH t=0.1 CHAOS start cand=c-elixir suite=bug seed=140 cpus=2
+H    13.34 CH S6RC-UP up=11.68
+H    13.72 CH t=5.9 BOOT-OK up=12.06 ok=1 (seconds since kernel start; waited 5.6)
+H    13.84 CH t=6.0 SAMPLE zombies=0 nproc=101 init_side_fds=159 init_side_rss_kb=28300 memavail_kb=609684 init_side_cpu_ticks=235
+H    18.93 CH t=11.1 BRAIN-READY after 0.2s from BOOT-OK
+H    23.90 CH t=16.1 SAMPLE zombies=0 nproc=100 init_side_fds=161 init_side_rss_kb=52120 memavail_kb=566424 init_side_cpu_ticks=653
+H    30.73 CH t=22.9 STEP 1 fPolicyBug
+H    32.22 CH t=24.4 EV ev=1 fault=policy-bug target=brain rec=0.18 ok=1 fixed=0 brain_answers_again_after=0.8 services_kept_running=1 brain_process_replaced=0 udevd_restart_count_before=1 after=1
+H    34.01 CH t=26.2 SAMPLE zombies=0 nproc=101 init_side_fds=160 init_side_rss_kb=55456 memavail_kb=568100 init_side_cpu_ticks=787
+H    35.22 CH t=27.4 STEP 2 fPolicyBug
+H    36.48 CH t=28.6 EV ev=2 fault=policy-bug target=brain rec=0.14 ok=1 fixed=0 brain_answers_again_after=0.7 services_kept_running=1 brain_process_replaced=0 udevd_restart_count_before=1 after=1
+H    39.48 CH t=31.7 STEP 3 fPolicyBug
+H    40.92 CH t=33.1 EV ev=3 fault=policy-bug target=brain rec=0.14 ok=1 fixed=0 brain_answers_again_after=0.7 services_kept_running=1 brain_process_replaced=0 udevd_restart_count_before=1 after=1
+H    43.92 CH t=36.1 STEP 4 fPolicyBug
+H    44.14 CH t=36.3 SAMPLE zombies=0 nproc=102 init_side_fds=160 init_side_rss_kb=55612 memavail_kb=568224 init_side_cpu_ticks=866
+H    45.33 CH t=37.5 EV ev=4 fault=policy-bug target=brain rec=0.18 ok=1 fixed=0 brain_answers_again_after=0.7 services_kept_running=1 brain_process_replaced=0 udevd_restart_count_before=1 after=1
+H    48.33 CH t=40.5 STEP 5 fPolicyBug
+H    49.66 CH t=41.8 EV ev=5 fault=policy-bug target=brain rec=0.13 ok=1 fixed=0 brain_answers_again_after=0.7 services_kept_running=1 brain_process_replaced=0 udevd_restart_count_before=1 after=1
+H    52.66 CH t=44.8 SUITE-DONE
+H    54.22 CH t=46.4 SAMPLE zombies=0 nproc=101 init_side_fds=160 init_side_rss_kb=55844 memavail_kb=567972 init_side_cpu_ticks=955
+H    54.67 [   53.059481] reboot: Power down
+H# vm exit code 0 after 55s, loadavg ['0.64', '0.66', '0.66']
+H# end wall=54.7s launches=1 suite_done=True

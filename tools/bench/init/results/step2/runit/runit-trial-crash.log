@@ -1,0 +1,22 @@
+H# start 2026-10-10 17:52:26 cand=runit suite=trial cpus_seen=4 loadavg_at_start=['0.73', '0.55', '0.48']
+H# launch 1 skip=0 dur=600 cmd: qemu-system-x86_64 -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/qemu -L /tmp/claude-0/-home-user-HubOS/19ba1693-e641-5e2a-a3db-c8037607fada/scratchpad/ib/root/usr/share/seabios -machine q35,smm=off -accel tcg,thread=multi -smp 2 -m 1024 -nographic -nodefaults -no-user-config -display none -monitor none -serial s
+H     0.11 c[?7l[2J[0mSeaBIOS (version 1.16.3-debian-1.16.3-2)
+H     4.47 Booting from ROM..c[?7l[2JCH STAGE1 up=2.86
+H     4.52 CH CAND runit pid1=runit stage2=runsvdir
+H     4.57 CH SUP-START up=2.97
+H     4.63 - runit: $Id: 25da3b86f7bed4038b8a039d2f8e8c9bbcf0822b $: booting.
+H     4.63 - runit: enter stage: /etc/runit/1
+H     4.65 - runit: leave stage: /etc/runit/1
+H     4.65 - runit: enter stage: /etc/runit/2
+H     4.70 CH t=0.0 CHAOS start cand=runit suite=trial seed=131 cpus=2
+H    24.16 CH t=19.5 TRIAL CONFIRMED scenario=crash after=19.4s true_state="waybar not running"
+H    24.48 CH t=19.8 STATUS run: /run/service/dbus/: (pid 130) 20s; run: log: (pid 125) 20s
+H    24.48 CH t=19.8 STATUS down: /run/service/driftwm/: 0s, normally up, want up; run: log: (pid 132) 20s
+H    24.48 CH t=19.9 STATUS run: /run/service/guard/: (pid 133) 20s
+H    24.49 CH t=19.9 STATUS run: /run/service/hubd/: (pid 124) 20s; run: log: (pid 118) 20s
+H    24.49 CH t=19.9 STATUS run: /run/service/seatd/: (pid 126) 20s; run: log: (pid 121) 20s
+H    24.49 CH t=19.9 STATUS run: /run/service/udevd/: (pid 123) 20s; run: log: (pid 119) 20s
+H    24.50 CH t=19.9 STATUS run: /run/service/waybar/: (pid 122) 20s; run: log: (pid 120) 20s
+H# trial finished
+H# vm exit code -9 after 45s, loadavg ['0.73', '0.58', '0.50']
+H# end wall=44.5s launches=1 suite_done=True
