@@ -120,3 +120,30 @@ for f in sorted(glob.glob(f"{R}/s6rc-par-wd4c/*followB*.log")):
             t = re.sub(r"^H *[\d.]+ CH t=[\d.]+ ", "", l)[:700]
             if t not in seen:
                 seen.add(t); print("- " + t)
+
+# ---------------- follow-up 8 ----------------
+print("\n## Follow-up 8, Part A: the boot-clock history (s6rc-par-wd4d)\n")
+rows = []
+for f in sorted(glob.glob(f"{R}/s6rc-par-wd4d/*alert-clock-*.log")):
+    ls = L(f)
+    case = re.search(r"clock-(c\d)", f).group(1)
+    r = first(ls, r"RESULT stopped=(\w+) alert=\"([^\"]*)\" starts_since_first_kill=(\d+) stop_after=([-\d.]+)s")
+    spans = [int(m.group(1)) for l in ls for m in [re.search(r"restart-limit: driftwm death 5 in the history; the last 5 span (\d+) hundredths", l)] if m]
+    rows.append((case, {"c1": "4 deaths, +600 s, 1 more death", "c2": "5 deaths, -3600 s after the 2nd start", "c3": "5 deaths, +120 s after the 2nd start", "c4": "control, no jump"}[case],
+                 "yes" if r and r.group(1) == "true" else "no", r.group(3) if r else "-", r.group(2) if r else "-", f"{spans[0]/100:.1f} s" if spans else "-"))
+print(table(["case", "what", "stopped", "starts after the first kill", "alert text", "span of the 5th death in the boot-clock history"], rows))
+print()
+for pat, lab in [("s6rc-par-wd4d/*alert-mustnot*.log", "wd4d"), ("s6rc-par-wd4d/*alert-c5*.log", "wd4d"), ("s6rc-par-wd4a/*alert-c5*.log", "wd4a"), ("s6rc-par-wd4d/*alert-c6*.log", "wd4d"), ("s6rc-par-wd4d/*alert-c7*.log", "wd4d")]:
+    for f in sorted(glob.glob(f"{R}/{pat}")):
+        ls = L(f)
+        out = sorted({re.sub(r"^H *[\d.]+ CH t=[\d.]+ ", "", l)[:330] for l in ls if re.search(r"(MUSTNOT (part . result|spread \d|driftwm 4-deaths)|C5 RESULT|C5 death \d: desktop|C6 RESULT|C7 (RESULT|part 2 RESULT|ALL))", l)})
+        print(f"**{os.path.basename(f)}**: " + "; ".join(out) + "\n")
+
+print("\n## Follow-up 8, Part B: marker and alert (s6rc-par-wd4d)\n")
+for f in sorted(glob.glob(f"{R}/s6rc-par-wd4d/*markerB*.log")):
+    seen = set()
+    for l in L(f):
+        if "MARKERB" in l:
+            t = re.sub(r"^H *[\d.]+ CH t=[\d.]+ ", "", l)[:900]
+            if t not in seen:
+                seen.add(t); print("- " + t)

@@ -2113,6 +2113,9 @@ func c5() {
 		killp(pidOf(s), syscall.SIGKILL)
 		rec, ok := waitOK(60 * time.Second)
 		say("C5 death %d: desktop back ok=%v after %.1fs; alert exists=%v; history file: %q", i, ok, rec, exists(alertDir+"/"+s), strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","))
+		if !ok {
+			say("C5 DESKTOP NOT BACK after death %d: why=%q; svstat: %s; pids %s; driftwm log tail: %s; waybar log tail: %s; hubd log tail: %s", i, why(), svstatAll(), allPids(), strings.ReplaceAll(sh("tail -n 12 /var/log/driftwm/current 2>/dev/null"), "\n", " | "), strings.ReplaceAll(sh("tail -n 6 /var/log/waybar/current 2>/dev/null"), "\n", " | "), strings.ReplaceAll(sh("tail -n 6 /var/log/hubd/current 2>/dev/null"), "\n", " | "))
+		}
 		if i == 3 {
 			time.Sleep(2 * time.Second)
 			setClock(-3600)
@@ -2177,7 +2180,22 @@ func c7() {
 		say("C7 requested stop+start %d at %.1fs: down exit=%q up exit=%q; history file: %q; alert exists=%v", i, time.Since(t).Seconds(), a, b, strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","), exists(alertDir+"/"+s))
 	}
 	rec, ok := waitOK(60 * time.Second)
+	say("C7 ALL alert files: [%s]; why=%q; history files: waybar %q hubd %q driftwm %q; svstat: %s", alertFiles(), why(), strings.ReplaceAll(readFile(histDir+"/waybar"), "\n", ","), strings.ReplaceAll(readFile(histDir+"/hubd"), "\n", ","), strings.ReplaceAll(readFile(histDir+"/driftwm"), "\n", ","), svstatAll())
 	say("C7 RESULT after %.1fs: desktop ok=%v (%.1fs); alert exists=%v; history file exists=%v content %q; svdt (wall-clock tally, for comparison only): %s", time.Since(t).Seconds(), ok, rec, exists(alertDir+"/"+s), exists(histDir+"/"+s), strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ","), strings.ReplaceAll(sh("s6-svdt -n 8 /run/service/"+s), "\n", " | "))
+	// part 2: the same by hand on a service with no dependents (waybar), after clearing whatever the driftwm cycles left
+	for _, a := range strings.Fields(sh("ls " + alertDir)) {
+		say("C7 part 2 setup: PERSON-COMMAND hub-retry %s (left over from part 1: %q)", a, alertText(a))
+		sh("/bin/hub-retry " + a + " 2>&1")
+	}
+	waitOK(40 * time.Second)
+	t2 := time.Now()
+	for i := 1; i <= 6; i++ {
+		a := sh("s6-svc -wD -d /run/service/waybar 2>&1; echo $?")
+		b := sh("s6-svc -wU -u /run/service/waybar 2>&1; echo $?")
+		say("C7 part 2: waybar requested stop+start %d at %.1fs: down exit=%q up exit=%q; waybar history %q; alert files [%s]", i, time.Since(t2).Seconds(), a, b, strings.ReplaceAll(readFile(histDir+"/waybar"), "\n", ","), alertFiles())
+	}
+	rec2, ok2 := waitOK(30 * time.Second)
+	say("C7 part 2 RESULT after %.1fs: desktop ok=%v (%.1fs); alert files [%s]; waybar history file exists=%v", time.Since(t2).Seconds(), ok2, rec2, alertFiles(), exists(histDir+"/waybar"))
 }
 
 // ---------- follow-up 8, Part B: marker and alert (candidate s6rc-par-wd4d, hubd started the image's way) ----------
