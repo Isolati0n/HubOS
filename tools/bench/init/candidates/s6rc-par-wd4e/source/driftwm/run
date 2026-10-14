@@ -1,0 +1,9 @@
+#!/bin/sh
+exec 2>&1
+# follow-up 9, Part B: a copy of the first lines of the image's driftwm run (etc/s6/sv/driftwm/run lines 11 to 14), extended: started
+# by hand (a plain s6-svc -u) after the restart-limit stop, forget the stop marker AND the helper's history and alert.
+if [ -e /run/hub/driftwm-gave-up ] || [ -e /run/hubos/alerts/driftwm ]; then
+  rm -f /run/hub/driftwm-gave-up /run/hubos/alerts/driftwm /run/hubos/restarts/driftwm
+  echo "driftwm: started by hand after the crash-loop stop; marker, history and alert cleared"
+fi
+exec policy driftwm --backend udev -mem 100 -wait /run/seatd.sock,/run/udev/ready -notify 3

@@ -1,0 +1,38 @@
+#!/bin/sh
+# restart-limit SERVICE EXITCODE SIGNAL : called by the finish script of a service (BENCH CODE, a test helper, not the product's).
+# Follow-up 9 version (s6rc-par-wd4e). Rule of the owner: 5 deaths within 60 s -> the service is STOPPED (finish exits 125, documented:
+# SOURCE s6 2.15.1.0 doc/servicedir.html: as if s6-svc -O had been called), an alert file is written; for driftwm also the marker
+# /run/hub/driftwm-gave-up and the fixed screen message of the image's driftwm finish script (lines 27 to 32, copied word for word).
+# History: /run/hubos/restarts/SERVICE, one line per death = seconds on the BOOT clock (/proc/uptime, hundredths), the last 5 lines,
+# written atomically. The supervisor's wall-clock death tally is not read.
+# Not counted: (1) a requested stop (s6-svc -d clears "wanted up" first); (2) exit code 99 = a follower (waybar, hubd without --once)
+# whose follow-driftwm wrapper ended because the compositor went away or was replaced (follow-up 9: the compositor's doing, not the
+# follower's own). Any other end of a follower counts.
+svc=$1; code=$2
+dir=/run/hubos/restarts; alerts=/run/hubos/alerts; marker=/run/hub/driftwm-gave-up
+[ "$(s6-svstat -o wantedup "/run/service/$svc" 2>/dev/null)" = true ] || exit 0
+if [ "$code" = 99 ]; then echo "restart-limit: $svc ended because the compositor went away: not counted"; exit 0; fi
+mkdir -p "$dir" "$alerts"
+now=$(cut -d' ' -f1 /proc/uptime | tr -d .)
+{ tail -n 4 "$dir/$svc" 2>/dev/null; echo "$now"; } > "$dir/$svc.new" && mv -f "$dir/$svc.new" "$dir/$svc"
+n=$(wc -l < "$dir/$svc"); first=$(head -n 1 "$dir/$svc")
+span=$((now - first))
+echo "$svc: ended with exit code $code, signal $3"
+echo "restart-limit: $svc death $n in the history; the last $n span $span hundredths of a second on the boot clock"
+if [ "$n" -ge 5 ] && [ "$span" -ge 0 ] && [ "$span" -le 6000 ]; then
+  if [ "$svc" = driftwm ]; then
+    mkdir -p /run/hub && : > "$marker"
+# The fixed message (the image's driftwm finish script, lines 27 to 32). ESC[2J ESC[H clears the screen and puts the cursor at the top left.
+MSG1="HUB OS: the desktop (driftwm) crashed 5 times within one minute and was stopped."
+MSG2="It will not start again by itself, and the machine will NOT reboot."
+MSG3="hubd and the recovery terminal are still running."
+MSG4="To try the desktop again by hand: s6-svc -u /run/service/driftwm"
+{ printf '\033[2J\033[H\n'; printf '%s\n\n%s\n\n%s\n\n%s\n' "$MSG1" "$MSG2" "$MSG3" "$MSG4"; } > /dev/tty0 2>/dev/null
+printf '%s\n%s\n%s\n%s\n' "$MSG1" "$MSG2" "$MSG3" "$MSG4" > /dev/console 2>/dev/null
+    echo "driftwm: giving up: 5 deaths in 60 s; not restarting"
+  fi
+  echo "$svc stopped: tried 5 times in 60 s" > "$alerts/$svc.new" && mv -f "$alerts/$svc.new" "$alerts/$svc"
+  echo "restart-limit: $svc stopped for good (alert written$( [ "$svc" = driftwm ] && echo ', marker written, screen message written'))"
+  exit 125
+fi
+exit 0

@@ -1854,6 +1854,14 @@ func alertSuite(kase string) {
 	switch kase {
 	case "c1", "c2", "c3", "c4":
 		clockStorm(kase)
+	case "f1":
+		f1()
+	case "f4":
+		f4()
+	case "drift5":
+		drift5()
+	case "clean5":
+		clean5()
 	case "c5":
 		c5()
 	case "c6":
@@ -2261,4 +2269,115 @@ func markerB() {
 	out = sh("/bin/hub-retry driftwm 2>&1; echo exit=$?")
 	say("MARKERB 5. nothing wrong: hub-retry driftwm printed %q; %s", out, files())
 	say("EV ev=%d fault=markerB target=driftwm rec=%.2f ok=%d fixed=0", evn, time.Since(tr).Seconds(), b2i(ok))
+}
+
+// ---------- follow-up 9: followers, the compositor's own counting, hand start (candidate s6rc-par-wd4e) ----------
+
+func histAll() string {
+	var out []string
+	for _, s := range allSvc {
+		out = append(out, fmt.Sprintf("%s=%q", s, strings.ReplaceAll(readFile(histDir+"/"+s), "\n", ",")))
+	}
+	return strings.Join(out, " ")
+}
+
+// f1: the compositor flaps: stopped and started by hand 6 times in 12 s (s6-svc -d / -u). No alert may appear for anybody; the desktop must
+// come back by itself (no person-command).
+func f1() {
+	if !begin("f1") {
+		return
+	}
+	evn++
+	t := time.Now()
+	mode := "hubd started the image's way (--once)"
+	if strings.Contains(sh("cat /proc/cmdline"), "hub.hubdplain=1") {
+		mode = "hubd started the plain way (a follower)"
+	}
+	say("F1 start (%s): pids %s; alert files [%s]", mode, allPids(), alertFiles())
+	for i := 1; i <= 6; i++ {
+		a := sh("s6-svc -wD -d /run/service/driftwm 2>&1; echo $?")
+		b := sh("s6-svc -wU -u /run/service/driftwm 2>&1; echo $?")
+		say("F1 hand stop+start %d at %.1fs: down exit=%q up exit=%q; alert files [%s]", i, time.Since(t).Seconds(), a, b, alertFiles())
+	}
+	rec, ok := waitOK(60 * time.Second)
+	say("F1 RESULT (%s): after %.1fs the desktop is back by itself ok=%v (%.1fs); alert files [%s]; why=%q; histories: %s; pids %s; svstat: %s", mode, time.Since(t).Seconds(), ok, rec, alertFiles(), why(), histAll(), allPids(), svstatAll())
+	say("F1 helper lines (waybar log): %s", strings.ReplaceAll(sh("grep -a 'restart-limit' /var/log/waybar/current 2>/dev/null | tail -n 8"), "\n", " | "))
+	say("F1 helper lines (hubd log): %s", strings.ReplaceAll(sh("grep -a 'restart-limit' /var/log/hubd/current 2>/dev/null | tail -n 8"), "\n", " | "))
+}
+
+// f4: mixed: the compositor goes away once (killed; waybar ends because of that), then waybar crashes by itself 4 times in all in 60 s
+// (a kill and 3 crashing starts): no stop; then one more crash of waybar: stop.
+func f4() {
+	if !begin("f4") {
+		return
+	}
+	evn++
+	t := time.Now()
+	say("F4 start: pids %s; alert files [%s]", allPids(), alertFiles())
+	killp(pidOf("driftwm"), syscall.SIGKILL)
+	rec, ok := waitOK(60 * time.Second)
+	say("F4 the compositor went away once: desktop back ok=%v after %.1fs at %.1fs of the test; waybar history %q; alert files [%s]", ok, rec, time.Since(t).Seconds(), strings.ReplaceAll(readFile(histDir+"/waybar"), "\n", ","), alertFiles())
+	s0 := starts("waybar")
+	os.WriteFile(faultDir+"/waybar.crash", nil, 0o644)
+	killp(pidOf("waybar"), syscall.SIGKILL)
+	for starts("waybar")-s0 < 3 && time.Since(t) < 50*time.Second {
+		time.Sleep(10 * time.Millisecond)
+	}
+	os.Remove(faultDir + "/waybar.crash")
+	rec, ok = waitOK(30 * time.Second)
+	say("F4 waybar crashed by itself 4 times (kill + 3 crashing starts) at %.1fs of the test: desktop back ok=%v after %.1fs; waybar history %q; alert files [%s]", time.Since(t).Seconds(), ok, rec, strings.ReplaceAll(readFile(histDir+"/waybar"), "\n", ","), alertFiles())
+	killp(pidOf("waybar"), syscall.SIGKILL)
+	time.Sleep(4 * time.Second)
+	say("F4 RESULT: one more waybar crash (the 5th own death) at %.1fs of the test: alert files [%s] text %q; waybar history %q; svstat waybar: %s; driftwm alert exists=%v", time.Since(t).Seconds(), alertFiles(), alertText("waybar"), strings.ReplaceAll(readFile(histDir+"/waybar"), "\n", ","), sh("s6-svstat /run/service/waybar"), exists(alertDir+"/driftwm"))
+}
+
+// drift5: a compositor crash storm; the stop with the image's message; then a plain s6-svc -u by hand (no hub-retry).
+func drift5() {
+	if !begin("drift5") {
+		return
+	}
+	evn++
+	const marker = "/run/hub/driftwm-gave-up"
+	say("DRIFT5 start: pids %s", allPids())
+	vcs0 := sh("cat /dev/vcs 2>&1 | head -c 400 | tr -s ' \\n' ' '")
+	os.WriteFile(faultDir+"/driftwm.crash", nil, 0o644)
+	t := time.Now()
+	killp(pidOf("driftwm"), syscall.SIGKILL)
+	for time.Since(t) < 25*time.Second && !exists(alertDir+"/driftwm") {
+		time.Sleep(50 * time.Millisecond)
+	}
+	os.Remove(faultDir + "/driftwm.crash")
+	time.Sleep(15 * time.Second)
+	say("DRIFT5 storm: driftwm stopped after the 5th death; alert files [%s] (the followers must have none); marker=%v; histories: %s", alertFiles(), exists(marker), histAll())
+	say("DRIFT5 alert text %q; svstat driftwm: %s", alertText("driftwm"), sh("s6-svstat /run/service/driftwm"))
+	say("DRIFT5 screen: /dev/vcs before the storm: %q; /dev/vcs after: %q (the same text must be on the serial console above: 'HUB OS: the desktop (driftwm) crashed 5 times within one minute and was stopped.')", vcs0, sh("cat /dev/vcs 2>&1 | head -c 600 | tr -s ' \\n' ' '"))
+	say("DRIFT5 helper lines (driftwm log): %s", strings.ReplaceAll(sh("grep -a 'restart-limit\\|giving up' /var/log/driftwm/current 2>/dev/null | tail -n 12"), "\n", " | "))
+	// a plain s6-svc -u by hand
+	pre := allPids()
+	say("DRIFT5 PERSON: the harness plays the person: a plain `s6-svc -u /run/service/driftwm` (no hub-retry)")
+	tr := time.Now()
+	out := sh("s6-svc -wU -u /run/service/driftwm 2>&1; echo exit=$?")
+	rec, ok := waitOK(60 * time.Second)
+	say("DRIFT5 RESULT after the plain s6-svc -u: output=%q; desktop back by itself ok=%v after %.2fs (why=%q); marker=%v alert files [%s] histories: %s; pids before %s / after %s", out, ok, time.Since(tr).Seconds(), why(), exists(marker), alertFiles(), histAll(), pre, allPids())
+	_ = rec
+}
+
+// clean5: five CLEAN exits (exit code 0) of the compositor in 60 s stop it (the image's script does not count exit 0; the helper does).
+func clean5() {
+	if !begin("clean5") {
+		return
+	}
+	evn++
+	s0 := starts("driftwm")
+	os.WriteFile(faultDir+"/driftwm.exit0", nil, 0o644)
+	os.WriteFile(faultDir+"/driftwm.quit", nil, 0o644)
+	t := time.Now()
+	for time.Since(t) < 25*time.Second && !exists(alertDir+"/driftwm") {
+		time.Sleep(50 * time.Millisecond)
+	}
+	os.Remove(faultDir + "/driftwm.exit0")
+	os.Remove(faultDir + "/driftwm.quit")
+	time.Sleep(3 * time.Second)
+	say("CLEAN5 RESULT: five clean exits (exit code 0): stopped=%v after %.2fs; starts since=%d; alert %q; marker=%v; history %q; svstat: %s", exists(alertDir+"/driftwm"), time.Since(t).Seconds(), starts("driftwm")-s0, alertText("driftwm"), exists("/run/hub/driftwm-gave-up"), strings.ReplaceAll(readFile(histDir+"/driftwm"), "\n", ","), sh("s6-svstat /run/service/driftwm"))
+	say("CLEAN5 helper lines: %s", strings.ReplaceAll(sh("grep -a 'restart-limit\\|ended with' /var/log/driftwm/current 2>/dev/null | tail -n 12"), "\n", " | "))
 }

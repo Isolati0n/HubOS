@@ -115,6 +115,13 @@ func runService(name string, args []string) {
 		time.Sleep(50 * time.Millisecond)
 		os.Exit(1)
 	}
+	// STAND-IN CHANGE (follow-up 9): two more faults. NAME.exit0: exit with code 0 at once on every start (a clean exit, for the test that
+	// the helper counts exit code 0). NAME.quit: the running process exits with code 0 (read by the heartbeat tick, then removed).
+	if exists(faultDir + "/" + name + ".exit0") {
+		logf(name, "fault: clean exit on start")
+		time.Sleep(50 * time.Millisecond)
+		os.Exit(0)
+	}
 	if *wait != "" && !waitFor(name, strings.Split(*wait, ","), 300*time.Second) {
 		logf(name, "gave up waiting")
 		os.Exit(1)
@@ -134,6 +141,11 @@ func runService(name string, args []string) {
 			// STAND-IN CHANGE (follow-up 4, item 4): pid and sequence number in the log line, so that a lost or doubled
 			// line in the log service can be counted. Nothing else about the heartbeat changed.
 			logf(name, "heartbeat pid=%d seq=%d", os.Getpid(), seq)
+			if exists(faultDir + "/" + name + ".quit") {
+				os.Remove(faultDir + "/" + name + ".quit")
+				logf(name, "fault: quitting with exit code 0")
+				os.Exit(0)
+			}
 			if exists(faultDir+"/"+name+".deadlock") && !hung.get() { // follow-up 4: a hang with no CPU use (a deadlock), State S
 				hung.set()
 				os.Remove(faultDir + "/" + name + ".deadlock")
