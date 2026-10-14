@@ -1856,8 +1856,8 @@ func alertSuite(kase string) {
 		clockStorm(kase)
 	case "retry7":
 		retry7()
-	case "followB":
-		followB()
+	case "followB", "followB2":
+		followB(kase)
 	case "storm-driftwm":
 		stormC("driftwm", 100*time.Second)
 	case "storm-waybar":
@@ -2032,7 +2032,7 @@ func retry7() {
 
 // ---------- follow-up 7, Part B: hubd and the compositor stopped for good (candidate s6rc-par-wd4c: hubd started like the image does) ----------
 
-func followB() {
+func followB(kase string) {
 	if !begin("followB") {
 		return
 	}
@@ -2055,6 +2055,15 @@ func followB() {
 	say("FOLLOWB 1. driftwm stopped by the limit after %.2fs; alert=%q; marker exists=%v", time.Since(t).Seconds(), alertText("driftwm"), exists(marker))
 	time.Sleep(20 * time.Second)
 	say("FOLLOWB 2. 20 s later: hubd pid %d -> %d (same=%v) state %s; hubd ping=%q; waybar pid %d -> %d; svstat of hubd: %s; hubd log tail: %s", h0, pidOf("hubd"), pidOf("hubd") == h0, stateOf(pidOf("hubd")), ping(), w0, pidOf("waybar"), sh("s6-svstat /run/service/hubd"), hubdLog())
+	if kase == "followB2" { // the clean case: hubd keeps running through the stop and the compositor then comes back
+		pre := allPids()
+		tr := time.Now()
+		out := sh("/bin/hub-retry driftwm 2>&1")
+		rec, ok := waitOK(40 * time.Second)
+		say("FOLLOWB2 hub-retry driftwm output=%q; driftwm pid=%d; desktop ok=%v after %.2fs (why=%q); hubd pid %d -> %d (same=%v); hubd ping=%q; pids before %s / after %s; alert files [%s]; hubd log tail: %s", out, pidOf("driftwm"), ok, time.Since(tr).Seconds(), why(), h0, pidOf("hubd"), pidOf("hubd") == h0, ping(), pre, allPids(), alertFiles(), hubdLog())
+		_ = rec
+		return
+	}
 	// 3. hubd itself dies while the compositor is stopped (a person kills it, or it crashes once)
 	killp(pidOf("hubd"), syscall.SIGKILL)
 	time.Sleep(15 * time.Second)

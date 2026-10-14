@@ -1,0 +1,1 @@
+Not tested in the init comparison (follow-ups 6 and 7): the real driftwm, waybar, hubd and seatd; real hardware; what s6-rc itself thinks of a service stopped with exit code 125; the bar, hubd or the phone page reading the alert files.

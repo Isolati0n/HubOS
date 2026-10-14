@@ -82,3 +82,41 @@ for f in sorted(glob.glob(f"{R}/s6rc-par-confirm/*trial-*.log"), key=lambda p: (
         res = "no verdict line"
     rows.append((scn.group(1), scn.group(2), res, f"wedge injected {inj.group(1)} s after first working" if inj else "-", (f"true state 3 s after a late wedge: {aft.group(1)!r}" if aft else "")))
 print(table(["scenario", "seed", "verdict", "injection", "after the verdict"], rows))
+
+# ---------------- follow-up 7 ----------------
+print("\n## Follow-up 7, Part A: clock jumps on the death tally (s6rc-par-wd4a, each case in a fresh VM)\n")
+rows = []
+for f in sorted(glob.glob(f"{R}/s6rc-par-wd4a/*alert-clock-*.log")):
+    ls = L(f)
+    case = re.search(r"clock-(c\d)", f).group(1)
+    r = first(ls, r"RESULT stopped=(\w+) alert=\"([^\"]*)\" starts_since_first_kill=(\d+) stop_after=([-\d.]+)s; tally entries=(\d+); tally span of the last 5 deaths=(-?\d+) s")
+    kill1 = first(ls, r"death 1: kill of driftwm at uptime ([\d.]+)")
+    seen = [float(m.group(1)) for l in ls for m in [re.search(r"start \d+ seen at uptime ([\d.]+)", l)] if m]
+    k5 = first(ls, r"death 5: kill of driftwm at uptime ([\d.]+)")
+    jump = first(ls, r"CLOCK JUMP ([+-]\d+) s")
+    last_death = float(k5.group(1)) if k5 else (seen[-1] if seen else 0)
+    boot = last_death - float(kill1.group(1)) if kill1 else 0
+    rows.append((case, {"c1": "4 deaths, +600 s, 1 more death", "c2": "5 deaths, -3600 s after the 2nd start", "c3": "5 deaths, +120 s after the 2nd start", "c4": "control, no jump"}[case],
+                 "yes" if r and r.group(1) == "true" else "no", r.group(3) if r else "-", r.group(2) if r else "-", (r.group(6) + " s") if r else "-", f"{boot:.1f} s"))
+print(table(["case", "what", "stopped", "starts after the first kill", "alert text", "span of the last 5 deaths in the tally at the end of the run (c3: 126 s at the 5th death)", "span on the boot clock (first kill to last death or start seen)"], rows))
+
+print("\n## Follow-up 7, Part C: one hub-retry also retries dependents (s6rc-par-wd4b)\n")
+for f in sorted(glob.glob(f"{R}/s6rc-par-wd4b/*retry7*.log")):
+    ls = L(f)
+    seen = set()
+    for l in ls:
+        if re.search(r"RETRY7 (harmless|dependent|the one command|RESULT|seatd storm over)", l):
+            t = re.sub(r"^H *[\d.]+ CH t=[\d.]+ ", "", l)[:600]
+            if t not in seen:
+                seen.add(t); print("- " + t)
+
+print("\n## Follow-up 7, Part B: hubd and the stopped compositor (s6rc-par-wd4c)\n")
+for f in sorted(glob.glob(f"{R}/s6rc-par-wd4c/*followB*.log")):
+    ls = L(f)
+    print(f"**{os.path.basename(f)}**\n")
+    seen = set()
+    for l in ls:
+        if re.search(r"FOLLOWB", l):
+            t = re.sub(r"^H *[\d.]+ CH t=[\d.]+ ", "", l)[:700]
+            if t not in seen:
+                seen.add(t); print("- " + t)
