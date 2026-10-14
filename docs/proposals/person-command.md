@@ -1,6 +1,6 @@
 # PROPOSAL: one command for a person to clear a stopped service or the watcher latch (design note only)
 
-**Status: PROPOSAL / DESIGN NOTE. Nothing is built. Nothing here is in the image, in hubd or in the product.** Written 2026-10-14 for the owner (init comparison, follow-up 7, Part D); updated 2026-10-14 with the owner decisions of follow-up 7 (follow-up 8, Part C). `HUB-OS.md` wins if this file disagrees with it. Labels: **TESTED** (a command was run; the log is named), **SOURCE** (read in a file, named), **BELIEVED**, **UNKNOWN**. "The command" below is a working description only; the name, the place and the spelling are not decided (see "What is still open").
+**Status: PROPOSAL / DESIGN NOTE. Nothing is built. Nothing here is in the image, in hubd or in the product.** Written 2026-10-14 for the owner (init comparison, follow-up 7, Part D); updated 2026-10-14 with the owner decisions of follow-up 7 (follow-up 8, Part C) and of follow-up 8 (follow-up 9, Part C). `HUB-OS.md` wins if this file disagrees with it. Labels: **TESTED** (a command was run; the log is named), **SOURCE** (read in a file, named), **BELIEVED**, **UNKNOWN**. "The command" below is a working description only; the name, the place and the spelling are not decided (see "What is still open").
 
 ## 0. Owner decisions that shape this note (2026-10-13, answers to the follow-up 7 questions; recorded in the run log, follow-up 8)
 
@@ -9,6 +9,14 @@
 - **Names:** `driftwm` clears the alert, the marker **and** the watcher latch (and starts the compositor); `watcher` clears the latch alone (and the "capped" message); every other service name clears that service's alert (and the dependents' alerts, section 2).
 - **The command empties the kill budget when it clears the latch, and says so** in its output (the watcher may then kill up to 3 more times in the next 10 minutes).
 - hubd is started the image's way in the bench (`follow-driftwm --once`), so the bench now matches the image for hubd.
+
+## 0b. Owner decisions of follow-up 8, and what the tests of follow-up 9 changed here (2026-10-14)
+
+- **Followers do not count when the compositor is the cause.** A follower (waybar, and hubd where it is not started with `--once`) whose `follow-driftwm` wrapper ends because the compositor went away or was replaced exits with a distinct code (99 in the bench) that the restart-limit helper ignores; a hand restart of the compositor does not count against them either. TESTED in follow-up 9 (bench copy of `follow-driftwm`). Consequence for this note: after a compositor stop the command no longer finds spurious alerts on waybar or hubd; a dependent's alert now means the dependent itself crashed 5 times in 60 s. The dependents logic of section 2, case 3, stays for the real case (the seatd case).
+- **A plain `s6-svc -u` of the compositor also clears the helper's history, the alert and the marker** (bench copy of the image's driftwm `run` script, TESTED in follow-up 9). So a person who does not use the command and just starts the compositor by hand (as the on-screen message tells them: `s6-svc -u /run/service/driftwm`) gets a clean state. The command remains the way to restart anything else, to clear the latch, and to retry dependents. Open: the same clean-up for other services started by a plain `s6-svc -u` (the bench does it only for driftwm).
+- **The helper replaces the image's driftwm counter and keeps its fixed screen message word for word** (written to `/dev/tty0` and `/dev/console`; TESTED: the four lines appeared on the serial console and in the virtual console). The message tells the person to type `s6-svc -u /run/service/driftwm`, so that sentence must stay true after adoption (it is, see above). Whether the message should instead name the person's command is open.
+- **hubd does not read the alert files yet** (owner decision). The bar and the phone page are not given the alerts by this design note.
+- **A lost history file delaying the stop by up to 4 deaths is accepted.**
 
 ## 1. What exists today (test hooks in the init-comparison bench, not product)
 
@@ -58,3 +66,6 @@ The person types (or clicks) one thing and a service name; they should not need 
 - Logging: where the command writes what it did (the bench hooks only print).
 - A service stopped on purpose by a person (not by the limit) is a different path; the command must not undo it (BELIEVED to be handled by "no alert: nothing to do"; the bench hook prints the state and does nothing, TESTED for a running service only).
 - Confirmation: none is proposed (the command only starts what the rule stopped); the owner may want one for the latch case because the budget is emptied.
+- (follow-up 9) The command and the plain `s6-svc -u` both clear the compositor's state. If a person runs the command for `driftwm` while the compositor is running and healthy, nothing is changed and it says so (TESTED for the bench hook, follow-up 8).
+- (follow-up 9) The exit code that marks "the compositor is the cause" (99 in the bench) is a convention between `follow-driftwm` and the finish script; it must be written down where both live, and no other service may use it.
+

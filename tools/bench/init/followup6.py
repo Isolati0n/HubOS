@@ -147,3 +147,17 @@ for f in sorted(glob.glob(f"{R}/s6rc-par-wd4d/*markerB*.log")):
             t = re.sub(r"^H *[\d.]+ CH t=[\d.]+ ", "", l)[:900]
             if t not in seen:
                 seen.add(t); print("- " + t)
+
+# ---------------- follow-up 9 ----------------
+print("\n## Follow-up 9: followers, the compositor's own counting, hand start (s6rc-par-wd4e)\n")
+def lines_of(pat):
+    out = []
+    for f in sorted(glob.glob(f"{R}/s6rc-par-wd4e/{pat}")):
+        out.append((os.path.basename(f), L(f)))
+    return out
+for pat, rx in [("*alert-f1-*.log", r"F1 (RESULT|helper lines)"), ("*alert-drift5-*.log", r"DRIFT5 (storm|alert text|RESULT)"), ("*alert-storm-waybar-*.log", r"STORM-C waybar (ALERT|hub-retry)"),
+                ("*alert-f4-*.log", r"F4 "), ("*alert-clean5-*.log", r"CLEAN5 RESULT"), ("*alert-clock-*.log", r"RESULT stopped"), ("*alert-mustnot*.log", r"MUSTNOT (part . result|spread \d|driftwm 4-deaths)"),
+                ("*alert-c5-*.log", r"C5 RESULT|C5 death \d: desktop"), ("*alert-c6-*.log", r"C6 RESULT"), ("*alert-c7-*.log", r"C7 (RESULT|ALL|part 2 RESULT)")]:
+    for name, ls in lines_of(pat):
+        out = sorted({re.sub(r"^H *[\d.]+ CH t=[\d.]+ ", "", l)[:360] for l in ls if re.search(rx, l)})
+        print(f"**{name}**: " + "; ".join(out) + "\n")
