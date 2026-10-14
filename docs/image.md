@@ -1,5 +1,7 @@
 # The Phase B images: build and test (slices S0 to S3, per-slot kernels, recovery kernel, boot-loop breaker, update keyring, the first hub image)
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 **Status:** built and tested in the build environment (`docs/environment.md`): QEMU in software emulation, **no KVM**, no real hardware. Everything here follows `docs/proposals/phase-b-image.md` and the owner's answers recorded in it ("Owner decisions (2026-10-02)"). Times are emulation times on 4 CPUs and say nothing about real machines. `HUB-OS.md` wins if anything here disagrees with it.
 
 Labels: **TESTED** (the command is in the runner or shown below), **BELIEVED**, **UNKNOWN**.

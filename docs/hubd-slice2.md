@@ -1,5 +1,7 @@
 # hubd second slice
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 ## Owner decisions (2026-10-05, round 5)
 
 These answer the questions at the end of section 17. They are the owner's decisions, recorded by the lead agent from the owner's message, and also recorded in `HUB-OS.md`.

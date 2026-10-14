@@ -21,7 +21,7 @@ This document builds on `docs/proposals/node-helper-api.md` (text clipboard brid
 3. **Two facts I found in the source that change the design.** (a) The display program on the nodes (wayvnc with neatvnc) can carry **text only** through the RFB clipboard: neatvnc advertises only the "text" format and wayvnc passes only `text/plain;charset=utf-8` (SOURCE). So **images and file references from nodes cannot arrive through the display connection**; they need a new call in the node helper API (a proposal in section 6). (b) Every viewer connected to wayvnc gets its **own** clipboard watcher in wayvnc, and every watcher broadcasts to **all** viewers (SOURCE). With two viewers (the hub and the phone) one copy on the node produces **two** announcements, and a paste made through one viewer comes back to the other as a "new copy" (BELIEVED from the source, not run). So the store must remove duplicates and recognise echoes of what the hub itself sent.
 4. **Echo loops (what I tested).** With a fake node that speaks the RFB Extended Clipboard messages, an echo of a text the hub had just sent was recognised and not stored as a new entry (TESTED against my own stand-in, which proves only that my design is consistent, not that real wayvnc behaves the same). Because node copies are never forwarded automatically, a real loop cannot start; the echo rule only keeps the history clean.
 5. **What happens when something fails (proposal, section 8).** The bar item never waits for the store: it answers from its last known state and shows it marked STALE. The picker asks the store with a 500 ms limit and says "history not answering" instead of freezing. A session worker that dies is restarted by the conductor; its machine is marked "stale" in the list, and on reconnect it asks the node for the current clipboard once ("peek") so a copy made during the gap is not lost. If the store dies, the list is empty after the restart (history is RAM only); the pinned entries come back from disk and the owner gets a notification that history was lost.
-6. **Size (proposal).** About 500 text entries and about 100 MB for pictures and file references. At the limit the oldest unpinned entry of that kind goes first. An item that is too big is not stored, but a one-line record ("12 MB from ai-1, too large") is, so you can see it happened. The 500 text entries have no byte limit yet: with the helper API's 1 MiB per item the worst case is 500 MiB of RAM. That needs an owner decision (question 12).
+6. **Size (proposal).** About 500 text entries and about 100 MB for pictures and file references. At the limit the oldest unpinned entry of that kind goes first. An item that is too big is not stored, but a one-line record ("12 MB from gaming-1, too large") is, so you can see it happened. The 500 text entries have no byte limit yet: with the helper API's 1 MiB per item the worst case is 500 MiB of RAM. That needs an owner decision (question 12).
 7. **What I could and could not test here.** TESTED: `wl-copy`/`wl-paste` behaviour with text, PNG and `text/uri-list` (types, change events, cleared selection, killed holder, 6 MB and 25 MB images, plain-text paste, a watcher eating a paste-once item); the RFB Extended Clipboard message flow against a fake server, including a 9 MB text, a silent node and a connection cut in the middle. NOT tested: real wayvnc and neatvnc, the session layer (does not exist), driftwm, Waybar and wofi (tested earlier by other sessions, not re-run), the QEMU hub image (a full run takes hours and other helpers use the machine).
 8. **The first slice that can be built and tested here** is in section 13: the store plus a hub-clipboard watcher plus a command-line client, text only, with unit tests for eviction, pins on disk and echo, then the bar item and picker, then the fake-node worker.
 9. **Questions for the owner** (batched): section 14. The main ones: how images and files get from nodes at all (new helper calls?); whether a node copy also changes the hub's own clipboard; the chord and the key for plain paste; limits; whether "paste" also types Ctrl+V on the node.
@@ -123,7 +123,7 @@ Messages (all BELIEVED/proposal):
 {"id":2,"cmd":"list","filter":"error 5","limit":50,"kinds":["text","image","files"]}
 {"id":3,"cmd":"get","item":"c-000123","as":"text"}
 {"id":4,"cmd":"pin","item":"c-000123","on":true}
-{"id":5,"cmd":"paste","item":"c-000123","to":["hub","ai-1","desk-2"],"plain":false}
+{"id":5,"cmd":"paste","item":"c-000123","to":["hub","gaming-1","desk-2"],"plain":false}
 {"id":6,"cmd":"feed"}                       // the connection then receives a line whenever the summary changes
 {"id":7,"cmd":"status"}
 ```
@@ -131,7 +131,7 @@ Messages (all BELIEVED/proposal):
 and, for workers and the hub watcher (they connect to the store, the store never connects out):
 
 ```json
-{"cmd":"hello","who":"worker","machine":"ai-1"}
+{"cmd":"hello","who":"worker","machine":"gaming-1"}
 // store -> worker:
 {"cmd":"set","req":"p-77","item":"c-000123","kind":"text","data":"..."}
 // worker -> store:
@@ -149,7 +149,7 @@ and, for workers and the hub watcher (they connect to the store, the store never
   "id": "c-000123",
   "seq": 123,
   "t_ms": 1791285228327,
-  "source": {"kind": "node", "machine": "ai-1"},
+  "source": {"kind": "node", "machine": "gaming-1"},
   "kind": "text",
   "mime": "text/plain;charset=utf-8",
   "bytes": 28,
@@ -236,7 +236,7 @@ Limits (proposal): at most 32 changes kept on the node; `wait` at most 25 s; a c
 ### 7.1 Picker (proposal: first a wofi list; an own picker later)
 
 - **wofi dmenu** already works as the machine list (SOURCE `cmd/hubd/slice2.go`; `docs/bar-findings.md`): list on stdin, the picked line on stdout, search is built in (wofi `--matching` modes `contains`, `multi-contains`, `fuzzy`; `--insensitive`; SOURCE `wofi(1)` from `wofi 1.4.1-1build2`, unpacked 2026-10-06).
-- A line per item, single line only: `ai-1   12:03   café ✓ 日本 line2` plus an index token at the start, because a picked line comes back as text (TESTED earlier for headings: "a heading can be picked", `docs/bar-findings.md` 320-321). Multi-line texts are shown on one line with `↵`; long ones are cut at about 100 characters (the line, not the stored text).
+- A line per item, single line only: `gaming-1   12:03   café ✓ 日本 line2` plus an index token at the start, because a picked line comes back as text (TESTED earlier for headings: "a heading can be picked", `docs/bar-findings.md` 320-321). Multi-line texts are shown on one line with `↵`; long ones are cut at about 100 characters (the line, not the stored text).
 - **wofi has a feature to show images in dmenu lines** (an "image escape" in the line, enabled with `--allow-images`; `wofi(1)` says "Allows image escape sequences to be processed and rendered"). The exact syntax and how big the picture is were **not** tested (I did not run wofi; it needs GTK libraries I did not unpack). **UNKNOWN** whether a thumbnail per line works under driftwm and how large it can be. An own picker (a layer-shell program) is the alternative (question 9).
 - **wofi remembers picks and reorders by them** unless given `--cache-file /dev/null` (SOURCE (repo) `docs/bar-findings.md` 320): history order must be ours, so the picker passes that. (SOURCE (repo); it is the same lesson as for the machine list.)
 - **Only one picker at a time:** the bar script guards with `pgrep -x wofi` (SOURCE (repo) `bar-findings.md` 325-334).
@@ -257,7 +257,7 @@ What "paste to node X" means here is **set node X's clipboard** (proposal): `cli
 | a node, text | worker: RFB Notify, answer the Request with the Provide | **at most 10,000,000 bytes** (section 3, item 8), lower by the owner's cap |
 | a node, image | helper API (a call that sets a non-text clipboard does not exist; proposal `PUT /v1/clipboard/item`, section 6 style) | UNKNOWN; question 4 |
 | a node, files | the file-transfer flow: destination, tickets, receive (SOURCE (repo) `file-transfer.md` 2.2) | as there; the hub carries no bytes |
-| several nodes | one `set` per node, in parallel, each with its own deadline; the result per node is shown ("ok on ai-1, timeout on nas") | each at most the deadline of section 8 |
+| several nodes | one `set` per node, in parallel, each with its own deadline; the result per node is shown ("ok on gaming-1, timeout on nas") | each at most the deadline of section 8 |
 
 An image or file item pasted as plain text is shown as its description (a text label or the file paths, one per line); an image has no plain-text form, so the plain option is greyed out in the picker (proposal; question 3).
 
@@ -280,7 +280,7 @@ The store keeps the text of an item as UTF-8 with no formatting (the owner's lis
 | **Bar feed (`clipctl feed`)** | Waybar restarts a custom module's command (`restart-interval`; SOURCE `waybar-custom(5)` from Waybar 0.9.24, read 2026-10-06); the bar shows the last line | the feed writes at most one line per second (same rule as `hubd feed`) | Waybar | 1 s |
 | **The pins file** | A pin that cannot be saved stays in RAM and the bar shows "pins not saved". A bad file at start is renamed aside, the store starts with no pins, a notification says so. | The write runs in its own thread with a 5 s deadline; `add` and `list` never wait for it | at the next change | 5 s |
 | **Hub clipboard set (`wl-copy`)** | "could not set the hub clipboard" on the bar | `wl-copy` is run with a 2 s deadline and its holder process is not waited for beyond that; TESTED that the holder stays and exits when the next copy replaces it (SOURCE (repo) `node-helper-api.md` 8.8; the init must collect orphans: BELIEVED for s6) | | 2 s |
-| **A paste to a node** | The picker action reports per node: "ok" or "ai-1: no answer in 5 s". A node that is down is skipped at once ("nas is down") because `hubd` knows. | the worker answers `timeout` at the deadline | | 5 s per node, nodes in parallel |
+| **A paste to a node** | The picker action reports per node: "ok" or "gaming-1: no answer in 5 s". A node that is down is skipped at once ("nas is down") because `hubd` knows. | the worker answers `timeout` at the deadline | | 5 s per node, nodes in parallel |
 | **The helper-API call** (images, files) | The machine's non-text copies are missed; the list shows the machine with a "no image capture" mark | long poll `wait` + 5 s | the hub retries with backoff | `wait` + 5 s |
 
 Two cross-checks with decisions already taken:
@@ -302,7 +302,7 @@ Two cross-checks with decisions already taken:
 | New text and 500 text entries exist | The oldest **unpinned** text entry is removed first. |
 | New image and the image budget would be exceeded | The oldest unpinned image or file entries are removed until it fits. |
 | Everything of that kind is pinned | The new item is **not stored**; the bar shows "clipboard full of pins" and a notification is sent once. (Alternative: evict the oldest pin: not proposed because it destroys what the owner asked to keep.) |
-| A single item above the per-item cap | **Not stored.** A record with `state: too_large`, size and source is stored (a few bytes), so the list says "12 MB from ai-1: too large". |
+| A single item above the per-item cap | **Not stored.** A record with `state: too_large`, size and source is stored (a few bytes), so the list says "12 MB from gaming-1: too large". |
 | A single item above the whole budget | Same as above. |
 | "Oldest" | By `last_t_ms`: an entry copied again moves to the top. |
 | Per-item caps | Text: 1 MiB (proposed in `node-helper-api.md`; the RFB path has a hard wall of 10,000,000 bytes, section 3 item 8). Image: 25 MB (a 4K noise PNG I made is 24.9 MB; real screenshots are far smaller; **a guess**). Files: 100 entries. All three are questions. |
@@ -360,7 +360,7 @@ Whether a node copy also **changes the hub's own clipboard** (as it does today t
 2. At "paste files" in node B's window, `hubd` asks B's helper for the open folder (`destination`), signs a one-time ticket per item (under the new decision the signing of requests is gone; whether the **ticket** keeps its signature is a question for that proposal: the owner said requests are not signed, and a ticket is not a request, but I did not decide), and tells B to fetch from A. A and B transfer directly.
 3. The receiver writes into the open folder with the rules R1-R8 (no overwrite, `name (2)`, a temporary name, size check).
 
-**What this document adds:** a `files` item in the history records (machine, list, time) and shows it in the picker as "5 files from nas (ai-1 selection) 12:03"; "paste to X" starts step 2 for the chosen target. A `files` item **expires in the sense that the source files may have changed**: before step 2 the hub asks A to confirm that each path still exists with the same size; otherwise the paste fails with a plain message ("a.txt changed on nas"). BELIEVED/proposal.
+**What this document adds:** a `files` item in the history records (machine, list, time) and shows it in the picker as "5 files from nas (gaming-1 selection) 12:03"; "paste to X" starts step 2 for the chosen target. A `files` item **expires in the sense that the source files may have changed**: before step 2 the hub asks A to confirm that each path still exists with the same size; otherwise the paste fails with a plain message ("a.txt changed on nas"). BELIEVED/proposal.
 
 **Not solved here:** which node GUI reports what is highlighted (the adapter, UNKNOWN until a GUI exists); the drag gesture (file-transfer section 3, separate). The file bytes **never** pass through `clipd` or the hub.
 
@@ -466,7 +466,7 @@ Fake nodes that exist: `tools/fakenode` only accepts and closes TCP connections 
 
 **Slice C2: bar item and picker.** `clipctl feed` with STALE after 3 s; Waybar module in a test config; wofi picker with the single-instance guard, `timeout`, `--cache-file /dev/null`; actions `to hub` and `plain`. Tests: feed output when `clipd` is stopped, hung (SIGSTOP) and back; the picker returns after 500 ms of silence with a message; a click on the module opens the picker (the earlier xdotool-like click test pattern, SOURCE (repo) `docs/image.md` "The wofi menu").
 
-**Slice C3: node text through a worker.** Fake RFB node (Go) with Extended Clipboard; a worker stand-in speaking the flow of section 3; `add` from it; `paste --to ai-1` through the worker; echo registry; duplicate announcement from a second viewer simulated by the fake node; deadline tests (silent node, cut connection, 10,000,000-byte wall).
+**Slice C3: node text through a worker.** Fake RFB node (Go) with Extended Clipboard; a worker stand-in speaking the flow of section 3; `add` from it; `paste --to gaming-1` through the worker; echo registry; duplicate announcement from a second viewer simulated by the fake node; deadline tests (silent node, cut connection, 10,000,000-byte wall).
 
 **Later slices (not first):** images from the hub; images from nodes through the helper API; file references with the file-transfer flow; own picker with thumbnails; Ctrl+V sending; phone web page view (not asked).
 

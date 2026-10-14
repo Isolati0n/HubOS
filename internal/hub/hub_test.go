@@ -394,19 +394,19 @@ func (r *rig) setStatus(id string, st status) {
 }
 
 func TestOpenUpMachinePlacesWindowAtHome(t *testing.T) {
-	r := newRig(t, machineDoc("ai-1", "AI Box", "ai", "moonlight", 21002, 2000, -1500, ""))
-	r.setStatus("ai-1", statusUp)
-	res := r.h.Open("ai-1")
+	r := newRig(t, machineDoc("gaming-1", "Gaming Box", "gaming", "moonlight", 21002, 2000, -1500, ""))
+	r.setStatus("gaming-1", statusUp)
+	res := r.h.Open("gaming-1")
 	if res.Action != "open" || !strings.Contains(res.Message, "at home (2000, -1500)") || !strings.Contains(res.Message, "matched by name") {
 		t.Fatalf("got %+v", res)
 	}
 	if len(r.f.moves) != 1 || r.f.moves[0][1] != 2000 || r.f.moves[0][2] != -1500 {
 		t.Errorf("moves: %v", r.f.moves)
 	}
-	if got := r.l.calls[0]; strings.Join(got, " ") != "foot --app-id=hubos-ai-1 --title=AI Box -- sleep infinity" {
+	if got := r.l.calls[0]; strings.Join(got, " ") != "foot --app-id=hubos-gaming-1 --title=Gaming Box -- sleep infinity" {
 		t.Errorf("command: %q", got)
 	}
-	if _, ok := r.h.WindowOf("ai-1"); !ok {
+	if _, ok := r.h.WindowOf("gaming-1"); !ok {
 		t.Error("window not recorded")
 	}
 	if _, err := os.Stat(r.rec); err != nil {
@@ -415,30 +415,30 @@ func TestOpenUpMachinePlacesWindowAtHome(t *testing.T) {
 }
 
 func TestOpenAgainGoesToExistingWindow(t *testing.T) {
-	r := newRig(t, machineDoc("ai-1", "AI Box", "ai", "moonlight", 21002, 10, 10, ""))
-	r.setStatus("ai-1", statusUp)
-	r.h.Open("ai-1")
-	res := r.h.Open("ai-1")
+	r := newRig(t, machineDoc("gaming-1", "Gaming Box", "gaming", "moonlight", 21002, 10, 10, ""))
+	r.setStatus("gaming-1", statusUp)
+	r.h.Open("gaming-1")
+	res := r.h.Open("gaming-1")
 	if res.Action != "went" || r.l.count() != 1 || len(r.f.windows) != 1 {
 		t.Errorf("got %+v launches=%d windows=%d", res, r.l.count(), len(r.f.windows))
 	}
 	// Still allowed when the machine has since gone down.
-	r.setStatus("ai-1", statusDown)
-	if res := r.h.Open("ai-1"); res.Action != "went" {
+	r.setStatus("gaming-1", statusDown)
+	if res := r.h.Open("gaming-1"); res.Action != "went" {
 		t.Errorf("down machine with an open window: %+v", res)
 	}
 }
 
 func TestDoubleClickWhileStartingDoesNothing(t *testing.T) {
-	r := newRig(t, machineDoc("ai-1", "AI Box", "ai", "moonlight", 21002, 10, 10, ""))
-	r.setStatus("ai-1", statusUp)
+	r := newRig(t, machineDoc("gaming-1", "Gaming Box", "gaming", "moonlight", 21002, 10, 10, ""))
+	r.setStatus("gaming-1", statusUp)
 	r.l.gate = make(chan struct{})
 	first := make(chan OpenResult)
-	go func() { first <- r.h.Open("ai-1") }()
+	go func() { first <- r.h.Open("gaming-1") }()
 	for i := 0; r.l.count() == 0 && i < 200; i++ {
 		time.Sleep(10 * time.Millisecond)
 	}
-	second := r.h.Open("ai-1")
+	second := r.h.Open("gaming-1")
 	if second.Action != "busy" || !strings.Contains(second.Message, "already opening") {
 		t.Errorf("second open: %+v", second)
 	}
@@ -452,20 +452,20 @@ func TestDoubleClickWhileStartingDoesNothing(t *testing.T) {
 }
 
 func TestDownMachineRefusedAndMessageShown(t *testing.T) {
-	r := newRig(t, machineDoc("ai-1", "AI Box", "ai", "moonlight", 21002, 10, 10, ""))
-	r.setStatus("ai-1", statusDown)
-	res := r.h.Open("ai-1")
-	if res.Action != "refused" || res.Message != "AI Box is down, not opened" {
+	r := newRig(t, machineDoc("gaming-1", "Gaming Box", "gaming", "moonlight", 21002, 10, 10, ""))
+	r.setStatus("gaming-1", statusDown)
+	res := r.h.Open("gaming-1")
+	if res.Action != "refused" || res.Message != "Gaming Box is down, not opened" {
 		t.Errorf("got %+v", res)
 	}
 	if r.l.count() != 0 {
 		t.Error("a viewer was started for a down machine")
 	}
 	st := r.h.Status()
-	if st.Class != "alert" || !strings.HasPrefix(st.Tooltip, "AI Box is down, not opened") {
+	if st.Class != "alert" || !strings.HasPrefix(st.Tooltip, "Gaming Box is down, not opened") {
 		t.Errorf("status: %+v", st)
 	}
-	if l := r.h.List(false, ""); l[0] != "! AI Box is down, not opened" {
+	if l := r.h.List(false, ""); l[0] != "! Gaming Box is down, not opened" {
 		t.Errorf("first menu line: %q", l[0])
 	}
 }
@@ -495,8 +495,8 @@ func TestNotCheckedAndNothingToOpen(t *testing.T) {
 
 func TestEndClosesOnlyTheLocalWindow(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""),
-		machineDoc("b", "B", "ai", "moonlight", 1, 2, 2, ""))
+		machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""),
+		machineDoc("b", "B", "gaming", "moonlight", 1, 2, 2, ""))
 	r.setStatus("a", statusUp)
 	r.setStatus("b", statusUp)
 	r.h.Open("a")
@@ -528,7 +528,7 @@ func TestEndClosesOnlyTheLocalWindow(t *testing.T) {
 
 func TestRestartAdoptsAndOpensNothing(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""),
+		machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""),
 		machineDoc("f", "F", "nas", "files", 1, 2, 2, "")) // comparison viewer
 	r.setStatus("a", statusUp)
 	r.setStatus("f", statusUp)
@@ -566,7 +566,7 @@ func TestRestartAdoptsAndOpensNothing(t *testing.T) {
 }
 
 func TestDriftwmRestartClearsRecord(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.Open("a")
 	go r.h.RunWatch(r.ctx)
@@ -599,7 +599,7 @@ func TestDriftwmRestartClearsRecord(t *testing.T) {
 }
 
 func TestWindowClosedByTheUserIsForgotten(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.Open("a")
 	w, _ := r.h.WindowOf("a")
@@ -674,7 +674,7 @@ func TestViewerThatIgnoresTheNameUsesComparison(t *testing.T) {
 }
 
 func TestNamedViewerThatIgnoresItsNameFailsWithAdvice(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.WindowWait = 400 * time.Millisecond
 	r.l.script = func([]string) { r.f.add("not-our-name", "t") }
@@ -685,7 +685,7 @@ func TestNamedViewerThatIgnoresItsNameFailsWithAdvice(t *testing.T) {
 }
 
 func TestNoWindowAppears(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.WindowWait = 300 * time.Millisecond
 	r.h.set.LateGrace = 0 // no grace period: the old behaviour, a plain failure
@@ -700,7 +700,7 @@ func TestNoWindowAppears(t *testing.T) {
 }
 
 func TestWindowTooTallIsShrunkClearOfTheBar(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.BarHeight = 30
 	r.l.script = func([]string) {
@@ -717,7 +717,7 @@ func TestWindowTooTallIsShrunkClearOfTheBar(t *testing.T) {
 }
 
 func TestInventoryTextStaysOneArgument(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.h.byID["a"].m.Name = `x"; touch /tmp/pwned; echo "`
 	r.setStatus("a", statusUp)
 	r.h.Open("a")
@@ -731,8 +731,8 @@ func TestInventoryTextStaysOneArgument(t *testing.T) {
 // ("unnamed": sets_name false, no title_match) start one at a time.
 func TestSecondLaunchWaitsForTheFirst(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A", "ai", "files", 1, 1, 1, ""),
-		machineDoc("b", "B", "ai", "files", 1, 2, 2, ""))
+		machineDoc("a", "A", "gaming", "files", 1, 1, 1, ""),
+		machineDoc("b", "B", "gaming", "files", 1, 2, 2, ""))
 	r.setStatus("a", statusUp)
 	r.setStatus("b", statusUp)
 	r.l.gate = make(chan struct{})
@@ -756,8 +756,8 @@ func TestSecondLaunchWaitsForTheFirst(t *testing.T) {
 // a restore after a compositor restart start all the viewers at once.
 func TestNamedViewersStartAtTheSameTime(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""),
-		machineDoc("b", "B", "ai", "moonlight", 1, 2, 2, ""))
+		machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""),
+		machineDoc("b", "B", "gaming", "moonlight", 1, 2, 2, ""))
 	r.setStatus("a", statusUp)
 	r.setStatus("b", statusUp)
 	r.l.gate = make(chan struct{})

@@ -1,5 +1,5 @@
 # The hub image's inventory for the QEMU test: fake machines on the guest's own loopback addresses (127.0.0.x). Nothing real.
-# ai-1 is "up" while `fakenode 127.0.0.12:21002` runs; nas-1 is down (nothing listens on its port).
+# gaming-1 is "up" while `fakenode 127.0.0.12:21002` runs; nas-1 is down (nothing listens on its port).
 format = 1
 
 [[machine]]
@@ -11,9 +11,9 @@ open    = ["none"]
 home    = { x = 0, y = 0 }
 
 [[machine]]
-id      = "ai-1"
-name    = "AI Box"
-role    = "ai"
+id      = "gaming-1"
+name    = "Gaming Box"
+role    = "gaming"
 address = "127.0.0.12"
 open    = ["ssh"]
 home    = { x = 0, y = -100 }
@@ -31,7 +31,7 @@ port    = 21004
 user    = "owner"
 
 # desk-1 and desk-2 are for the open-marker test (H3c): both are "up" while fakenode listens on their ports. Their homes are
-# far to the right of ai-1 (a 1024 px wide screen shows about 1000 canvas units), so opening one takes the view away from ai-1.
+# far to the right of gaming-1 (a 1024 px wide screen shows about 1000 canvas units), so opening one takes the view away from gaming-1.
 [[machine]]
 id      = "desk-1"
 name    = "Desk One"

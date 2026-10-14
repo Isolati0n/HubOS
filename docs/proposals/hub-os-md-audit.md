@@ -1,5 +1,7 @@
 # Audit: where HUB-OS.md may be behind later owner decisions (read-only; HUB-OS.md is not edited by this file)
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 Written 2026-10-10 on `main` at 2b9173e. Method: for each topic, (a) what `HUB-OS.md` says now (line numbers are of `HUB-OS.md` at that commit), (b) whether a repo document records a NEWER decision, with its path, or "not recorded in the repo". Nothing here is a guess: where the repo is silent the entry says "not recorded". Labels: SOURCE = read in the file named. Owner decisions given only in chat are not in the repo, so they appear as "not recorded". Written by the lead agent; no helper wrote any part.
 
 ## 1. Machine roles dropped in favour of named machines (only "hub" and "guest of that host" kept)

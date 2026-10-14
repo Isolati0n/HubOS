@@ -1,5 +1,7 @@
 # PROPOSAL: window layouts on the hub, saved by name and restored by name
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 ## Owner decisions (2026-10-05, round 5)
 
 These answer the questions of section 9. They are the owner's decisions, recorded by the lead agent from the owner's message, and also recorded in `HUB-OS.md`.
@@ -207,7 +209,7 @@ zoom   = 1.0
 camera = { x = 0, y = 0 }        # centre of the view, Y up (what `driftwm msg camera` takes)
 
 [[window]]
-machine = "ai-1"                 # an inventory id
+machine = "gaming-1"                 # an inventory id
 x = -2000                        # window centre, Y up
 y = 0
 w = 1280                         # visible frame size
@@ -242,7 +244,7 @@ Rules, copied from the inventory's way of working: unknown field is an error; `m
 
 ### 5.5 When a machine is opened after a layout was applied
 
-`hubd open` already places a new window at the machine's `home`. Proposal: while a layout is **active**, `open` uses the layout's position for that machine if it has one, else `home`. So "apply layout work" then clicking AI box in the panel opens its window where `work` wants it. "Active" is hubd's memory; where it is kept is question 3. Nothing about this opens a window by itself.
+`hubd open` already places a new window at the machine's `home`. Proposal: while a layout is **active**, `open` uses the layout's position for that machine if it has one, else `home`. So "apply layout work" then clicking the gaming box in the panel opens its window where `work` wants it. "Active" is hubd's memory; where it is kept is question 3. Nothing about this opens a window by itself.
 
 ### 5.6 What I tested of this
 

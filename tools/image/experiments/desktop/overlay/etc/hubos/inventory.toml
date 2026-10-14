@@ -1,5 +1,5 @@
 # Desktop experiment inventory: fake machines on the guest's own loopback addresses (127.0.0.x). Nothing real.
-# ai-1 is "up" when `fakenode 127.0.0.12:21002` runs (start-bar starts it); nas-1 is down (nothing listens on its port).
+# gaming-1 is "up" when `fakenode 127.0.0.12:21002` runs (start-bar starts it); nas-1 is down (nothing listens on its port).
 format = 1
 
 [[machine]]
@@ -11,9 +11,9 @@ open    = ["none"]
 home    = { x = 0, y = 0 }
 
 [[machine]]
-id      = "ai-1"
-name    = "AI Box"
-role    = "ai"
+id      = "gaming-1"
+name    = "Gaming Box"
+role    = "gaming"
 address = "127.0.0.12"
 open    = ["ssh"]
 home    = { x = 0, y = -100 }

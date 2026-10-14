@@ -22,7 +22,7 @@ func shortDir(t *testing.T) string {
 }
 
 func TestSocketServesAllCommands(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	sock, err := SocketPath(shortDir(t))
 	if err != nil {
@@ -66,7 +66,7 @@ func TestSocketServesAllCommands(t *testing.T) {
 }
 
 func TestFeedSendsOnlyWhenTheLineChanges(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	sock, _ := SocketPath(shortDir(t))
 	l, _ := Listen(sock)
@@ -127,7 +127,7 @@ func TestLongRuntimeDirIsRefusedPlainly(t *testing.T) {
 
 // STALE comes from the clock, not from an event: the feed must notice it.
 func TestFeedShowsStaleWhenTimePassesWithNoEvent(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.ProbeInterval = 200 * time.Millisecond // stale after 600 ms
 	r.h.mu.Lock()

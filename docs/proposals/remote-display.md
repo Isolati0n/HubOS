@@ -1,5 +1,7 @@
 # PROPOSAL: how each node's display, sound and control reach the hub
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 > **OWNER DECISION (2026-10-06): no passwords and no encryption on the display connections.** Every password, TLS, RSA-AES or VeNCrypt setup described below (sections 4.4, 5 and round 2 R2.3) is "none used": the hub's viewer will use RFB security type None, and every node's wayvnc listens on the cluster address only. The text below stays as the test record of what is possible. The hub's requests to nodes (the control API) are also not signed. The questions "Authentication on the display protocol" and "Control API" are answered: none, and unsigned and unencrypted.
 
 **Status: PROPOSAL. Nothing here is decided and nothing here is in the images.** `HUB-OS.md` wins if this file disagrees with it. Written 2026-10-04. The only code is experiment scripts in `tools/image/experiments/remote-display/` (loopback, fake nodes, no real machine).
@@ -246,7 +248,7 @@ RTP stream 0.5: peak 875 (Volume: 0.50)
 | Option | What | Label |
 |---|---|---|
 | **Waybar's own `wireplumber` module**, for the master only | options `format`, `format-muted`, `on-click`, `on-scroll-up/down`, `scroll-step`, `max-volume`; it controls the default sink only ([man page](https://raw.githubusercontent.com/Alexays/Waybar/master/man/waybar-wireplumber.5.scd), summarised). Waybar's newest release is 0.15.0 of 2026-02-06 ([feed](https://github.com/Alexays/Waybar/releases.atom), summarised); Ubuntu 24.04 has 0.9.24. **In an earlier test the module made Waybar exit** (`can't make support.system handle`, cause UNKNOWN, maybe the unpacked set-up) (`docs/bar-findings.md` section 8). | SOURCE, TESTED earlier |
-| **A list in the existing menu style** (wofi), opened from a volume button on the bar | hubd prints one line per node (`AI box  70%  [muted]`); picking a line toggles mute or steps the volume (`+10`, `-10` as extra lines). Same technique as the machine list (`docs/bar-findings.md` section 6). No slider. | BELIEVED (the list technique is TESTED there; this use is not) |
+| **A list in the existing menu style** (wofi), opened from a volume button on the bar | hubd prints one line per node (`Gaming box  70%  [muted]`); picking a line toggles mute or steps the volume (`+10`, `-10` as extra lines). Same technique as the machine list (`docs/bar-findings.md` section 6). No slider. | BELIEVED (the list technique is TESTED there; this use is not) |
 | **A small layer-shell panel** (our own program) | real sliders and mute buttons per node. A new program to write and keep. | BELIEVED; nothing tested |
 
 **Smallest honest design:** a bar button (a Waybar custom module fed by hubd, like the machine alert) that shows the master state; **click** opens the wofi-style list with one line per node plus lines for master and "mute all"; **scroll on the button** steps the master volume. All values go through hubd, which calls `wpctl`. Sliders only if you later want them. None of this was built or run.

@@ -1,5 +1,5 @@
 # BROKEN ON PURPOSE: session must not start with a dash.
-# EXPECT: ai-1: session "-Desktop" must not start with a dash
+# EXPECT: gaming-1: session "-Desktop" must not start with a dash
 
 format = 1
 
@@ -12,9 +12,9 @@ open    = ["none"]
 home    = { x = 0, y = 0 }
 
 [[machine]]
-id      = "ai-1"
-name    = "AI box"
-role    = "ai"
+id      = "gaming-1"
+name    = "Gaming box"
+role    = "gaming"
 address = "192.0.2.30"
 open    = ["moonlight"]
 home    = { x = 2000, y = -1500 }

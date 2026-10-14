@@ -1,5 +1,5 @@
 # BROKEN ON PURPOSE: session only when open includes moonlight.
-# EXPECT: ai-1: session is set but open does not include "moonlight"
+# EXPECT: gaming-1: session is set but open does not include "moonlight"
 
 format = 1
 
@@ -12,9 +12,9 @@ open    = ["none"]
 home    = { x = 0, y = 0 }
 
 [[machine]]
-id      = "ai-1"
-name    = "AI box"
-role    = "ai"
+id      = "gaming-1"
+name    = "Gaming box"
+role    = "gaming"
 address = "192.0.2.30"
 open    = ["ssh"]
 home    = { x = 2000, y = -1500 }

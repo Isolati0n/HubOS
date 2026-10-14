@@ -142,7 +142,7 @@ Running:
 ```json
 {
   "api": 1, "min_hub": 1,
-  "machine": "ai-1",
+  "machine": "gaming-1",
   "state": "running",
   "image_release": "hub-2026.10.04-1",
   "slot": "a",
@@ -161,7 +161,7 @@ Running:
 Recovery (what the agent answers today, SOURCE `agent.go`, read 2026-10-06):
 
 ```json
-{"api": 1, "min_hub": 1, "machine": "ai-1", "state": "recovery",
+{"api": 1, "min_hub": 1, "machine": "gaming-1", "state": "recovery",
  "recovery_release": "recovery-1", "boot_failures": 3, "failure_limit": 3}
 ```
 
@@ -186,7 +186,7 @@ Already in that state: `200 {"session":"running"}` (so a retry is harmless). Whi
 ### 4.4 `GET /v1/audio` and `POST /v1/audio/restart`
 
 ```json
-{"sender": "running", "destination": "10.0.0.2:46003", "stream": "rtp-ai-1"}
+{"sender": "running", "destination": "10.0.0.2:46003", "stream": "rtp-gaming-1"}
 ```
 
 `restart` answers `202 {"sender":"starting"}`. There is **no volume or mute call** on the node. Section 7.
@@ -318,9 +318,9 @@ neatvnc v1.0.3 (SOURCE: clone of [any1/neatvnc](https://github.com/any1/neatvnc)
 | **C. Both** | Same command, two ways to start it | Cheapest to add once one exists | |
 | **D. Automatic on every change** | `wl-paste --watch` on the hub | See 8.6. Not recommended. | TESTED loops |
 
-**The target:** the machine whose window has focus. `hubd` already keeps a record of which driftwm window belongs to which machine (`HUB-OS.md`, `docs/hubd-slice2.md`); the focused window comes from driftwm's socket. **BELIEVED**, not built. A bar button could instead open the machine list ("push to: AI box, NAS, ..."), which needs no focus rule but one more click. Pushing to a node whose window is **not** focused works with this design (the helper needs no focus), which the TigerVNC-style viewer path could not do (round 2: it needs focus, repo). TESTED in the sense that headless `wl-copy` needs no focused window.
+**The target:** the machine whose window has focus. `hubd` already keeps a record of which driftwm window belongs to which machine (`HUB-OS.md`, `docs/hubd-slice2.md`); the focused window comes from driftwm's socket. **BELIEVED**, not built. A bar button could instead open the machine list ("push to: gaming box, NAS, ..."), which needs no focus rule but one more click. Pushing to a node whose window is **not** focused works with this design (the helper needs no focus), which the TigerVNC-style viewer path could not do (round 2: it needs focus, repo). TESTED in the sense that headless `wl-copy` needs no focused window.
 
-`hubd clipboard push` would: read the hub clipboard, refuse empty/non-text/too big with a plain message on the bar, `PUT` it, and show "sent 28 bytes to ai-1" or the error. **Not built.**
+`hubd clipboard push` would: read the hub clipboard, refuse empty/non-text/too big with a plain message on the bar, `PUT` it, and show "sent 28 bytes to gaming-1" or the error. **Not built.**
 
 ### 8.4 How the node helper sets its clipboard
 

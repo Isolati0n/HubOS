@@ -1,5 +1,7 @@
 # Phase B, first slice: a tiny bootable Hub OS image
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 > **PROPOSAL; the owner's answers of 2026-10-02 are in the section 'Owner decisions'.**
 
 **Written:** 2026-10-02. **Status of the evidence:** everything marked TESTED was run in the build environment described in `docs/environment.md` (4 CPUs, 16 GB, about 30 GB of disk, **no KVM**: virtual machines run in software emulation, so all times below are emulation times and say nothing about real hardware). Nothing here was run on real hardware. `HUB-OS.md` wins if anything here disagrees with it.

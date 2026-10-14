@@ -36,7 +36,7 @@ func TestRealExampleLoadsAndRendersTheChosenCommandLines(t *testing.T) {
 		{m("nas-1", "ssh", port(2222), "alice", ""), []string{"foot", "--app-id=hubos-nas-1", "--title=nas-1 name", "--hold", "--", "ssh", "-p", "2222", "-l", "alice", "-t", "--", "192.0.2.30", "tmux", "new-session", "-A", "-s", "hubos"}},
 		{m("g1", "spice", port(5901), "", ""), []string{"remote-viewer", "--name=hubos-g1", "--title=g1 name", "--", "spice://192.0.2.30:5901"}},
 		{m("g2", "vnc", port(5902), "", ""), []string{"remote-viewer", "--name=hubos-g2", "--title=g2 name", "--", "vnc://192.0.2.30:5902"}},
-		{m("ai-1", "moonlight", nil, "", "Desktop"), []string{"moonlight", "stream", "192.0.2.30", "Desktop", "--display-mode", "windowed", "--no-quit-after", "--capture-system-keys", "never"}},
+		{m("gaming-1", "moonlight", nil, "", "Desktop"), []string{"moonlight", "stream", "192.0.2.30", "Desktop", "--display-mode", "windowed", "--no-quit-after", "--capture-system-keys", "never"}},
 	} {
 		v := tab.For(tc.m.Open[0])
 		if v == nil {
@@ -67,13 +67,13 @@ func TestRealExampleLoadsAndRendersTheChosenCommandLines(t *testing.T) {
 	}
 	// Moonlight: matched by title, not by name; the title is from the template.
 	mv := tab.For("moonlight")
-	title, ok, err := mv.MatchTitle(inventory.Machine{ID: "ai-1"})
-	if mv.SetsName || !ok || err != nil || title != "ai-1 - Moonlight" || mv.WindowWait.String() != "30s" || mv.LateGrace.String() != "1m0s" {
+	title, ok, err := mv.MatchTitle(inventory.Machine{ID: "gaming-1"})
+	if mv.SetsName || !ok || err != nil || title != "gaming-1 - Moonlight" || mv.WindowWait.String() != "30s" || mv.LateGrace.String() != "1m0s" {
 		t.Errorf("moonlight: sets_name=%v title=%q ok=%v err=%v wait=%v grace=%v", mv.SetsName, title, ok, err, mv.WindowWait, mv.LateGrace)
 	}
 	// A moonlight machine with no session cannot be opened, with the plain message.
-	_, err = mv.Args(inventory.Machine{ID: "ai-1", Address: "a", Open: []string{"moonlight"}})
-	if err == nil || err.Error() != "ai-1 has no session in the inventory, and its viewer command needs one" {
+	_, err = mv.Args(inventory.Machine{ID: "gaming-1", Address: "a", Open: []string{"moonlight"}})
+	if err == nil || err.Error() != "gaming-1 has no session in the inventory, and its viewer command needs one" {
 		t.Errorf("missing session: %v", err)
 	}
 	// Every entry says it is unverified.

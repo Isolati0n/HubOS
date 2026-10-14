@@ -27,7 +27,7 @@ Hub OS has two parts:
 
 The hub is the owner's daily driver. Every capability is outsourced to a specialized node. The hub runs no workloads: only viewers, plus the broker, the bar and the compositor.
 
-The hub is one computer: the main node and daily driver of the cluster, which handles remote sessions while specific work (AI, NAS and so on) is done by other nodes and shown on the hub.
+The hub is one computer: the main node and daily driver of the cluster, which handles remote sessions while specific work (NAS, gaming and so on) is done by other nodes and shown on the hub.
 
 The hub is eventually built from scratch: every component chosen, built from source and optimized for the hub's one use. The current Ubuntu-based image is the scaffold, not the goal. The Linux kernel stays upstream Linux, built for the hub (see docs/proposals/from-scratch-hub.md for the staged plan).
 
@@ -68,7 +68,6 @@ The hub is eventually built from scratch: every component chosen, built from sou
 |---|---|---|
 | Hub | Daily driver; runs only viewers | This machine runs the broker |
 | Gaming box (one) | All games, Linux only | Its default display window only, the same one the other machines use, for working on its distro's GUI from the hub; all play happens at its own monitors |
-| AI / GPU box | Generating pictures, videos, music and prompts (generative media) | Its default display window (VNC; wayvnc on the node) |
 | General desktop node | Web browser, text editor, everyday apps | Its default display window (VNC; wayvnc on the node) |
 | NAS | Cluster file storage | Its own bespoke GUI in a window (the bespoke file manager is part of it) |
 | Backup NAS | Local backup copy of the NAS | Listed; opened like the NAS |
@@ -150,7 +149,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - node.conf is parsed, never sourced (the hub's stage-1 script, which sources it today, is still to be fixed).
 - Two distro families to start: the Ubuntu-without-systemd reference, and from scratch.
 - Nodes run for years without a distro version change; a rolling distro only when pinned by date.
-- glibc where needed (the gaming box; the AI box if NVIDIA needs it), any libc elsewhere.
+- glibc where needed (the gaming box), any libc elsewhere.
 - Conformance is checked both by a parametrised Go test and by a command that prints a checklist; a test-only stand-in node helper is fine.
 - A node's whole OS is declared in one file, and whether it will boot is checked before deployment (a preflight; docs/proposals/distro-workshop.md).
 
@@ -291,7 +290,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 - Windows have a free pointer; leave a window by clicking outside it.
 
 ### Power actions (after the first working slice)
-- Each machine gets Restart and Shut down, with a confirmation that names what will be lost (for example, "this ends the open desktop session on the AI box").
+- Each machine gets Restart and Shut down, with a confirmation that names what will be lost (for example, "this ends the open desktop session on the general desktop node").
 
 ### Adding machines
 - v1: hand-edit the inventory file. A guided "add machine" step may come later.
@@ -337,7 +336,6 @@ Every machine runs its own purpose-built operating system or distribution (see W
 
 - **Full protection:** redundant disks, detection and repair of silent corruption, snapshots, ECC memory. Engineering effort and budget are not limits.
 - **Filesystem:** OpenZFS on the NAS and the backup NAS (an out-of-tree module declared in their configs, on a kernel version OpenZFS supports). A restore from the backup NAS must be tested before either machine is trusted. Btrfs stays the fallback if OpenZFS cannot be built for a needed kernel.
-- **Workloads that need different tuning** (for example, AI datasets) get separately tuned areas on the same NAS. The AI box keeps its active dataset on its own fast SSD; the NAS holds the master copy.
 - Opens with an ssh terminal for now; the bespoke file manager comes later. Non-Linux devices do not need access.
 - **Backups:** a local backup NAS, plus a copy off-site or in another room. No encryption.
 - The inventory and viewers.toml get the NAS backup copy. Secrets do not; secrets handling is a separate step.
@@ -384,7 +382,7 @@ Every machine runs its own purpose-built operating system or distribution (see W
 
 Ready means the machine's session server is accepting connections:
 
-- Machines with a display window (gaming, AI, desktop): the node helper answers GET /v1/live and the display server accepts a connection (owner decision, 2026-10-05).
+- Machines with a display window (gaming, desktop): the node helper answers GET /v1/live and the display server accepts a connection (owner decision, 2026-10-05).
 - Guests: SSH or the SPICE/VNC port answers.
 - NAS and backup NAS: the share or SSH answers.
 - VM host: SSH answers.
@@ -500,7 +498,7 @@ HubOS/
 - Soul Calibur II netplay: Dolphin (GameCube, delay-based) or Ring Out (a recompiled port, delay-based, five weeks old); decide in December
 - What the phone runs (a viewer app or a view of the hub canvas)
 - Hub service design (s6 or dinit): restart Waybar and hubd when driftwm restarts; set --bar-height and ulimit -n
-- Display protocol for non-gaming nodes: the plan is VNC with wayvnc on the nodes, PipeWire RTP for sound (raw), and one unsigned control API; the AI box uses VNC; RDP is out of scope for now (docs/proposals/remote-display.md)
+- Display protocol for non-gaming nodes: the plan is VNC with wayvnc on the nodes, PipeWire RTP for sound (raw), and one unsigned control API; RDP is out of scope for now (docs/proposals/remote-display.md)
 - Clipboard: text only, both directions wanted; node to hub works in tests, hub to node is unresolved
 - Where the mixer settings live: the hub's config partition, included in the NAS backup
 - Whether the no-systemd rule covers appliances that are not Hub OS machines (for example a PiKVM, which runs its own Linux); a December decision
@@ -509,7 +507,6 @@ HubOS/
 - The clipboard bridge and the node helper API (see docs/proposals/node-helper-api.md)
 - The network recovery agent in the recovery kernel: protocol, what hubd can ask it, and whether an automatic repair mode exists (see docs/proposals/recovery-and-out-of-band.md)
 - Out-of-band hardware per machine (power cycle, screen, BIOS): none, a PiKVM-class device, a relay or a switched power strip; decided in December
-- AI box GPU: re-check price and availability in December
 - Forwarder design: always grab and re-inject, or grab only while forwarding (decided after December measurements)
 - N64: confirm RMG against Gopher64 in a December test
 - MesenCE's Linux release format (AppImage or other): the owner checks
@@ -596,3 +593,4 @@ HubOS/
 - **2026-10-10:** The bar shows which machine is currently receiving the keyboard and mouse (the physical devices always stay on the gaming box).
 - **2026-10-10:** Open question added: how a new machine learns the owner's public key at first network install. Unverified list entry on the 100 and 5000 machine scale test narrowed to what was not measured.
 - **2026-10-13:** Init plan decided by the owner: s6 with s6-rc (the `s6rc-par` setup) plus a separate watcher; no custom init, no policy brain; OpenRC counts as failed (source: docs/proposals/init-comparison.md, "Owner decisions 2026-10-13"). The hang rule is still NOT built (the watcher exists only as a test stand-in). Build items that follow, none built yet: the restart-limit alert (a service restarted 5 times in 60 s is stopped, an alert is raised, its dependents keep running), a stricter trial-boot confirm with the compositor probes, the latch auto-clear after a healthy hour, the design of the person's command, and the adoption of s6-rc into the image.
+- **2026-10-13:** AI box removed entirely (owner decision, real build included): its table row, its GPU re-check and its NAS dataset note are gone; no GPU is bought for it. Earlier Change log lines that mention it are history and stay.

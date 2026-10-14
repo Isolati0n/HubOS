@@ -87,7 +87,7 @@ New users and groups (next to `hub` and `seat`): user `hubd` (uid 1002, home `/v
 
 ## 5. How a credential reaches a viewer (without a command line)
 
-The core sends the launcher `{"op":"start","machine":"ai-1","argv":[...],"cred":{...}}` over `desk.sock` (the credential is in memory in both processes and goes over the local socket only). The launcher then gives the viewer its credential in the way *that viewer* supports. Compare:
+The core sends the launcher `{"op":"start","machine":"gaming-1","argv":[...],"cred":{...}}` over `desk.sock` (the credential is in memory in both processes and goes over the local socket only). The launcher then gives the viewer its credential in the way *that viewer* supports. Compare:
 
 | Method | How it works | Who can see it | Fits |
 |---|---|---|---|

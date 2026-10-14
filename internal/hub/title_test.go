@@ -43,8 +43,8 @@ func moonRig(t *testing.T, machines ...string) *rig {
 
 func moonMachines() []string {
 	return []string{
-		machineDoc("a", "A", "ai", "moonlight", 0, 1, 1, ""),
-		machineDoc("b", "B", "ai", "moonlight", 0, 2, 2, ""),
+		machineDoc("a", "A", "gaming", "moonlight", 0, 1, 1, ""),
+		machineDoc("b", "B", "gaming", "moonlight", 0, 2, 2, ""),
 	}
 }
 
@@ -297,7 +297,7 @@ programs = ["moonlight"]
 command = ["foot", "--title={id} - Moonlight", "--", "moonlight", "stream", "{address}", "{session}"]
 title_match = "{id} - Moonlight"
 `
-	r := newRigViewers(t, vdoc, moonMachines()[0], machineDoc("b", "B", "ai", "moonlight", 0, 2, 2, "session = \"Desktop\"\n"))
+	r := newRigViewers(t, vdoc, moonMachines()[0], machineDoc("b", "B", "gaming", "moonlight", 0, 2, 2, "session = \"Desktop\"\n"))
 	r.setStatus("a", statusUp)
 	r.setStatus("b", statusUp)
 	res := r.h.Open("a")
@@ -320,9 +320,9 @@ programs = ["spice", "ssh"]
 command = ["foot", "--", "sleep", "infinity"]
 `
 	r := newRigViewers(t, vdoc,
-		machineDoc("a", "A", "ai", "moonlight", 0, 1, 1, ""),    // table: moonlight 47989
-		machineDoc("b", "B", "ai", "moonlight", 4000, 2, 2, ""), // own port wins
-		machineDoc("n", "NAS", "nas", "files", 0, 3, 3, ""),     // table: files 445
+		machineDoc("a", "A", "gaming", "moonlight", 0, 1, 1, ""),    // table: moonlight 47989
+		machineDoc("b", "B", "gaming", "moonlight", 4000, 2, 2, ""), // own port wins
+		machineDoc("n", "NAS", "nas", "files", 0, 3, 3, ""),         // table: files 445
 		machineDoc("h", "Host", "vm-host", "ssh", 22, 4, 4, ""),
 		machineDoc("g", "G", "guest", "spice", 0, 5, 5, "host = \"h\"\nlifetime = \"ephemeral\"\n"), // no spice default
 	)

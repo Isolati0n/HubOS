@@ -307,9 +307,9 @@ address = "192.0.2.10"
 open = ["none"]
 home = { x = 0, y = 0 }
 [[machine]]
-id = "ai-1"
-name = "AI"
-role = "ai"
+id = "gaming-1"
+name = "Gaming"
+role = "gaming"
 address = "192.0.2.30"
 open = ["ssh", "moonlight"]
 home = { x = 1, y = 1 }
