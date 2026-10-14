@@ -83,17 +83,17 @@ func line(t *testing.T, out, id string) string {
 
 func TestUpDownAndNotChecked(t *testing.T) {
 	gaming := startNode(t, "127.0.0.41")
-	ai := startNode(t, "127.0.0.42")
+	backup := startNode(t, "127.0.0.42")
 	nas := startNode(t, "127.0.0.43")
 	vmhost := startNode(t, "127.0.0.44")
 	guest := startNode(t, "127.0.0.45")
-	ai.stop()
+	backup.stop()
 	guest.stop()
 
 	path := writeInventory(t,
 		machine("hub", "hub", "127.0.0.40", `["none"]`, 0, "", 0, 0),
 		machine("gaming-1", "gaming", gaming.addr, `["moonlight"]`, gaming.port, "", -2000, -1500),
-		machine("ai-1", "ai", ai.addr, `["moonlight", "ssh"]`, ai.port, "", 2000, -1500),
+		machine("backup-nas-1", "backup-nas", backup.addr, `["ssh"]`, backup.port, "", 2000, -1500),
 		machine("desktop-1", "desktop", "127.0.0.46", `["moonlight"]`, 0, "", 2000, 0),
 		machine("nas-1", "nas", nas.addr, `["files", "ssh"]`, nas.port, "share = \"pool\"\n", -2000, 0),
 		machine("vmhost-1", "vm-host", vmhost.addr, `["ssh"]`, vmhost.port, "", 0, 1500),
@@ -107,13 +107,13 @@ func TestUpDownAndNotChecked(t *testing.T) {
 		t.Fatalf("exit %d, stderr %q\n%s", code, errOut, out)
 	}
 	want := map[string]string{
-		"hub":        "UP (this machine, not checked)",
-		"gaming-1":   "UP",
-		"ai-1":       "DOWN (connection refused)",
-		"desktop-1":  "NOT CHECKED (no port in the inventory and no default port for moonlight)",
-		"nas-1":      "UP",
-		"vmhost-1":   "UP",
-		"scratch-os": "DOWN (connection refused)",
+		"hub":          "UP (this machine, not checked)",
+		"gaming-1":     "UP",
+		"backup-nas-1": "DOWN (connection refused)",
+		"desktop-1":    "NOT CHECKED (no port in the inventory and no default port for moonlight)",
+		"nas-1":        "UP",
+		"vmhost-1":     "UP",
+		"scratch-os":   "DOWN (connection refused)",
 	}
 	for id, status := range want {
 		if l := line(t, out, id); !strings.HasSuffix(l, status) {
@@ -154,7 +154,7 @@ func TestStoppingANodeChangesTheNextRun(t *testing.T) {
 	n := startNode(t, "127.0.0.49")
 	path := writeInventory(t,
 		machine("hub", "hub", "127.0.0.40", `["none"]`, 0, "", 0, 0),
-		machine("ai-1", "ai", n.addr, `["moonlight"]`, n.port, "", 1, 1),
+		machine("gaming-1", "gaming", n.addr, `["moonlight"]`, n.port, "", 1, 1),
 	)
 	_, out, _ := runHubd("--inventory", path)
 	if !strings.Contains(out, "\n1 of 1 up\n") {
@@ -162,7 +162,7 @@ func TestStoppingANodeChangesTheNextRun(t *testing.T) {
 	}
 	n.stop()
 	code, out, _ := runHubd("--inventory", path)
-	if code != 0 || !strings.Contains(out, "\n0 of 1 up\n") || !strings.HasSuffix(line(t, out, "ai-1"), "DOWN (connection refused)") {
+	if code != 0 || !strings.Contains(out, "\n0 of 1 up\n") || !strings.HasSuffix(line(t, out, "gaming-1"), "DOWN (connection refused)") {
 		t.Errorf("second run (exit %d):\n%s", code, out)
 	}
 }
@@ -171,7 +171,7 @@ func TestOverallTimeLimit(t *testing.T) {
 	n := startNode(t, "127.0.0.50")
 	path := writeInventory(t,
 		machine("hub", "hub", "127.0.0.40", `["none"]`, 0, "", 0, 0),
-		machine("ai-1", "ai", n.addr, `["moonlight"]`, n.port, "", 1, 1),
+		machine("gaming-1", "gaming", n.addr, `["moonlight"]`, n.port, "", 1, 1),
 	)
 	var out, errb bytes.Buffer
 	code := run([]string{"--inventory", path}, &out, &errb, config{perMachine: time.Second, total: time.Nanosecond})
@@ -246,7 +246,7 @@ func TestCheckSubcommandIsSliceOne(t *testing.T) {
 	n := startNode(t, "127.0.0.21")
 	inv := writeInventory(t,
 		machine("hub", "hub", "127.0.0.10", `["none"]`, 0, "", 0, 0),
-		machine("ai-1", "ai", "127.0.0.21", `["moonlight"]`, n.port, "", 1, 1))
+		machine("gaming-1", "gaming", "127.0.0.21", `["moonlight"]`, n.port, "", 1, 1))
 	var a, b, e bytes.Buffer
 	if code := dispatch([]string{"--inventory", inv}, &a, &e); code != 0 {
 		t.Fatalf("plain: %d %s", code, e.String())
@@ -330,7 +330,7 @@ func TestCheckTimeoutFlagIsValidated(t *testing.T) {
 	n := startNode(t, "127.0.0.31")
 	inv := writeInventory(t,
 		machine("hub", "hub", "127.0.0.10", `["none"]`, 0, "", 0, 0),
-		machine("ai-1", "ai", "127.0.0.31", `["moonlight"]`, n.port, "", 1, 1))
+		machine("gaming-1", "gaming", "127.0.0.31", `["moonlight"]`, n.port, "", 1, 1))
 	for _, tc := range []struct{ arg, want string }{
 		{"0s", "must be more than 0"},
 		{"-1s", "must be more than 0"},
@@ -385,7 +385,7 @@ func TestCheckUsesTheDefaultPortsTable(t *testing.T) {
 		machine("hub", "hub", "127.0.0.50", `["none"]`, 0, "", 0, 0),
 		machine("pc", "desktop", sun.addr, `["moonlight"]`, 0, "", 1, 1),
 		machine("box", "vm-host", ssh.addr, `["ssh"]`, 0, "", 2, 2),
-		machine("own", "ai", own.addr, `["moonlight"]`, own.port, "", 3, 3),
+		machine("own", "gaming", own.addr, `["moonlight"]`, own.port, "", 3, 3),
 		machine("nas", "nas", smb.addr, `["files"]`, 0, "", 5, 5),
 		machine("vm", "guest", "127.0.0.54", `["spice"]`, 0, "host = \"box\"\nlifetime = \"ephemeral\"\n", 4, 4),
 	)
@@ -460,7 +460,7 @@ func TestCheckWithoutAViewersFileSaysSoInOneLine(t *testing.T) {
 	n := startNode(t, "127.0.0.61")
 	path := writeInventory(t,
 		machine("hub", "hub", "127.0.0.60", `["none"]`, 0, "", 0, 0),
-		machine("a", "ai", n.addr, `["moonlight"]`, n.port, "", 1, 1),
+		machine("a", "gaming", n.addr, `["moonlight"]`, n.port, "", 1, 1),
 		machine("b", "desktop", "127.0.0.62", `["moonlight"]`, 0, "", 2, 2),
 	)
 	code, out, errOut := runHubd("--inventory", path)

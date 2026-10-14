@@ -18,7 +18,7 @@ Today `hubd` learns two things about a node: "answers on its display port" and, 
 ## 4. The format (example, all values placeholders)
 ```toml
 schema      = "node-capability-v1"   # placeholder schema id
-node_name   = "ai-1"                 # must equal the inventory id
+node_name   = "gaming-1"                 # must equal the inventory id
 generation  = 17                     # counter, see rules
 
 [display]                            # required

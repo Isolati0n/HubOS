@@ -12,8 +12,8 @@ import (
 
 func TestSnapshotHoldsTheBarLineAndTheMenuList(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A & Box", "ai", "moonlight", 1, 1, 1, ""),
-		machineDoc("b", "B Box", "ai", "moonlight", 1, 2, 2, ""))
+		machineDoc("a", "A & Box", "gaming", "moonlight", 1, 1, 1, ""),
+		machineDoc("b", "B Box", "gaming", "moonlight", 1, 2, 2, ""))
 	r.setStatus("a", statusUp)
 	r.setStatus("b", statusDown)
 	r.h.Open("a")
@@ -74,7 +74,7 @@ func TestStaleListHasAStaleFirstLineAndTheLastList(t *testing.T) {
 		t.Errorf("%q", got)
 	}
 	// a line starting with "!" is never acted on by Pick
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	if p := r.h.Pick(got[0]); p.Action != "ignored" {
 		t.Errorf("pick of the stale line: %+v", p)
 	}
@@ -97,7 +97,7 @@ func TestReadSnapshotRefusesAnEmptyOrBrokenFile(t *testing.T) {
 }
 
 func TestRunSnapshotWritesAtOnceAndOnChange(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	path := filepath.Join(t.TempDir(), "s.json")
 	ctx, cancel := context.WithCancel(context.Background())

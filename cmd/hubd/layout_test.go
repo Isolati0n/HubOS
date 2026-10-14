@@ -157,7 +157,7 @@ func writeSnap(t *testing.T, sock string, age time.Duration) {
 	t.Helper()
 	snap := hub.Snapshot{Time: time.Now().Add(-age),
 		Line: hub.StatusLine{Text: "3 of 4 up", Class: "ok", Tooltip: "1 down: Storage"},
-		List: []string{"? search by id or name...", "- Hub (1 machine)", "   hub              Desk Hub                 THIS HUB", " ● ai-1             AI Box                   UP"}}
+		List: []string{"? search by id or name...", "- Hub (1 machine)", "   hub              Desk Hub                 THIS HUB", " ● gaming-1         Gaming Box               UP"}}
 	b, _ := json.Marshal(snap)
 	if err := os.WriteFile(hub.SnapshotPath(sock), b, 0o600); err != nil {
 		t.Fatal(err)
@@ -202,7 +202,7 @@ func TestMenuShowsTheLastListMarkedStaleAndPickingDoesNothing(t *testing.T) {
 	shown := filepath.Join(dir, "shown")
 	fake := filepath.Join(dir, "fakewofi")
 	// the stand-in for wofi saves the lines it is given and picks the machine line
-	os.WriteFile(fake, []byte("#!/bin/sh\ncat > "+shown+"\necho ' ● ai-1             AI Box                   UP'\n"), 0o700)
+	os.WriteFile(fake, []byte("#!/bin/sh\ncat > "+shown+"\necho ' ● gaming-1         Gaming Box               UP'\n"), 0o700)
 	var out, errb bytes.Buffer
 	code := dispatch([]string{"menu", "--socket", sock, "--wofi", fake, "--style", filepath.Join(dir, "none.css")}, &out, &errb)
 	if code != 1 || !strings.Contains(errb.String(), "hubd is not running, so nothing was done") {
@@ -210,7 +210,7 @@ func TestMenuShowsTheLastListMarkedStaleAndPickingDoesNothing(t *testing.T) {
 	}
 	b, _ := os.ReadFile(shown)
 	lines := strings.Split(strings.TrimRight(string(b), "\n"), "\n")
-	if len(lines) != 5 || !strings.HasPrefix(lines[0], "! STALE: hubd is not running") || !strings.Contains(lines[0], "2 min old") || !strings.Contains(lines[4], "ai-1") {
+	if len(lines) != 5 || !strings.HasPrefix(lines[0], "! STALE: hubd is not running") || !strings.Contains(lines[0], "2 min old") || !strings.Contains(lines[4], "gaming-1") {
 		t.Errorf("the menu showed:\n%s", b)
 	}
 	// without a last list the old message stays

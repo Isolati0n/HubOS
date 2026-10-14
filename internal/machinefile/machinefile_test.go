@@ -61,11 +61,11 @@ home = { x = -2000, y = 0 }
 user = "owner"
 share = "pool"
 `
-	aiFile = `name = "ai-1"
+	gamingFile = `name = "gaming-1"
 kind = "node"
 address = "192.0.2.30:8480"
-group = "generative"
-role = "ai"
+group = "games"
+role = "gaming"
 open = ["vnc", "ssh"]
 home = { x = 2000, y = 0 }
 `
@@ -94,7 +94,7 @@ func itoa(n int) string { return strconv.Itoa(n) }
 
 // 1. one hub plus three nodes: a valid inventory that the existing validator accepts, the same bytes on a second run.
 func TestOneHubThreeNodes(t *testing.T) {
-	files := map[string]string{"hub.toml": hubFile, "nas-1.toml": nasFile, "ai-1.toml": aiFile, "desk-1.toml": deskFile}
+	files := map[string]string{"hub.toml": hubFile, "nas-1.toml": nasFile, "gaming-1.toml": gamingFile, "desk-1.toml": deskFile}
 	text, ps := gen(t, files)
 	if len(ps) > 0 {
 		t.Fatal(problemsText(ps))

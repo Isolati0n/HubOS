@@ -1,5 +1,7 @@
 # PROPOSAL: the hub notification daemon (toasts, bar badge, list of older ones, notifications from nodes)
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 **Status: PROPOSAL, docs only. Nothing here is decided beyond the owner decisions in section 1, and nothing here is built into the images or into hubd.** `HUB-OS.md` wins if this file disagrees with it. Written 2026-10-06 by a helper agent (no sub-helpers). The only code is throwaway; the shell scripts I used for the `mako` tests are quoted in section 9. Every choice is a question in section 12.
 
 **Labels on every item:**
@@ -190,9 +192,9 @@ If mako is the painter, `notifd` talks to it with the **freedesktop D-Bus method
   "id": "n-000123",
   "seq": 123,
   "t_ms": 1791285228327,
-  "source": {"kind": "node", "machine": "ai-1", "app": "render"},
+  "source": {"kind": "node", "machine": "desk-1", "app": "render"},
   "title": "Job finished",
-  "body": "Render 12 done on ai-1",
+  "body": "Render 12 done on desk-1",
   "severity": "info",
   "progress": null,
   "key": "render-12",

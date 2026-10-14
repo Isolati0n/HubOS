@@ -1,5 +1,7 @@
 # Phase B desktop: does driftwm's real-display path start in QEMU?
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 > **PROPOSAL, and an experiment report. Nothing in `HUB-OS.md` changed because of it.** `HUB-OS.md` wins if this file disagrees with it.
 
 **Run:** 2026-10-03, in the build environment of `docs/environment.md` (4 CPUs, no KVM: QEMU runs in software emulation, so every time below is slow-motion and not what hardware would do). Labels: **TESTED** (command and output shown), **SOURCE** (read in a file, named), **BELIEVED** (reasoned, not run), **UNKNOWN**.

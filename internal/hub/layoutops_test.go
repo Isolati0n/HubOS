@@ -13,8 +13,8 @@ import (
 func newLayoutRig(t *testing.T) *rig {
 	t.Helper()
 	r := newRig(t,
-		machineDoc("a", "A Box", "ai", "moonlight", 1, 100, 100, ""),
-		machineDoc("b", "B Box", "ai", "moonlight", 1, 300, 300, ""),
+		machineDoc("a", "A Box", "gaming", "moonlight", 1, 100, 100, ""),
+		machineDoc("b", "B Box", "gaming", "moonlight", 1, 300, 300, ""),
 		machineDoc("c", "C Desk", "desktop", "moonlight", 1, 3000, 0, ""))
 	r.set.LayoutDir = filepath.Join(t.TempDir(), "layouts")
 	r.h = New(r.inv, r.vt, r.f, r.l.launch, r.set, r.rec)
@@ -391,7 +391,7 @@ func TestLayoutWithoutADriftwmStillBecomesActive(t *testing.T) {
 }
 
 func TestLayoutsAreOffWithoutAFolder(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	if res := r.h.Layout("list", "", false); res.OK {
 		t.Errorf("%+v", res)
 	}

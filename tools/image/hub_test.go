@@ -210,7 +210,7 @@ func TestHubImage(t *testing.T) {
 	for _, b := range []struct{ v, f string }{{"1", "good"}, {"2", "good"}, {"3", "unhealthy"}} {
 		r.script("build-bundle.sh", nil, b.v, b.f, filepath.Join(bdir, "h"+b.v+"-"+b.f), r.pub, r.sec)
 	}
-	// the fake machines "ai-1", "desk-1" and "desk-2" (listeners on 127.0.0.12:21002, 127.0.0.13:21003, 127.0.0.15:21005) are the repo's test helper, served to the guest over HTTP; it is not in the image
+	// the fake machines "gaming-1", "desk-1" and "desk-2" (listeners on 127.0.0.12:21002, 127.0.0.13:21003, 127.0.0.15:21005) are the repo's test helper, served to the guest over HTTP; it is not in the image
 	if out, err := exec.Command("go", "build", "-o", filepath.Join(bdir, "fakenode"), "../fakenode").CombinedOutput(); err != nil {
 		t.Fatalf("go build fakenode: %v\n%s", err, out)
 	}
@@ -274,7 +274,7 @@ func TestHubImage(t *testing.T) {
 		start := time.Now()
 		r.vm = r.bootVM("hub first boot")
 		handover := time.Since(start)
-		// the fake machines ai-1, desk-1 and desk-2 come up (as the user hub): the bar then shows "3 of 4 up" (nas-1 stays down)
+		// the fake machines gaming-1, desk-1 and desk-2 come up (as the user hub): the bar then shows "3 of 4 up" (nas-1 stays down)
 		r.sh(`wget -q -O /tmp/fakenode ` + r.base + `/fakenode && chmod +x /tmp/fakenode && echo fakenode-ok`)
 		r.sh(asHub("sh -c '/tmp/fakenode 127.0.0.12:21002 127.0.0.13:21003 127.0.0.15:21005 > /tmp/fakenode.log 2>&1 &'"))
 		st, up := waitDesktop(240 * time.Second)
@@ -380,10 +380,10 @@ func TestHubImage(t *testing.T) {
 			t.Skip("run stopped by a repeated hang")
 		}
 		start := time.Now()
-		rc, out := r.sh(asHub("hubd open " + hubSock + " ai-1 2>&1"))
+		rc, out := r.sh(asHub("hubd open " + hubSock + " gaming-1 2>&1"))
 		time.Sleep(8 * time.Second)
 		st := state()
-		home := regexp.MustCompile(`#\d+ hubos-ai-1 \[0, -100\] \d+x\d+\s+"AI Box"`).MatchString(st)
+		home := regexp.MustCompile(`#\d+ hubos-gaming-1 \[0, -100\] \d+x\d+\s+"Gaming Box"`).MatchString(st)
 		r.shot("hub-3-hubd-open")
 		// the menu: click the bar item (move far past the top-left corner, then step to the item); the list must show.
 		// A click can be lost while the pointer has only just arrived, so it is tried up to three times (the attempts are logged).
@@ -423,7 +423,7 @@ func TestHubImage(t *testing.T) {
 		time.Sleep(3 * time.Second)
 		wofi2 := count()
 		ok := rc == 0 && home && list > 40000 && wofi != "0" && wofi != "?"
-		record("H3 hubd open ai-1 (fake viewer: foot with the app-id hubos-ai-1 and the title AI Box) places the window at its home (0,-100); a click on the Waybar item opens hubd's menu with the machine list drawn", ok, time.Since(start),
+		record("H3 hubd open gaming-1 (fake viewer: foot with the app-id hubos-gaming-1 and the title Gaming Box) places the window at its home (0,-100); a click on the Waybar item opens hubd's menu with the machine list drawn", ok, time.Since(start),
 			fmt.Sprintf("open rc=%d; click attempts %d; list-background pixels %d (an empty list is under 20000); wofi running %s, after Escape %s", rc, attempts, list, wofi, wofi2))
 		if !ok {
 			t.Errorf("rc=%d home=%v list=%d\n%s\n%s", rc, home, list, out, st)
@@ -437,17 +437,17 @@ func TestHubImage(t *testing.T) {
 			t.Skip("run stopped by a repeated hang")
 		}
 		start := time.Now()
-		// close the AI Box window first, so the click has to open it again (not just go to a window that exists)
-		rcEnd, outEnd := r.sh(asHub("hubd end " + hubSock + " ai-1 2>&1"))
+		// close the Gaming Box window first, so the click has to open it again (not just go to a window that exists)
+		rcEnd, outEnd := r.sh(asHub("hubd end " + hubSock + " gaming-1 2>&1"))
 		time.Sleep(3 * time.Second)
 		stEnd := state()
 		// hubd now waits up to 30 s for a window to close (it was 3 s, which was too short on this slow machine); the test still waits up
 		// to 30 s for the window to be gone instead of requiring rc 0.
-		for i := 0; i < 10 && strings.Contains(stEnd, "hubos-ai-1"); i++ {
+		for i := 0; i < 10 && strings.Contains(stEnd, "hubos-gaming-1"); i++ {
 			time.Sleep(3 * time.Second)
 			stEnd = state()
 		}
-		closed := !strings.Contains(stEnd, "hubos-ai-1")
+		closed := !strings.Contains(stEnd, "hubos-gaming-1")
 		wofiCount := func() string {
 			_, w := r.sh(`ps | grep -c '[w]ofi --dmenu'`)
 			nums := regexp.MustCompile(`(?m)^\d+\s*$`).FindAllString(w, -1)
@@ -456,9 +456,9 @@ func TestHubImage(t *testing.T) {
 			}
 			return strings.TrimSpace(nums[len(nums)-1])
 		}
-		homeRe := regexp.MustCompile(`#\d+ hubos-ai-1 \[0, -100\] \d+x\d+\s+"AI Box"`)
-		// up to three tries: open the menu with the bar click, move the pointer onto the "ai-1  AI Box" row (the rows are
-		// 23 px apart; ai-1 is the 7th line) and click it
+		homeRe := regexp.MustCompile(`#\d+ hubos-gaming-1 \[0, -100\] \d+x\d+\s+"Gaming Box"`)
+		// up to three tries: open the menu with the bar click, move the pointer onto the "gaming-1  Gaming Box" row (the rows are
+		// 23 px apart; gaming-1 is the 7th line) and click it
 		// calibration: clamp the pointer to the bottom right corner, move it by (-150,-150) and find the arrow in a screenshot
 		r.monitor("mouse_move 4000 4000")
 		time.Sleep(500 * time.Millisecond)
@@ -508,7 +508,7 @@ func TestHubImage(t *testing.T) {
 			st = state()
 			home = homeRe.MatchString(st)
 			if !home {
-				t.Logf("attempt %d: no AI Box window at its home after the click", attempts)
+				t.Logf("attempt %d: no Gaming Box window at its home after the click", attempts)
 			}
 		}
 		_, evs := r.sh(`grep -E 'POINTER_BUTTON|POINTER_MOTION' /tmp/ev2.log | awk '{print $1, $2}' | sort | uniq -c; tail -n 6 /tmp/ev2.log | cut -c1-120; kill $(pidof libinput) 2>/dev/null; true`)
@@ -516,7 +516,7 @@ func TestHubImage(t *testing.T) {
 		r.shot("hub-3-row-click-opened")
 		after := wofiCount()
 		ok := closed && opened && home
-		record("H3b two clicks on a row of the wofi menu (relative QEMU mouse) make hubd open that machine: the closed AI Box window comes back at its home (0,-100)", ok, time.Since(start),
+		record("H3b two clicks on a row of the wofi menu (relative QEMU mouse) make hubd open that machine: the closed Gaming Box window comes back at its home (0,-100)", ok, time.Since(start),
 			fmt.Sprintf("window closed before: %v (end rc=%d); menu opened: %v; click attempts %d; window at home after the click: %v; wofi running after: %s", closed, rcEnd, opened, attempts, home, after))
 		if !ok {
 			t.Errorf("closed=%v opened=%v home=%v\n%s\n%s\n%s", closed, opened, home, outEnd, stEnd, st)
@@ -630,20 +630,20 @@ func TestHubImage(t *testing.T) {
 		}
 		start := time.Now()
 		const filled, empty = "●", "○"
-		// two fake viewer windows: ai-1 (home 0,-100) and desk-1 (home 3000,-100, far to the right); desk-2 stays closed
-		r.sh(asHub("hubd open " + hubSock + " ai-1 2>&1"))
+		// two fake viewer windows: gaming-1 (home 0,-100) and desk-1 (home 3000,-100, far to the right); desk-2 stays closed
+		r.sh(asHub("hubd open " + hubSock + " gaming-1 2>&1"))
 		time.Sleep(3 * time.Second)
 		rcD, outD := r.sh(asHub("hubd open " + hubSock + " desk-1 2>&1"))
 		time.Sleep(8 * time.Second)
 		st0 := state()
 		ws0, cam0, camOK0 := parseState(st0)
-		ai0, haveAI := findWin(ws0, "hubos-ai-1")
+		gm0, haveGM := findWin(ws0, "hubos-gaming-1")
 		d1, haveD1 := findWin(ws0, "hubos-desk-1")
 		_, haveD2 := findWin(ws0, "hubos-desk-2")
-		offscreen := haveAI && haveD1 && camOK0 && !inView(ai0, cam0) && inView(d1, cam0)
+		offscreen := haveGM && haveD1 && camOK0 && !inView(gm0, cam0) && inView(d1, cam0)
 		_, list0 := r.sh(asHub("hubd list " + hubSock))
 		t.Logf("two windows open (desk-1 rc=%d %s):\n%s\nlist:\n%s", rcD, strings.TrimSpace(outD), st0, list0)
-		marks := markerOf(list0, "ai-1") == filled && markerOf(list0, "desk-1") == filled && markerOf(list0, "desk-2") == empty && markerOf(list0, "nas-1") == empty && markerOf(list0, "hub") == "none"
+		marks := markerOf(list0, "gaming-1") == filled && markerOf(list0, "desk-1") == filled && markerOf(list0, "desk-2") == empty && markerOf(list0, "nas-1") == empty && markerOf(list0, "hub") == "none"
 		r.shot("hub-3c-two-windows-open")
 
 		// the menu opened by the bar click shows the list
@@ -652,44 +652,44 @@ func TestHubImage(t *testing.T) {
 		listPix := countColor(img, 0, 60, 660, 460, menuBg)
 		menuOK := tries > 0 && listPix > 40000
 
-		// click the ai-1 row (7th line): its window is off screen; it must be focused and in view
+		// click the gaming-1 row (7th line): its window is off screen; it must be focused and in view
 		clicks := clickRow(213)
 		time.Sleep(6 * time.Second)
 		st1 := state()
 		ws1, cam1, camOK1 := parseState(st1)
-		ai1, _ := findWin(ws1, "hubos-ai-1")
+		gm1, _ := findWin(ws1, "hubos-gaming-1")
 		d1b, _ := findWin(ws1, "hubos-desk-1")
 		_, foots := r.sh(`ps | grep -c '[f]oot '`) // one viewer per open machine: still two
-		pickedOffscreen := camOK1 && ai1.focused && !d1b.focused && inView(ai1, cam1) && !inView(d1b, cam1) && wofiCount() == "0"
-		t.Logf("after the click on the ai-1 row (%d clicks):\n%s\nfoot processes: %s", clicks, st1, strings.TrimSpace(foots))
-		r.shot("hub-3c-picked-ai-1-from-off-screen")
+		pickedOffscreen := camOK1 && gm1.focused && !d1b.focused && inView(gm1, cam1) && !inView(d1b, cam1) && wofiCount() == "0"
+		t.Logf("after the click on the gaming-1 row (%d clicks):\n%s\nfoot processes: %s", clicks, st1, strings.TrimSpace(foots))
+		r.shot("hub-3c-picked-gaming-1-from-off-screen")
 
-		// behind another window: move desk-1 on top of ai-1 and focus it, then pick ai-1 again
+		// behind another window: move desk-1 on top of gaming-1 and focus it, then pick gaming-1 again
 		r.sh(asHub(fmt.Sprintf("driftwm msg move 0 -100 --id %d", d1b.id)))
 		r.sh(asHub(fmt.Sprintf("driftwm msg focus --id %d", d1b.id)))
 		time.Sleep(6 * time.Second)
 		st2 := state()
 		ws2, _, _ := parseState(st2)
-		ai2, _ := findWin(ws2, "hubos-ai-1")
+		gm2, _ := findWin(ws2, "hubos-gaming-1")
 		d12, _ := findWin(ws2, "hubos-desk-1")
-		coverSetup := d12.focused && !ai2.focused && d12.x == 0 && d12.y == -100
-		r.shot("hub-3c-desk-1-covers-ai-1")
+		coverSetup := d12.focused && !gm2.focused && d12.x == 0 && d12.y == -100
+		r.shot("hub-3c-desk-1-covers-gaming-1")
 		tries2 := openMenu()
 		clicks2 := clickRow(213)
 		time.Sleep(6 * time.Second)
 		st3 := state()
 		ws3, cam3, camOK3 := parseState(st3)
-		ai3, _ := findWin(ws3, "hubos-ai-1")
+		gm3, _ := findWin(ws3, "hubos-gaming-1")
 		d13, _ := findWin(ws3, "hubos-desk-1")
-		pickedBehind := tries2 > 0 && camOK3 && ai3.focused && !d13.focused && inView(ai3, cam3) && wofiCount() == "0"
+		pickedBehind := tries2 > 0 && camOK3 && gm3.focused && !d13.focused && inView(gm3, cam3) && wofiCount() == "0"
 		order := make([]string, 0, len(ws3))
 		for _, w := range ws3 {
 			order = append(order, w.app)
 		}
-		t.Logf("desk-1 on top of ai-1 (setup ok: %v):\n%s\nafter the click (%d clicks):\n%s\nwindows in the order driftwm prints them: %v", coverSetup, st2, clicks2, st3, order)
-		r.shot("hub-3c-picked-ai-1-from-behind")
+		t.Logf("desk-1 on top of gaming-1 (setup ok: %v):\n%s\nafter the click (%d clicks):\n%s\nwindows in the order driftwm prints them: %v", coverSetup, st2, clicks2, st3, order)
+		r.shot("hub-3c-picked-gaming-1-from-behind")
 
-		// close desk-1 with hubd end: its marker must change, ai-1's must not
+		// close desk-1 with hubd end: its marker must change, gaming-1's must not
 		rcE, outE := r.sh(asHub("hubd end " + hubSock + " desk-1 2>&1"))
 		time.Sleep(4 * time.Second)
 		_, list1 := r.sh(asHub("hubd list " + hubSock))
@@ -699,7 +699,7 @@ func TestHubImage(t *testing.T) {
 			time.Sleep(3 * time.Second)
 			_, list1 = r.sh(asHub("hubd list " + hubSock))
 		}
-		afterEnd := markerOf(list1, "desk-1") == empty && markerOf(list1, "ai-1") == filled && markerOf(list1, "desk-2") == empty
+		afterEnd := markerOf(list1, "desk-1") == empty && markerOf(list1, "gaming-1") == filled && markerOf(list1, "desk-2") == empty
 		tries3 := openMenu()
 		r.shot("hub-3c-menu-after-end")
 
@@ -751,9 +751,9 @@ func TestHubImage(t *testing.T) {
 		searchMarker := markerOf(list2, "desk-2") == filled
 
 		ok := rcD == 0 && !haveD2 && offscreen && marks && menuOK && pickedOffscreen && coverSetup && pickedBehind && afterEnd && searchOpened && searchMarker
-		record("H3c the open marker: two fake viewer windows are open (ai-1 and desk-1, far apart) and a third machine (desk-2) is not; the list opened by the bar click marks the two with a filled dot and the others with an empty dot; a click on the open ai-1 row (window off screen, then window behind another) focuses it and moves the view to it; hubd end desk-1 changes its marker; typing part of a NAME finds a marked line and a pick of it opens the machine", ok, time.Since(start),
-			fmt.Sprintf("windows open before: ai-1 %v, desk-1 %v, desk-2 %v; ai-1 off screen while desk-1 in view: %v; markers right (ai-1 and desk-1 filled, desk-2 and nas-1 empty, the hub line has no dot): %v; menu opened on try %d, list pixels %d; click on ai-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over ai-1: %v; second pick (%d clicks): ai-1 focused and in view: %v; after hubd end desk-1 (rc %d): desk-1 empty and ai-1 filled: %v; search 'two' + Enter (try %d) opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
-				haveAI, haveD1, haveD2, offscreen, marks, tries, listPix, clicks, pickedOffscreen, coverSetup, clicks2, pickedBehind, rcE, afterEnd, searchTries, searchOpened, d24.x, d24.y, searchMarker, cam0, cam1, camOK1))
+		record("H3c the open marker: two fake viewer windows are open (gaming-1 and desk-1, far apart) and a third machine (desk-2) is not; the list opened by the bar click marks the two with a filled dot and the others with an empty dot; a click on the open gaming-1 row (window off screen, then window behind another) focuses it and moves the view to it; hubd end desk-1 changes its marker; typing part of a NAME finds a marked line and a pick of it opens the machine", ok, time.Since(start),
+			fmt.Sprintf("windows open before: gaming-1 %v, desk-1 %v, desk-2 %v; gaming-1 off screen while desk-1 in view: %v; markers right (gaming-1 and desk-1 filled, desk-2 and nas-1 empty, the hub line has no dot): %v; menu opened on try %d, list pixels %d; click on gaming-1 (%d clicks): focused and in view, desk-1 not: %v; desk-1 placed over gaming-1: %v; second pick (%d clicks): gaming-1 focused and in view: %v; after hubd end desk-1 (rc %d): desk-1 empty and gaming-1 filled: %v; search 'two' + Enter (try %d) opened desk-2 (focused): %v (at [%d, %d]; its home is [3000, 1000]), then filled: %v; camera before %v, after first pick %v (read ok: %v)",
+				haveGM, haveD1, haveD2, offscreen, marks, tries, listPix, clicks, pickedOffscreen, coverSetup, clicks2, pickedBehind, rcE, afterEnd, searchTries, searchOpened, d24.x, d24.y, searchMarker, cam0, cam1, camOK1))
 		if !ok {
 			t.Errorf("rcD=%d haveD2=%v offscreen=%v marks=%v menuOK=%v pickedOffscreen=%v coverSetup=%v pickedBehind=%v afterEnd=%v searchOpened=%v searchMarker=%v", rcD, haveD2, offscreen, marks, menuOK, pickedOffscreen, coverSetup, pickedBehind, afterEnd, searchOpened, searchMarker)
 			t.Fail()
@@ -801,12 +801,12 @@ func TestHubImage(t *testing.T) {
 		}
 		start := time.Now()
 		r.sh(`wget -q -O /tmp/h6lib.sh ` + r.base + `/h6lib.sh && wget -q -O /tmp/h6kill.sh ` + r.base + `/h6kill.sh && echo scripts-ok`)
-		for _, id := range []string{"ai-1", "desk-1", "desk-2"} {
+		for _, id := range []string{"gaming-1", "desk-1", "desk-2"} {
 			r.sh(asHub("hubd open " + hubSock + " " + id + " 2>&1"))
 		}
 		three := func(ws []hubWin, _ [2]float64, _ float64) bool {
 			m := hubWinsByApp(ws, "hubos-")
-			return len(m) == 3 && m["hubos-ai-1"].ID >= 0 && m["hubos-desk-1"].W >= 64 && m["hubos-desk-2"].W >= 64 && m["hubos-ai-1"].W >= 64
+			return len(m) == 3 && m["hubos-gaming-1"].ID >= 0 && m["hubos-desk-1"].W >= 64 && m["hubos-desk-2"].W >= 64 && m["hubos-gaming-1"].W >= 64
 		}
 		st0, three0 := pollState(180*time.Second, three)
 		ws0, _, _, _ := parseHubState(st0)
@@ -819,7 +819,7 @@ func TestHubImage(t *testing.T) {
 			r.sh(asHub(fmt.Sprintf("driftwm msg resize %d %d --id %d", w, h, ids[app])))
 			r.sh(asHub(fmt.Sprintf("driftwm msg move %d %d --id %d", x, y, ids[app])))
 		}
-		put("hubos-ai-1", -400, 0, 300, 200)
+		put("hubos-gaming-1", -400, 0, 300, 200)
 		put("hubos-desk-1", 0, 0, 300, 200)
 		put("hubos-desk-2", 400, 0, 300, 200)
 		r.sh(asHub("driftwm msg zoom 0.8"))
@@ -828,7 +828,7 @@ func TestHubImage(t *testing.T) {
 		time.Sleep(3 * time.Second)
 		stA, _ := pollState(60*time.Second, func(ws []hubWin, cam [2]float64, z float64) bool {
 			m := hubWinsByApp(ws, "hubos-")
-			return len(m) == 3 && m["hubos-ai-1"].X == -400 && m["hubos-desk-1"].X == 0 && m["hubos-desk-2"].X == 400 && z > 0.79 && z < 0.81 && cam[0] > 119 && cam[0] < 121
+			return len(m) == 3 && m["hubos-gaming-1"].X == -400 && m["hubos-desk-1"].X == 0 && m["hubos-desk-2"].X == 400 && z > 0.79 && z < 0.81 && cam[0] > 119 && cam[0] < 121
 		})
 		wsA, camA, zoomA, _ := parseHubState(stA)
 		mapA := hubWinsByApp(wsA, "hubos-")
@@ -858,7 +858,7 @@ func TestHubImage(t *testing.T) {
 		pidAfter := servePID()
 		_, listAfter := lay("list")
 		_, hubList := r.sh(asHub("hubd list " + hubSock))
-		remembered := strings.Contains(listAfter, "* arr-a") && markerOf(hubList, "ai-1") == "●" && markerOf(hubList, "desk-1") == "●" && markerOf(hubList, "desk-2") == "●"
+		remembered := strings.Contains(listAfter, "* arr-a") && markerOf(hubList, "gaming-1") == "●" && markerOf(hubList, "desk-1") == "●" && markerOf(hubList, "desk-2") == "●"
 		// the active layout also governs a machine opened later; after "clear" the home position is used again
 		r.sh(asHub("hubd end " + hubSock + " desk-2 2>&1"))
 		_, gone := pollState(60*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool {
@@ -892,7 +892,7 @@ func TestHubImage(t *testing.T) {
 		lay("delete arr-a")
 		lay("delete arr-c")
 		r.sh(`rm -f /config/hubos/layouts/*.corrupt.*; ls -A /config/hubos/layouts`)
-		narrow := mapA["hubos-ai-1"].W <= 390 && mapA["hubos-desk-1"].W <= 390 && mapA["hubos-desk-2"].W <= 390 // the three windows really stand apart
+		narrow := mapA["hubos-gaming-1"].W <= 390 && mapA["hubos-desk-1"].W <= 390 && mapA["hubos-desk-2"].W <= 390 // the three windows really stand apart
 		ok := three0 && rcSaveA == 0 && strings.Contains(outSaveA, "3 windows") && (!narrow || !strings.Contains(outSaveA, "overlap")) &&
 			strings.Contains(lsOut, "hub") && strings.Contains(lsOut, "arr-a.layout.json") && strings.Contains(lsOut, "\n1\n3\n") &&
 			rcSaveB == 0 && strings.Contains(outSaveB, "WARNING: these windows overlap") &&
@@ -976,7 +976,7 @@ func TestHubImage(t *testing.T) {
 		rng := rand.New(rand.NewSource(seed))
 		t.Logf("kill cycles: %d, random seed: %d", cycles, seed)
 		// close the windows of the earlier tests, then switch to the 20-machine inventory and viewers
-		for _, id := range []string{"ai-1", "desk-1", "desk-2"} {
+		for _, id := range []string{"gaming-1", "desk-1", "desk-2"} {
 			r.sh(asHub("hubd end " + hubSock + " " + id + " 2>&1"))
 		}
 		pollState(90*time.Second, func(ws []hubWin, _ [2]float64, _ float64) bool { return len(hubWinsByApp(ws, "hubos-")) == 0 })

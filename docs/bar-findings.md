@@ -1,5 +1,7 @@
 # Bar findings
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 **Researched: 2026-10-01 — build environment; will change.** This file records what was run to find out how a bar (Waybar) and a list menu behave with driftwm. `HUB-OS.md` wins if anything here disagrees with it. It builds on `docs/driftwm-findings.md` (called "the driftwm findings" below) and `docs/environment.md`.
 
 - **driftwm:** `malbiruk/driftwm` at the pinned commit `352333a8fa1b22171492d4b71a54102045c9a19d` (version 0.19.0), built and run nested on a virtual X display with a software renderer, exactly as in section 0 of the driftwm findings. **Nothing was run on a real screen, GPU or input device.** driftwm was only read and run. Nothing was pushed to it, forked, or filed on it, and it was not changed.

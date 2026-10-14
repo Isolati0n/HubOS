@@ -71,7 +71,6 @@ All decisions are in `HUB-OS.md`. Where to look:
 (`distro-contract.md` section 5, `bulletproof-compositor.md` section 12, `hub-stability.md` section 12 and `driftwm-layouts.md` section 9 were answered; see their "Owner decisions" sections.) The owner said the file-transfer and from-scratch questions will be answered later (an open question in `HUB-OS.md`).
 
 ### 3.4 December hardware (all hardware is bought at once)
-- The AI box GPU (NVIDIA with CUDA or AMD with ROCm, decided from the generative-media software).
 - The ultra-high-quality DAC for the hub's sound (research in December).
 - The exact ECC memory modules for the hub (candidate board ASRock Rack B650D4U-2L2T/BCM with an EPYC 4005).
 - The management switch.

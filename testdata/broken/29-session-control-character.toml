@@ -1,5 +1,5 @@
 # BROKEN ON PURPOSE: session has no control characters or line breaks.
-# EXPECT: ai-1: session must not contain control characters or line breaks
+# EXPECT: gaming-1: session must not contain control characters or line breaks
 
 format = 1
 
@@ -12,9 +12,9 @@ open    = ["none"]
 home    = { x = 0, y = 0 }
 
 [[machine]]
-id      = "ai-1"
-name    = "AI box"
-role    = "ai"
+id      = "gaming-1"
+name    = "Gaming box"
+role    = "gaming"
 address = "192.0.2.30"
 open    = ["moonlight"]
 home    = { x = 2000, y = -1500 }

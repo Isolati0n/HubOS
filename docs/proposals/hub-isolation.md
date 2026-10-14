@@ -1,5 +1,7 @@
 # PROPOSAL: the hub as separate processes under a supervisor (isolation, failure table, interface rules, resource fences)
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 **Status: PROPOSAL.** Nothing here is decided, built into the image, or a change to `HUB-OS.md`, the main image or `hubd`. `HUB-OS.md` wins if this file disagrees with it. Written 2026-10-05 on branch `hub-isolation-and-workshop` (from `origin/main`). I recommend and I list questions (section 11); I do not decide design.
 
 **Labels on every item** (as in the other proposals):

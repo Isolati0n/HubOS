@@ -27,15 +27,6 @@ user    = "owner"
 share   = "pool"
 
 [[machine]]
-id      = "ai-1"
-name    = "AI Box"
-role    = "ai"
-address = "192.0.2.30"
-open    = ["moonlight", "ssh"]
-home    = { x = 2000, y = 0 }
-user    = "owner"
-
-[[machine]]
 id      = "vmhost-1"
 name    = "VM Host"
 role    = "vm-host"

@@ -101,7 +101,7 @@ func TestRunningViewerLogIsTrimmedAndKeepsWriting(t *testing.T) {
 }
 
 func TestFailureMessageNamesTheLog(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.LogDir = t.TempDir()
 	r.l.script = nil

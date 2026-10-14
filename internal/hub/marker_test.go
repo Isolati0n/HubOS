@@ -23,8 +23,8 @@ func lineOf(lines []string, id string) string {
 
 func markerRig(t *testing.T) *rig {
 	r := newRig(t,
-		machineDoc("a", "A Box", "ai", "moonlight", 1, 1, 1, ""),
-		machineDoc("b", "B Box", "ai", "moonlight", 1, 2, 2, ""),
+		machineDoc("a", "A Box", "gaming", "moonlight", 1, 1, 1, ""),
+		machineDoc("b", "B Box", "gaming", "moonlight", 1, 2, 2, ""),
 		machineDoc("c", "C Desk", "desktop", "moonlight", 1, 3, 3, ""))
 	for _, id := range []string{"a", "b", "c"} {
 		r.setStatus(id, statusUp)
@@ -125,7 +125,7 @@ func TestMarkerWindowAppearsLate(t *testing.T) {
 
 func TestMarkerWithTheDuplicateTitleWarning(t *testing.T) {
 	// hubd knows one of two same-named windows: the marker stays filled and the warning shows.
-	r := newRig(t, machineDoc("a", "A name", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A name", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.Open("a")
 	r.f.add("hubos-a", "A name")

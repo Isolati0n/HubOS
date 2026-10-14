@@ -19,7 +19,7 @@ import (
 // 11.2). The settle wait is the production value (500 ms).
 
 func lateRig(t *testing.T) *rig {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.WindowWait = 300 * time.Millisecond
 	r.h.set.LateGrace = 5 * time.Second
@@ -270,8 +270,8 @@ func TestPerViewerWindowWaitOverridesTheHubDefault(t *testing.T) {
 
 func TestSameNameWindowsGiveAWarningInTheMenuAndTheTooltip(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A name", "ai", "moonlight", 1, 1, 1, ""),
-		machineDoc("b", "B name", "ai", "moonlight", 1, 2, 2, ""))
+		machineDoc("a", "A name", "gaming", "moonlight", 1, 1, 1, ""),
+		machineDoc("b", "B name", "gaming", "moonlight", 1, 2, 2, ""))
 	r.setStatus("a", statusUp)
 	r.setStatus("b", statusUp)
 	r.h.Open("a")
@@ -318,7 +318,7 @@ func TestStaleTooltipShowsBothAges(t *testing.T) {
 		t.Errorf("tooltip: %s", tip)
 	}
 	// Before any round has finished.
-	r2 := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r2 := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r2.h.set.ProbeInterval = 100 * time.Millisecond
 	time.Sleep(450 * time.Millisecond)
 	if tip := r2.h.Status().Tooltip; !strings.Contains(tip, "no check round has finished yet") {
@@ -327,7 +327,7 @@ func TestStaleTooltipShowsBothAges(t *testing.T) {
 }
 
 func TestNoEscapeFlagLeavesTheTextAlone(t *testing.T) {
-	r := newRig(t, machineDoc("m", `A<b>&"x"`, "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("m", `A<b>&"x"`, "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("m", statusDown)
 	escaped := r.h.StatusJSON()
 	r.h.set.NoEscape = true
@@ -533,7 +533,7 @@ func TestIgnoredAppIDsAreNeverCandidatesForComparisonMatching(t *testing.T) {
 		t.Errorf("late path adopted window %d, want 1", id)
 	}
 	// A named viewer is not affected by the list.
-	r = newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r = newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.IgnoreAppIDs = []string{"hubos-a"}
 	if res := r.h.Open("a"); res.Action != "open" {

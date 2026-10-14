@@ -120,10 +120,10 @@ func TestHubosBackend(t *testing.T) {
 	rel := filepath.Join(dir, "release")
 	os.WriteFile(rel, []byte("version=recovery-7\nflavor=recovery\n"), 0o644)
 	conf := filepath.Join(dir, "node.conf")
-	os.WriteFile(conf, []byte("NAME=\"ai-1\"\nNET=dhcp\n"), 0o644)
+	os.WriteFile(conf, []byte("NAME=\"gaming-1\"\nNET=dhcp\n"), 0o644)
 	b := &HubosBackend{Ctl: ctl, Release: rel, LogFile: filepath.Join(dir, "log"), NodeConf: conf}
-	if b.Machine() != "ai-1" {
-		t.Fatalf("machine id %q, want ai-1 (NAME= in node.conf)", b.Machine())
+	if b.Machine() != "gaming-1" {
+		t.Fatalf("machine id %q, want gaming-1 (NAME= in node.conf)", b.Machine())
 	}
 	if st := b.Status(); st.Release != "recovery-7" || st.BootFailures != 2 || st.FailureLimit != 3 || st.State != "recovery" {
 		t.Fatalf("status %+v", st)

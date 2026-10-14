@@ -208,8 +208,8 @@ func TestDefaultPortsSessionAndTitleMatch(t *testing.T) {
 	if len(ps) != 0 {
 		t.Fatalf("%q", ps)
 	}
-	title, ok, err := tab.Viewers[0].MatchTitle(inventory.Machine{ID: "ai-1"})
-	if !ok || err != nil || title != "ai-1 - Moonlight" {
+	title, ok, err := tab.Viewers[0].MatchTitle(inventory.Machine{ID: "gaming-1"})
+	if !ok || err != nil || title != "gaming-1 - Moonlight" {
 		t.Errorf("title %q %v %v", title, ok, err)
 	}
 	if _, ok, _ := tab.Viewers[0].MatchTitle(inventory.Machine{}); !ok {

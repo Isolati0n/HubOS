@@ -1,5 +1,7 @@
 # Viewers research
 
+Note (2026-10-13): the AI box was removed from the cluster; mentions of it below are history.
+
 **Researched: 2026-10-02 — build environment; will change.** This file records what the official documentation, man pages, `--help` output and source code say about the programs Hub OS would start as viewers, and what happened when the ones that are in the Ubuntu archive were run under driftwm. `HUB-OS.md` wins if anything here disagrees with it. It is the input for the real `viewers.toml` (`docs/hubd-slice2.md`) and, later, for the secrets design.
 
 **Nothing was verified on hardware.** Everything that was run used the nested, software-rendered driftwm of `docs/driftwm-findings.md`, on a virtual screen, in the cloud build environment. No real screen, GPU, network or input device. No real Moonlight or Sunshine was run.

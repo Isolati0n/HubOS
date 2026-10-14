@@ -16,8 +16,8 @@ import (
 func watchRig(t *testing.T) *rig {
 	t.Helper()
 	r := newRig(t,
-		machineDoc("a", "A Box", "ai", "moonlight", 1, 100, 100, ""),
-		machineDoc("b", "B Box", "ai", "moonlight", 1, 300, 300, ""),
+		machineDoc("a", "A Box", "gaming", "moonlight", 1, 100, 100, ""),
+		machineDoc("b", "B Box", "gaming", "moonlight", 1, 300, 300, ""),
 		machineDoc("c", "C Desk", "desktop", "moonlight", 1, 3000, 0, ""))
 	for _, id := range []string{"a", "b", "c"} {
 		r.setStatus(id, statusUp)
@@ -134,7 +134,7 @@ func TestRestoreWaitsForTheWaylandSocket(t *testing.T) {
 	}
 	defer os.RemoveAll(dir)
 	sock := filepath.Join(dir, "wayland-1")
-	r := newRig(t, machineDoc("a", "A Box", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A Box", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.WaylandSocket = sock
 	go r.h.RunWatch(r.ctx)
@@ -196,7 +196,7 @@ func TestRestoreSaysWhichMachineWasNotRestored(t *testing.T) {
 
 // After a reboot nothing comes back: the list lives only in hubd's memory.
 func TestNothingIsRestoredWhenHubdStartsAfterTheCrash(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A Box", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A Box", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.h.Open("a")
 	r.f.crash()
@@ -237,7 +237,7 @@ func (s *sigRec) send(pid int, sig syscall.Signal) error {
 }
 
 func TestRestartDesktopSendsTermToTheCompositorAndNothingElse(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.f.pid = 4242
 	rec := &sigRec{}
 	alive := true
@@ -267,7 +267,7 @@ func TestRestartDesktopSendsTermToTheCompositorAndNothingElse(t *testing.T) {
 }
 
 func TestRestartDesktopKillsAfterTheWaitIfTheCompositorDoesNotExit(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.f.pid = 4242
 	rec := &sigRec{}
 	r.h.set.KillWait = 150 * time.Millisecond
@@ -294,7 +294,7 @@ func TestRestartDesktopRefusesWhenItCannotBeSureItIsTheCompositor(t *testing.T) 
 		{"another program owns the socket", 4242, "sway", `is "sway"`},
 	} {
 		t.Run(c.name, func(t *testing.T) {
-			r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+			r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 			r.f.pid = c.pid
 			rec := &sigRec{}
 			r.h.set.Signal = rec.send
@@ -351,7 +351,7 @@ func TestRestartDesktopKeepsTheWindowsEvenIfTheyVanishBeforeTheStreamEnds(t *tes
 // runs, docs/hubd-slice2.md section 17.6). hubd now looks again until the window
 // stays, and asks again.
 func TestWindowIsPutAtItsHomeAgainWhenTheCompositorMovesItAfterTheFirstMove(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.f.cascade[0] = 2 // the first two moves are overridden by the compositor
 	res := r.h.Open("a")
@@ -371,7 +371,7 @@ func TestWindowIsPutAtItsHomeAgainWhenTheCompositorMovesItAfterTheFirstMove(t *t
 // cascade spot, only when the first picture arrives, overwriting any move made
 // before that. hubd waits for the first picture before it moves the window.
 func TestWindowIsNotMovedBeforeItHasDrawnItsFirstPicture(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.SizedWait = 3 * time.Second
 	r.l.script = func(args []string) {
@@ -408,7 +408,7 @@ func TestWindowIsNotMovedBeforeItHasDrawnItsFirstPicture(t *testing.T) {
 }
 
 func TestWindowThatNeverDrawsIsMovedAnywayWithAWarning(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.l.script = func(args []string) {
 		id := r.f.add("hubos-a", "A")
@@ -424,7 +424,7 @@ func TestWindowThatNeverDrawsIsMovedAnywayWithAWarning(t *testing.T) {
 }
 
 func TestWindowThatNeverStaysGetsAWarningNotASilentWrongPlace(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.f.cascade[0] = 1 << 20
 	res := r.h.Open("a")
@@ -436,7 +436,7 @@ func TestWindowThatNeverStaysGetsAWarningNotASilentWrongPlace(t *testing.T) {
 // A viewer that is slow to show its window (it goes to the late-window state)
 // still gets its window put at the saved place when the window comes.
 func TestRestoreOfASlowViewerPlacesItsLateWindowAtTheSavedPlace(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A Box", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A Box", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.WindowWait = 100 * time.Millisecond
 	r.h.set.LateGrace = 5 * time.Second
@@ -491,7 +491,7 @@ func TestAnOpenUnderWayWhenTheCompositorRestartedRecordsAndMovesNothing(t *testi
 }
 
 func TestWindowThatClosedBeforeItWasPlacedIsNotRecorded(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.SizedWait = 3 * time.Second
 	r.l.script = func(args []string) {
@@ -561,7 +561,7 @@ func TestSecondCrashDuringARestoreStillRestoresTheViewFromBeforeTheFirst(t *test
 // end of the placing: hubd asks again (seen in the hub image test: a window kept the viewer's first size because
 // the first move timed out).
 func TestSlowAnswersFromDriftwmAreAskedAgainWhilePlacing(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 100, 100, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 100, 100, ""))
 	r.setStatus("a", statusUp)
 	r.h.set.SettleMax = 2 * time.Second
 	r.h.set.SizedWait = 2 * time.Second
@@ -604,7 +604,7 @@ func TestEndWaitsForASlowWindowUpToThirtySecondsByDefault(t *testing.T) {
 	if got := DefaultSettings().CloseWait; got != 30*time.Second {
 		t.Errorf("default close wait %s", got)
 	}
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	r.setStatus("a", statusUp)
 	r.h.Open("a")
 	wid, _ := r.h.WindowOf("a")

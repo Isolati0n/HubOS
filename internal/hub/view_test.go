@@ -16,8 +16,8 @@ func big(t *testing.T) *rig {
 	t.Helper()
 	parts := []string{
 		machineDoc("gaming-1", "Gaming Box", "gaming", "moonlight", 1, -1, -1, ""),
-		machineDoc("ai-1", "AI Box", "ai", "moonlight", 1, -2, -2, ""),
-		machineDoc("ai-2", "AI Box 2", "ai", "moonlight", 1, -3, -3, ""),
+		machineDoc("desktop-1", "Desktop 1", "desktop", "moonlight", 1, -2, -2, ""),
+		machineDoc("desktop-2", "Desktop 2", "desktop", "moonlight", 1, -3, -3, ""),
 		machineDoc("vmhost-1", "VM Host", "vm-host", "ssh", 1, -4, -4, ""),
 	}
 	for i := 1; i <= 20; i++ {
@@ -30,7 +30,7 @@ func big(t *testing.T) *rig {
 			r.setStatus(s.m.ID, statusUp)
 		}
 	}
-	r.setStatus("ai-2", statusDown)
+	r.setStatus("desktop-2", statusDown)
 	r.setStatus("g05", statusDown)
 	r.setStatus("g06", statusDown)
 	return r
@@ -43,7 +43,7 @@ func TestListGroupsNestingFoldingAndDownFirst(t *testing.T) {
 		"? search by id or name...",
 		"- Hub (1 machine)",
 		"   hub              Hub                      THIS HUB",
-		"- AI (2 machines, 1 down)",
+		"- Desktop (2 machines, 1 down)",
 		" ○ vmhost-1         VM Host                  UP",
 		"   + Guests of vmhost-1 (20 machines, 2 down)", // 20 > fold threshold 12: folded
 	} {
@@ -51,8 +51,8 @@ func TestListGroupsNestingFoldingAndDownFirst(t *testing.T) {
 			t.Errorf("missing %q in:\n%s", want, got)
 		}
 	}
-	// Down first inside a group: ai-2 before ai-1.
-	if strings.Index(got, "ai-2") > strings.Index(got, "ai-1 ") {
+	// Down first inside a group: desktop-2 before desktop-1.
+	if strings.Index(got, "desktop-2") > strings.Index(got, "desktop-1 ") {
 		t.Errorf("down machine not first:\n%s", got)
 	}
 	if strings.Contains(got, "g01") {
@@ -108,10 +108,10 @@ func TestPickIgnoresHeadingsUnknownAndEmptyLines(t *testing.T) {
 		"newline":           "\n",
 		"unknown line":      "   no-such-machine   Nothing   UP",
 		"plain text":        "hello",
-		"message line":      "! AI Box is down, not opened",
-		"id without indent": "ai-1",
+		"message line":      "! Desktop 1 is down, not opened",
+		"id without indent": "desktop-1",
 		"unknown heading":   "+ Nonsense (3 machines)",
-		"name only":         "   AI Box",
+		"name only":         "   Desktop 1",
 	} {
 		before := r.l.count()
 		res := r.h.Pick(line)
@@ -123,7 +123,7 @@ func TestPickIgnoresHeadingsUnknownAndEmptyLines(t *testing.T) {
 		}
 	}
 	// A machine line opens by id and the rest of the line does not matter.
-	res := r.h.Pick("   ai-1             whatever the name was    DOWN")
+	res := r.h.Pick("   desktop-1             whatever the name was    DOWN")
 	if res.Action != "open" {
 		t.Errorf("machine line: %+v", res)
 	}
@@ -137,10 +137,10 @@ func TestStatusLineCountsHubExcludedAndTooltipCapped(t *testing.T) {
 	if st.Text != "21 of 24 up" || st.Class != "alert" {
 		t.Errorf("got %+v", st)
 	}
-	if !strings.Contains(st.Tooltip, "3 down: AI Box 2, Guest 5 and 1 more") {
+	if !strings.Contains(st.Tooltip, "3 down: Desktop 2, Guest 5 and 1 more") {
 		t.Errorf("tooltip: %q", st.Tooltip)
 	}
-	r.setStatus("ai-2", statusUp)
+	r.setStatus("desktop-2", statusUp)
 	r.setStatus("g05", statusUp)
 	r.setStatus("g06", statusUp)
 	st = r.h.Status()
@@ -154,7 +154,7 @@ func TestStatusLineCountsHubExcludedAndTooltipCapped(t *testing.T) {
 
 func TestStatusLineBeforeFirstRoundNotCheckedAndStale(t *testing.T) {
 	r := newRig(t,
-		machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""),
+		machineDoc("a", "A", "desktop", "moonlight", 1, 1, 1, ""),
 		machineDoc("n", "N", "desktop", "moonlight", 0, 2, 2, ""))
 	if st := r.h.Status(); st.Text != "checking... 0 of 1 done" || st.Class != "ok" {
 		t.Errorf("start: %+v", st)
@@ -167,7 +167,7 @@ func TestStatusLineBeforeFirstRoundNotCheckedAndStale(t *testing.T) {
 }
 
 func TestOutOfFileHandlesIsNeverShownAsDown(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "desktop", "moonlight", 1, 1, 1, ""))
 	r.h.mu.Lock()
 	r.h.byID["a"].status = statusNoHandles
 	r.h.mu.Unlock()
@@ -361,7 +361,7 @@ func TestFirstRoundShowsHowManyAreDoneNotPartialCounts(t *testing.T) {
 }
 
 func TestRoundStartsOneIntervalAfterTheLastFinished(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "desktop", "moonlight", 1, 1, 1, ""))
 	r.h.set.ProbeInterval = 300 * time.Millisecond
 	var mu sync.Mutex
 	var starts, ends []time.Time

@@ -8,11 +8,11 @@ Today the owner hand-edits one `inventory.toml` (SOURCE `docs/inventory-format.m
 ## 2. The machine file (the owner's fields)
 One TOML file per machine in `machine_files/`:
 ```toml
-name     = "ai-1"             # unique; the permanent label
+name     = "gaming-1"         # unique; the permanent label
 kind     = "node"             # "hub" or "node"
 address  = "192.0.2.21:8480"  # "hub address", see 3.1; placeholder port
 guest_of = ""                 # empty, or the name of the host machine
-group    = "generative"       # free text, display only
+group    = "games"             # free text, display only
 ```
 `address` is present for every non-hub machine and absent or empty for the hub.
 

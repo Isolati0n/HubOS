@@ -16,7 +16,7 @@ func newStore(t *testing.T) *layoutStore {
 func sampleLayout(name string) Layout {
 	return Layout{Format: 1, Name: name, Saved: "2026-10-05T15:40:00Z",
 		View:    &LayoutView{Zoom: 0.8, Cam: [2]float64{120.5, -80}},
-		Windows: []LayoutWindow{{"ai-1", -2000, 0, 1280, 720}, {"nas-1", 2000, 0, 1280, 720}}}
+		Windows: []LayoutWindow{{"gaming-1", -2000, 0, 1280, 720}, {"nas-1", 2000, 0, 1280, 720}}}
 }
 
 func TestLayoutNameRule(t *testing.T) {
@@ -258,7 +258,7 @@ func TestAtomicWriteFailureChangesNothingAndLeavesNoTemp(t *testing.T) {
 }
 
 func TestLayoutTempFilesFromACrashAreRemovedAtStart(t *testing.T) {
-	r := newRig(t, machineDoc("a", "A", "ai", "moonlight", 1, 1, 1, ""))
+	r := newRig(t, machineDoc("a", "A", "gaming", "moonlight", 1, 1, 1, ""))
 	dir := filepath.Join(t.TempDir(), "layouts")
 	os.MkdirAll(dir, 0o755)
 	os.WriteFile(filepath.Join(dir, ".work.layout.json.tmp123"), []byte("half"), 0o644)
