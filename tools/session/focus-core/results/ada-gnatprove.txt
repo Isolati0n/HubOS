@@ -1,0 +1,52 @@
+=========================
+Summary of SPARK analysis
+=========================
+
+--------------------------------------------------------------------------------------------------------
+SPARK Analysis results        Total      Flow                             Provers   Justified   Unproved
+--------------------------------------------------------------------------------------------------------
+Data Dependencies                 .         .                                   .           .          .
+Flow Dependencies                 .         .                                   .           .          .
+Initialization                    .         .                                   .           .          .
+Non-Aliasing                      .         .                                   .           .          .
+Run-time Checks                  96         .                           96 (CVC5)           .          .
+Assertions                       56         .                56 (CVC5 98%, Z3 2%)           .          .
+Functional Contracts              9         .    9 (CVC5 75%, Trivial 5%, Z3 20%)           .          .
+LSP Verification                  .         .                                   .           .          .
+Termination                       7         7                                   .           .          .
+Concurrency                       .         .                                   .           .          .
+--------------------------------------------------------------------------------------------------------
+Total                           168    7 (4%)                           161 (96%)           .          .
+
+
+max steps used for successful proof: 2018
+
+============================
+Most difficult proved checks
+============================
+
+No check found with max time greater than 1 second
+
+========================
+Detailed analysis report
+========================
+
+Analyzed 1 unit
+in unit focus_core, 17 subprograms and packages out of 17 analyzed
+  Focus_Core at focus_core.ads:6 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Count_Btns at focus_core.ads:76 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (4 checks)
+  Focus_Core.Count_Keys at focus_core.ads:74 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (4 checks)
+  Focus_Core.Find_Btn at focus_core.adb:109 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Find_Key at focus_core.adb:99 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Input at focus_core.adb:167 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Is_Machine at focus_core.ads:72 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Push at focus_core.adb:27 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Remove_Btn_At at focus_core.adb:143 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (26 checks)
+  Focus_Core.Remove_Dest_Btns at focus_core.adb:68 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (27 checks)
+  Focus_Core.Remove_Dest_Keys at focus_core.adb:37 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (27 checks)
+  Focus_Core.Remove_Key_At at focus_core.adb:119 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (26 checks)
+  Focus_Core.Request at focus_core.adb:223 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Restart at focus_core.adb:252 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Sat_Inc at focus_core.adb:35 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (0 checks)
+  Focus_Core.Step at focus_core.ads:89 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (45 checks)
+  Focus_Core.Valid at focus_core.ads:81 flow analyzed (0 errors, 0 checks, 0 warnings and 0 pragma Assume statements) and proved (2 checks)

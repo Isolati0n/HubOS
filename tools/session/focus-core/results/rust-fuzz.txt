@@ -1,0 +1,10 @@
+rust fuzz: seed=1001 cases=10000000 steps=200002506 violations=0 hash=dafa113ada961c2b seconds=31.98 steps_per_second=6253728
+rust fuzz: seed=1002 cases=10000000 steps=200022645 violations=0 hash=1e5624738aff6ee5 seconds=32.24 steps_per_second=6203347
+rust fuzz: seed=1003 cases=10000000 steps=199977771 violations=0 hash=ed169a57ac5d1fef seconds=31.60 steps_per_second=6328924
+rust fuzz: seed=1004 cases=10000000 steps=199993310 violations=0 hash=5cbefc4c78d326e8 seconds=31.74 steps_per_second=6300829
+rust fuzz: seed=1005 cases=10000000 steps=200002235 violations=0 hash=d419181a5dd6ea20 seconds=31.99 steps_per_second=6252436
+rust fuzz: seed=1006 cases=10000000 steps=200002320 violations=0 hash=b6860486c4669797 seconds=32.13 steps_per_second=6224957
+rust fuzz: seed=1007 cases=10000000 steps=199975356 violations=0 hash=5ddc1f394033dea6 seconds=32.71 steps_per_second=6113858
+rust fuzz: seed=1008 cases=10000000 steps=200000070 violations=0 hash=71f2b1b1339084be seconds=32.94 steps_per_second=6071443
+rust fuzz: seed=1009 cases=10000000 steps=200023554 violations=0 hash=5c35952ab116828f seconds=33.09 steps_per_second=6045744
+rust fuzz: seed=1010 cases=10000000 steps=200028544 violations=0 hash=150479a7b72ad521 seconds=33.18 steps_per_second=6027995

@@ -1,0 +1,11 @@
+no_synth_key_release               detected: VIOLATION invariant 3 at case 16 step 13 event Event { kind: Req, a: 2
+no_synth_button_release            detected: VIOLATION invariant 3 at case 27 step 10 event Event { kind: Req, a: 6
+no_epoch_bump_on_request           detected: VIOLATION invariant 4 at case 0 step 5 event Event { kind: Req, a: 12,
+deliver_without_conn_check         detected: VIOLATION invariant 1 at case 129 step 9 event Event { kind: Bd, a: 15
+deliver_without_gen_check          detected: VIOLATION invariant 1 at case 28 step 30 event Event { kind: Ku, a: 6,
+reconnect_without_release_all      detected: VIOLATION invariant 3 at case 780 step 23 event Event { kind: Rec, a: 
+stale_verification_accepted        detected: VIOLATION invariant 6 at case 2 step 22 event Event { kind: Vok, a: 8,
+restart_keeps_held                 detected: VIOLATION invariant 3 at case 625 step 15 event Event { kind: Rst, a: 
+owed_never_set                     detected: VIOLATION invariant 3 at case 780 step 18 event Event { kind: Req, a: 
+chord_dropped_while_waiting        detected: VIOLATION invariant 5 at case 2 step 6 event Event { kind: Menu, a: 0,
+hub_input_with_stale_epoch         detected: VIOLATION invariant 1 at case 4 step 7 event Event { kind: Bu, a: 0, c
